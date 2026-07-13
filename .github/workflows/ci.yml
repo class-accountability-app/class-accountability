@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Cancel older runs on the same branch — saves Actions minutes on the free tier.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, typecheck, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Test
+        run: npm test --if-present
+
+      - name: Build
+        run: npm run build
+        env:
+          # Placeholder values so the build doesn't fail on missing env vars.
+          # Real secrets live in Vercel — never here.
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+
+  security:
+    name: Security checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fail if .env files are committed
+        run: |
+          if git ls-files | grep -E '^\.env(\.|$)' | grep -v '\.env\.example'; then
+            echo "::error::A .env file is committed. Remove it and ROTATE THE KEYS — assume they are compromised."
+            exit 1
+          fi
+          echo "No .env files committed."
+
+      - name: Warn if service_role key appears in client code
+        run: |
+          if grep -rn "service_role" --include='*.ts' --include='*.tsx' --include='*.js' app components lib 2>/dev/null; then
+            echo "::error::service_role key referenced in client-side code. It bypasses ALL row-level security. Server-side only."
+            exit 1
+          fi
+          echo "No service_role usage in client code."
+
+      - name: Check every migration that creates a table also enables RLS
+        run: |
+          fail=0
+          for f in supabase/migrations/*.sql; do
+            [ -e "$f" ] || continue
+            if grep -qi "create table" "$f" && ! grep -qi "enable row level security" "$f"; then
+              echo "::error file=$f::This migration creates a table but never enables row level security. A table without RLS is publicly readable."
+              fail=1
+            fi
+          done
+          exit $fail
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+        continue-on-error: true
