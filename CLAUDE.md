@@ -10,10 +10,11 @@ The core loop: sign up → join a class → get auto-paired into a pod → set a
 
 ## Stack
 
-- **Next.js 15** (App Router) + **TypeScript** + **Tailwind**
+- **Next.js 16** (App Router) + **TypeScript** + **Tailwind**
 - **Supabase**: Postgres + Auth (magic link) + **Row Level Security**
 - Hosted on **Vercel**; CI via **GitHub Actions**
 - Node 20+. Windows dev machine (PowerShell).
+- The root request-interception file is **`proxy.ts`** (Next 16's convention), not `middleware.ts` — the old convention is deprecated and triggers a build warning. Don't recreate `middleware.ts` at the root.
 
 ## Commands
 
@@ -31,7 +32,7 @@ The core loop: sign up → join a class → get auto-paired into a pod → set a
 4. **The university-email restriction is enforced in a DB trigger**, not just the login form — the anon key lets anyone bypass the form.
 5. **Schema changes go in `supabase/migrations/*.sql`**, committed to the repo — never by clicking in the Supabase dashboard. Note the folder is spelled `migrations` (this bit us once).
 6. **`main` is protected.** Work on a branch, open a PR, let CI pass, merge. Never commit to `main` directly.
-7. **Never use `getSession()` in middleware for auth decisions — use `getUser()`**, which revalidates the token. `getSession()` trusts the cookie without verifying it.
+7. **Never use `getSession()` in `proxy.ts` for auth decisions — use `getUser()`**, which revalidates the token. `getSession()` trusts the cookie without verifying it.
 
 ## Data model (already migrated in 0001_init.sql)
 
