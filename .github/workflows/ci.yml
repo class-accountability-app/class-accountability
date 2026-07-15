@@ -70,10 +70,17 @@ jobs:
           fail=0
           for f in supabase/migrations/*.sql; do
             [ -e "$f" ] || continue
-            if grep -qi "create table" "$f" && ! grep -qi "enable row level security" "$f"; then
-              echo "::error file=$f::This migration creates a table but never enables row level security. A table without RLS is publicly readable."
-              fail=1
-            fi
+            # Strip -- comments so a mention of RLS in a comment can't satisfy the check,
+            # then flatten to one lowercase line for scanning.
+            code=$(sed 's/--.*$//' "$f" | tr '\n' ' ' | tr -s ' ' | tr '[:upper:]' '[:lower:]')
+            tables=$(echo "$code" | grep -oE 'create table (if not exists )?(public\.)?[a-z_][a-z0-9_]*' \
+              | sed -E 's/create table (if not exists )?(public\.)?//')
+            for t in $tables; do
+              if ! echo "$code" | grep -qE "alter table (public\.)?$t enable row level security"; then
+                echo "::error file=$f::Table '$t' is created but never has RLS enabled. A table without RLS is publicly readable."
+                fail=1
+              fi
+            done
           done
           exit $fail
 
