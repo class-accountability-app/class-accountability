@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { JoinButton } from './join-button'
@@ -46,9 +47,12 @@ export default async function ClassesPage() {
                   </span>
                 </div>
                 {joinedClassIds.has(c.id) ? (
-                  <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                    Joined
-                  </span>
+                  <Link
+                    href={`/classes/${c.id}`}
+                    className="text-xs font-medium text-zinc-500 underline dark:text-zinc-400"
+                  >
+                    View pods
+                  </Link>
                 ) : (
                   <JoinButton classId={c.id} />
                 )}
