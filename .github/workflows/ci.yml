@@ -6,6 +6,11 @@ on:
   push:
     branches: [main]
 
+# Least-privilege default: neither job needs more than reading repo contents
+# (no PR comments, no pushes, no other GitHub API writes).
+permissions:
+  contents: read
+
 # Cancel older runs on the same branch — saves Actions minutes on the free tier.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
