@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { JoinButton } from '../join-button'
@@ -141,6 +142,12 @@ export default async function ClassPodsPage({
         <p className="text-xs text-zinc-600 dark:text-zinc-400">
           {cls.university} · {cls.term}
         </p>
+        <Link
+          href={`/classes/${cls.id}/progress`}
+          className="text-xs font-medium text-zinc-500 underline dark:text-zinc-400"
+        >
+          Targets &amp; progress
+        </Link>
       </div>
 
       {invitesToMe.length > 0 && (
