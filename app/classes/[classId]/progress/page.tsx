@@ -1,9 +1,13 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { sumProgress, computePace, projectionText } from '@/lib/projection'
+import { relativeTime, daysSince } from '@/lib/relativeTime'
 import { TargetForm } from './target-form'
 import { LogProgressForm } from './log-progress-form'
 import { CommentSection } from './comment-section'
+import { NudgeForm } from './nudge-form'
+
+const CHURN_THRESHOLD_DAYS = 7
 
 const RECENT_LOGS_PER_MEMBER = 5
 
@@ -34,6 +38,14 @@ type CommentRow = {
   body: string
   created_at: string
   profiles: { display_name: string }[] | null
+}
+
+type NudgeRow = {
+  id: string
+  from_user_id: string
+  to_user_id: string
+  content: string | null
+  created_at: string
 }
 
 function unitLabelFor(type: TargetType): string {
@@ -156,6 +168,17 @@ export default async function ProgressPage({
     recentLogsByUser.set(userId, theirLogs)
   }
 
+  // Churn signal: most recent progress_log per member, across all their
+  // targets in this class. podLogs is already ordered newest-first, so the
+  // first hit per user is their latest log — no extra query needed.
+  const lastLogAtByUser = new Map<string, string>()
+  for (const log of (podLogs as ProgressLog[] | null) ?? []) {
+    const ownerId = targetById.get(log.target_id)?.user_id
+    if (ownerId && !lastLogAtByUser.has(ownerId)) {
+      lastLogAtByUser.set(ownerId, log.logged_at)
+    }
+  }
+
   const visibleLogIds = [...recentLogsByUser.values()].flat().map((l) => l.id)
 
   const { data: comments } =
@@ -177,6 +200,18 @@ export default async function ProgressPage({
   const profileNames = new Map(
     (podProfiles ?? []).map((p) => [p.id, p.display_name])
   )
+
+  // Flat, newest-first: nudges I sent or received in this pod. The pairing_id
+  // filter scopes to the current pod; the from/to filter states explicitly
+  // what the app wants, with RLS's "read own nudges" policy as the enforcer.
+  const { data: nudges } = myPairingId
+    ? await supabase
+        .from('nudges')
+        .select('id, from_user_id, to_user_id, content, created_at')
+        .eq('pairing_id', myPairingId)
+        .or(`from_user_id.eq.${user.id},to_user_id.eq.${user.id}`)
+        .order('created_at', { ascending: false })
+    : { data: [] as NudgeRow[] }
 
   const now = new Date()
 
@@ -268,15 +303,40 @@ export default async function ProgressPage({
           orderedPodUserIds.map((memberId) => {
             const targets = targetsByUser.get(memberId) ?? []
             const recentLogs = recentLogsByUser.get(memberId) ?? []
+            const lastLogAt = lastLogAtByUser.get(memberId)
+            const lastLogDays = lastLogAt ? daysSince(lastLogAt, now) : null
+            const isChurned = lastLogDays !== null && lastLogDays >= CHURN_THRESHOLD_DAYS
+            const churnLine =
+              lastLogDays === null
+                ? 'No logs yet'
+                : lastLogDays === 0
+                  ? 'Last logged today'
+                  : `Last logged ${lastLogDays} day${lastLogDays === 1 ? '' : 's'} ago`
             return (
               <div
                 key={memberId}
                 className="flex flex-col gap-3 rounded border border-black/[.15] p-3 dark:border-white/[.2]"
               >
-                <span className="text-sm font-medium text-black dark:text-zinc-50">
-                  {profileNames.get(memberId) ?? 'Unknown'}
-                  {memberId === user.id ? ' (you)' : ''}
-                </span>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-medium text-black dark:text-zinc-50">
+                      {profileNames.get(memberId) ?? 'Unknown'}
+                      {memberId === user.id ? ' (you)' : ''}
+                    </span>
+                    <span
+                      className={
+                        isChurned
+                          ? 'text-xs text-zinc-400 dark:text-zinc-600'
+                          : 'text-xs text-zinc-600 dark:text-zinc-400'
+                      }
+                    >
+                      {churnLine}
+                    </span>
+                  </div>
+                  {memberId !== user.id && (
+                    <NudgeForm podId={myPairingId!} toUserId={memberId} />
+                  )}
+                </div>
 
                 {targets.length === 0 ? (
                   <p className="text-xs text-zinc-600 dark:text-zinc-400">No targets yet.</p>
@@ -345,6 +405,40 @@ export default async function ProgressPage({
               </div>
             )
           })
+        )}
+      </div>
+
+      <div className="flex w-full max-w-md flex-col gap-3">
+        <h2 className="text-lg font-semibold text-black dark:text-zinc-50">Nudges</h2>
+        {!myPairingId ? (
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            You&apos;re not in a pod yet.
+          </p>
+        ) : (nudges ?? []).length === 0 ? (
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">No nudges yet.</p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {(nudges as NudgeRow[]).map((n) => (
+              <li
+                key={n.id}
+                className="flex flex-col gap-1 rounded border border-black/[.15] px-3 py-2 dark:border-white/[.2]"
+              >
+                <span className="text-xs text-zinc-700 dark:text-zinc-300">
+                  <span className="font-medium">
+                    {profileNames.get(n.from_user_id) ?? 'Unknown'}
+                  </span>{' '}
+                  &rarr;{' '}
+                  <span className="font-medium">
+                    {profileNames.get(n.to_user_id) ?? 'Unknown'}
+                  </span>
+                  : {n.content}
+                </span>
+                <span className="text-[10px] text-zinc-500 dark:text-zinc-500">
+                  {relativeTime(n.created_at, now)}
+                </span>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </div>
