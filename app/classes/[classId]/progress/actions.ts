@@ -155,6 +155,70 @@ export async function addComment(classId: string, progressLogId: string, formDat
   return { error: null }
 }
 
+const NUDGE_DAILY_LIMIT = 3
+
+export async function sendNudge(podId: string, toUserId: string, formData: FormData) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'You must be signed in.' }
+  }
+
+  const content = formData.get('content')?.toString().trim()
+
+  if (!content) {
+    return { error: "Say something before sending — the box can't be empty." }
+  }
+
+  if (content.length > 280) {
+    return { error: 'Keep it to 280 characters or fewer.' }
+  }
+
+  const rollingWindowStart = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+
+  const { count } = await supabase
+    .from('nudges')
+    .select('id', { count: 'exact', head: true })
+    .eq('from_user_id', user.id)
+    .eq('to_user_id', toUserId)
+    .gte('created_at', rollingWindowStart)
+
+  if ((count ?? 0) >= NUDGE_DAILY_LIMIT) {
+    return { error: "You've already nudged them a few times today — give it a bit." }
+  }
+
+  const { data, error } = await supabase
+    .from('nudges')
+    .insert({
+      from_user_id: user.id,
+      to_user_id: toUserId,
+      pairing_id: podId,
+      type: 'question_prompt',
+      content,
+    })
+    .select('id')
+    .single()
+
+  if (error || !data) {
+    return { error: "Couldn't send that nudge — make sure you're still podmates." }
+  }
+
+  const { data: pairing } = await supabase
+    .from('pairings')
+    .select('class_id')
+    .eq('id', podId)
+    .single()
+
+  if (pairing) {
+    revalidatePath(`/classes/${pairing.class_id}/progress`)
+  }
+
+  return { error: null }
+}
+
 export async function deleteComment(classId: string, commentId: string) {
   const supabase = await createClient()
   const {
