@@ -9,7 +9,7 @@ import { InvitationActions } from './invitation-actions'
 
 const POD_SOFT_CAP = 6
 
-type PodMember = { pairing_id: string; user_id: string; profiles: { display_name: string }[] | null }
+type PodMember = { pairing_id: string; user_id: string; profiles: { display_name: string } | null }
 type Invitation = {
   id: string
   pod_id: string
@@ -122,7 +122,7 @@ export default async function ClassPodsPage({
   const classmateNames = new Map<string, string>(
     (classmates ?? []).map((c) => [
       c.user_id,
-      (c.profiles as { display_name: string }[] | null)?.[0]?.display_name ?? 'Unknown',
+      (c.profiles as unknown as { display_name: string } | null)?.display_name ?? 'Unknown',
     ])
   )
 
@@ -131,7 +131,7 @@ export default async function ClassPodsPage({
 
   function memberNames(podId: string) {
     return (membersByPod.get(podId) ?? []).map(
-      (m) => m.profiles?.[0]?.display_name ?? 'Unknown'
+      (m) => m.profiles?.display_name ?? 'Unknown'
     )
   }
 
@@ -201,7 +201,7 @@ export default async function ClassPodsPage({
               >
                 <div className="flex flex-col gap-1">
                   <span className="text-sm font-medium text-black dark:text-zinc-50">
-                    {podMembers.map((m) => m.profiles?.[0]?.display_name ?? 'Unknown').join(', ')}
+                    {podMembers.map((m) => m.profiles?.display_name ?? 'Unknown').join(', ')}
                   </span>
                   <span className="text-xs text-zinc-600 dark:text-zinc-400">
                     {podMembers.length} / {POD_SOFT_CAP} members
@@ -256,7 +256,7 @@ export default async function ClassPodsPage({
                 >
                   <div className="flex flex-col">
                     <span className="text-sm text-black dark:text-zinc-50">
-                      {podMembers.map((m) => m.profiles?.[0]?.display_name ?? 'Unknown').join(', ') ||
+                      {podMembers.map((m) => m.profiles?.display_name ?? 'Unknown').join(', ') ||
                         'Empty pod'}
                     </span>
                     <span className="text-xs text-zinc-600 dark:text-zinc-400">
