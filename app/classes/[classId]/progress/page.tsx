@@ -33,7 +33,7 @@ type CommentRow = {
   author_id: string
   body: string
   created_at: string
-  profiles: { display_name: string }[] | null
+  profiles: { display_name: string } | null
 }
 
 function unitLabelFor(type: TargetType): string {
@@ -335,7 +335,7 @@ export default async function ProgressPage({
                             author_id: c.author_id,
                             body: c.body,
                             created_at: c.created_at,
-                            authorName: c.profiles?.[0]?.display_name ?? 'Unknown',
+                            authorName: c.profiles?.display_name ?? 'Unknown',
                           }))}
                         />
                       </div>
