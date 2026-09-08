@@ -26,23 +26,19 @@ export function TargetForm({ classId }: { classId: string }) {
   }
 
   return (
-    <form
-      ref={formRef}
-      onSubmit={handleSubmit}
-      className="flex w-full flex-col gap-3"
-    >
+    <form ref={formRef} onSubmit={handleSubmit} className="flex w-full flex-col gap-3">
       <input
         type="text"
         name="title"
         required
         placeholder="Target title"
-        className="rounded border border-black/[.15] px-3 py-2 text-sm dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
+        className="rounded-[2px] border border-border bg-surface px-3 py-3 text-sm text-ink placeholder:text-muted"
       />
       <select
         name="target_type"
         value={targetType}
         onChange={(e) => setTargetType(e.target.value)}
-        className="rounded border border-black/[.15] px-3 py-2 text-sm dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
+        className="rounded-[2px] border border-border bg-surface px-3 py-3 text-sm text-ink"
       >
         <option value="task">Task</option>
         <option value="word_count">Word count</option>
@@ -56,25 +52,25 @@ export function TargetForm({ classId }: { classId: string }) {
           step="any"
           required
           placeholder={targetType === 'word_count' ? 'Target word count' : 'Target hours'}
-          className="rounded border border-black/[.15] px-3 py-2 text-sm dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
+          className="rounded-[2px] border border-border bg-surface px-3 py-3 text-sm text-ink placeholder:text-muted"
         />
       )}
-      <label className="flex flex-col gap-1 text-xs text-zinc-600 dark:text-zinc-400">
+      <label className="flex flex-col gap-1 text-xs text-muted">
         Deadline (optional)
         <input
           type="date"
           name="deadline"
-          className="rounded border border-black/[.15] px-3 py-2 text-sm text-black dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
+          className="rounded-[2px] border border-border bg-surface px-3 py-3 text-sm text-ink"
         />
       </label>
       <button
         type="submit"
         disabled={isPending}
-        className="rounded bg-foreground px-3 py-2 text-sm font-medium text-background disabled:opacity-50"
+        className="rounded-[2px] bg-accent px-3 py-3 text-sm font-medium text-white disabled:opacity-50"
       >
         {isPending ? 'Creating…' : 'Create target'}
       </button>
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-sm text-red-700">{error}</p>}
     </form>
   )
 }

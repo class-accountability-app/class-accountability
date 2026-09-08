@@ -1,26 +1,46 @@
 @import "tailwindcss";
 
+/*
+ * Vintage-notebook palette. Base hexes come from the design brief; a few are
+ * darkened from the brief's literal values to clear WCAG AA contrast at small
+ * text sizes (muted text, accent-as-text, the stale status dot) — see the
+ * PR description for the exact ratios. Single theme, no dark mode.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --page-bg: #f6ecd6;
+  --surface: #fbf6e8;
+  --border: #d9c69a;
+  --ink: #3a2f22;
+  --muted: #6b5636; /* brief: #8a7248 — darkened, #8a7248 was 3.9:1 on page bg (fails AA) */
+  --accent: #b5583f;
+  --accent-text: #9c4830; /* accent, darkened for use as text — raw accent is 4.39:1 (fails AA) */
+  --status-active: #6f8556;
+  --status-stale: #948e78; /* brief: #b5b09c — darkened, #b5b09c was 2.0:1 (fails even the 3:1 graphics bar) */
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-page-bg: var(--page-bg);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-text: var(--accent-text);
+  --color-status-active: var(--status-active);
+  --color-status-stale: var(--status-stale);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-heading: var(--font-fraunces);
+  --font-body: var(--font-schibsted-grotesk);
+  --font-meta: var(--font-courier-prime);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--page-bg);
+  background-image: repeating-linear-gradient(
+    var(--page-bg),
+    var(--page-bg) 27px,
+    #e3d3ac 28px
+  );
+  color: var(--ink);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 }

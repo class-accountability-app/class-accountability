@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { sumProgress, computePace, projectionText } from '@/lib/projection'
 import { relativeTime, daysSince } from '@/lib/relativeTime'
+import { StatusStamp } from '@/components/status-stamp'
 import { TargetForm } from './target-form'
 import { LogProgressForm } from './log-progress-form'
 import { CommentSection } from './comment-section'
@@ -247,19 +248,19 @@ export default async function ProgressPage({
   ]
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12">
+    <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12 sm:items-start sm:pl-16">
       <div className="flex w-full max-w-md flex-col gap-2">
-        <h1 className="text-xl font-semibold text-black dark:text-zinc-50">{cls.name}</h1>
-        <p className="text-xs text-zinc-600 dark:text-zinc-400">Targets &amp; progress</p>
+        <h1 className="font-heading text-xl font-semibold text-ink">{cls.name}</h1>
+        <p className="font-meta text-xs text-muted">Targets &amp; progress</p>
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-4">
-        <h2 className="text-lg font-semibold text-black dark:text-zinc-50">New target</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">New target</h2>
         <TargetForm classId={classId} />
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-4">
-        <h2 className="text-lg font-semibold text-black dark:text-zinc-50">Log progress</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">Log progress</h2>
         <LogProgressForm
           classId={classId}
           targets={(myTargets ?? []).map((t) => ({
@@ -271,20 +272,18 @@ export default async function ProgressPage({
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-3">
-        <h2 className="text-lg font-semibold text-black dark:text-zinc-50">Your targets</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">Your targets</h2>
         {(myTargets ?? []).length === 0 ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">No targets yet.</p>
+          <p className="text-sm text-muted">No targets yet.</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {(myTargets ?? []).map((t) => (
               <li
                 key={t.id}
-                className="flex flex-col gap-1 rounded border border-black/[.15] px-3 py-2 dark:border-white/[.2]"
+                className="flex flex-col gap-1 rounded-[2px] border border-border bg-surface px-4 py-3"
               >
-                <span className="text-sm font-medium text-black dark:text-zinc-50">
-                  {t.title}
-                </span>
-                <span className="text-xs text-zinc-600 dark:text-zinc-400">
+                <span className="text-sm font-medium text-ink">{t.title}</span>
+                <span className="font-meta text-xs text-muted">
                   {t.deadline ? `Due ${t.deadline}` : 'No deadline'}
                 </span>
               </li>
@@ -294,11 +293,9 @@ export default async function ProgressPage({
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-6">
-        <h2 className="text-lg font-semibold text-black dark:text-zinc-50">Pod progress</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">Pod progress</h2>
         {!myPairingId ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            You&apos;re not in a pod yet.
-          </p>
+          <p className="text-sm text-muted">You&apos;re not in a pod yet.</p>
         ) : (
           orderedPodUserIds.map((memberId) => {
             const targets = targetsByUser.get(memberId) ?? []
@@ -315,23 +312,18 @@ export default async function ProgressPage({
             return (
               <div
                 key={memberId}
-                className="flex flex-col gap-3 rounded border border-black/[.15] p-3 dark:border-white/[.2]"
+                className="flex flex-col gap-3 rounded-[2px] border border-border bg-surface p-4"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-sm font-medium text-black dark:text-zinc-50">
-                      {profileNames.get(memberId) ?? 'Unknown'}
-                      {memberId === user.id ? ' (you)' : ''}
-                    </span>
-                    <span
-                      className={
-                        isChurned
-                          ? 'text-xs text-zinc-400 dark:text-zinc-600'
-                          : 'text-xs text-zinc-600 dark:text-zinc-400'
-                      }
-                    >
-                      {churnLine}
-                    </span>
+                  <div className="flex items-center gap-2">
+                    <StatusStamp status={isChurned ? 'stale' : 'active'} />
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-heading text-sm font-semibold text-ink">
+                        {profileNames.get(memberId) ?? 'Unknown'}
+                        {memberId === user.id ? ' (you)' : ''}
+                      </span>
+                      <span className="font-meta text-xs text-muted">{churnLine}</span>
+                    </div>
                   </div>
                   {memberId !== user.id && (
                     <NudgeForm podId={myPairingId!} toUserId={memberId} />
@@ -339,23 +331,17 @@ export default async function ProgressPage({
                 </div>
 
                 {targets.length === 0 ? (
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400">No targets yet.</p>
+                  <p className="text-xs text-muted">No targets yet.</p>
                 ) : (
                   <ul className="flex flex-col gap-2">
                     {targets.map((t) => {
                       const projection = targetProjectionLine(t)
                       return (
                         <li key={t.id} className="flex flex-col gap-0.5">
-                          <span className="text-xs font-medium text-black dark:text-zinc-50">
-                            {t.title}
-                          </span>
-                          <span className="text-xs text-zinc-600 dark:text-zinc-400">
-                            {targetProgressLine(t)}
-                          </span>
+                          <span className="text-xs font-medium text-ink">{t.title}</span>
+                          <span className="text-xs text-muted">{targetProgressLine(t)}</span>
                           {projection && (
-                            <span className="text-xs text-zinc-600 dark:text-zinc-400">
-                              {projection}
-                            </span>
+                            <span className="text-xs text-muted">{projection}</span>
                           )}
                         </li>
                       )
@@ -364,25 +350,21 @@ export default async function ProgressPage({
                 )}
 
                 {recentLogs.length > 0 && (
-                  <div className="flex flex-col gap-3 border-t border-black/[.1] pt-2 dark:border-white/[.15]">
-                    <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                      Recent activity
-                    </span>
+                  <div className="flex flex-col gap-3 border-t border-dashed border-border pt-3">
+                    <span className="text-xs font-medium text-muted">Recent activity</span>
                     {recentLogs.map((log) => (
                       <div key={log.id} className="flex flex-col gap-1.5">
                         <div className="flex flex-col">
-                          <span className="text-xs text-black dark:text-zinc-50">
+                          <span className="text-xs text-ink">
                             {log.target.title}: {log.progress_value}
                             {unitLabelFor(log.target.target_type)
                               ? ` ${unitLabelFor(log.target.target_type)}`
                               : ''}
                           </span>
                           {log.description && (
-                            <span className="text-xs text-zinc-600 dark:text-zinc-400">
-                              {log.description}
-                            </span>
+                            <span className="text-xs text-muted">{log.description}</span>
                           )}
-                          <span className="text-[10px] text-zinc-500 dark:text-zinc-500">
+                          <span className="font-meta text-[10px] text-muted">
                             {new Date(log.logged_at).toLocaleString()}
                           </span>
                         </div>
@@ -409,22 +391,20 @@ export default async function ProgressPage({
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-3">
-        <h2 className="text-lg font-semibold text-black dark:text-zinc-50">Nudges</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">Nudges</h2>
         {!myPairingId ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            You&apos;re not in a pod yet.
-          </p>
+          <p className="text-sm text-muted">You&apos;re not in a pod yet.</p>
         ) : (nudges ?? []).length === 0 ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">No nudges yet.</p>
+          <p className="text-sm text-muted">No nudges yet.</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {(nudges as NudgeRow[]).map((n) => (
               <li
                 key={n.id}
-                className="flex flex-col gap-1 rounded border border-black/[.15] px-3 py-2 dark:border-white/[.2]"
+                className="flex flex-col gap-1 rounded-[2px] border border-border bg-surface px-4 py-3"
               >
-                <span className="text-xs text-zinc-700 dark:text-zinc-300">
-                  <span className="font-medium">
+                <span className="text-xs text-ink">
+                  <span className="font-medium text-accent-text">
                     {profileNames.get(n.from_user_id) ?? 'Unknown'}
                   </span>{' '}
                   &rarr;{' '}
@@ -433,7 +413,7 @@ export default async function ProgressPage({
                   </span>
                   : {n.content}
                 </span>
-                <span className="text-[10px] text-zinc-500 dark:text-zinc-500">
+                <span className="font-meta text-[10px] text-muted">
                   {relativeTime(n.created_at, now)}
                 </span>
               </li>

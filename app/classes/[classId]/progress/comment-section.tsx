@@ -55,20 +55,20 @@ export function CommentSection({
   }
 
   return (
-    <div className="flex flex-col gap-2 border-l border-black/[.1] pl-3 dark:border-white/[.15]">
+    <div className="flex flex-col gap-2 border-l-2 border-border pl-3">
       {comments.length > 0 && (
         <ul className="flex flex-col gap-1.5">
           {comments.map((c) => (
             <li key={c.id} className="flex items-start justify-between gap-2">
-              <span className="text-xs text-zinc-700 dark:text-zinc-300">
-                <span className="font-medium">{c.authorName}:</span> {c.body}
+              <span className="text-xs text-ink">
+                <span className="font-medium text-accent-text">{c.authorName}:</span> {c.body}
               </span>
               {c.author_id === currentUserId && (
                 <button
                   type="button"
                   onClick={() => handleDelete(c.id)}
                   disabled={isPending && deletingId === c.id}
-                  className="shrink-0 text-xs text-zinc-500 underline disabled:opacity-50 dark:text-zinc-400"
+                  className="shrink-0 text-xs text-muted underline disabled:opacity-50"
                 >
                   Delete
                 </button>
@@ -83,17 +83,17 @@ export function CommentSection({
           name="body"
           maxLength={280}
           placeholder="Add a comment"
-          className="flex-1 rounded border border-black/[.15] px-2 py-1 text-xs dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
+          className="flex-1 rounded-[2px] border border-border bg-surface px-2 py-1.5 text-xs text-ink placeholder:text-muted"
         />
         <button
           type="submit"
           disabled={isPending}
-          className="shrink-0 rounded bg-foreground px-2 py-1 text-xs font-medium text-background disabled:opacity-50"
+          className="shrink-0 rounded-[2px] bg-accent px-2 py-2 text-xs font-medium text-white disabled:opacity-50"
         >
           Post
         </button>
       </form>
-      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-xs text-red-700">{error}</p>}
     </div>
   )
 }

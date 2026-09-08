@@ -27,29 +27,27 @@ export default async function ClassesPage() {
   const joinedClassIds = new Set(memberships?.map((m) => m.class_id))
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12">
-      <div className="flex w-full max-w-xs flex-col gap-3">
-        <h1 className="text-xl font-semibold text-black dark:text-zinc-50">Classes</h1>
+    <div className="flex flex-1 flex-col items-center gap-10 px-4 py-12 sm:items-start sm:pl-16">
+      <div className="flex w-full max-w-sm flex-col gap-3">
+        <h1 className="font-heading text-xl font-semibold text-ink sm:text-2xl">Classes</h1>
 
         {classes && classes.length > 0 ? (
           <ul className="flex flex-col gap-2">
             {classes.map((c) => (
               <li
                 key={c.id}
-                className="flex items-center justify-between gap-3 rounded border border-black/[.15] px-3 py-2 dark:border-white/[.2]"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-[2px] border border-border bg-surface px-4 py-3"
               >
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium text-black dark:text-zinc-50">
-                    {c.name}
-                  </span>
-                  <span className="text-xs text-zinc-600 dark:text-zinc-400">
+                  <span className="font-heading text-sm font-semibold text-ink">{c.name}</span>
+                  <span className="font-meta text-xs text-muted">
                     {c.university} · {c.term}
                   </span>
                 </div>
                 {joinedClassIds.has(c.id) ? (
                   <Link
                     href={`/classes/${c.id}`}
-                    className="text-xs font-medium text-zinc-500 underline dark:text-zinc-400"
+                    className="text-xs font-medium text-accent-text underline underline-offset-2"
                   >
                     View pods
                   </Link>
@@ -60,14 +58,12 @@ export default async function ClassesPage() {
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">No classes yet.</p>
+          <p className="text-sm text-muted">No classes yet.</p>
         )}
       </div>
 
-      <div className="flex w-full max-w-xs flex-col gap-3">
-        <h2 className="text-lg font-semibold text-black dark:text-zinc-50">
-          Create a class
-        </h2>
+      <div className="flex w-full max-w-sm flex-col gap-3">
+        <h2 className="font-heading text-lg font-semibold text-ink">Create a class</h2>
         <CreateClassForm />
       </div>
     </div>

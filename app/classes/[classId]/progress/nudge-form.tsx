@@ -47,11 +47,11 @@ export function NudgeForm({ podId, toUserId }: { podId: string; toUserId: string
             setSent(false)
             setIsOpen(true)
           }}
-          className="text-xs font-medium text-black underline dark:text-zinc-50"
+          className="text-xs font-medium text-accent-text underline underline-offset-2"
         >
           Nudge
         </button>
-        {sent && <p className="text-xs text-zinc-600 dark:text-zinc-400">Nudge sent.</p>}
+        {sent && <p className="text-xs text-muted">Nudge sent.</p>}
       </div>
     )
   }
@@ -63,13 +63,13 @@ export function NudgeForm({ podId, toUserId }: { podId: string; toUserId: string
         maxLength={280}
         rows={2}
         placeholder="How's it going — anything you're stuck on?"
-        className="rounded border border-black/[.15] px-2 py-1 text-xs dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
+        className="rounded-[2px] border border-border bg-surface px-2 py-1.5 text-xs text-ink placeholder:text-muted"
       />
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <button
           type="submit"
           disabled={isPending}
-          className="rounded bg-foreground px-2 py-1 text-xs font-medium text-background disabled:opacity-50"
+          className="rounded-[2px] bg-accent px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
         >
           {isPending ? 'Sending…' : 'Send nudge'}
         </button>
@@ -79,12 +79,12 @@ export function NudgeForm({ podId, toUserId }: { podId: string; toUserId: string
             setIsOpen(false)
             setError(null)
           }}
-          className="text-xs text-zinc-600 underline dark:text-zinc-400"
+          className="text-xs text-muted underline underline-offset-2"
         >
           Cancel
         </button>
       </div>
-      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-xs text-red-700">{error}</p>}
     </form>
   )
 }
