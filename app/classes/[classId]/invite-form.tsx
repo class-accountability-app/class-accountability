@@ -15,7 +15,7 @@ export function InviteForm({
   const [error, setError] = useState<string | null>(null)
 
   if (eligibleClassmates.length === 0) {
-    return <p className="text-xs text-zinc-600 dark:text-zinc-400">No classmates left to invite.</p>
+    return <p className="text-xs text-muted">No classmates left to invite.</p>
   }
 
   function handleInvite() {
@@ -30,12 +30,12 @@ export function InviteForm({
   }
 
   return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col gap-1 border-t border-dashed border-border pt-3">
+      <div className="flex flex-wrap items-center gap-2">
         <select
           value={selectedId}
           onChange={(e) => setSelectedId(e.target.value)}
-          className="rounded border border-black/[.15] px-2 py-1.5 text-sm dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
+          className="rounded-[2px] border border-border bg-surface px-2 py-2 text-sm text-ink"
         >
           {eligibleClassmates.map((c) => (
             <option key={c.id} value={c.id}>
@@ -47,12 +47,12 @@ export function InviteForm({
           type="button"
           onClick={handleInvite}
           disabled={isPending}
-          className="rounded bg-foreground px-3 py-1.5 text-sm font-medium text-background disabled:opacity-50"
+          className="rounded-[2px] bg-accent px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
         >
           {isPending ? 'Inviting…' : 'Invite'}
         </button>
       </div>
-      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-xs text-red-700">{error}</p>}
     </div>
   )
 }

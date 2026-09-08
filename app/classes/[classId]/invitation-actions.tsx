@@ -34,7 +34,7 @@ export function InvitationActions({ invitationId }: { invitationId: string }) {
           type="button"
           onClick={handleAccept}
           disabled={isPending}
-          className="rounded bg-foreground px-3 py-1.5 text-sm font-medium text-background disabled:opacity-50"
+          className="rounded-[2px] bg-accent px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
         >
           {isPending ? '…' : 'Accept'}
         </button>
@@ -42,12 +42,12 @@ export function InvitationActions({ invitationId }: { invitationId: string }) {
           type="button"
           onClick={handleDecline}
           disabled={isPending}
-          className="rounded border border-black/[.15] px-3 py-1.5 text-sm font-medium text-black disabled:opacity-50 dark:border-white/[.2] dark:text-zinc-50"
+          className="rounded-[2px] border border-border bg-surface px-4 py-2.5 text-sm font-medium text-ink disabled:opacity-50"
         >
           {isPending ? '…' : 'Decline'}
         </button>
       </div>
-      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-xs text-red-700">{error}</p>}
     </div>
   )
 }

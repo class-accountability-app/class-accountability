@@ -24,40 +24,36 @@ export function CreateClassForm() {
   }
 
   return (
-    <form
-      ref={formRef}
-      onSubmit={handleSubmit}
-      className="flex w-full max-w-xs flex-col gap-3"
-    >
+    <form ref={formRef} onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-3">
       <input
         type="text"
         name="name"
         required
         placeholder="Class name"
-        className="rounded border border-black/[.15] px-3 py-2 dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
+        className="rounded-[2px] border border-border bg-surface px-3 py-3 text-ink placeholder:text-muted"
       />
       <input
         type="text"
         name="university"
         required
         placeholder="University"
-        className="rounded border border-black/[.15] px-3 py-2 dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
+        className="rounded-[2px] border border-border bg-surface px-3 py-3 text-ink placeholder:text-muted"
       />
       <input
         type="text"
         name="term"
         required
         placeholder="Term (e.g. 2026-Fall)"
-        className="rounded border border-black/[.15] px-3 py-2 dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
+        className="rounded-[2px] border border-border bg-surface px-3 py-3 text-ink placeholder:text-muted"
       />
       <button
         type="submit"
         disabled={isPending}
-        className="rounded bg-foreground px-3 py-2 text-sm font-medium text-background disabled:opacity-50"
+        className="rounded-[2px] bg-accent px-3 py-3 text-sm font-medium text-white disabled:opacity-50"
       >
         {isPending ? 'Creating…' : 'Create class'}
       </button>
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-sm text-red-700">{error}</p>}
     </form>
   )
 }

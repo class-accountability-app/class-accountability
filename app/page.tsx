@@ -19,25 +19,25 @@ export default async function Home() {
     .single()
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
+    <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-16">
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-semibold text-black dark:text-zinc-50">
+        <h1 className="font-heading text-2xl font-semibold text-ink sm:text-3xl">
           Hey {profile?.display_name ?? 'there'}
         </h1>
-        <p className="text-zinc-600 dark:text-zinc-400">{user.email}</p>
+        <p className="font-meta text-sm text-muted">{user.email}</p>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center justify-center gap-4">
         <Link
           href="/classes"
-          className="rounded bg-foreground px-4 py-2 text-sm font-medium text-background"
+          className="rounded-[2px] bg-accent px-5 py-3 text-sm font-medium text-white"
         >
           Go to classes
         </Link>
         <form action="/auth/signout" method="post">
           <button
             type="submit"
-            className="rounded border border-black/[.15] px-4 py-2 text-sm font-medium dark:border-white/[.2]"
+            className="rounded-[2px] border border-border bg-surface px-5 py-3 text-sm font-medium text-ink"
           >
             Sign out
           </button>

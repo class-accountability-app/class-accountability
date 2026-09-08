@@ -15,11 +15,7 @@ export function LogProgressForm({
   const [error, setError] = useState<string | null>(null)
 
   if (targets.length === 0) {
-    return (
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
-        Create a target above before logging progress.
-      </p>
-    )
+    return <p className="text-sm text-muted">Create a target above before logging progress.</p>
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -38,15 +34,11 @@ export function LogProgressForm({
   }
 
   return (
-    <form
-      ref={formRef}
-      onSubmit={handleSubmit}
-      className="flex w-full flex-col gap-3"
-    >
+    <form ref={formRef} onSubmit={handleSubmit} className="flex w-full flex-col gap-3">
       <select
         name="target_id"
         required
-        className="rounded border border-black/[.15] px-3 py-2 text-sm dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
+        className="rounded-[2px] border border-border bg-surface px-3 py-3 text-sm text-ink"
       >
         {targets.map((t) => (
           <option key={t.id} value={t.id}>
@@ -61,23 +53,23 @@ export function LogProgressForm({
         step="any"
         required
         placeholder="Progress value (e.g. words written, hours studied, 1 for done)"
-        className="rounded border border-black/[.15] px-3 py-2 text-sm dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
+        className="rounded-[2px] border border-border bg-surface px-3 py-3 text-sm text-ink placeholder:text-muted"
       />
       <textarea
         name="description"
         maxLength={280}
         rows={2}
         placeholder="What did you do? (optional, ≤280 chars)"
-        className="rounded border border-black/[.15] px-3 py-2 text-sm dark:border-white/[.2] dark:bg-black dark:text-zinc-50"
+        className="rounded-[2px] border border-border bg-surface px-3 py-3 text-sm text-ink placeholder:text-muted"
       />
       <button
         type="submit"
         disabled={isPending}
-        className="rounded bg-foreground px-3 py-2 text-sm font-medium text-background disabled:opacity-50"
+        className="rounded-[2px] bg-accent px-3 py-3 text-sm font-medium text-white disabled:opacity-50"
       >
         {isPending ? 'Logging…' : 'Log progress'}
       </button>
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-sm text-red-700">{error}</p>}
     </form>
   )
 }

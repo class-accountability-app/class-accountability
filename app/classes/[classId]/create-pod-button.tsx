@@ -23,11 +23,11 @@ export function CreatePodButton({ classId }: { classId: string }) {
         type="button"
         onClick={handleCreate}
         disabled={isPending}
-        className="rounded bg-foreground px-3 py-1.5 text-sm font-medium text-background disabled:opacity-50"
+        className="rounded-[2px] bg-accent px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
       >
         {isPending ? 'Creating…' : 'Create a pod'}
       </button>
-      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-xs text-red-700">{error}</p>}
     </div>
   )
 }

@@ -52,12 +52,10 @@ export default async function ClassPodsPage({
 
   if (!membership) {
     return (
-      <div className="flex flex-1 flex-col items-center gap-4 px-4 py-12">
-        <div className="flex w-full max-w-xs flex-col gap-3">
-          <h1 className="text-xl font-semibold text-black dark:text-zinc-50">{cls.name}</h1>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Join this class to see and form pods.
-          </p>
+      <div className="flex flex-1 flex-col items-center gap-4 px-4 py-12 sm:items-start sm:pl-16">
+        <div className="flex w-full max-w-sm flex-col gap-3">
+          <h1 className="font-heading text-xl font-semibold text-ink">{cls.name}</h1>
+          <p className="text-sm text-muted">Join this class to see and form pods.</p>
           <JoinButton classId={cls.id} />
         </div>
       </div>
@@ -136,15 +134,15 @@ export default async function ClassPodsPage({
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12">
+    <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12 sm:items-start sm:pl-16">
       <div className="flex w-full max-w-md flex-col gap-2">
-        <h1 className="text-xl font-semibold text-black dark:text-zinc-50">{cls.name}</h1>
-        <p className="text-xs text-zinc-600 dark:text-zinc-400">
+        <h1 className="font-heading text-xl font-semibold text-ink">{cls.name}</h1>
+        <p className="font-meta text-xs text-muted">
           {cls.university} · {cls.term}
         </p>
         <Link
           href={`/classes/${cls.id}/progress`}
-          className="text-xs font-medium text-zinc-500 underline dark:text-zinc-400"
+          className="text-xs font-medium text-accent-text underline underline-offset-2"
         >
           Targets &amp; progress
         </Link>
@@ -152,16 +150,14 @@ export default async function ClassPodsPage({
 
       {invitesToMe.length > 0 && (
         <div className="flex w-full max-w-md flex-col gap-3">
-          <h2 className="text-lg font-semibold text-black dark:text-zinc-50">
-            Invitations for you
-          </h2>
+          <h2 className="font-heading text-lg font-semibold text-ink">Invitations for you</h2>
           <ul className="flex flex-col gap-2">
             {invitesToMe.map((inv) => (
               <li
                 key={inv.id}
-                className="flex items-center justify-between gap-3 rounded border border-black/[.15] px-3 py-2 dark:border-white/[.2]"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-[2px] border border-border bg-surface px-4 py-3"
               >
-                <span className="text-sm text-black dark:text-zinc-50">
+                <span className="text-sm text-ink">
                   Invited to join a pod ({memberNames(inv.pod_id).join(', ') || 'empty pod'})
                 </span>
                 <InvitationActions invitationId={inv.id} />
@@ -172,9 +168,9 @@ export default async function ClassPodsPage({
       )}
 
       <div className="flex w-full max-w-md flex-col gap-4">
-        <h2 className="text-lg font-semibold text-black dark:text-zinc-50">Your pod</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">Your pod</h2>
         {myPods.length === 0 ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-muted">
             You&apos;re not in a pod yet. Create one or request to join one below.
           </p>
         ) : (
@@ -197,25 +193,26 @@ export default async function ClassPodsPage({
             return (
               <div
                 key={podId}
-                className="flex flex-col gap-3 rounded border border-black/[.15] p-3 dark:border-white/[.2]"
+                className="flex flex-col gap-3 rounded-[2px] border border-border bg-surface p-4"
               >
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm font-medium text-black dark:text-zinc-50">
+                <div className="flex flex-col gap-0.5">
+                  <span className="font-heading text-sm font-semibold text-ink">
                     {podMembers.map((m) => m.profiles?.display_name ?? 'Unknown').join(', ')}
                   </span>
-                  <span className="text-xs text-zinc-600 dark:text-zinc-400">
+                  <span className="font-meta text-xs text-muted">
                     {podMembers.length} / {POD_SOFT_CAP} members
                   </span>
                 </div>
 
                 {incomingRequests.length > 0 && (
-                  <div className="flex flex-col gap-2">
-                    <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
-                      Requests to join
-                    </span>
+                  <div className="flex flex-col gap-2 border-t border-dashed border-border pt-3">
+                    <span className="text-xs font-medium text-muted">Requests to join</span>
                     {incomingRequests.map((req) => (
-                      <div key={req.id} className="flex items-center justify-between gap-3">
-                        <span className="text-sm text-black dark:text-zinc-50">
+                      <div
+                        key={req.id}
+                        className="flex flex-wrap items-center justify-between gap-3"
+                      >
+                        <span className="text-sm text-ink">
                           {classmateNames.get(req.invitee_id) ?? 'Unknown'}
                         </span>
                         <InvitationActions invitationId={req.id} />
@@ -225,7 +222,7 @@ export default async function ClassPodsPage({
                 )}
 
                 {isFull ? (
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400">Pod is full.</p>
+                  <p className="text-xs text-muted">Pod is full.</p>
                 ) : (
                   <InviteForm podId={podId} eligibleClassmates={eligibleClassmates} />
                 )}
@@ -237,11 +234,9 @@ export default async function ClassPodsPage({
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-3">
-        <h2 className="text-lg font-semibold text-black dark:text-zinc-50">
-          Other pods in this class
-        </h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">Other pods in this class</h2>
         {otherPods.length === 0 ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">No other pods yet.</p>
+          <p className="text-sm text-muted">No other pods yet.</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {otherPods.map((podId) => {
@@ -252,25 +247,21 @@ export default async function ClassPodsPage({
               return (
                 <li
                   key={podId}
-                  className="flex items-center justify-between gap-3 rounded border border-black/[.15] px-3 py-2 dark:border-white/[.2]"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-[2px] border border-border bg-surface px-4 py-3"
                 >
                   <div className="flex flex-col">
-                    <span className="text-sm text-black dark:text-zinc-50">
+                    <span className="text-sm text-ink">
                       {podMembers.map((m) => m.profiles?.display_name ?? 'Unknown').join(', ') ||
                         'Empty pod'}
                     </span>
-                    <span className="text-xs text-zinc-600 dark:text-zinc-400">
+                    <span className="font-meta text-xs text-muted">
                       {podMembers.length} / {POD_SOFT_CAP} members
                     </span>
                   </div>
                   {isFull ? (
-                    <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                      Full
-                    </span>
+                    <span className="text-xs font-medium text-muted">Full</span>
                   ) : alreadyRequested ? (
-                    <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                      Requested
-                    </span>
+                    <span className="text-xs font-medium text-muted">Requested</span>
                   ) : (
                     <RequestJoinButton podId={podId} />
                   )}
