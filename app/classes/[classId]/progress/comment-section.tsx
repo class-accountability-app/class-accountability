@@ -88,7 +88,7 @@ export function CommentSection({
         <button
           type="submit"
           disabled={isPending}
-          className="shrink-0 rounded-[2px] bg-accent px-2 py-2 text-xs font-medium text-white disabled:opacity-50"
+          className="btn shrink-0 rounded-[2px] bg-accent px-2 py-2 text-xs font-medium text-white disabled:opacity-50"
         >
           Post
         </button>

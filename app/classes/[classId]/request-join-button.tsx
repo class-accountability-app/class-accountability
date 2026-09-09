@@ -23,7 +23,7 @@ export function RequestJoinButton({ podId }: { podId: string }) {
         type="button"
         onClick={handleRequest}
         disabled={isPending}
-        className="rounded-[2px] border border-border bg-surface px-4 py-2.5 text-sm font-medium text-ink disabled:opacity-50"
+        className="btn rounded-[2px] border border-border bg-surface px-4 py-2.5 text-sm font-medium text-ink disabled:opacity-50"
       >
         {isPending ? 'Requesting…' : 'Request to join'}
       </button>

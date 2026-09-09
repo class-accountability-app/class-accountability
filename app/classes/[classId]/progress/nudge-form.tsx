@@ -69,7 +69,7 @@ export function NudgeForm({ podId, toUserId }: { podId: string; toUserId: string
         <button
           type="submit"
           disabled={isPending}
-          className="rounded-[2px] bg-accent px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
+          className="btn rounded-[2px] bg-accent px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
         >
           {isPending ? 'Sending…' : 'Send nudge'}
         </button>
