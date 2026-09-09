@@ -17,9 +17,10 @@ export function StatusStamp({
 
   return (
     <span
+      key={status}
       {...a11yProps}
       title={label}
-      className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${className}`}
+      className={`status-stamp inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${className}`}
       style={{ border: `1.5px solid ${color}`, transform: 'rotate(-7deg)' }}
     >
       <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: color }} />

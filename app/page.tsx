@@ -30,14 +30,14 @@ export default async function Home() {
       <div className="flex flex-wrap items-center justify-center gap-4">
         <Link
           href="/classes"
-          className="rounded-[2px] bg-accent px-5 py-3 text-sm font-medium text-white"
+          className="btn rounded-[2px] bg-accent px-5 py-3 text-sm font-medium text-white"
         >
           Go to classes
         </Link>
         <form action="/auth/signout" method="post">
           <button
             type="submit"
-            className="rounded-[2px] border border-border bg-surface px-5 py-3 text-sm font-medium text-ink"
+            className="btn rounded-[2px] border border-border bg-surface px-5 py-3 text-sm font-medium text-ink"
           >
             Sign out
           </button>

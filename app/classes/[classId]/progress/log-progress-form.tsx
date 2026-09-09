@@ -65,7 +65,7 @@ export function LogProgressForm({
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-[2px] bg-accent px-3 py-3 text-sm font-medium text-white disabled:opacity-50"
+        className="btn rounded-[2px] bg-accent px-3 py-3 text-sm font-medium text-white disabled:opacity-50"
       >
         {isPending ? 'Logging…' : 'Log progress'}
       </button>

@@ -16,7 +16,7 @@ export function Nav({ signedIn }: { signedIn: boolean }) {
           <form action="/auth/signout" method="post">
             <button
               type="submit"
-              className="font-meta text-xs text-muted underline decoration-border underline-offset-4 hover:text-accent-text"
+              className="nav-link font-meta text-xs text-muted"
             >
               sign out
             </button>
