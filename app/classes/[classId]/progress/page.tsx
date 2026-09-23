@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { sumProgress, computePace, projectionText } from '@/lib/projection'
 import { relativeTime, daysSince } from '@/lib/relativeTime'
 import { StatusStamp } from '@/components/status-stamp'
+import { ProgressBar } from '@/components/progress-bar'
 import { TargetForm } from './target-form'
 import { LogProgressForm } from './log-progress-form'
 import { CommentSection } from './comment-section'
@@ -12,7 +13,7 @@ const CHURN_THRESHOLD_DAYS = 7
 
 const RECENT_LOGS_PER_MEMBER = 5
 
-type TargetType = 'task' | 'word_count' | 'study_hours'
+type TargetType = 'task' | 'word_count' | 'study_hours' | 'character_count'
 
 type Target = {
   id: string
@@ -52,6 +53,7 @@ type NudgeRow = {
 function unitLabelFor(type: TargetType): string {
   if (type === 'word_count') return 'words'
   if (type === 'study_hours') return 'hours'
+  if (type === 'character_count') return 'characters'
   return ''
 }
 
@@ -336,10 +338,18 @@ export default async function ProgressPage({
                   <ul className="flex flex-col gap-2">
                     {targets.map((t) => {
                       const projection = targetProjectionLine(t)
+                      const totalLogged = sumProgress(logsByTarget.get(t.id) ?? [])
                       return (
-                        <li key={t.id} className="flex flex-col gap-0.5">
+                        <li key={t.id} className="flex flex-col gap-1">
                           <span className="text-xs font-medium text-ink">{t.title}</span>
                           <span className="text-xs text-muted">{targetProgressLine(t)}</span>
+                          {t.target_type !== 'task' && t.target_amount !== null && (
+                            <ProgressBar
+                              value={totalLogged}
+                              max={t.target_amount}
+                              valueText={targetProgressLine(t)}
+                            />
+                          )}
                           {projection && (
                             <span className="text-xs text-muted">{projection}</span>
                           )}

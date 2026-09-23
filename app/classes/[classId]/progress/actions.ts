@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 
 const FOREIGN_KEY_VIOLATION = '23503'
 
-const TARGET_TYPES = ['task', 'word_count', 'study_hours'] as const
+const TARGET_TYPES = ['task', 'word_count', 'study_hours', 'character_count'] as const
 type TargetType = (typeof TARGET_TYPES)[number]
 
 function isTargetType(value: string): value is TargetType {
