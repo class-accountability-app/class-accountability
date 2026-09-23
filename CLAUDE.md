@@ -4,9 +4,11 @@ Context for Claude Code. Read this before doing anything in this repo.
 
 ## What this project is
 
-A class-scoped accountability app for university students. Students in the same class are auto-paired into **pods of 3** and can passively see each other's progress. No chat, no coordination — quiet mutual accountability. Solo-built capstone project, 7-week timeline (14 Jul – 28 Aug 2026).
+A class-scoped accountability app for university students. Students in the same class form small **pods of up to 6** and can passively see each other's progress. No chat, no coordination — quiet mutual accountability. Solo-built capstone project, 7-week timeline (14 Jul – 28 Aug 2026).
 
-The core loop: sign up → join a class → get auto-paired into a pod → set a target → log progress → see podmates' progress → optional nudge.
+Pods are formed by the students themselves, not auto-paired: anyone in a class can start a pod, invite classmates, or ask to join an existing pod; the invitee or the pod accepts or declines. The cap of 6 is a soft cap checked in the server action, not a DB constraint (see 0003/0004).
+
+The core loop: sign up → join a class → start or join a pod → set a target → log progress → see podmates' progress → optional nudge.
 
 ## Stack
 
@@ -40,13 +42,13 @@ The core loop: sign up → join a class → get auto-paired into a pod → set a
 10. **Form fields are at least 16px with a visible label.** A placeholder is an example, never the label. Use the right keyboard (`inputMode="numeric"` for whole numbers, `"decimal"` for hours, `type="email"` + `autoComplete="email"` for email). Errors sit under the field, linked with `aria-describedby` (see `components/form-errors.tsx`).
 11. **The mockups in `docs/mockups/phase1/` are the design source.** Match their copy, colours and spacing. Don't build anything their README marks as phase 2.
 
-## Data model (already migrated in 0001_init.sql)
+## Data model
 
-`profiles`, `classes`, `class_memberships`, `pairings`, `pairing_members`, `targets`, `progress_logs`, `nudges`. Pods are the `pairing_members` join table (NOT an array column — you can't write clean RLS against an array). `is_podmate(uuid)` is a `security definer` helper that every visibility policy calls.
+`profiles`, `classes`, `class_memberships`, `pairings`, `pairing_members`, `targets`, `progress_logs`, `nudges` (0001), plus `pod_invitations` (0003: `kind` is `invite` or `request`, `status` is `pending`/`accepted`/`declined`; accepting goes through the `accept_pod_invitation` function, 0004) and `progress_comments` (0008). A pod is a `pairings` row; its members are the `pairing_members` join table (NOT an array column — you can't write clean RLS against an array). `is_podmate(uuid)` is a `security definer` helper that every visibility policy calls.
 
 ## Scope discipline
 
-**In (MVP):** auth, create/join class, auto-pairing into pods of 3, targets + deadlines, manual progress logging, shared pod view, one "stuck on" nudge, churn detection (display-only).
+**In (MVP):** auth, create/join class, student-formed pods (start, invite, request to join; up to 6), targets + deadlines, manual progress logging, shared pod view, one "stuck on" nudge, churn detection (display-only).
 
 **Roadmap:** phase 1 gets the app ready for a pilot with a Japanese university class (Japanese/English UI, then the screens in `docs/mockups/phase1/`). Phase 2 adds the items the mockups README lists (notifications, milestones, weekly stats). **Phase 3, after the pilot: Google Docs automatic tracking.** It is no longer cut, but nothing is built for it before phase 3. The `spike/google-docs-poc` code (PR #23, `app/dev/google-poc`, `app/api/google/*`, `lib/google/*`) is a proof of concept for reference only — don't extend it or build on it.
 
