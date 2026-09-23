@@ -1,0 +1,45 @@
+<!doctype html><html><head><meta charset=utf-8>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime&amp;family=Fraunces:opsz,wght@9..144,500;9..144,600&amp;family=Klee+One:wght@400;600&amp;family=Schibsted+Grotesk:wght@400;500;600&amp;family=Shippori+Mincho:wght@500;700&amp;family=Zen+Kaku+Gothic+New:wght@400;500;700&amp;display=swap">
+<style>
+body{margin:0;background:#f3e9d6}
+a{color:#9c4830}a:hover{color:#7a3522}
+a:focus-visible,button:focus-visible{outline:2px solid #3a2f22;outline-offset:3px}
+.press:active{transform:translateY(2px);box-shadow:none !important}
+@keyframes sp-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes sp-ink{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes sp-stamp{0%{opacity:0;transform:rotate(-7deg) scale(2.2)}55%{opacity:1;transform:rotate(-7deg) scale(.92)}100%{opacity:1;transform:rotate(-7deg) scale(1)}}
+@keyframes sp-restamp{0%{opacity:0;transform:rotate(-7deg) scale(2.2)}7%{opacity:1;transform:rotate(-7deg) scale(.92)}11%,100%{opacity:1;transform:rotate(-7deg) scale(1)}}
+@keyframes sp-draw{to{stroke-dashoffset:0}}
+@keyframes sp-lines{0%,10%{stroke-dashoffset:1}60%,100%{stroke-dashoffset:0}}
+@keyframes sp-note{from{opacity:0;transform:translateY(-12px) rotate(-5deg)}to{opacity:1;transform:translateY(0) rotate(-1deg)}}
+@keyframes sp-loopbar{0%{transform:scaleX(.06)}70%,100%{transform:scaleX(1)}}
+@keyframes sp-wiggle{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg)}}
+@keyframes sp-float{0%,100%{transform:translate(0,0) rotate(-4deg)}50%{transform:translate(5px,-7px) rotate(2deg)}}
+@keyframes sp-box{0%{opacity:0;transform:rotate(8deg) scale(2)}60%{opacity:1;transform:rotate(8deg) scale(.94)}100%{opacity:1;transform:rotate(8deg) scale(1)}}
+@keyframes sp-box-l{0%{opacity:0;transform:rotate(-6deg) scale(2)}60%{opacity:1;transform:rotate(-6deg) scale(.94)}100%{opacity:1;transform:rotate(-6deg) scale(1)}}
+@keyframes sp-scene{0%{opacity:0;transform:translateY(8px)}3%{opacity:1;transform:translateY(0)}18%{opacity:1;transform:translateY(0)}21%{opacity:0;transform:translateY(-6px)}100%{opacity:0;transform:translateY(-6px)}}
+@keyframes sp-dot{0%,19%{background:#3a2f22}20%,100%{background:#d9c69a}}
+@keyframes sp-cursor{0%,1%{opacity:0;transform:translate(70px,60px)}4%{opacity:1;transform:translate(40px,34px)}8%{opacity:1;transform:translate(0,0) scale(1)}9%{transform:translate(0,0) scale(.82)}10.5%{transform:translate(0,0) scale(1)}17%{opacity:1;transform:translate(0,0)}19%,100%{opacity:0;transform:translate(0,0)}}
+@keyframes sp-btn-out{0%,9%{opacity:1}11%,100%{opacity:0}}
+@keyframes sp-joined{0%,9%{opacity:0;transform:rotate(-6deg) scale(2)}12%{opacity:1;transform:rotate(-6deg) scale(.94)}14%,100%{opacity:1;transform:rotate(-6deg) scale(1)}}
+@keyframes sp-ap1{0%,2%{opacity:0;transform:translateY(6px)}5%,100%{opacity:1;transform:translateY(0)}}
+@keyframes sp-ap2{0%,5%{opacity:0;transform:translateY(6px)}8%,100%{opacity:1;transform:translateY(0)}}
+@keyframes sp-ap3{0%,10%{opacity:0;transform:translateY(6px)}13%,100%{opacity:1;transform:translateY(0)}}
+@keyframes sp-chip{0%,8.5%{background:#fbf6ea;color:#3a2f22;border-color:#d9c69a}10%,100%{background:#3a2f22;color:#fbf6ea;border-color:#3a2f22}}
+@keyframes sp-grow{0%,5%{transform:scaleX(.565)}14%,100%{transform:scaleX(1)}}
+@keyframes sp-out{0%,9%{opacity:1}10%,100%{opacity:0}}
+@keyframes sp-in{0%,9%{opacity:0}10%,100%{opacity:1}}
+@keyframes sp-stamp-late{0%,11%{opacity:0;transform:rotate(-7deg) scale(2.2)}14%{opacity:1;transform:rotate(-7deg) scale(.92)}16%,100%{opacity:1;transform:rotate(-7deg) scale(1)}}
+@keyframes sp-note-late{0%,9%{opacity:0;transform:translateY(-10px) rotate(-5deg)}13%,100%{opacity:1;transform:translateY(0) rotate(-1deg)}}
+summary::-webkit-details-marker{display:none}
+details[open] .faq-icon{transform:rotate(45deg)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important}.sp-draw{stroke-dashoffset:0 !important}}
+</style>
+</head><body>
+<div style="width: 390px; height: 844px; position: relative; box-sizing: border-box; display: flex; flex-direction: column; background-color: #f3e9d6; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 31px, rgba(58,47,34,0.08) 31px, rgba(58,47,34,0.08) 32px); color: #3a2f22; font-family: 'Schibsted Grotesk', 'Zen Kaku Gothic New', sans-serif; overflow: hidden;">
+<header style="display: flex; align-items: center; justify-content: space-between; height: 60px; padding: 0 20px; box-sizing: border-box; background: #fbf6ea; border-bottom: 1px solid #d9c69a; flex-shrink: 0;"><span style="font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600;">Study Pods</span><button type="button" aria-label="Switch to English" style="height: 44px; padding: 0 8px; border: none; background: transparent; font-family: 'Courier Prime', monospace; font-size: 13px; color: #6b5636; text-decoration: underline; text-underline-offset: 3px;">EN</button><a href="#" style="display: inline-flex; align-items: center; height: 44px; padding: 0 4px; font-family: 'Courier Prime', 'Zen Kaku Gothic New', monospace; font-size: 13px; color: #6b5636;">ログアウト</a></header>
+<main style="display: flex; flex-direction: column; gap: 20px; padding: 28px 20px 32px;">
+<div style="margin-top: 48px; padding: 28px 22px; background: #fbf6ea; border: 1px solid #d9c69a; border-radius: 2px; display: flex; flex-direction: column; gap: 14px; position: relative;"><div aria-hidden="true" style="position: absolute; top: -13px; left: 50%; width: 104px; height: 26px; margin-left: -52px; background-color: rgba(201,164,104,0.5); background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.18) 0, rgba(255,255,255,0.18) 6px, transparent 6px, transparent 12px); transform: rotate(-3deg);"></div><p style="margin: 0; font-family: 'Courier Prime', 'Zen Kaku Gothic New', monospace; font-size: 13px; color: #6b5636;">クラスへの招待</p><h1 style="margin: 0; font-family: 'Shippori Mincho', 'Fraunces', serif; font-weight: 700; font-size: 27px; line-height: 1.45; word-break: auto-phrase;">統計学 201</h1><p style="margin: -6px 0 0; font-family: 'Courier Prime', 'Zen Kaku Gothic New', monospace; font-size: 13px; color: #6b5636;">2026 秋学期 · メンバー 18人</p><p style="margin: 6px 0 0; font-size: 15px; line-height: 1.85; color: #4a3d2c;">参加すると、このクラスの人にあなたの表示名が表示されます。進み具合が見えるのは、同じポッドの仲間だけです。</p><button type="button" class="press" style="display: flex; align-items: center; justify-content: center; height: 52px; width: 100%; border: none; background: #b5583f; color: #ffffff; font-family: inherit; font-size: 16px; font-weight: 600; border-radius: 2px; box-shadow: 0 2px 0 rgba(58,47,34,0.35); cursor: pointer; text-decoration: none; margin-top: 8px;">このクラスに参加する</button><button type="button" style="display: flex; align-items: center; justify-content: center; height: 48px; width: 100%; border: 1px solid #d9c69a; background: #fbf6ea; color: #3a2f22; font-family: inherit; font-size: 15px; font-weight: 600; border-radius: 2px; cursor: pointer; text-decoration: none;">キャンセル</button></div>
+</main>
+</div>
+</body></html>
