@@ -52,7 +52,7 @@ export function LogProgressForm({
         min="0.01"
         step="any"
         required
-        placeholder="Progress value (e.g. words written, hours studied, 1 for done)"
+        placeholder="Progress value (e.g. words written, hours studied, characters written, 1 for done)"
         className="rounded-[2px] border border-border bg-surface px-3 py-3 text-sm text-ink placeholder:text-muted"
       />
       <textarea

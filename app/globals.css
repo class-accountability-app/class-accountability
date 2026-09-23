@@ -97,6 +97,10 @@ body {
     box-shadow 0.1s ease;
 }
 
+.progress-bar-fill {
+  transition: width 0.4s ease;
+}
+
 .btn:active:not(:disabled) {
   transform: translateY(2px);
   box-shadow: 0 0 0 0 rgba(58, 47, 34, 0.35);

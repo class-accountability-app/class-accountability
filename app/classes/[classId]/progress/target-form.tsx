@@ -3,6 +3,12 @@
 import { useRef, useState, useTransition } from 'react'
 import { createTarget } from './actions'
 
+const TARGET_AMOUNT_PLACEHOLDER: Record<string, string> = {
+  word_count: 'Target word count',
+  study_hours: 'Target hours',
+  character_count: 'Target character count',
+}
+
 export function TargetForm({ classId }: { classId: string }) {
   const formRef = useRef<HTMLFormElement>(null)
   const [targetType, setTargetType] = useState('task')
@@ -43,6 +49,7 @@ export function TargetForm({ classId }: { classId: string }) {
         <option value="task">Task</option>
         <option value="word_count">Word count</option>
         <option value="study_hours">Study hours</option>
+        <option value="character_count">Character count</option>
       </select>
       {targetType !== 'task' && (
         <input
@@ -51,7 +58,7 @@ export function TargetForm({ classId }: { classId: string }) {
           min="1"
           step="any"
           required
-          placeholder={targetType === 'word_count' ? 'Target word count' : 'Target hours'}
+          placeholder={TARGET_AMOUNT_PLACEHOLDER[targetType] ?? 'Target amount'}
           className="rounded-[2px] border border-border bg-surface px-3 py-3 text-sm text-ink placeholder:text-muted"
         />
       )}
