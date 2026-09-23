@@ -1,19 +1,22 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
+import type { ErrorKey } from '@/lib/errors'
+import { FormError } from '@/components/form-errors'
 import { requestToJoin } from './actions'
 
 export function RequestJoinButton({ podId }: { podId: string }) {
+  const t = useTranslations('pods')
+  const tCommon = useTranslations('common')
   const [isPending, startTransition] = useTransition()
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<ErrorKey | null>(null)
 
   function handleRequest() {
     setError(null)
     startTransition(async () => {
-      const { error } = await requestToJoin(podId)
-      if (error) {
-        setError(error)
-      }
+      const result = await requestToJoin(podId)
+      setError(result.error)
     })
   }
 
@@ -25,9 +28,9 @@ export function RequestJoinButton({ podId }: { podId: string }) {
         disabled={isPending}
         className="btn rounded-[2px] border border-border bg-surface px-4 py-2.5 text-sm font-medium text-ink disabled:opacity-50"
       >
-        {isPending ? 'Requesting…' : 'Request to join'}
+        {isPending ? tCommon('sending') : t('requestToJoin')}
       </button>
-      {error && <p className="text-xs text-red-700">{error}</p>}
+      <FormError error={error} />
     </div>
   )
 }

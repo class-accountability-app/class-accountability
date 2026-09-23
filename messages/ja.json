@@ -1,0 +1,198 @@
+{
+  "metadata": {
+    "title": "Study Pods",
+    "description": "同じクラスの仲間と、静かに進み具合を見せ合う学習ポッドです。"
+  },
+  "common": {
+    "listSeparator": "、",
+    "unknownPerson": "不明なユーザー",
+    "cancel": "キャンセル",
+    "working": "処理中…",
+    "creating": "作成中…",
+    "sending": "送信中…",
+    "classMeta": "{university} · {term}"
+  },
+  "nav": {
+    "brand": "Study Pods",
+    "signOut": "ログアウト",
+    "switchToEnglish": "EN",
+    "switchToEnglishLabel": "Switch to English",
+    "switchToJapanese": "日本語",
+    "switchToJapaneseLabel": "日本語に切り替える"
+  },
+  "home": {
+    "greeting": "こんにちは、{name}さん",
+    "greetingNoName": "こんにちは",
+    "goToClasses": "クラスを開く",
+    "signOut": "ログアウト"
+  },
+  "login": {
+    "title": "Study Pods にログイン",
+    "emailLabel": "大学のメールアドレス",
+    "emailPlaceholder": "23b0000@andrew.ac.jp",
+    "emailHint": "@andrew.ac.jp のアドレスだけ使えます。",
+    "submit": "ログインリンクを送る",
+    "sentTitle": "メールを確認してください",
+    "sentBody": "{email} にログインリンクを送りました。"
+  },
+  "classes": {
+    "title": "クラス",
+    "viewPods": "ポッドを見る",
+    "empty": "まだクラスがありません。",
+    "createHeading": "クラスを作成",
+    "join": "参加する",
+    "joining": "参加中…"
+  },
+  "classForm": {
+    "nameLabel": "クラス名",
+    "namePlaceholder": "例：統計学 201",
+    "universityLabel": "大学名",
+    "termLabel": "学期",
+    "termPlaceholder": "例：2026 秋学期",
+    "submit": "クラスを作成"
+  },
+  "pods": {
+    "joinToSee": "このクラスに参加すると、ポッドを見たり作ったりできます。",
+    "progressLink": "目標と進み具合",
+    "invitationsHeading": "あなたへの招待",
+    "invitedTo": "ポッドへの招待（{members}）",
+    "emptyPod": "メンバーのいないポッド",
+    "yourPod": "あなたのポッド",
+    "notInPod": "まだポッドに入っていません。ポッドを作って仲間を招待するか、下のポッドに参加をリクエストしましょう。",
+    "memberCount": "メンバー {count} / {max}人",
+    "requestsHeading": "参加リクエスト",
+    "podFull": "このポッドは満員です。",
+    "otherPods": "このクラスのほかのポッド",
+    "noOtherPods": "ほかのポッドはまだありません。",
+    "full": "満員",
+    "requested": "リクエスト済み",
+    "createPod": "ポッドを作る",
+    "requestToJoin": "参加をリクエスト",
+    "accept": "承諾する",
+    "decline": "断る",
+    "inviteLabel": "招待するクラスメイト",
+    "invite": "招待する",
+    "inviting": "招待中…",
+    "noOneToInvite": "招待できるクラスメイトはもういません。"
+  },
+  "units": {
+    "word_count": "{count, number}語",
+    "study_hours": "{count, number}時間",
+    "character_count": "{count, number}字"
+  },
+  "amounts": {
+    "word_count": "{logged, number} / {target, number} 語",
+    "study_hours": "{logged, number} / {target, number} 時間",
+    "character_count": "{logged, number} / {target, number} 字"
+  },
+  "progress": {
+    "subtitle": "目標と進み具合",
+    "newTarget": "新しい目標",
+    "logProgress": "記録する",
+    "yourTargets": "あなたの目標",
+    "noTargets": "まだ目標がありません。",
+    "due": "締め切り {date}",
+    "noDeadline": "締め切りなし",
+    "podProgress": "ポッドの進み具合",
+    "notInPod": "まだポッドに入っていません。",
+    "noLogsYet": "まだ記録がありません",
+    "lastLogged": "最終記録：{when}",
+    "you": "{name}（あなた）",
+    "recentActivity": "最近の記録",
+    "done": "完了",
+    "notDone": "まだ完了していません",
+    "logLine": "{title}：{amount}",
+    "targetReached": "目標を達成しました。",
+    "noRecentProgress": "この7日間は記録がありません。",
+    "projection": "この7日間は1日あたり{pace}のペースです。このままだと{finish}ごろに達成できそうです。",
+    "projectionWithDeadline": "この7日間は1日あたり{pace}のペースです。このままだと{finish}ごろに達成できそうです（締め切りは{deadline}）。"
+  },
+  "targetForm": {
+    "titleLabel": "タイトル",
+    "titlePlaceholder": "例：期末レポート",
+    "typeLabel": "種類",
+    "types": {
+      "task": "タスク（完了したら記録）",
+      "word_count": "語数",
+      "study_hours": "勉強時間",
+      "character_count": "文字数"
+    },
+    "amountLabel": {
+      "word_count": "目標の語数",
+      "study_hours": "目標の時間",
+      "character_count": "目標の文字数"
+    },
+    "amountPlaceholder": {
+      "word_count": "例：2000",
+      "study_hours": "例：10",
+      "character_count": "例：2000"
+    },
+    "deadlineLabel": "締め切り（任意）",
+    "submit": "目標を作成"
+  },
+  "logForm": {
+    "needTarget": "記録する前に、上で目標を作成してください。",
+    "targetLabel": "目標",
+    "valueLabel": {
+      "task": "完了したら 1 を入力",
+      "word_count": "書いた語数",
+      "study_hours": "勉強した時間",
+      "character_count": "書いた文字数"
+    },
+    "valuePlaceholder": {
+      "task": "1",
+      "word_count": "例：300",
+      "study_hours": "例：1.5",
+      "character_count": "例：540"
+    },
+    "noteLabel": "ひとこと（任意）",
+    "notePlaceholder": "例：序論を書き終えた",
+    "submit": "記録する",
+    "logging": "記録中…"
+  },
+  "comments": {
+    "label": "コメント",
+    "placeholder": "例：おつかれさまです！",
+    "post": "投稿",
+    "delete": "削除",
+    "author": "{name}："
+  },
+  "nudges": {
+    "heading": "声かけ",
+    "empty": "まだ声かけはありません。",
+    "line": "<sender>{from}</sender> → <recipient>{to}</recipient>：{content}",
+    "open": "声をかける",
+    "sent": "声かけを送りました。",
+    "messageLabel": "メッセージ",
+    "messagePlaceholder": "例：進み具合はどうですか？困っていることはありますか？",
+    "submit": "送る"
+  },
+  "errors": {
+    "generic": "問題が発生しました。少し時間をおいて、もう一度お試しください。",
+    "signedOut": "ログインが必要です。もう一度ログインしてください。",
+    "notAllowed": "この操作を行う権限がありません。",
+    "authFailed": "ログインできませんでした。もう一度お試しください。",
+    "emailDomain": "@andrew.ac.jp のメールアドレスだけ使えます。大学のメールアドレスを入力してください。",
+    "emailInvalid": "メールアドレスの形式が正しくありません。",
+    "rateLimited": "短い時間に何度も送信されました。少し待ってから、もう一度お試しください。",
+    "required": "入力してください。",
+    "classFieldsRequired": "クラス名・大学名・学期をすべて入力してください。",
+    "alreadyJoinedClass": "このクラスにはすでに参加しています。",
+    "podNotFound": "ポッドが見つかりませんでした。",
+    "invitePending": "この人にはすでに招待を送っています。",
+    "requestPending": "このポッドにはすでに参加をリクエストしています。",
+    "invitationNotFound": "招待が見つかりませんでした。",
+    "podFull": "このポッドは満員です。",
+    "titleRequired": "タイトルを入力してください。",
+    "invalidTargetType": "目標の種類を選んでください。",
+    "targetAmountPositive": "目標の量には、0より大きい数を入力してください。",
+    "chooseTarget": "目標を選んでください。",
+    "progressPositive": "0より大きい数を入力してください。",
+    "tooLong": "280文字以内で入力してください。",
+    "notOwnTarget": "記録できるのは、自分の目標だけです。",
+    "commentEmpty": "コメントを入力してください。",
+    "nudgeEmpty": "メッセージを入力してください。",
+    "nudgeLimit": "声かけは、同じ相手に24時間で3回までです。少し時間をおいてください。",
+    "nudgeFailed": "声かけを送れませんでした。まだ同じポッドにいるか確認してください。"
+  }
+}

@@ -1,0 +1,198 @@
+{
+  "metadata": {
+    "title": "Study Pods",
+    "description": "Quiet, class-based study pods where classmates can see each other's progress."
+  },
+  "common": {
+    "listSeparator": ", ",
+    "unknownPerson": "Unknown",
+    "cancel": "Cancel",
+    "working": "Working…",
+    "creating": "Creating…",
+    "sending": "Sending…",
+    "classMeta": "{university} · {term}"
+  },
+  "nav": {
+    "brand": "Study Pods",
+    "signOut": "Sign out",
+    "switchToEnglish": "EN",
+    "switchToEnglishLabel": "Switch to English",
+    "switchToJapanese": "日本語",
+    "switchToJapaneseLabel": "日本語に切り替える"
+  },
+  "home": {
+    "greeting": "Hi, {name}",
+    "greetingNoName": "Hi there",
+    "goToClasses": "Open classes",
+    "signOut": "Sign out"
+  },
+  "login": {
+    "title": "Log in to Study Pods",
+    "emailLabel": "University email",
+    "emailPlaceholder": "23b0000@andrew.ac.jp",
+    "emailHint": "Only @andrew.ac.jp addresses can be used.",
+    "submit": "Send sign-in link",
+    "sentTitle": "Check your inbox",
+    "sentBody": "We sent a sign-in link to {email}."
+  },
+  "classes": {
+    "title": "Classes",
+    "viewPods": "View pods",
+    "empty": "No classes yet.",
+    "createHeading": "Create a class",
+    "join": "Join",
+    "joining": "Joining…"
+  },
+  "classForm": {
+    "nameLabel": "Class name",
+    "namePlaceholder": "e.g. Statistics 201",
+    "universityLabel": "University",
+    "termLabel": "Term",
+    "termPlaceholder": "e.g. 2026 Fall",
+    "submit": "Create class"
+  },
+  "pods": {
+    "joinToSee": "Join this class to see pods and start your own.",
+    "progressLink": "Targets & progress",
+    "invitationsHeading": "Invitations for you",
+    "invitedTo": "Invited to join a pod ({members})",
+    "emptyPod": "Empty pod",
+    "yourPod": "Your pod",
+    "notInPod": "You're not in a pod yet. Start one and invite classmates, or ask to join a pod below.",
+    "memberCount": "{count} / {max} members",
+    "requestsHeading": "Requests to join",
+    "podFull": "This pod is full.",
+    "otherPods": "Other pods in this class",
+    "noOtherPods": "No other pods yet.",
+    "full": "Full",
+    "requested": "Requested",
+    "createPod": "Start a pod",
+    "requestToJoin": "Ask to join",
+    "accept": "Accept",
+    "decline": "Decline",
+    "inviteLabel": "Classmate to invite",
+    "invite": "Invite",
+    "inviting": "Inviting…",
+    "noOneToInvite": "No classmates left to invite."
+  },
+  "units": {
+    "word_count": "{count, plural, one {# word} other {# words}}",
+    "study_hours": "{count, plural, one {# hour} other {# hours}}",
+    "character_count": "{count, plural, one {# character} other {# characters}}"
+  },
+  "amounts": {
+    "word_count": "{logged, number} / {target, number} words",
+    "study_hours": "{logged, number} / {target, number} hours",
+    "character_count": "{logged, number} / {target, number} characters"
+  },
+  "progress": {
+    "subtitle": "Targets & progress",
+    "newTarget": "New target",
+    "logProgress": "Log progress",
+    "yourTargets": "Your targets",
+    "noTargets": "No targets yet.",
+    "due": "Due {date}",
+    "noDeadline": "No deadline",
+    "podProgress": "Pod progress",
+    "notInPod": "You're not in a pod yet.",
+    "noLogsYet": "Nothing logged yet",
+    "lastLogged": "Last logged: {when}",
+    "you": "{name} (you)",
+    "recentActivity": "Recent activity",
+    "done": "Done",
+    "notDone": "Not done yet",
+    "logLine": "{title}: {amount}",
+    "targetReached": "Target reached.",
+    "noRecentProgress": "Nothing logged in the last 7 days.",
+    "projection": "At {pace} a day over the last 7 days, you'd finish around {finish}.",
+    "projectionWithDeadline": "At {pace} a day over the last 7 days, you'd finish around {finish}. The deadline is {deadline}."
+  },
+  "targetForm": {
+    "titleLabel": "Title",
+    "titlePlaceholder": "e.g. Final report",
+    "typeLabel": "Type",
+    "types": {
+      "task": "Task (log it when it's done)",
+      "word_count": "Word count",
+      "study_hours": "Study hours",
+      "character_count": "Character count"
+    },
+    "amountLabel": {
+      "word_count": "Target word count",
+      "study_hours": "Target hours",
+      "character_count": "Target character count"
+    },
+    "amountPlaceholder": {
+      "word_count": "e.g. 2000",
+      "study_hours": "e.g. 10",
+      "character_count": "e.g. 2000"
+    },
+    "deadlineLabel": "Deadline (optional)",
+    "submit": "Create target"
+  },
+  "logForm": {
+    "needTarget": "Create a target above before you log progress.",
+    "targetLabel": "Target",
+    "valueLabel": {
+      "task": "Enter 1 when it's done",
+      "word_count": "Words written",
+      "study_hours": "Hours studied",
+      "character_count": "Characters written"
+    },
+    "valuePlaceholder": {
+      "task": "1",
+      "word_count": "e.g. 300",
+      "study_hours": "e.g. 1.5",
+      "character_count": "e.g. 540"
+    },
+    "noteLabel": "Note (optional)",
+    "notePlaceholder": "e.g. Finished the introduction",
+    "submit": "Log progress",
+    "logging": "Logging…"
+  },
+  "comments": {
+    "label": "Comment",
+    "placeholder": "e.g. Nice work!",
+    "post": "Post",
+    "delete": "Delete",
+    "author": "{name}:"
+  },
+  "nudges": {
+    "heading": "Nudges",
+    "empty": "No nudges yet.",
+    "line": "<sender>{from}</sender> → <recipient>{to}</recipient>: {content}",
+    "open": "Nudge",
+    "sent": "Nudge sent.",
+    "messageLabel": "Message",
+    "messagePlaceholder": "e.g. How's it going? Anything you're stuck on?",
+    "submit": "Send nudge"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again in a moment.",
+    "signedOut": "You need to be signed in. Please log in again.",
+    "notAllowed": "You don't have permission to do that.",
+    "authFailed": "We couldn't sign you in. Please try again.",
+    "emailDomain": "Only @andrew.ac.jp email addresses can be used. Please enter your university email.",
+    "emailInvalid": "That doesn't look like a valid email address.",
+    "rateLimited": "Too many tries in a short time. Please wait a moment and try again.",
+    "required": "Please fill this in.",
+    "classFieldsRequired": "Please fill in the class name, university and term.",
+    "alreadyJoinedClass": "You've already joined this class.",
+    "podNotFound": "We couldn't find that pod.",
+    "invitePending": "You've already invited this person.",
+    "requestPending": "You've already asked to join this pod.",
+    "invitationNotFound": "We couldn't find that invitation.",
+    "podFull": "This pod is full.",
+    "titleRequired": "Please add a title.",
+    "invalidTargetType": "Please choose a target type.",
+    "targetAmountPositive": "The target amount needs to be a number above 0.",
+    "chooseTarget": "Please choose a target.",
+    "progressPositive": "Please enter a number above 0.",
+    "tooLong": "Please keep it to 280 characters or fewer.",
+    "notOwnTarget": "You can only log progress on your own targets.",
+    "commentEmpty": "Please write a comment first.",
+    "nudgeEmpty": "Please write a message first.",
+    "nudgeLimit": "You can nudge the same person up to 3 times in 24 hours. Please give it a little while.",
+    "nudgeFailed": "Couldn't send that nudge. Check that you're still in the same pod."
+  }
+}

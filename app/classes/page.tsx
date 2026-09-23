@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { JoinButton } from './join-button'
 import { CreateClassForm } from './create-class-form'
@@ -25,11 +26,12 @@ export default async function ClassesPage() {
     .eq('user_id', user.id)
 
   const joinedClassIds = new Set(memberships?.map((m) => m.class_id))
+  const [t, tCommon] = await Promise.all([getTranslations('classes'), getTranslations('common')])
 
   return (
     <div className="flex flex-1 flex-col items-center gap-10 px-4 py-12 sm:items-start sm:pl-16">
       <div className="flex w-full max-w-sm flex-col gap-3">
-        <h1 className="font-heading text-xl font-semibold text-ink sm:text-2xl">Classes</h1>
+        <h1 className="font-heading text-xl font-semibold text-ink sm:text-2xl">{t('title')}</h1>
 
         {classes && classes.length > 0 ? (
           <ul className="flex flex-col gap-2">
@@ -41,7 +43,7 @@ export default async function ClassesPage() {
                 <div className="flex flex-col">
                   <span className="font-heading text-sm font-semibold text-ink">{c.name}</span>
                   <span className="font-meta text-xs text-muted">
-                    {c.university} · {c.term}
+                    {tCommon('classMeta', { university: c.university, term: c.term })}
                   </span>
                 </div>
                 {joinedClassIds.has(c.id) ? (
@@ -49,7 +51,7 @@ export default async function ClassesPage() {
                     href={`/classes/${c.id}`}
                     className="text-xs font-medium text-accent-text underline underline-offset-2"
                   >
-                    View pods
+                    {t('viewPods')}
                   </Link>
                 ) : (
                   <JoinButton classId={c.id} />
@@ -58,12 +60,12 @@ export default async function ClassesPage() {
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-muted">No classes yet.</p>
+          <p className="text-sm text-muted">{t('empty')}</p>
         )}
       </div>
 
       <div className="flex w-full max-w-sm flex-col gap-3">
-        <h2 className="font-heading text-lg font-semibold text-ink">Create a class</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">{t('createHeading')}</h2>
         <CreateClassForm />
       </div>
     </div>

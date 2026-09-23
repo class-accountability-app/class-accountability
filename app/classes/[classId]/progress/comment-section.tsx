@@ -1,6 +1,14 @@
 'use client'
 
-import { useRef, useState, useTransition } from 'react'
+import { useId, useRef, useState, useTransition } from 'react'
+import { useTranslations } from 'next-intl'
+import type { ErrorKey } from '@/lib/errors'
+import {
+  FieldError,
+  FormError,
+  describedField,
+  useFocusFirstInvalid,
+} from '@/components/form-errors'
 import { addComment, deleteComment } from './actions'
 
 type Comment = {
@@ -22,20 +30,33 @@ export function CommentSection({
   comments: Comment[]
   currentUserId: string
 }) {
+  const t = useTranslations('comments')
+  const id = useId()
   const formRef = useRef<HTMLFormElement>(null)
   const [isPending, startTransition] = useTransition()
   const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [postError, setPostError] = useState<ErrorKey | null>(null)
+  const [deleteError, setDeleteError] = useState<ErrorKey | null>(null)
+  useFocusFirstInvalid(formRef, postError)
+
+  const fieldId = `${id}-comment`
+  const errorId = `${fieldId}-error`
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    setError(null)
+    setPostError(null)
+    setDeleteError(null)
     const formData = new FormData(e.currentTarget)
 
+    if (!formData.get('body')?.toString().trim()) {
+      setPostError('commentEmpty')
+      return
+    }
+
     startTransition(async () => {
-      const { error } = await addComment(classId, progressLogId, formData)
-      if (error) {
-        setError(error)
+      const result = await addComment(classId, progressLogId, formData)
+      if (result.error) {
+        setPostError(result.error)
         return
       }
       formRef.current?.reset()
@@ -43,14 +64,13 @@ export function CommentSection({
   }
 
   function handleDelete(commentId: string) {
-    setError(null)
+    setPostError(null)
+    setDeleteError(null)
     setDeletingId(commentId)
     startTransition(async () => {
-      const { error } = await deleteComment(classId, commentId)
+      const result = await deleteComment(classId, commentId)
       setDeletingId(null)
-      if (error) {
-        setError(error)
-      }
+      setDeleteError(result.error)
     })
   }
 
@@ -61,7 +81,8 @@ export function CommentSection({
           {comments.map((c) => (
             <li key={c.id} className="flex items-start justify-between gap-2">
               <span className="text-xs text-ink">
-                <span className="font-medium text-accent-text">{c.authorName}:</span> {c.body}
+                <span className="font-medium text-accent-text">{t('author', { name: c.authorName })}</span>{' '}
+                {c.body}
               </span>
               {c.author_id === currentUserId && (
                 <button
@@ -70,30 +91,38 @@ export function CommentSection({
                   disabled={isPending && deletingId === c.id}
                   className="shrink-0 text-xs text-muted underline disabled:opacity-50"
                 >
-                  Delete
+                  {t('delete')}
                 </button>
               )}
             </li>
           ))}
         </ul>
       )}
-      <form ref={formRef} onSubmit={handleSubmit} className="flex items-center gap-2">
-        <input
-          type="text"
-          name="body"
-          maxLength={280}
-          placeholder="Add a comment"
-          className="flex-1 rounded-[2px] border border-border bg-surface px-2 py-1.5 text-xs text-ink placeholder:text-muted"
-        />
-        <button
-          type="submit"
-          disabled={isPending}
-          className="btn shrink-0 rounded-[2px] bg-accent px-2 py-2 text-xs font-medium text-white disabled:opacity-50"
-        >
-          Post
-        </button>
+      <FormError error={deleteError} />
+      <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex flex-col gap-1.5">
+        <label htmlFor={fieldId} className="text-xs font-medium text-muted">
+          {t('label')}
+        </label>
+        <div className="flex items-center gap-2">
+          <input
+            id={fieldId}
+            type="text"
+            name="body"
+            maxLength={280}
+            placeholder={t('placeholder')}
+            className="min-w-0 flex-1 rounded-[2px] border border-border bg-surface px-2 py-1.5 text-ink placeholder:text-muted"
+            {...describedField(postError, errorId)}
+          />
+          <button
+            type="submit"
+            disabled={isPending}
+            className="btn shrink-0 rounded-[2px] bg-accent px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
+          >
+            {t('post')}
+          </button>
+        </div>
+        <FieldError id={errorId} error={postError} />
       </form>
-      {error && <p className="text-xs text-red-700">{error}</p>}
     </div>
   )
 }

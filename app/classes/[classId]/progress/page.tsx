@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
-import { sumProgress, computePace, projectionText } from '@/lib/projection'
-import { relativeTime, daysSince } from '@/lib/relativeTime'
+import { sumProgress, computePace, project } from '@/lib/projection'
+import { formatDate, formatDateTime, formatDayAgo, formatTimeAgo, tokyoDaysAgo } from '@/lib/date'
 import { StatusStamp } from '@/components/status-stamp'
 import { ProgressBar } from '@/components/progress-bar'
 import { TargetForm } from './target-form'
@@ -14,6 +15,7 @@ const CHURN_THRESHOLD_DAYS = 7
 const RECENT_LOGS_PER_MEMBER = 5
 
 type TargetType = 'task' | 'word_count' | 'study_hours' | 'character_count'
+type NumericTargetType = Exclude<TargetType, 'task'>
 
 type Target = {
   id: string
@@ -48,13 +50,6 @@ type NudgeRow = {
   to_user_id: string
   content: string | null
   created_at: string
-}
-
-function unitLabelFor(type: TargetType): string {
-  if (type === 'word_count') return 'words'
-  if (type === 'study_hours') return 'hours'
-  if (type === 'character_count') return 'characters'
-  return ''
 }
 
 export default async function ProgressPage({
@@ -217,30 +212,54 @@ export default async function ProgressPage({
     : { data: [] as NudgeRow[] }
 
   const now = new Date()
+  const [t, tUnits, tAmounts, tCommon, tNudges, locale] = await Promise.all([
+    getTranslations('progress'),
+    getTranslations('units'),
+    getTranslations('amounts'),
+    getTranslations('common'),
+    getTranslations('nudges'),
+    getLocale(),
+  ])
+  const nameOf = (id: string) => profileNames.get(id) ?? tCommon('unknownPerson')
+
+  function amountText(type: NumericTargetType, logged: number, target: number | null): string {
+    return target === null ? tUnits(type, { count: logged }) : tAmounts(type, { logged, target })
+  }
 
   function targetProgressLine(target: Target): string {
     const totalLogged = sumProgress(logsByTarget.get(target.id) ?? [])
     if (target.target_type === 'task') {
-      return totalLogged >= 1 ? 'Done' : 'Not marked done yet'
+      return totalLogged >= 1 ? t('done') : t('notDone')
     }
-    const unit = unitLabelFor(target.target_type)
-    const amountStr = target.target_amount !== null ? ` / ${target.target_amount}` : ''
-    return `${totalLogged}${amountStr} ${unit}`
+    return amountText(target.target_type, totalLogged, target.target_amount)
   }
 
   function targetProjectionLine(target: Target): string | null {
     if (target.target_type === 'task') return null
     const logs = logsByTarget.get(target.id) ?? []
-    const totalLogged = sumProgress(logs)
-    const pace = computePace(logs, now)
-    return projectionText({
-      unitLabel: unitLabelFor(target.target_type),
-      totalLogged,
+    const projection = project({
+      totalLogged: sumProgress(logs),
       targetAmount: target.target_amount,
-      pace,
+      pace: computePace(logs, now),
       deadline: target.deadline,
       now,
     })
+    if (!projection) return null
+    if (projection.kind === 'reached') return t('targetReached')
+    if (projection.kind === 'noRecentProgress') return t('noRecentProgress')
+    const values = {
+      pace: tUnits(target.target_type, { count: projection.pace }),
+      finish: formatDate(projection.finish, locale),
+    }
+    return projection.deadline
+      ? t('projectionWithDeadline', { ...values, deadline: formatDate(projection.deadline, locale) })
+      : t('projection', values)
+  }
+
+  function logAmount(log: ProgressLog & { target: Target }): string {
+    return log.target.target_type === 'task'
+      ? t('done')
+      : tUnits(log.target.target_type, { count: log.progress_value })
   }
 
   // Ordered so I appear first, then podmates.
@@ -253,40 +272,42 @@ export default async function ProgressPage({
     <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12 sm:items-start sm:pl-16">
       <div className="flex w-full max-w-md flex-col gap-2">
         <h1 className="font-heading text-xl font-semibold text-ink">{cls.name}</h1>
-        <p className="font-meta text-xs text-muted">Targets &amp; progress</p>
+        <p className="font-meta text-xs text-muted">{t('subtitle')}</p>
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-4">
-        <h2 className="font-heading text-lg font-semibold text-ink">New target</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">{t('newTarget')}</h2>
         <TargetForm classId={classId} />
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-4">
-        <h2 className="font-heading text-lg font-semibold text-ink">Log progress</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">{t('logProgress')}</h2>
         <LogProgressForm
           classId={classId}
-          targets={(myTargets ?? []).map((t) => ({
-            id: t.id,
-            title: t.title,
-            target_type: t.target_type,
+          targets={(myTargets ?? []).map((target) => ({
+            id: target.id,
+            title: target.title,
+            target_type: target.target_type,
           }))}
         />
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-3">
-        <h2 className="font-heading text-lg font-semibold text-ink">Your targets</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">{t('yourTargets')}</h2>
         {(myTargets ?? []).length === 0 ? (
-          <p className="text-sm text-muted">No targets yet.</p>
+          <p className="text-sm text-muted">{t('noTargets')}</p>
         ) : (
           <ul className="flex flex-col gap-2">
-            {(myTargets ?? []).map((t) => (
+            {(myTargets ?? []).map((target) => (
               <li
-                key={t.id}
+                key={target.id}
                 className="flex flex-col gap-1 rounded-[2px] border border-border bg-surface px-4 py-3"
               >
-                <span className="text-sm font-medium text-ink">{t.title}</span>
+                <span className="text-sm font-medium text-ink">{target.title}</span>
                 <span className="font-meta text-xs text-muted">
-                  {t.deadline ? `Due ${t.deadline}` : 'No deadline'}
+                  {target.deadline
+                    ? t('due', { date: formatDate(target.deadline, locale) })
+                    : t('noDeadline')}
                 </span>
               </li>
             ))}
@@ -295,22 +316,19 @@ export default async function ProgressPage({
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-6">
-        <h2 className="font-heading text-lg font-semibold text-ink">Pod progress</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">{t('podProgress')}</h2>
         {!myPairingId ? (
-          <p className="text-sm text-muted">You&apos;re not in a pod yet.</p>
+          <p className="text-sm text-muted">{t('notInPod')}</p>
         ) : (
           orderedPodUserIds.map((memberId) => {
             const targets = targetsByUser.get(memberId) ?? []
             const recentLogs = recentLogsByUser.get(memberId) ?? []
             const lastLogAt = lastLogAtByUser.get(memberId)
-            const lastLogDays = lastLogAt ? daysSince(lastLogAt, now) : null
-            const isChurned = lastLogDays !== null && lastLogDays >= CHURN_THRESHOLD_DAYS
-            const churnLine =
-              lastLogDays === null
-                ? 'No logs yet'
-                : lastLogDays === 0
-                  ? 'Last logged today'
-                  : `Last logged ${lastLogDays} day${lastLogDays === 1 ? '' : 's'} ago`
+            const isChurned =
+              lastLogAt !== undefined && tokyoDaysAgo(lastLogAt, now) >= CHURN_THRESHOLD_DAYS
+            const churnLine = lastLogAt
+              ? t('lastLogged', { when: formatDayAgo(lastLogAt, locale, now) })
+              : t('noLogsYet')
             return (
               <div
                 key={memberId}
@@ -321,8 +339,7 @@ export default async function ProgressPage({
                     <StatusStamp status={isChurned ? 'stale' : 'active'} />
                     <div className="flex flex-col gap-0.5">
                       <span className="font-heading text-sm font-semibold text-ink">
-                        {profileNames.get(memberId) ?? 'Unknown'}
-                        {memberId === user.id ? ' (you)' : ''}
+                        {memberId === user.id ? t('you', { name: nameOf(memberId) }) : nameOf(memberId)}
                       </span>
                       <span className="font-meta text-xs text-muted">{churnLine}</span>
                     </div>
@@ -333,21 +350,22 @@ export default async function ProgressPage({
                 </div>
 
                 {targets.length === 0 ? (
-                  <p className="text-xs text-muted">No targets yet.</p>
+                  <p className="text-xs text-muted">{t('noTargets')}</p>
                 ) : (
                   <ul className="flex flex-col gap-2">
-                    {targets.map((t) => {
-                      const projection = targetProjectionLine(t)
-                      const totalLogged = sumProgress(logsByTarget.get(t.id) ?? [])
+                    {targets.map((target) => {
+                      const projection = targetProjectionLine(target)
+                      const totalLogged = sumProgress(logsByTarget.get(target.id) ?? [])
+                      const progressLine = targetProgressLine(target)
                       return (
-                        <li key={t.id} className="flex flex-col gap-1">
-                          <span className="text-xs font-medium text-ink">{t.title}</span>
-                          <span className="text-xs text-muted">{targetProgressLine(t)}</span>
-                          {t.target_type !== 'task' && t.target_amount !== null && (
+                        <li key={target.id} className="flex flex-col gap-1">
+                          <span className="text-xs font-medium text-ink">{target.title}</span>
+                          <span className="text-xs text-muted">{progressLine}</span>
+                          {target.target_type !== 'task' && target.target_amount !== null && (
                             <ProgressBar
                               value={totalLogged}
-                              max={t.target_amount}
-                              valueText={targetProgressLine(t)}
+                              max={target.target_amount}
+                              valueText={progressLine}
                             />
                           )}
                           {projection && (
@@ -361,21 +379,18 @@ export default async function ProgressPage({
 
                 {recentLogs.length > 0 && (
                   <div className="flex flex-col gap-3 border-t border-dashed border-border pt-3">
-                    <span className="text-xs font-medium text-muted">Recent activity</span>
+                    <span className="text-xs font-medium text-muted">{t('recentActivity')}</span>
                     {recentLogs.map((log) => (
                       <div key={log.id} className="flex flex-col gap-1.5">
                         <div className="flex flex-col">
                           <span className="text-xs text-ink">
-                            {log.target.title}: {log.progress_value}
-                            {unitLabelFor(log.target.target_type)
-                              ? ` ${unitLabelFor(log.target.target_type)}`
-                              : ''}
+                            {t('logLine', { title: log.target.title, amount: logAmount(log) })}
                           </span>
                           {log.description && (
                             <span className="text-xs text-muted">{log.description}</span>
                           )}
                           <span className="font-meta text-[10px] text-muted">
-                            {new Date(log.logged_at).toLocaleString()}
+                            {formatDateTime(log.logged_at, locale, now)}
                           </span>
                         </div>
                         <CommentSection
@@ -387,7 +402,7 @@ export default async function ProgressPage({
                             author_id: c.author_id,
                             body: c.body,
                             created_at: c.created_at,
-                            authorName: c.profiles?.display_name ?? 'Unknown',
+                            authorName: c.profiles?.display_name ?? tCommon('unknownPerson'),
                           }))}
                         />
                       </div>
@@ -401,11 +416,11 @@ export default async function ProgressPage({
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-3">
-        <h2 className="font-heading text-lg font-semibold text-ink">Nudges</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">{tNudges('heading')}</h2>
         {!myPairingId ? (
-          <p className="text-sm text-muted">You&apos;re not in a pod yet.</p>
+          <p className="text-sm text-muted">{t('notInPod')}</p>
         ) : (nudges ?? []).length === 0 ? (
-          <p className="text-sm text-muted">No nudges yet.</p>
+          <p className="text-sm text-muted">{tNudges('empty')}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {(nudges as NudgeRow[]).map((n) => (
@@ -414,17 +429,16 @@ export default async function ProgressPage({
                 className="flex flex-col gap-1 rounded-[2px] border border-border bg-surface px-4 py-3"
               >
                 <span className="text-xs text-ink">
-                  <span className="font-medium text-accent-text">
-                    {profileNames.get(n.from_user_id) ?? 'Unknown'}
-                  </span>{' '}
-                  &rarr;{' '}
-                  <span className="font-medium">
-                    {profileNames.get(n.to_user_id) ?? 'Unknown'}
-                  </span>
-                  : {n.content}
+                  {tNudges.rich('line', {
+                    from: nameOf(n.from_user_id),
+                    to: nameOf(n.to_user_id),
+                    content: n.content ?? '',
+                    sender: (chunks) => <span className="font-medium text-accent-text">{chunks}</span>,
+                    recipient: (chunks) => <span className="font-medium">{chunks}</span>,
+                  })}
                 </span>
                 <span className="font-meta text-[10px] text-muted">
-                  {relativeTime(n.created_at, now)}
+                  {formatTimeAgo(n.created_at, locale, now)}
                 </span>
               </li>
             ))}

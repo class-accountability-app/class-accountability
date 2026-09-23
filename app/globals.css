@@ -29,9 +29,32 @@
   --color-status-active: var(--status-active);
   --color-status-stale: var(--status-stale);
 
-  --font-heading: var(--font-fraunces);
-  --font-body: var(--font-schibsted-grotesk);
-  --font-meta: var(--font-courier-prime);
+  /* Latin face first; Japanese characters fall through to the second face. */
+  --font-heading: var(--font-fraunces), var(--font-shippori-mincho), serif;
+  --font-body: var(--font-schibsted-grotesk), var(--font-zen-kaku-gothic-new), sans-serif;
+  --font-meta: var(--font-courier-prime), var(--font-zen-kaku-gothic-new), monospace;
+}
+
+/*
+ * Japanese body text needs more leading than Latin. Tailwind's text-xs/sm/base
+ * utilities read these variables, so overriding them here loosens body text
+ * only; heading sizes (text-lg and up) keep their tighter defaults.
+ */
+:lang(ja) {
+  word-break: auto-phrase;
+  --text-xs--line-height: 1.8;
+  --text-sm--line-height: 1.8;
+  --text-base--line-height: 1.8;
+}
+
+/*
+ * iOS Safari zooms the page when a focused field's text is under 16px.
+ * Unlayered, so it wins over any Tailwind text-* utility on a field.
+ */
+input,
+select,
+textarea {
+  font-size: max(16px, 1em);
 }
 
 body {
@@ -42,7 +65,11 @@ body {
     #e3d3ac 28px
   );
   color: var(--ink);
-  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-body);
+}
+
+html:lang(ja) body {
+  line-height: 1.8;
 }
 
 /*

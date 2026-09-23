@@ -2,24 +2,25 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-
-const FOREIGN_KEY_VIOLATION = '23503'
+import { DB_CODES, logServerError, toErrorKey, type ActionResult } from '@/lib/errors'
 
 const TARGET_TYPES = ['task', 'word_count', 'study_hours', 'character_count'] as const
 type TargetType = (typeof TARGET_TYPES)[number]
+
+const MAX_TEXT_LENGTH = 280
 
 function isTargetType(value: string): value is TargetType {
   return (TARGET_TYPES as readonly string[]).includes(value)
 }
 
-export async function createTarget(classId: string, formData: FormData) {
+export async function createTarget(classId: string, formData: FormData): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'You must be signed in.' }
+    return { error: 'signedOut' }
   }
 
   const title = formData.get('title')?.toString().trim()
@@ -28,18 +29,18 @@ export async function createTarget(classId: string, formData: FormData) {
   const deadlineRaw = formData.get('deadline')?.toString().trim()
 
   if (!title) {
-    return { error: 'Title is required.' }
+    return { error: 'titleRequired' }
   }
 
   if (!targetType || !isTargetType(targetType)) {
-    return { error: 'Choose a valid target type.' }
+    return { error: 'invalidTargetType' }
   }
 
   let targetAmount: number | null = null
   if (targetType !== 'task') {
     const parsed = targetAmountRaw ? Number(targetAmountRaw) : NaN
     if (!Number.isFinite(parsed) || parsed <= 0) {
-      return { error: 'Target amount must be a positive number.' }
+      return { error: 'targetAmountPositive' }
     }
     targetAmount = parsed
   }
@@ -60,21 +61,21 @@ export async function createTarget(classId: string, formData: FormData) {
     .single()
 
   if (error || !data) {
-    return { error: error?.message ?? 'Could not create target.' }
+    return { error: toErrorKey('createTarget', error) }
   }
 
   revalidatePath(`/classes/${classId}/progress`)
   return { error: null }
 }
 
-export async function logProgress(classId: string, formData: FormData) {
+export async function logProgress(classId: string, formData: FormData): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'You must be signed in.' }
+    return { error: 'signedOut' }
   }
 
   const targetId = formData.get('target_id')?.toString()
@@ -82,17 +83,17 @@ export async function logProgress(classId: string, formData: FormData) {
   const descriptionRaw = formData.get('description')?.toString().trim()
 
   if (!targetId) {
-    return { error: 'Choose a target.' }
+    return { error: 'chooseTarget' }
   }
 
   const progressValue = progressValueRaw ? Number(progressValueRaw) : NaN
   if (!Number.isFinite(progressValue) || progressValue <= 0) {
-    return { error: 'Progress value must be a positive number.' }
+    return { error: 'progressPositive' }
   }
 
   const description = descriptionRaw || null
-  if (description && description.length > 280) {
-    return { error: 'Description must be 280 characters or fewer.' }
+  if (description && description.length > MAX_TEXT_LENGTH) {
+    return { error: 'tooLong' }
   }
 
   const { data, error } = await supabase
@@ -107,34 +108,37 @@ export async function logProgress(classId: string, formData: FormData) {
     .single()
 
   if (error || !data) {
-    if (error?.code === FOREIGN_KEY_VIOLATION) {
-      return { error: 'You can only log progress against your own targets.' }
+    return {
+      error: toErrorKey('logProgress', error, { [DB_CODES.foreignKeyViolation]: 'notOwnTarget' }),
     }
-    return { error: error?.message ?? 'Could not log progress.' }
   }
 
   revalidatePath(`/classes/${classId}/progress`)
   return { error: null }
 }
 
-export async function addComment(classId: string, progressLogId: string, formData: FormData) {
+export async function addComment(
+  classId: string,
+  progressLogId: string,
+  formData: FormData
+): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'You must be signed in.' }
+    return { error: 'signedOut' }
   }
 
   const body = formData.get('body')?.toString().trim()
 
   if (!body) {
-    return { error: 'Comment cannot be empty.' }
+    return { error: 'commentEmpty' }
   }
 
-  if (body.length > 280) {
-    return { error: 'Comment must be 280 characters or fewer.' }
+  if (body.length > MAX_TEXT_LENGTH) {
+    return { error: 'tooLong' }
   }
 
   const { data, error } = await supabase
@@ -148,33 +152,38 @@ export async function addComment(classId: string, progressLogId: string, formDat
     .single()
 
   if (error || !data) {
-    return { error: error?.message ?? "Couldn't post that comment." }
+    return { error: toErrorKey('addComment', error) }
   }
 
   revalidatePath(`/classes/${classId}/progress`)
   return { error: null }
 }
 
+// Keep in sync with the "3 times in 24 hours" wording of errors.nudgeLimit.
 const NUDGE_DAILY_LIMIT = 3
 
-export async function sendNudge(podId: string, toUserId: string, formData: FormData) {
+export async function sendNudge(
+  podId: string,
+  toUserId: string,
+  formData: FormData
+): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'You must be signed in.' }
+    return { error: 'signedOut' }
   }
 
   const content = formData.get('content')?.toString().trim()
 
   if (!content) {
-    return { error: "Say something before sending — the box can't be empty." }
+    return { error: 'nudgeEmpty' }
   }
 
-  if (content.length > 280) {
-    return { error: 'Keep it to 280 characters or fewer.' }
+  if (content.length > MAX_TEXT_LENGTH) {
+    return { error: 'tooLong' }
   }
 
   const rollingWindowStart = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
@@ -187,7 +196,7 @@ export async function sendNudge(podId: string, toUserId: string, formData: FormD
     .gte('created_at', rollingWindowStart)
 
   if ((count ?? 0) >= NUDGE_DAILY_LIMIT) {
-    return { error: "You've already nudged them a few times today — give it a bit." }
+    return { error: 'nudgeLimit' }
   }
 
   const { data, error } = await supabase
@@ -203,7 +212,8 @@ export async function sendNudge(podId: string, toUserId: string, formData: FormD
     .single()
 
   if (error || !data) {
-    return { error: "Couldn't send that nudge — make sure you're still podmates." }
+    logServerError('sendNudge', error)
+    return { error: 'nudgeFailed' }
   }
 
   const { data: pairing } = await supabase
@@ -219,20 +229,20 @@ export async function sendNudge(podId: string, toUserId: string, formData: FormD
   return { error: null }
 }
 
-export async function deleteComment(classId: string, commentId: string) {
+export async function deleteComment(classId: string, commentId: string): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'You must be signed in.' }
+    return { error: 'signedOut' }
   }
 
   const { error } = await supabase.from('progress_comments').delete().eq('id', commentId)
 
   if (error) {
-    return { error: error.message }
+    return { error: toErrorKey('deleteComment', error) }
   }
 
   revalidatePath(`/classes/${classId}/progress`)
