@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { logServerError } from '@/lib/errors'
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get('code')
@@ -10,6 +11,7 @@ export async function GET(request: NextRequest) {
     if (!error) {
       return NextResponse.redirect(new URL('/', request.url))
     }
+    logServerError('authCallback', error)
   }
 
   return NextResponse.redirect(new URL('/login?error=auth_failed', request.url))

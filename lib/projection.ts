@@ -1,5 +1,6 @@
-// Plain-words linear projection for word_count / study_hours targets.
+// Plain-words linear projection for numeric targets.
 // No charts, no smoothing — pace is a flat average over the last 7 days.
+// Returns data, not a sentence: the page picks the translated message.
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -16,42 +17,34 @@ export function computePace(logs: ProgressLogLike[], now: Date = new Date()): nu
   return recent / 7
 }
 
-function formatDate(d: Date): string {
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-}
+export type Projection =
+  | { kind: 'reached' }
+  | { kind: 'noRecentProgress' }
+  | { kind: 'onPace'; pace: number; finish: Date; deadline: string | null }
 
-export function projectionText({
-  unitLabel,
+export function project({
   totalLogged,
   targetAmount,
   pace,
   deadline,
   now = new Date(),
 }: {
-  unitLabel: string // e.g. 'words' or 'hours'
   totalLogged: number
   targetAmount: number | null
   pace: number
-  deadline: string | null // date string, e.g. '2026-08-05'
+  deadline: string | null
   now?: Date
-}): string | null {
+}): Projection | null {
   if (targetAmount === null) return null
 
   const remaining = targetAmount - totalLogged
-  const deadlineStr = deadline ? formatDate(new Date(deadline)) : null
+  if (remaining <= 0) return { kind: 'reached' }
+  if (pace <= 0) return { kind: 'noRecentProgress' }
 
-  if (remaining <= 0) {
-    return 'Target reached.'
+  return {
+    kind: 'onPace',
+    pace: Math.round(pace * 10) / 10,
+    finish: new Date(now.getTime() + (remaining / pace) * DAY_MS),
+    deadline,
   }
-
-  if (pace <= 0) {
-    return 'No recent progress.'
-  }
-
-  const daysToFinish = remaining / pace
-  const finishDate = new Date(now.getTime() + daysToFinish * DAY_MS)
-  const paceRounded = Math.round(pace * 10) / 10
-
-  const base = `At ${paceRounded} ${unitLabel}/day (last 7 days), you'd finish around ${formatDate(finishDate)}`
-  return deadlineStr ? `${base} — deadline ${deadlineStr}` : `${base}.`
 }

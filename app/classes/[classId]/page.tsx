@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { JoinButton } from '../join-button'
 import { CreatePodButton } from './create-pod-button'
@@ -43,6 +44,9 @@ export default async function ClassPodsPage({
     redirect('/classes')
   }
 
+  const [t, tCommon] = await Promise.all([getTranslations('pods'), getTranslations('common')])
+  const unknown = tCommon('unknownPerson')
+
   const { data: membership } = await supabase
     .from('class_memberships')
     .select('status')
@@ -55,7 +59,7 @@ export default async function ClassPodsPage({
       <div className="flex flex-1 flex-col items-center gap-4 px-4 py-12 sm:items-start sm:pl-16">
         <div className="flex w-full max-w-sm flex-col gap-3">
           <h1 className="font-heading text-xl font-semibold text-ink">{cls.name}</h1>
-          <p className="text-sm text-muted">Join this class to see and form pods.</p>
+          <p className="text-sm text-muted">{t('joinToSee')}</p>
           <JoinButton classId={cls.id} />
         </div>
       </div>
@@ -120,7 +124,7 @@ export default async function ClassPodsPage({
   const classmateNames = new Map<string, string>(
     (classmates ?? []).map((c) => [
       c.user_id,
-      (c.profiles as unknown as { display_name: string } | null)?.display_name ?? 'Unknown',
+      (c.profiles as unknown as { display_name: string } | null)?.display_name ?? unknown,
     ])
   )
 
@@ -128,9 +132,13 @@ export default async function ClassPodsPage({
   const otherPods = podIds.filter((id) => !myPodIds.has(id))
 
   function memberNames(podId: string) {
-    return (membersByPod.get(podId) ?? []).map(
-      (m) => m.profiles?.display_name ?? 'Unknown'
-    )
+    return (membersByPod.get(podId) ?? [])
+      .map((m) => m.profiles?.display_name ?? unknown)
+      .join(tCommon('listSeparator'))
+  }
+
+  function memberCount(podId: string) {
+    return t('memberCount', { count: (membersByPod.get(podId) ?? []).length, max: POD_SOFT_CAP })
   }
 
   return (
@@ -138,19 +146,19 @@ export default async function ClassPodsPage({
       <div className="flex w-full max-w-md flex-col gap-2">
         <h1 className="font-heading text-xl font-semibold text-ink">{cls.name}</h1>
         <p className="font-meta text-xs text-muted">
-          {cls.university} · {cls.term}
+          {tCommon('classMeta', { university: cls.university, term: cls.term })}
         </p>
         <Link
           href={`/classes/${cls.id}/progress`}
           className="text-xs font-medium text-accent-text underline underline-offset-2"
         >
-          Targets &amp; progress
+          {t('progressLink')}
         </Link>
       </div>
 
       {invitesToMe.length > 0 && (
         <div className="flex w-full max-w-md flex-col gap-3">
-          <h2 className="font-heading text-lg font-semibold text-ink">Invitations for you</h2>
+          <h2 className="font-heading text-lg font-semibold text-ink">{t('invitationsHeading')}</h2>
           <ul className="flex flex-col gap-2">
             {invitesToMe.map((inv) => (
               <li
@@ -158,7 +166,7 @@ export default async function ClassPodsPage({
                 className="flex flex-wrap items-center justify-between gap-3 rounded-[2px] border border-border bg-surface px-4 py-3"
               >
                 <span className="text-sm text-ink">
-                  Invited to join a pod ({memberNames(inv.pod_id).join(', ') || 'empty pod'})
+                  {t('invitedTo', { members: memberNames(inv.pod_id) || t('emptyPod') })}
                 </span>
                 <InvitationActions invitationId={inv.id} />
               </li>
@@ -168,11 +176,9 @@ export default async function ClassPodsPage({
       )}
 
       <div className="flex w-full max-w-md flex-col gap-4">
-        <h2 className="font-heading text-lg font-semibold text-ink">Your pod</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">{t('yourPod')}</h2>
         {myPods.length === 0 ? (
-          <p className="text-sm text-muted">
-            You&apos;re not in a pod yet. Create one or request to join one below.
-          </p>
+          <p className="text-sm text-muted">{t('notInPod')}</p>
         ) : (
           myPods.map((podId) => {
             const podMembers = membersByPod.get(podId) ?? []
@@ -197,23 +203,21 @@ export default async function ClassPodsPage({
               >
                 <div className="flex flex-col gap-0.5">
                   <span className="font-heading text-sm font-semibold text-ink">
-                    {podMembers.map((m) => m.profiles?.display_name ?? 'Unknown').join(', ')}
+                    {memberNames(podId)}
                   </span>
-                  <span className="font-meta text-xs text-muted">
-                    {podMembers.length} / {POD_SOFT_CAP} members
-                  </span>
+                  <span className="font-meta text-xs text-muted">{memberCount(podId)}</span>
                 </div>
 
                 {incomingRequests.length > 0 && (
                   <div className="flex flex-col gap-2 border-t border-dashed border-border pt-3">
-                    <span className="text-xs font-medium text-muted">Requests to join</span>
+                    <span className="text-xs font-medium text-muted">{t('requestsHeading')}</span>
                     {incomingRequests.map((req) => (
                       <div
                         key={req.id}
                         className="flex flex-wrap items-center justify-between gap-3"
                       >
                         <span className="text-sm text-ink">
-                          {classmateNames.get(req.invitee_id) ?? 'Unknown'}
+                          {classmateNames.get(req.invitee_id) ?? unknown}
                         </span>
                         <InvitationActions invitationId={req.id} />
                       </div>
@@ -222,7 +226,7 @@ export default async function ClassPodsPage({
                 )}
 
                 {isFull ? (
-                  <p className="text-xs text-muted">Pod is full.</p>
+                  <p className="text-xs text-muted">{t('podFull')}</p>
                 ) : (
                   <InviteForm podId={podId} eligibleClassmates={eligibleClassmates} />
                 )}
@@ -234,9 +238,9 @@ export default async function ClassPodsPage({
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-3">
-        <h2 className="font-heading text-lg font-semibold text-ink">Other pods in this class</h2>
+        <h2 className="font-heading text-lg font-semibold text-ink">{t('otherPods')}</h2>
         {otherPods.length === 0 ? (
-          <p className="text-sm text-muted">No other pods yet.</p>
+          <p className="text-sm text-muted">{t('noOtherPods')}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {otherPods.map((podId) => {
@@ -250,18 +254,13 @@ export default async function ClassPodsPage({
                   className="flex flex-wrap items-center justify-between gap-3 rounded-[2px] border border-border bg-surface px-4 py-3"
                 >
                   <div className="flex flex-col">
-                    <span className="text-sm text-ink">
-                      {podMembers.map((m) => m.profiles?.display_name ?? 'Unknown').join(', ') ||
-                        'Empty pod'}
-                    </span>
-                    <span className="font-meta text-xs text-muted">
-                      {podMembers.length} / {POD_SOFT_CAP} members
-                    </span>
+                    <span className="text-sm text-ink">{memberNames(podId) || t('emptyPod')}</span>
+                    <span className="font-meta text-xs text-muted">{memberCount(podId)}</span>
                   </div>
                   {isFull ? (
-                    <span className="text-xs font-medium text-muted">Full</span>
+                    <span className="text-xs font-medium text-muted">{t('full')}</span>
                   ) : alreadyRequested ? (
-                    <span className="text-xs font-medium text-muted">Requested</span>
+                    <span className="text-xs font-medium text-muted">{t('requested')}</span>
                   ) : (
                     <RequestJoinButton podId={podId} />
                   )}

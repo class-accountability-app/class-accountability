@@ -2,21 +2,20 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-
-const UNIQUE_VIOLATION = '23505'
+import { DB_CODES, logServerError, toErrorKey, type ActionResult } from '@/lib/errors'
 
 // Soft cap only — no DB constraint (see 0003 decision log). Checked here, not
 // enforced atomically; see 0004's comment on the accept race.
 const POD_SOFT_CAP = 6
 
-export async function createPod(classId: string) {
+export async function createPod(classId: string): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'You must be signed in.' }
+    return { error: 'signedOut' }
   }
 
   const { data: pod, error } = await supabase
@@ -26,7 +25,7 @@ export async function createPod(classId: string) {
     .single()
 
   if (error) {
-    return { error: error.message }
+    return { error: toErrorKey('createPod', error) }
   }
 
   const { error: memberError } = await supabase
@@ -34,21 +33,21 @@ export async function createPod(classId: string) {
     .insert({ pairing_id: pod.id, user_id: user.id })
 
   if (memberError) {
-    return { error: memberError.message }
+    return { error: toErrorKey('createPod.addMember', memberError) }
   }
 
   revalidatePath(`/classes/${classId}`)
   return { error: null }
 }
 
-export async function sendInvite(podId: string, inviteeId: string) {
+export async function sendInvite(podId: string, inviteeId: string): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'You must be signed in.' }
+    return { error: 'signedOut' }
   }
 
   const { data: pod, error: podError } = await supabase
@@ -58,7 +57,8 @@ export async function sendInvite(podId: string, inviteeId: string) {
     .single()
 
   if (podError || !pod) {
-    return { error: 'Pod not found.' }
+    if (podError) logServerError('sendInvite.findPod', podError)
+    return { error: 'podNotFound' }
   }
 
   const { error } = await supabase.from('pod_invitations').insert({
@@ -70,24 +70,23 @@ export async function sendInvite(podId: string, inviteeId: string) {
   })
 
   if (error) {
-    if (error.code === UNIQUE_VIOLATION) {
-      return { error: 'An invitation to this person is already pending.' }
+    return {
+      error: toErrorKey('sendInvite', error, { [DB_CODES.uniqueViolation]: 'invitePending' }),
     }
-    return { error: error.message }
   }
 
   revalidatePath(`/classes/${pod.class_id}`)
   return { error: null }
 }
 
-export async function requestToJoin(podId: string) {
+export async function requestToJoin(podId: string): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'You must be signed in.' }
+    return { error: 'signedOut' }
   }
 
   const { data: pod, error: podError } = await supabase
@@ -97,7 +96,8 @@ export async function requestToJoin(podId: string) {
     .single()
 
   if (podError || !pod) {
-    return { error: 'Pod not found.' }
+    if (podError) logServerError('requestToJoin.findPod', podError)
+    return { error: 'podNotFound' }
   }
 
   const { error } = await supabase.from('pod_invitations').insert({
@@ -109,24 +109,23 @@ export async function requestToJoin(podId: string) {
   })
 
   if (error) {
-    if (error.code === UNIQUE_VIOLATION) {
-      return { error: 'You already have a pending request for this pod.' }
+    return {
+      error: toErrorKey('requestToJoin', error, { [DB_CODES.uniqueViolation]: 'requestPending' }),
     }
-    return { error: error.message }
   }
 
   revalidatePath(`/classes/${pod.class_id}`)
   return { error: null }
 }
 
-export async function acceptInvitation(invitationId: string) {
+export async function acceptInvitation(invitationId: string): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'You must be signed in.' }
+    return { error: 'signedOut' }
   }
 
   const { data: invitation, error: fetchError } = await supabase
@@ -136,7 +135,8 @@ export async function acceptInvitation(invitationId: string) {
     .single()
 
   if (fetchError || !invitation) {
-    return { error: 'Invitation not found.' }
+    if (fetchError) logServerError('acceptInvitation.find', fetchError)
+    return { error: 'invitationNotFound' }
   }
 
   const { count } = await supabase
@@ -145,7 +145,7 @@ export async function acceptInvitation(invitationId: string) {
     .eq('pairing_id', invitation.pod_id)
 
   if ((count ?? 0) >= POD_SOFT_CAP) {
-    return { error: 'This pod is full.' }
+    return { error: 'podFull' }
   }
 
   const { error } = await supabase.rpc('accept_pod_invitation', {
@@ -153,21 +153,21 @@ export async function acceptInvitation(invitationId: string) {
   })
 
   if (error) {
-    return { error: error.message }
+    return { error: toErrorKey('acceptInvitation', error) }
   }
 
   revalidatePath(`/classes/${invitation.class_id}`)
   return { error: null }
 }
 
-export async function declineInvitation(invitationId: string) {
+export async function declineInvitation(invitationId: string): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'You must be signed in.' }
+    return { error: 'signedOut' }
   }
 
   const { data: invitation, error: fetchError } = await supabase
@@ -177,7 +177,8 @@ export async function declineInvitation(invitationId: string) {
     .single()
 
   if (fetchError || !invitation) {
-    return { error: 'Invitation not found.' }
+    if (fetchError) logServerError('declineInvitation.find', fetchError)
+    return { error: 'invitationNotFound' }
   }
 
   const { error } = await supabase
@@ -186,7 +187,7 @@ export async function declineInvitation(invitationId: string) {
     .eq('id', invitationId)
 
   if (error) {
-    return { error: error.message }
+    return { error: toErrorKey('declineInvitation', error) }
   }
 
   revalidatePath(`/classes/${invitation.class_id}`)
