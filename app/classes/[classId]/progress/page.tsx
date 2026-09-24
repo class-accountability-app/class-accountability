@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
@@ -9,6 +10,7 @@ import { TargetForm } from './target-form'
 import { LogProgressForm } from './log-progress-form'
 import { CommentSection } from './comment-section'
 import { NudgeForm } from './nudge-form'
+import { EmptyState, emptyActionClass } from '@/components/empty-state'
 
 const CHURN_THRESHOLD_DAYS = 7
 
@@ -212,12 +214,13 @@ export default async function ProgressPage({
     : { data: [] as NudgeRow[] }
 
   const now = new Date()
-  const [t, tUnits, tAmounts, tCommon, tNudges, locale] = await Promise.all([
+  const [t, tUnits, tAmounts, tCommon, tNudges, tEmpty, locale] = await Promise.all([
     getTranslations('progress'),
     getTranslations('units'),
     getTranslations('amounts'),
     getTranslations('common'),
     getTranslations('nudges'),
+    getTranslations('empty'),
     getLocale(),
   ])
   const nameOf = (id: string) => profileNames.get(id) ?? tCommon('unknownPerson')
@@ -275,12 +278,12 @@ export default async function ProgressPage({
         <p className="font-meta text-xs text-muted">{t('subtitle')}</p>
       </div>
 
-      <div className="flex w-full max-w-md flex-col gap-4">
+      <div id="new-target" className="flex w-full max-w-md scroll-mt-4 flex-col gap-4">
         <h2 className="font-heading text-lg font-semibold text-ink">{t('newTarget')}</h2>
         <TargetForm classId={classId} />
       </div>
 
-      <div className="flex w-full max-w-md flex-col gap-4">
+      <div id="log-progress" className="flex w-full max-w-md scroll-mt-4 flex-col gap-4">
         <h2 className="font-heading text-lg font-semibold text-ink">{t('logProgress')}</h2>
         <LogProgressForm
           classId={classId}
@@ -295,7 +298,15 @@ export default async function ProgressPage({
       <div className="flex w-full max-w-md flex-col gap-3">
         <h2 className="font-heading text-lg font-semibold text-ink">{t('yourTargets')}</h2>
         {(myTargets ?? []).length === 0 ? (
-          <p className="text-sm text-muted">{t('noTargets')}</p>
+          <EmptyState
+            illustration="target"
+            body={tEmpty('noTargets')}
+            action={
+              <a href="#new-target" className={emptyActionClass}>
+                {tEmpty('createTarget')}
+              </a>
+            }
+          />
         ) : (
           <ul className="flex flex-col gap-2">
             {(myTargets ?? []).map((target) => (
@@ -318,7 +329,15 @@ export default async function ProgressPage({
       <div className="flex w-full max-w-md flex-col gap-6">
         <h2 className="font-heading text-lg font-semibold text-ink">{t('podProgress')}</h2>
         {!myPairingId ? (
-          <p className="text-sm text-muted">{t('notInPod')}</p>
+          <EmptyState
+            illustration="pod"
+            body={t('notInPod')}
+            action={
+              <Link href={`/classes/${classId}`} className={emptyActionClass}>
+                {tEmpty('findPod')}
+              </Link>
+            }
+          />
         ) : (
           orderedPodUserIds.map((memberId) => {
             const targets = targetsByUser.get(memberId) ?? []
@@ -326,6 +345,10 @@ export default async function ProgressPage({
             const lastLogAt = lastLogAtByUser.get(memberId)
             const isChurned =
               lastLogAt !== undefined && tokyoDaysAgo(lastLogAt, now) >= CHURN_THRESHOLD_DAYS
+            const isMe = memberId === user.id
+            // A podmate with no targets: nudging them is the next step, so
+            // the nudge button moves from the header into the empty state.
+            const podmateHasNoTargets = !isMe && targets.length === 0
             const churnLine = lastLogAt
               ? t('lastLogged', { when: formatDayAgo(lastLogAt, locale, now) })
               : t('noLogsYet')
@@ -339,17 +362,23 @@ export default async function ProgressPage({
                     <StatusStamp status={isChurned ? 'stale' : 'active'} />
                     <div className="flex min-w-0 flex-col gap-0.5">
                       <span className="font-heading text-sm font-semibold text-ink [overflow-wrap:anywhere]">
-                        {memberId === user.id ? t('you', { name: nameOf(memberId) }) : nameOf(memberId)}
+                        {isMe ? t('you', { name: nameOf(memberId) }) : nameOf(memberId)}
                       </span>
                       <span className="font-meta text-xs text-muted">{churnLine}</span>
                     </div>
                   </div>
-                  {memberId !== user.id && (
+                  {!isMe && !podmateHasNoTargets && (
                     <NudgeForm podId={myPairingId!} toUserId={memberId} />
                   )}
                 </div>
 
-                {targets.length === 0 ? (
+                {podmateHasNoTargets ? (
+                  <EmptyState
+                    illustration="target"
+                    body={tEmpty('memberNoTargets', { name: nameOf(memberId) })}
+                    action={<NudgeForm podId={myPairingId!} toUserId={memberId} block />}
+                  />
+                ) : targets.length === 0 ? (
                   <p className="text-xs text-muted">{t('noTargets')}</p>
                 ) : (
                   <ul className="flex flex-col gap-2">
@@ -375,6 +404,18 @@ export default async function ProgressPage({
                       )
                     })}
                   </ul>
+                )}
+
+                {isMe && targets.length > 0 && recentLogs.length === 0 && (
+                  <EmptyState
+                    illustration="log"
+                    body={tEmpty('noLogs')}
+                    action={
+                      <a href="#log-progress" className={emptyActionClass}>
+                        {tEmpty('logProgress')}
+                      </a>
+                    }
+                  />
                 )}
 
                 {recentLogs.length > 0 && (

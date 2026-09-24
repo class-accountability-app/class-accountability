@@ -4,9 +4,11 @@ import { useState, useTransition } from 'react'
 import { useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
 import { FormError } from '@/components/form-errors'
+import { emptyActionClass } from '@/components/empty-state'
 import { createPod } from './actions'
 
-export function CreatePodButton({ classId }: { classId: string }) {
+// `block` is the full-width version used as an empty state's action.
+export function CreatePodButton({ classId, block = false }: { classId: string; block?: boolean }) {
   const t = useTranslations('pods')
   const tCommon = useTranslations('common')
   const [isPending, startTransition] = useTransition()
@@ -21,12 +23,16 @@ export function CreatePodButton({ classId }: { classId: string }) {
   }
 
   return (
-    <div className="flex flex-col items-start gap-1">
+    <div className={`flex flex-col gap-1 ${block ? 'items-stretch' : 'items-start'}`}>
       <button
         type="button"
         onClick={handleCreate}
         disabled={isPending}
-        className="btn rounded-[2px] bg-accent px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+        className={
+          block
+            ? `${emptyActionClass} disabled:opacity-50`
+            : 'btn rounded-[2px] bg-accent px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50'
+        }
       >
         {isPending ? tCommon('creating') : t('createPod')}
       </button>

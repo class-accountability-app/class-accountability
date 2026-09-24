@@ -4,9 +4,9 @@
 
 const HOME = '/'
 
-// Pages that only make sense before login; sending someone back to them after
-// login would loop.
-const AUTH_PATH = /^\/(login|auth)(\/|\?|#|$)/
+// Pages that only make sense before login (or, for /welcome, on the way in);
+// sending someone back to them afterwards would loop.
+const AUTH_PATH = /^\/(login|auth|welcome)(\/|\?|#|$)/
 
 // Control characters: browsers drop tabs and newlines inside URLs, so
 // "/\t/evil.example" would turn into "//evil.example".

@@ -36,6 +36,8 @@ describe('safeNextPath', () => {
     ['the login page', '/login'],
     ['the login page with a query', '/login?next=/classes'],
     ['an auth route', '/auth/confirm?token_hash=x'],
+    ['the welcome page', '/welcome'],
+    ['the welcome page with its own next', '/welcome?next=/classes'],
   ])('rejects %s', (_label, raw) => {
     expect(safeNextPath(raw)).toBe('/')
   })
@@ -43,6 +45,7 @@ describe('safeNextPath', () => {
   it('keeps paths that only start like an auth route', () => {
     expect(safeNextPath('/loginhelp')).toBe('/loginhelp')
     expect(safeNextPath('/authors')).toBe('/authors')
+    expect(safeNextPath('/welcomepack')).toBe('/welcomepack')
   })
 })
 

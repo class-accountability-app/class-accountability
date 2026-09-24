@@ -18,7 +18,14 @@
     "switchToEnglish": "EN",
     "switchToEnglishLabel": "Switch to English",
     "switchToJapanese": "日本語",
-    "switchToJapaneseLabel": "日本語に切り替える"
+    "switchToJapaneseLabel": "日本語に切り替える",
+    "main": "Main",
+    "tabs": {
+      "home": "Home",
+      "classes": "Classes",
+      "nudges": "Nudges",
+      "settings": "Settings"
+    }
   },
   "home": {
     "greeting": "Hi, {name}",
@@ -67,7 +74,6 @@
   "classes": {
     "title": "Classes",
     "viewPods": "View pods",
-    "empty": "No classes yet.",
     "createHeading": "Create a class",
     "join": "Join",
     "joining": "Joining…"
@@ -87,7 +93,7 @@
     "invitedTo": "Invited to join a pod ({members})",
     "emptyPod": "Empty pod",
     "yourPod": "Your pod",
-    "notInPod": "You're not in a pod yet. Start one and invite classmates, or ask to join a pod below.",
+    "notInPod": "Start a pod and invite classmates, or ask to join a pod below.",
     "memberCount": "{count} / {max} members",
     "requestsHeading": "Requests to join",
     "podFull": "This pod is full.",
@@ -225,6 +231,57 @@
     "nudgeFailed": "Couldn't send that nudge. Check that you're still in the same pod.",
     "codeInvalid": "That code is wrong or has expired. Check the code in your email, or send a new one.",
     "codeFormat": "Please enter the 6-digit code.",
-    "resendTooSoon": "Please wait a little before resending the code."
+    "resendTooSoon": "Please wait a little before resending the code.",
+    "displayNameRequired": "Please enter a display name.",
+    "displayNameTooLong": "Please keep your display name to 20 characters or fewer.",
+    "displayNameInvalid": "Display names can't contain line breaks or other special characters."
+  },
+  "welcome": {
+    "eyebrow": "Welcome",
+    "title": "Choose the name your pod will see",
+    "body": "Classmates in your classes and pods will see this name. Right now they see part of your email address: “{current}”.",
+    "label": "Display name",
+    "hint": "A nickname is fine. You can change it later in Settings.",
+    "previewHeading": "How your pod will see you",
+    "previewStatus": "Logged today",
+    "submit": "Continue",
+    "saving": "Saving…"
+  },
+  "settings": {
+    "title": "Settings",
+    "profileHeading": "Profile",
+    "nameLabel": "Display name",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved.",
+    "email": "Email: {email} (not shown to anyone else)",
+    "languageHeading": "Language",
+    "privacyPolicy": "Privacy policy",
+    "deleteData": "Request data deletion",
+    "deleteDataSubject": "Data deletion request",
+    "signOut": "Sign out"
+  },
+  "nudgesPage": {
+    "title": "Nudges",
+    "emptyTitle": "No nudges yet",
+    "emptyBody": "When a podmate nudges you, it shows up here. If someone in your pod hasn't logged anything for a while, you can nudge them too.",
+    "viewPod": "View your pod",
+    "rule": "You can nudge the same person up to 3 times in 24 hours."
+  },
+  "empty": {
+    "noClasses": "There are no classes to join yet.",
+    "createClass": "Create a class",
+    "findPod": "Find a pod",
+    "noTargets": "No targets yet.",
+    "createTarget": "Create a target",
+    "noLogs": "Nothing logged yet.",
+    "logProgress": "Log progress",
+    "memberNoTargets": "{name} hasn't set a target yet."
+  },
+  "notFound": {
+    "eyebrow": "404",
+    "title": "Page not found",
+    "body": "The link may be out of date, or the page may have been removed.",
+    "home": "Back to Home"
   }
 }

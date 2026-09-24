@@ -7,6 +7,7 @@ import { CreatePodButton } from './create-pod-button'
 import { RequestJoinButton } from './request-join-button'
 import { InviteForm } from './invite-form'
 import { InvitationActions } from './invitation-actions'
+import { EmptyState } from '@/components/empty-state'
 
 const POD_SOFT_CAP = 6
 
@@ -178,7 +179,11 @@ export default async function ClassPodsPage({
       <div className="flex w-full max-w-md flex-col gap-4">
         <h2 className="font-heading text-lg font-semibold text-ink">{t('yourPod')}</h2>
         {myPods.length === 0 ? (
-          <p className="text-sm text-muted">{t('notInPod')}</p>
+          <EmptyState
+            illustration="pod"
+            body={t('notInPod')}
+            action={<CreatePodButton classId={classId} block />}
+          />
         ) : (
           myPods.map((podId) => {
             const podMembers = membersByPod.get(podId) ?? []
@@ -234,7 +239,7 @@ export default async function ClassPodsPage({
             )
           })
         )}
-        <CreatePodButton classId={classId} />
+        {myPods.length > 0 && <CreatePodButton classId={classId} />}
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-3">

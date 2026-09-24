@@ -4,9 +4,19 @@ import { useId, useRef, useState, useTransition } from 'react'
 import { useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
 import { FieldError, describedField, useFocusFirstInvalid } from '@/components/form-errors'
+import { emptyActionClass } from '@/components/empty-state'
 import { sendNudge } from './actions'
 
-export function NudgeForm({ podId, toUserId }: { podId: string; toUserId: string }) {
+// `block` shows the closed state as a full-width button (an empty state's action).
+export function NudgeForm({
+  podId,
+  toUserId,
+  block = false,
+}: {
+  podId: string
+  toUserId: string
+  block?: boolean
+}) {
   const t = useTranslations('nudges')
   const tCommon = useTranslations('common')
   const id = useId()
@@ -50,14 +60,18 @@ export function NudgeForm({ podId, toUserId }: { podId: string; toUserId: string
 
   if (!isOpen) {
     return (
-      <div className="flex flex-col items-start gap-1">
+      <div className={`flex flex-col gap-1 ${block ? 'items-stretch' : 'items-start'}`}>
         <button
           type="button"
           onClick={() => {
             setSent(false)
             setIsOpen(true)
           }}
-          className="min-h-11 text-xs font-medium text-accent-text underline underline-offset-2"
+          className={
+            block
+              ? emptyActionClass
+              : 'min-h-11 text-xs font-medium text-accent-text underline underline-offset-2'
+          }
         >
           {t('open')}
         </button>
@@ -71,7 +85,7 @@ export function NudgeForm({ podId, toUserId }: { podId: string; toUserId: string
   return (
     // w-full makes the open form wrap onto its own line under the name
     // (the card's header row is flex-wrap), instead of widening the row.
-    <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex w-full flex-col gap-2">
+    <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex w-full flex-col gap-2 text-left">
       <label htmlFor={fieldId} className="text-sm font-medium text-ink">
         {t('messageLabel')}
       </label>
