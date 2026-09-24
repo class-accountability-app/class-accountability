@@ -81,6 +81,34 @@ export function loginErrorKeyFor(error: RawError, email: string): ErrorKey {
   return key
 }
 
+// verifyOtp with the 6-digit code. Supabase answers a wrong code and an
+// expired one with the same otp_expired ("Token has expired or is invalid"),
+// so the two share one message that covers both.
+export function codeErrorKeyFor(error: RawError): ErrorKey {
+  if (error?.code === 'otp_expired') return 'codeInvalid'
+  return errorKeyFor(error)
+}
+
+// Resending the code. Supabase lets one address request an email once every
+// 60 seconds; the countdown normally prevents that, so hitting it is rare.
+export function resendErrorKeyFor(error: RawError, email: string): ErrorKey {
+  if (error?.code === 'over_email_send_rate_limit') return 'resendTooSoon'
+  return loginErrorKeyFor(error, email)
+}
+
+// The email button (/auth/confirm). "expired" shows screen 15: the token is
+// past its hour, already used (by the code or the button, they share one
+// token) or not a token at all. A rate limit, a network failure (status 0) or
+// a Supabase outage (5xx) keeps screen 14 with a message, so pressing again
+// can still work.
+export function confirmOutcomeFor(error: RawError): 'expired' | ErrorKey {
+  const key = errorKeyFor(error)
+  if (key === 'rateLimited') return key
+  const status = error?.status ?? 0
+  if (status === 0 || status >= 500) return 'generic'
+  return 'expired'
+}
+
 // Server actions: log the raw error (code + message) for Vercel, then map it.
 export function toErrorKey(
   context: string,

@@ -1,5 +1,14 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { DB_CODES, errorKeyFor, loginErrorKeyFor, redactEmails, toErrorKey } from './errors'
+import {
+  DB_CODES,
+  codeErrorKeyFor,
+  confirmOutcomeFor,
+  errorKeyFor,
+  loginErrorKeyFor,
+  redactEmails,
+  resendErrorKeyFor,
+  toErrorKey,
+} from './errors'
 import ja from '@/messages/ja.json'
 import en from '@/messages/en.json'
 
@@ -96,6 +105,57 @@ describe('errorKeyFor (client login)', () => {
     expect(errorKeyFor({ code: 'unexpected_failure', message: 'Something broke', status: 500 })).toBe(
       'generic'
     )
+  })
+})
+
+// What Supabase returns for a wrong code and for an expired one: the same.
+const otpExpired = { code: 'otp_expired', message: 'Token has expired or is invalid', status: 403 }
+
+describe('codeErrorKeyFor (verifyOtp with the 6-digit code)', () => {
+  it('maps a wrong or expired code to one message', () => {
+    expect(codeErrorKeyFor(otpExpired)).toBe('codeInvalid')
+  })
+
+  it('maps too many attempts to the rate-limit message', () => {
+    expect(codeErrorKeyFor({ code: 'over_request_rate_limit', message: 'x', status: 429 })).toBe(
+      'rateLimited'
+    )
+  })
+
+  it('keeps an outage generic', () => {
+    expect(codeErrorKeyFor({ message: '{}', status: 500 })).toBe('generic')
+  })
+})
+
+describe('resendErrorKeyFor', () => {
+  it('maps the per-address email limit to "wait before resending"', () => {
+    expect(
+      resendErrorKeyFor({ code: 'over_email_send_rate_limit', message: 'x', status: 429 }, 'a@andrew.ac.jp')
+    ).toBe('resendTooSoon')
+  })
+
+  it('maps other errors like the first send', () => {
+    expect(resendErrorKeyFor({ message: '{}', status: 500 }, 'taro@gmail.com')).toBe('emailDomain')
+    expect(resendErrorKeyFor({ message: 'x', status: 429 }, 'a@andrew.ac.jp')).toBe('rateLimited')
+  })
+})
+
+describe('confirmOutcomeFor (the email button)', () => {
+  it('shows the expired screen for a used, expired or bogus token', () => {
+    expect(confirmOutcomeFor(otpExpired)).toBe('expired')
+    expect(confirmOutcomeFor({ code: 'validation_failed', message: 'x', status: 400 })).toBe('expired')
+  })
+
+  it('keeps the button for a rate limit', () => {
+    expect(confirmOutcomeFor({ code: 'over_request_rate_limit', message: 'x', status: 429 })).toBe(
+      'rateLimited'
+    )
+  })
+
+  it('keeps the button for a network failure or an outage', () => {
+    expect(confirmOutcomeFor({ message: 'Failed to fetch', status: 0 })).toBe('generic')
+    expect(confirmOutcomeFor({ message: '{}', status: 503 })).toBe('generic')
+    expect(confirmOutcomeFor({ message: 'no status' })).toBe('generic')
   })
 })
 

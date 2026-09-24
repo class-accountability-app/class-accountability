@@ -27,13 +27,41 @@
     "signOut": "Sign out"
   },
   "login": {
+    "eyebrow": "Log in",
     "title": "Log in to Study Pods",
+    "intro": "No password needed. We'll email a 6-digit login code and a login link to your university address.",
     "emailLabel": "University email",
     "emailPlaceholder": "23b0000@andrew.ac.jp",
     "emailHint": "Only @andrew.ac.jp addresses can be used.",
-    "submit": "Send sign-in link",
-    "sentTitle": "Check your inbox",
-    "sentBody": "We sent a sign-in link to {email}."
+    "submit": "Send login code",
+    "codeTitle": "Check your inbox",
+    "codeBody": "We sent a 6-digit code to <strong>{email}</strong>. You can log in by opening the link in the email, or by entering the code here.",
+    "codeLabel": "6-digit code",
+    "verify": "Log in",
+    "verifying": "Logging in…",
+    "openOutlook": "Open your email in Outlook",
+    "opensInNewTab": "(opens in a new tab)",
+    "helpTitle": "Email not arriving?",
+    "helpSpam": "Check your junk email folder",
+    "helpTypo": "Check the address for typos",
+    "resendIn": "You can resend in {seconds}s",
+    "resend": "Resend the code",
+    "resent": "We sent a new code.",
+    "changeEmail": "Use a different address"
+  },
+  "confirm": {
+    "eyebrow": "From the email button",
+    "title": "Log in to Study Pods",
+    "body": "Press the button to log in on this browser. It works on a phone or a computer.",
+    "submit": "Log in",
+    "submitting": "Logging in…",
+    "ignore": "If you didn't ask to log in, just close this page. Nothing will happen.",
+    "expiredEyebrow": "Log in",
+    "expiredTitle": "This button no longer works",
+    "expiredBody": "It expired after 1 hour, or you already logged in with the code or the button.",
+    "newCode": "Get a new code",
+    "openHome": "Open Home",
+    "expiredHint": "If you're already logged in, \"Open Home\" takes you straight in."
   },
   "classes": {
     "title": "Classes",
@@ -193,6 +221,9 @@
     "commentEmpty": "Please write a comment first.",
     "nudgeEmpty": "Please write a message first.",
     "nudgeLimit": "You can nudge the same person up to 3 times in 24 hours. Please give it a little while.",
-    "nudgeFailed": "Couldn't send that nudge. Check that you're still in the same pod."
+    "nudgeFailed": "Couldn't send that nudge. Check that you're still in the same pod.",
+    "codeInvalid": "That code is wrong or has expired. Check the code in your email, or send a new one.",
+    "codeFormat": "Please enter the 6-digit code.",
+    "resendTooSoon": "Please wait a little before resending the code."
   }
 }
