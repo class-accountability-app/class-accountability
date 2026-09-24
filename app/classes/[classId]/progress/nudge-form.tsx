@@ -69,7 +69,9 @@ export function NudgeForm({ podId, toUserId }: { podId: string; toUserId: string
   }
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex flex-col gap-2">
+    // w-full makes the open form wrap onto its own line under the name
+    // (the card's header row is flex-wrap), instead of widening the row.
+    <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex w-full flex-col gap-2">
       <label htmlFor={fieldId} className="text-sm font-medium text-ink">
         {t('messageLabel')}
       </label>
@@ -79,7 +81,7 @@ export function NudgeForm({ podId, toUserId }: { podId: string; toUserId: string
         maxLength={280}
         rows={2}
         placeholder={t('messagePlaceholder')}
-        className="rounded-[2px] border border-border bg-surface px-2 py-1.5 text-ink placeholder:text-muted"
+        className="w-full rounded-[2px] border border-border bg-surface px-2 py-1.5 text-ink placeholder:text-muted"
         {...describedField(error, errorId)}
       />
       <FieldError id={errorId} error={error} />

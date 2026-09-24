@@ -334,11 +334,11 @@ export default async function ProgressPage({
                 key={memberId}
                 className="flex flex-col gap-3 rounded-[2px] border border-border bg-surface p-4"
               >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div className="flex min-w-0 items-center gap-2">
                     <StatusStamp status={isChurned ? 'stale' : 'active'} />
-                    <div className="flex flex-col gap-0.5">
-                      <span className="font-heading text-sm font-semibold text-ink">
+                    <div className="flex min-w-0 flex-col gap-0.5">
+                      <span className="font-heading text-sm font-semibold text-ink [overflow-wrap:anywhere]">
                         {memberId === user.id ? t('you', { name: nameOf(memberId) }) : nameOf(memberId)}
                       </span>
                       <span className="font-meta text-xs text-muted">{churnLine}</span>
