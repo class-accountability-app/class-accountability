@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>ログインコード</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f3e9d6;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">コード {{ .Token }} を入力してログインしてください（1時間有効）&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f3e9d6;">
+<tr><td align="center" style="padding:32px 12px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background-color:#fbf6ea;border:1px solid #d9c69a;border-top:4px solid #b5583f;border-radius:4px;">
+<tr><td style="padding:28px 32px 0 32px;font-family:'Fraunces',Georgia,serif;font-size:22px;font-weight:600;color:#3a2f22;">Study Pods</td></tr>
+<tr><td style="padding:24px 32px 0 32px;">
+<h1 style="margin:0;font-family:'Hiragino Mincho ProN','Yu Mincho','YuMincho','Shippori Mincho',Georgia,serif;font-size:24px;line-height:1.5;font-weight:700;color:#3a2f22;">ログインコード</h1>
+<p style="margin:12px 0 0 0;font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','YuGothic','Meiryo','Zen Kaku Gothic New',Arial,sans-serif;font-size:15px;line-height:1.8;color:#4a3d2c;">Study Pods のログイン画面に、このコードを入力してください。</p>
+</td></tr>
+<tr><td style="padding:24px 32px 0 32px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td align="center" style="padding:22px 12px 18px 12px;background-color:#fffdf7;border:1.5px dashed #b9a57c;border-radius:4px;">
+<div style="font-family:'Courier New',Courier,monospace;font-size:40px;line-height:1.2;font-weight:700;letter-spacing:10px;color:#3a2f22;">{{ .Token }}</div>
+<div style="margin-top:8px;font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','YuGothic','Meiryo','Zen Kaku Gothic New',Arial,sans-serif;font-size:13px;line-height:1.6;color:#6b5636;">有効期限：1時間</div>
+</td></tr>
+</table>
+</td></tr>
+<tr><td style="padding:24px 32px 0 32px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td style="border-top:1px solid #d9c69a;font-size:0;line-height:0;">&nbsp;</td>
+<td width="1" style="padding:0 12px;white-space:nowrap;font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','YuGothic','Meiryo','Zen Kaku Gothic New',Arial,sans-serif;font-size:13px;color:#6b5636;line-height:1;position:relative;top:-7px;">または</td>
+<td style="border-top:1px solid #d9c69a;font-size:0;line-height:0;">&nbsp;</td>
+</tr>
+</table>
+</td></tr>
+<tr><td align="center" style="padding:12px 32px 0 32px;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+<tr><td align="center" bgcolor="#b5583f" style="border-radius:3px;box-shadow:0 2px 0 rgba(58,47,34,0.35);">
+<a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}" target="_blank" style="display:inline-block;padding:15px 36px;font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','YuGothic','Meiryo','Zen Kaku Gothic New',Arial,sans-serif;font-size:16px;font-weight:700;line-height:1.2;color:#ffffff;text-decoration:none;border-radius:3px;">ボタンでログインする</a>
+</td></tr>
+</table>
+<p style="margin:12px 0 0 0;font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','YuGothic','Meiryo','Zen Kaku Gothic New',Arial,sans-serif;font-size:13px;line-height:1.7;color:#6b5636;">ボタンを押すと、開いたブラウザでログインします。<br>コードとボタンは、どちらか一方だけ使えます。</p>
+</td></tr>
+<tr><td style="padding:28px 32px 0 32px;"><div style="border-top:1px solid #d9c69a;font-size:0;line-height:0;">&nbsp;</div></td></tr>
+<tr><td style="padding:18px 32px 0 32px;font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','YuGothic','Meiryo','Zen Kaku Gothic New',Arial,sans-serif;font-size:13px;line-height:1.8;color:#6b5636;">
+心当たりがない場合は、このメールを無視してください。コードを知らなければ、誰もあなたのアカウントにログインできません。
+</td></tr>
+<tr><td lang="en" style="padding:12px 32px 28px 32px;font-family:Arial,sans-serif;font-size:12px;line-height:1.7;color:#6b5636;">
+Your Study Pods login code is above. Enter it on the login screen, or use the button. It expires in 1 hour. If you didn&#39;t ask for it, you can ignore this email.
+</td></tr>
+</table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;">
+<tr><td align="center" style="padding:18px 12px 0 12px;font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','YuGothic','Meiryo','Zen Kaku Gothic New',Arial,sans-serif;font-size:12px;line-height:1.8;color:#6b5636;">
+このメールは {{ .Email }} 宛てに送信されました。<br>Study Pods ・ 同じ授業の、小さな学習グループ ・ <a href="https://www.study-pods.org" style="color:#9c4830;">www.study-pods.org</a>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>
