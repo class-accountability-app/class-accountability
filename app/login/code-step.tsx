@@ -14,9 +14,8 @@ import {
   secondsUntilResend,
   type LoginAttempt,
 } from '@/lib/auth/login-code'
+import { OUTLOOK_INBOX_URL, gmailInboxUrl } from '@/lib/auth/mail-links'
 import { sendLoginCode } from './send-code'
-
-const OUTLOOK_URL = 'https://outlook.office.com/mail/'
 
 // Screen 02: enter the 6-digit code from the email, in the tab that asked for it.
 export function CodeStep({
@@ -178,15 +177,24 @@ export function CodeStep({
         </button>
       </form>
 
-      <a
-        href={OUTLOOK_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex h-12 w-full items-center justify-center rounded-[2px] border border-border bg-surface text-[15px] font-semibold text-ink no-underline"
-      >
-        {t('openOutlook')}
-        <span className="sr-only">{t('opensInNewTab')}</span>
-      </a>
+      {/* Side by side; each wraps onto its own line when narrower than 9rem. */}
+      <div className="flex flex-wrap gap-3">
+        {[
+          { href: gmailInboxUrl(attempt.email), label: t('openInGmail') },
+          { href: OUTLOOK_INBOX_URL, label: t('openInOutlook') },
+        ].map(({ href, label }) => (
+          <a
+            key={label}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-12 flex-1 basis-36 items-center justify-center rounded-[2px] border border-border bg-surface px-3 text-center text-[15px] font-semibold text-ink no-underline"
+          >
+            {label}
+            <span className="sr-only">{t('opensInNewTab')}</span>
+          </a>
+        ))}
+      </div>
 
       <section
         aria-labelledby="login-help-title"

@@ -10,6 +10,8 @@ Pods are formed by the students themselves, not auto-paired: anyone in a class c
 
 The core loop: sign up → join a class → start or join a pod → set a target → log progress → see podmates' progress → optional nudge.
 
+Students log in with a 6-digit code or a button sent to their university email (andrew.ac.jp), often on a phone. That address works in both Gmail (Google Workspace) and Outlook, so never assume one mail app: the code screen links to both.
+
 ## Stack
 
 - **Next.js 16** (App Router) + **TypeScript** + **Tailwind**
