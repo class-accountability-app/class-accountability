@@ -16,7 +16,7 @@ The core loop: sign up → join a class → start or join a pod → set a target
 - **Supabase**: Postgres + Auth (magic link) + **Row Level Security**
 - **next-intl** for Japanese/English, with no locale in the URL. Locale comes from the `locale` cookie, then `Accept-Language` (ja → Japanese, anything else → English), then Japanese (`i18n/`).
 - Hosted on **Vercel**; CI via **GitHub Actions**
-- Node 20+. Windows dev machine (PowerShell).
+- Node 24 everywhere: local, CI and Vercel (`engines` in package.json). The lock file is written by a newer npm than Node 20's npm 10, which rejects it in `npm ci`. Windows dev machine (PowerShell).
 - The root request-interception file is **`proxy.ts`** (Next 16's convention), not `middleware.ts` — the old convention is deprecated and triggers a build warning. Don't recreate `middleware.ts` at the root.
 
 ## Commands
