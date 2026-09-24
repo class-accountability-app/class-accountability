@@ -3,8 +3,8 @@
 import { Suspense, useEffect, useRef, useState, useTransition } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import type { ErrorKey } from '@/lib/errors'
-import { requestLoginLink } from './actions'
+import { createClient } from '@/lib/supabase/client'
+import { loginErrorKeyFor, type ErrorKey } from '@/lib/errors'
 
 function LoginForm() {
   const t = useTranslations('login')
@@ -23,15 +23,26 @@ function LoginForm() {
     if (error) emailRef.current?.focus()
   }, [error])
 
+  // Runs in the browser on purpose: each student's request reaches Supabase
+  // from their own IP, so Supabase's per-IP auth limits apply per student,
+  // not to the whole class behind Vercel's IPs.
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError(null)
-    const formData = new FormData(e.currentTarget)
+    const address = email.trim()
+    if (!address) {
+      setError('emailInvalid')
+      return
+    }
 
     startTransition(async () => {
-      const result = await requestLoginLink(formData)
-      if (result.error) {
-        setError(result.error)
+      const supabase = createClient()
+      const { error } = await supabase.auth.signInWithOtp({
+        email: address,
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      })
+      if (error) {
+        setError(loginErrorKeyFor(error, address))
         return
       }
       setSent(true)
