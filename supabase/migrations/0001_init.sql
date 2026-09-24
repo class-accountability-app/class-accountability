@@ -1,4 +1,4 @@
-`-- =============================================================================
+-- =============================================================================
 -- 0001_init.sql — Initial schema for the Class-Scoped Accountability App
 -- =============================================================================
 --
@@ -400,4 +400,4 @@ create trigger on_auth_user_created
 -- Then do the test that actually matters: sign in as a SECOND user who is not
 -- in your pod, and confirm you cannot see the first user's progress_logs.
 -- "It works for me" proves nothing about isolation.
--- =============================================================================`
+-- =============================================================================
