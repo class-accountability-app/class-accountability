@@ -41,8 +41,13 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   if (!user && !isPublicRoute(request.nextUrl.pathname)) {
+    // Remember where they were heading, so login can bring them back (e.g. a
+    // class join link). safeNextPath checks it wherever it's read.
     const redirectUrl = request.nextUrl.clone()
     redirectUrl.pathname = '/login'
+    redirectUrl.search = ''
+    const next = request.nextUrl.pathname + request.nextUrl.search
+    if (next !== '/') redirectUrl.searchParams.set('next', next)
     return NextResponse.redirect(redirectUrl)
   }
 

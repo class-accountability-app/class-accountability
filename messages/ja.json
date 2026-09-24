@@ -27,13 +27,41 @@
     "signOut": "ログアウト"
   },
   "login": {
+    "eyebrow": "ログイン",
     "title": "Study Pods にログイン",
+    "intro": "パスワードは不要です。大学のメールアドレスに、6桁のログインコードとログインリンクが届きます。",
     "emailLabel": "大学のメールアドレス",
     "emailPlaceholder": "23b0000@andrew.ac.jp",
     "emailHint": "@andrew.ac.jp のアドレスだけ使えます。",
-    "submit": "ログインリンクを送る",
-    "sentTitle": "メールを確認してください",
-    "sentBody": "{email} にログインリンクを送りました。"
+    "submit": "ログインコードを送る",
+    "codeTitle": "メールを確認してください",
+    "codeBody": "<strong>{email}</strong> に6桁のコードを送りました。メールのリンクを開いても、ここにコードを入力してもログインできます。",
+    "codeLabel": "6桁のコード",
+    "verify": "ログイン",
+    "verifying": "ログイン中…",
+    "openOutlook": "Outlook でメールを開く",
+    "opensInNewTab": "（新しいタブで開きます）",
+    "helpTitle": "メールが届かないときは",
+    "helpSpam": "迷惑メールフォルダを確認してください",
+    "helpTypo": "アドレスの入力ミスがないか確認してください",
+    "resendIn": "再送できるまで あと {seconds}秒",
+    "resend": "コードを再送する",
+    "resent": "新しいコードを送りました。",
+    "changeEmail": "別のアドレスを使う"
+  },
+  "confirm": {
+    "eyebrow": "メールのボタンから",
+    "title": "Study Pods にログインします",
+    "body": "ボタンを押すと、このブラウザでログインします。スマートフォンでもパソコンでも使えます。",
+    "submit": "ログインする",
+    "submitting": "ログイン中…",
+    "ignore": "心当たりがない場合は、このページを閉じてください。何も起きません。",
+    "expiredEyebrow": "ログイン",
+    "expiredTitle": "このボタンは使えなくなりました",
+    "expiredBody": "有効期限（1時間）が切れたか、すでにコードまたはボタンでログイン済みです。",
+    "newCode": "新しいコードを受け取る",
+    "openHome": "ホームを開く",
+    "expiredHint": "すでにログインしている場合は「ホームを開く」からそのまま使えます。"
   },
   "classes": {
     "title": "クラス",
@@ -193,6 +221,9 @@
     "commentEmpty": "コメントを入力してください。",
     "nudgeEmpty": "メッセージを入力してください。",
     "nudgeLimit": "声かけは、同じ相手に24時間で3回までです。少し時間をおいてください。",
-    "nudgeFailed": "声かけを送れませんでした。まだ同じポッドにいるか確認してください。"
+    "nudgeFailed": "声かけを送れませんでした。まだ同じポッドにいるか確認してください。",
+    "codeInvalid": "コードが正しくないか、有効期限が切れています。メールのコードを確かめるか、新しいコードを送ってください。",
+    "codeFormat": "6桁の数字を入力してください。",
+    "resendTooSoon": "もう少し待ってから、コードを再送してください。"
   }
 }

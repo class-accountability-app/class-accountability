@@ -7,6 +7,7 @@ All names, numbers, emails and codes in them are fake examples.
 | Screen | Built in |
 |---|---|
 | 01-login, 02-login-code | Prompt 2 (login code) |
+| 14-email-button-page, 15-email-button-expired | Prompt 2 (the email button's /auth/confirm page) |
 | 03-display-name, 13-settings | Prompt 3 (app shell and settings) |
 | 12-nudges-empty, bottom tab bar on every screen | Prompt 3 |
 | 04-join-from-link, 05-home-checklist, 06-class-link-qr | Prompt 4 (class link and checklist) |
