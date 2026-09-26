@@ -181,6 +181,17 @@ describe('toErrorKey', () => {
     ).toBe('alreadyJoinedClass')
   })
 
+  it('maps the nudge-limit trigger when the call site asks for it', () => {
+    captureLog()
+    const triggerError = {
+      code: DB_CODES.nudgeLimit,
+      message: 'Nudge limit reached: 3 per recipient per 24 hours.',
+    }
+    expect(toErrorKey('sendNudge', triggerError, { [DB_CODES.nudgeLimit]: 'nudgeLimit' })).toBe(
+      'nudgeLimit'
+    )
+  })
+
   it('maps RLS denials and rate limits', () => {
     captureLog()
     expect(toErrorKey('x', { code: '42501', message: 'new row violates row-level security policy' })).toBe(

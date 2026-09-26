@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import {
   Fraunces,
   Schibsted_Grotesk,
@@ -10,6 +10,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { Nav } from '@/components/nav'
+import { TabBar } from '@/components/app-nav'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -51,6 +52,14 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title'), description: t('description') }
 }
 
+// viewport-fit=cover lets the page draw under the iPhone home indicator, so
+// env(safe-area-inset-bottom) is non-zero and the tab bar can pad for it.
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -58,12 +67,18 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale()
 
-  // UI-chrome-only read: decides whether the nav shows "sign out". No
-  // business data touched, no change to any page's own auth handling.
+  // UI-chrome-only reads: whether the nav shows the app links and sign-out,
+  // and the classes the クラス tab needs (one class opens it directly). No
+  // change to any page's own auth handling.
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
+
+  const { data: memberships } = user
+    ? await supabase.from('class_memberships').select('class_id').eq('user_id', user.id)
+    : { data: null }
+  const classIds = (memberships ?? []).map((m) => m.class_id)
 
   const fontVariables = [fraunces, schibstedGrotesk, courierPrime, zenKakuGothicNew, shipporiMincho]
     .map((font) => font.variable)
@@ -73,7 +88,7 @@ export default async function RootLayout({
     <html lang={locale} className={`${fontVariables} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-body">
         <NextIntlClientProvider>
-          <Nav signedIn={!!user} />
+          <Nav signedIn={!!user} classIds={classIds} />
           <div className="relative flex flex-1 flex-col">
             <div
               aria-hidden
@@ -81,6 +96,7 @@ export default async function RootLayout({
             />
             <main className="flex flex-1 flex-col">{children}</main>
           </div>
+          {user && <TabBar classIds={classIds} />}
         </NextIntlClientProvider>
       </body>
     </html>

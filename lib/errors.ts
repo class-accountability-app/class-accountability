@@ -11,10 +11,13 @@ type RawError = { code?: string; message?: string; status?: number } | null | un
 const PG_UNIQUE_VIOLATION = '23505'
 const PG_FOREIGN_KEY_VIOLATION = '23503'
 const PG_INSUFFICIENT_PRIVILEGE = '42501'
+// Raised by the enforce_nudge_limit trigger (0011_display_name_and_nudge_limit.sql).
+const NUDGE_LIMIT = 'SP001'
 
 export const DB_CODES = {
   uniqueViolation: PG_UNIQUE_VIOLATION,
   foreignKeyViolation: PG_FOREIGN_KEY_VIOLATION,
+  nudgeLimit: NUDGE_LIMIT,
 } as const
 
 const EMAIL_PATTERN = /[^\s"'<>(),;:]+@[^\s"'<>(),;:]+/g

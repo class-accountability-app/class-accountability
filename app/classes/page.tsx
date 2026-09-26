@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { JoinButton } from './join-button'
 import { CreateClassForm } from './create-class-form'
+import { EmptyState, emptyActionClass } from '@/components/empty-state'
 
 export default async function ClassesPage() {
   const supabase = await createClient()
@@ -26,7 +27,11 @@ export default async function ClassesPage() {
     .eq('user_id', user.id)
 
   const joinedClassIds = new Set(memberships?.map((m) => m.class_id))
-  const [t, tCommon] = await Promise.all([getTranslations('classes'), getTranslations('common')])
+  const [t, tCommon, tEmpty] = await Promise.all([
+    getTranslations('classes'),
+    getTranslations('common'),
+    getTranslations('empty'),
+  ])
 
   return (
     <div className="flex flex-1 flex-col items-center gap-10 px-4 py-12 sm:items-start sm:pl-16">
@@ -60,11 +65,19 @@ export default async function ClassesPage() {
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-muted">{t('empty')}</p>
+          <EmptyState
+            illustration="classes"
+            body={tEmpty('noClasses')}
+            action={
+              <a href="#create-class" className={emptyActionClass}>
+                {tEmpty('createClass')}
+              </a>
+            }
+          />
         )}
       </div>
 
-      <div className="flex w-full max-w-sm flex-col gap-3">
+      <div id="create-class" className="flex w-full max-w-sm scroll-mt-4 flex-col gap-3">
         <h2 className="font-heading text-lg font-semibold text-ink">{t('createHeading')}</h2>
         <CreateClassForm />
       </div>

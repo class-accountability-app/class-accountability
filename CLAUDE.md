@@ -30,6 +30,14 @@ Students log in with a 6-digit code or a button sent to their university email (
 - `npm run build` — production build
 - Run lint + typecheck + test + build locally before every push; CI runs all four.
 
+### RLS tests
+
+`supabase/tests/*.sql` check what the database allows each kind of user (own row, podmate, classmate, outsider, logged out). Each file is ONE transaction that ends in `ROLLBACK`: it creates throwaway `rls-test-*@andrew.ac.jp` users, impersonates them with `set local role authenticated` + `request.jwt.claims`, and raises `FAIL: …` on the first broken rule. Success is a final row reading `all RLS tests passed`.
+
+- Run a file as one script: Supabase MCP `execute_sql` or the dashboard's SQL editor (no Docker or `psql` needed). CI does not run them, since CI has no database.
+- It runs on the live project, so ask first. Before and after, `select count(*)` from `auth.users`, `profiles` and `nudges` and confirm the counts match.
+- When a migration changes a policy, trigger or grant, add checks for it here in the same PR.
+
 ## Non-negotiable rules
 
 1. **Every Postgres table has RLS enabled.** A table without `enable row level security` is publicly readable via the anon key (which ships to the browser). Every migration that runs `create table` must also enable RLS in the same file. CI fails the PR otherwise.
@@ -47,6 +55,8 @@ Students log in with a 6-digit code or a button sent to their university email (
 ## Data model
 
 `profiles`, `classes`, `class_memberships`, `pairings`, `pairing_members`, `targets`, `progress_logs`, `nudges` (0001), plus `pod_invitations` (0003: `kind` is `invite` or `request`, `status` is `pending`/`accepted`/`declined`; accepting goes through the `accept_pod_invitation` function, 0004) and `progress_comments` (0008). A pod is a `pairings` row; its members are the `pairing_members` join table (NOT an array column — you can't write clean RLS against an array). `is_podmate(uuid)` is a `security definer` helper that every visibility policy calls.
+
+0011: `profiles.name_chosen_at` is null until the student saves a display name (a trigger stamps it; clients may update only `display_name`). The proxy sends anyone with a null value to `/welcome`. Name rules: 1–20 graphemes in the app (`lib/display-name.ts`); the DB enforces trimmed, no control characters and ≤ 80 code points. Nudges: max 3 per sender→recipient in a rolling 24 hours (trigger, error code `SP001`), and `pairing_id` must be a pod both people are in.
 
 ## Scope discipline
 

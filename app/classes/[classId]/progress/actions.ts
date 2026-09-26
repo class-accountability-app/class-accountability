@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { DB_CODES, logServerError, toErrorKey, type ActionResult } from '@/lib/errors'
+import { DB_CODES, toErrorKey, type ActionResult } from '@/lib/errors'
 
 const TARGET_TYPES = ['task', 'word_count', 'study_hours', 'character_count'] as const
 type TargetType = (typeof TARGET_TYPES)[number]
@@ -212,8 +212,10 @@ export async function sendNudge(
     .single()
 
   if (error || !data) {
-    logServerError('sendNudge', error)
-    return { error: 'nudgeFailed' }
+    // The database enforces the same limit (0011), so a request that races
+    // past the count above still gets the friendly message.
+    const key = toErrorKey('sendNudge', error, { [DB_CODES.nudgeLimit]: 'nudgeLimit' })
+    return { error: key === 'nudgeLimit' ? key : 'nudgeFailed' }
   }
 
   const { data: pairing } = await supabase

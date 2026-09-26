@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { setLocale } from '@/i18n/actions'
+import { DesktopLinks, HeaderSignOut } from '@/components/app-nav'
 
-// Persistent shell nav: wordmark left, language switch and sign-out right.
+// Persistent shell nav: wordmark left; on desktop the page links, then the
+// language switch and sign-out. Phones get the page links from the tab bar.
 // Lives once in the root layout — no page reimplements it.
-export async function Nav({ signedIn }: { signedIn: boolean }) {
+export async function Nav({ signedIn, classIds }: { signedIn: boolean; classIds: string[] }) {
   const [t, locale] = await Promise.all([getTranslations('nav'), getLocale()])
   const target = locale === 'ja' ? 'en' : 'ja'
 
@@ -18,6 +20,7 @@ export async function Nav({ signedIn }: { signedIn: boolean }) {
           {t('brand')}
         </Link>
         <div className="flex items-center gap-2">
+          {signedIn && <DesktopLinks classIds={classIds} />}
           {/* A form, not a JS click handler: works before hydration too. */}
           <form action={setLocale}>
             <input type="hidden" name="locale" value={target} />
@@ -30,13 +33,7 @@ export async function Nav({ signedIn }: { signedIn: boolean }) {
               {target === 'en' ? t('switchToEnglish') : t('switchToJapanese')}
             </button>
           </form>
-          {signedIn && (
-            <form action="/auth/signout" method="post">
-              <button type="submit" className="nav-link min-h-11 px-2 font-meta text-xs text-muted">
-                {t('signOut')}
-              </button>
-            </form>
-          )}
+          {signedIn && <HeaderSignOut />}
         </div>
       </div>
     </header>
