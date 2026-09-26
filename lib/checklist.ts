@@ -15,8 +15,10 @@ export type Checklist = {
   steps: { id: StepId; done: boolean }[]
   doneCount: number
   allDone: boolean
-  // The first unfinished step: the only one that gets a button.
+  // The first unfinished step: the only one that gets an action.
   next: StepId | null
+  // Its button's link. Null for 'join': that step gets the コードで参加 field
+  // instead, since a class can only be joined with its code (0013).
   nextHref: string | null
   // For "統計学 201 に参加しました" under a finished first step.
   joinedClassName: string | null
@@ -35,7 +37,6 @@ export function buildChecklist(classes: HomeClass[], hasTarget: boolean): Checkl
   const next = steps.find((s) => !s.done)?.id ?? null
 
   let nextHref: string | null = null
-  if (next === 'join') nextHref = '/classes'
   if (next === 'pod' && withoutPod) nextHref = `/classes/${withoutPod.id}`
   if (next === 'target') {
     const cls = withPod ?? classes[0]

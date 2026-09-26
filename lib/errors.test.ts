@@ -175,10 +175,10 @@ describe('toErrorKey', () => {
   it('lets the call site give a code a specific meaning', () => {
     captureLog()
     expect(
-      toErrorKey('joinClass', { code: DB_CODES.uniqueViolation, message: 'duplicate key' }, {
-        [DB_CODES.uniqueViolation]: 'alreadyJoinedClass',
+      toErrorKey('sendInvite', { code: DB_CODES.uniqueViolation, message: 'duplicate key' }, {
+        [DB_CODES.uniqueViolation]: 'invitePending',
       })
-    ).toBe('alreadyJoinedClass')
+    ).toBe('invitePending')
   })
 
   it('maps the nudge-limit trigger when the call site asks for it', () => {

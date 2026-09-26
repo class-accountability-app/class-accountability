@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { SETUP_SEEN_COOKIE, buildChecklist, type HomeClass, type StepId } from '@/lib/checklist'
 import { MarkSetupSeen } from './setup-seen'
+import { CodeJoinForm } from '@/components/code-join-form'
 
 type MembershipRow = {
   class_id: string
@@ -183,7 +184,7 @@ export default async function Home() {
           href="/classes"
           className="self-start text-[15px] font-semibold text-accent-text underline underline-offset-4"
         >
-          {t('findClasses')}
+          {t('joinAnotherClass')}
         </Link>
       </div>
     </div>
@@ -256,6 +257,11 @@ async function Step({
           </span>
         </span>
         <span className="text-sm leading-[1.7] text-ink/85">{detail}</span>
+        {isNext && id === 'join' && (
+          <div className="mt-2">
+            <CodeJoinForm />
+          </div>
+        )}
         {href && (
           <Link
             href={href}
