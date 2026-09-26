@@ -12,6 +12,21 @@ export function isOutsideApp(pathname: string): boolean {
   return OUTSIDE_APP.test(pathname)
 }
 
+// The class invitation (screen 04) is a single decision with its own buttons,
+// so it has no tab bar either. It stays inside the app for the welcome
+// redirect: a student who hasn't chosen a name goes through /welcome first.
+const JOIN_PAGE = /^\/join(\/|$)/
+
+export function hidesTabBar(pathname: string): boolean {
+  return isOutsideApp(pathname) || JOIN_PAGE.test(pathname)
+}
+
+// The header ログアウト link on phones: only where there's no tab bar to
+// reach 設定 from, once signed in (mockups 03 and 04).
+export function showsHeaderSignOutOnPhones(pathname: string): boolean {
+  return pathname === '/welcome' || JOIN_PAGE.test(pathname)
+}
+
 // The クラス tab opens the class directly when there's exactly one, since
 // that's where a student in one class always goes next.
 export function classesHref(classIds: readonly string[]): string {

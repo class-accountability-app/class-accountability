@@ -30,8 +30,36 @@
   "home": {
     "greeting": "Hi, {name}",
     "greetingNoName": "Hi there",
-    "goToClasses": "Open classes",
-    "signOut": "Sign out"
+    "setup": {
+      "heading": "Getting started",
+      "count": "{done} / {total} done",
+      "valueText": "{done} of {total} done",
+      "doneMark": " (done)",
+      "nextMark": " (next step)",
+      "joinedClass": "You joined {name}",
+      "allDone": "You're all set. From here, just keep logging your progress.",
+      "steps": {
+        "join": {
+          "title": "Join a class",
+          "body": "Use the link or QR code from your class.",
+          "action": "Find a class"
+        },
+        "pod": {
+          "title": "Join a pod",
+          "body": "Invite classmates, or accept an invitation you've received.",
+          "action": "Open the class"
+        },
+        "target": {
+          "title": "Set your first target",
+          "body": "Pick a report length or study hours from a template.",
+          "action": "Set a target"
+        }
+      }
+    },
+    "classesHeading": "Your classes",
+    "classMetaNoPod": "{term} · No pod yet",
+    "classMetaPod": "{term} · Pod of {count}",
+    "findClasses": "Find another class"
   },
   "login": {
     "eyebrow": "Log in",
@@ -93,7 +121,7 @@
     "invitedTo": "Invited to join a pod ({members})",
     "emptyPod": "Empty pod",
     "yourPod": "Your pod",
-    "notInPod": "Start a pod and invite classmates, or ask to join a pod below.",
+    "notInPod": "Start a pod and invite classmates, or wait for an invitation. A pod has up to 6 people.",
     "memberCount": "{count} / {max} members",
     "requestsHeading": "Requests to join",
     "podFull": "This pod is full.",
@@ -108,7 +136,8 @@
     "inviteLabel": "Classmate to invite",
     "invite": "Invite",
     "inviting": "Inviting…",
-    "noOneToInvite": "No classmates left to invite."
+    "noOneToInvite": "No classmates left to invite.",
+    "notInPodTitle": "You're not in a pod yet"
   },
   "units": {
     "word_count": "{count, plural, one {# word} other {# words}}",
@@ -146,24 +175,40 @@
     "titleLabel": "Title",
     "titlePlaceholder": "e.g. Final report",
     "typeLabel": "Type",
-    "types": {
-      "task": "Task (log it when it's done)",
-      "word_count": "Word count",
-      "study_hours": "Study hours",
-      "character_count": "Character count"
-    },
-    "amountLabel": {
-      "word_count": "Target word count",
-      "study_hours": "Target hours",
-      "character_count": "Target character count"
-    },
     "amountPlaceholder": {
       "word_count": "e.g. 2000",
       "study_hours": "e.g. 10",
       "character_count": "e.g. 2000"
     },
     "deadlineLabel": "Deadline (optional)",
-    "submit": "Create target"
+    "submit": "Create target",
+    "pageTitle": "New target",
+    "templatesHeading": "Start from a template",
+    "templates": {
+      "report2000": "Report, 2,000 characters",
+      "report4000": "Report, 4,000 characters",
+      "study10": "Exam study, 10 hours",
+      "submit": "Hand in an assignment",
+      "custom": "Set my own"
+    },
+    "templatesHint": "A template fills in the fields below. You can change anything afterwards.",
+    "templateTitles": {
+      "report": "Final report",
+      "examStudy": "Exam study",
+      "submit": "Hand in the assignment"
+    },
+    "typeSegments": {
+      "character_count": "Characters",
+      "word_count": "Words",
+      "study_hours": "Hours",
+      "task": "Task"
+    },
+    "amountHeading": "Target",
+    "unitSuffix": {
+      "character_count": "characters",
+      "word_count": "words",
+      "study_hours": "hours"
+    }
   },
   "logForm": {
     "needTarget": "Create a target above before you log progress.",
@@ -234,7 +279,11 @@
     "resendTooSoon": "Please wait a little before resending the code.",
     "displayNameRequired": "Please enter a display name.",
     "displayNameTooLong": "Please keep your display name to 20 characters or fewer.",
-    "displayNameInvalid": "Display names can't contain line breaks or other special characters."
+    "displayNameInvalid": "Display names can't contain line breaks or other special characters.",
+    "alreadyInPod": "You're already in a pod in this class. You can be in one pod per class.",
+    "inviteeInPod": "This classmate is already in another pod in this class.",
+    "alreadyPodmate": "This classmate is already in this pod.",
+    "joinCodeInvalid": "This link doesn't work. Please check the link again."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -283,5 +332,31 @@
     "title": "Page not found",
     "body": "The link may be out of date, or the page may have been removed.",
     "home": "Back to Home"
+  },
+  "join": {
+    "eyebrow": "Class invitation",
+    "meta": "{term} · {count, plural, one {# member} other {# members}}",
+    "body": "If you join, people in this class will see your display name. Only your podmates can see your progress.",
+    "submit": "Join this class",
+    "joining": "Joining…",
+    "cancel": "Cancel",
+    "invalidTitle": "This link doesn't work",
+    "invalidBody": "The link may be old, or the code may be wrong. Please check the link with your teacher or a classmate.",
+    "home": "Back to Home"
+  },
+  "invite": {
+    "heading": "Invite to this class",
+    "body": "Anyone who gets this link or QR code can join this class directly.",
+    "linkLabel": "Join link",
+    "copy": "Copy",
+    "copied": "Copied",
+    "copyFailed": "Couldn't copy. The link is selected, so you can copy it yourself.",
+    "qrLabel": "QR code for {url}",
+    "qrHint": "Ready to use on slides or a notice board",
+    "savePng": "Save QR code",
+    "present": "Show in class",
+    "anyMemberCanShare": "Anyone in this class can share this link.",
+    "close": "Close",
+    "codeLabel": "Code"
   }
 }

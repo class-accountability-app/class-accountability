@@ -8,6 +8,10 @@ import { RequestJoinButton } from './request-join-button'
 import { InviteForm } from './invite-form'
 import { InvitationActions } from './invitation-actions'
 import { EmptyState } from '@/components/empty-state'
+import { InviteCard } from './invite-card'
+import { appOrigin } from '@/lib/app-origin'
+import { groupedCode, joinUrl, shortJoinUrl } from '@/lib/join-link'
+import { qrSvg } from '@/lib/qr'
 
 const POD_SOFT_CAP = 6
 
@@ -37,7 +41,7 @@ export default async function ClassPodsPage({
 
   const { data: cls } = await supabase
     .from('classes')
-    .select('id, name, university, term')
+    .select('id, name, university, term, join_code')
     .eq('id', classId)
     .single()
 
@@ -132,6 +136,13 @@ export default async function ClassPodsPage({
   const myPods = podIds.filter((id) => myPodIds.has(id))
   const otherPods = podIds.filter((id) => !myPodIds.has(id))
 
+  // One pod per class (0012): anyone already in a pod here can't be invited.
+  const inAPod = new Set(((members as PodMember[] | null) ?? []).map((m) => m.user_id))
+
+  const url = joinUrl(await appOrigin(), cls.join_code)
+  const shortUrl = shortJoinUrl(url)
+  const svg = await qrSvg(url)
+
   function memberNames(podId: string) {
     return (membersByPod.get(podId) ?? [])
       .map((m) => m.profiles?.display_name ?? unknown)
@@ -145,10 +156,8 @@ export default async function ClassPodsPage({
   return (
     <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12 sm:items-start sm:pl-16">
       <div className="flex w-full max-w-md flex-col gap-2">
-        <h1 className="font-heading text-xl font-semibold text-ink">{cls.name}</h1>
-        <p className="font-meta text-xs text-muted">
-          {tCommon('classMeta', { university: cls.university, term: cls.term })}
-        </p>
+        <p className="font-meta text-[13px] text-muted">{cls.term}</p>
+        <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink">{cls.name}</h1>
         <Link
           href={`/classes/${cls.id}/progress`}
           className="text-xs font-medium text-accent-text underline underline-offset-2"
@@ -176,11 +185,24 @@ export default async function ClassPodsPage({
         </div>
       )}
 
-      <div className="flex w-full max-w-md flex-col gap-4">
-        <h2 className="font-heading text-lg font-semibold text-ink">{t('yourPod')}</h2>
+      <div className="w-full max-w-md">
+        <InviteCard
+          url={url}
+          shortUrl={shortUrl}
+          code={cls.join_code}
+          groupedCode={groupedCode(cls.join_code)}
+          classTitle={cls.name}
+          qrSvg={svg}
+        />
+      </div>
+
+      <div className="flex w-full max-w-md flex-col gap-3">
+        <h2 className="font-heading text-xl font-bold text-ink">{t('yourPod')}</h2>
         {myPods.length === 0 ? (
           <EmptyState
             illustration="pod"
+            title={t('notInPodTitle')}
+            headingLevel="h3"
             body={t('notInPod')}
             action={<CreatePodButton classId={classId} block />}
           />
@@ -194,6 +216,7 @@ export default async function ClassPodsPage({
                 ([id]) =>
                   id !== user.id &&
                   !memberIds.has(id) &&
+                  !inAPod.has(id) &&
                   !myPendingInvitePairs.has(`${podId}:${id}`)
               )
               .map(([id, displayName]) => ({ id, displayName }))
@@ -239,42 +262,44 @@ export default async function ClassPodsPage({
             )
           })
         )}
-        {myPods.length > 0 && <CreatePodButton classId={classId} />}
       </div>
 
-      <div className="flex w-full max-w-md flex-col gap-3">
-        <h2 className="font-heading text-lg font-semibold text-ink">{t('otherPods')}</h2>
-        {otherPods.length === 0 ? (
-          <p className="text-sm text-muted">{t('noOtherPods')}</p>
-        ) : (
-          <ul className="flex flex-col gap-2">
-            {otherPods.map((podId) => {
-              const podMembers = membersByPod.get(podId) ?? []
-              const isFull = podMembers.length >= POD_SOFT_CAP
-              const alreadyRequested = myPendingRequestPodIds.has(podId)
+      {/* Asking to join another pod only makes sense while you have none. */}
+      {myPods.length === 0 && (
+        <div className="flex w-full max-w-md flex-col gap-3">
+          <h2 className="font-heading text-lg font-semibold text-ink">{t('otherPods')}</h2>
+          {otherPods.length === 0 ? (
+            <p className="text-sm text-muted">{t('noOtherPods')}</p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {otherPods.map((podId) => {
+                const podMembers = membersByPod.get(podId) ?? []
+                const isFull = podMembers.length >= POD_SOFT_CAP
+                const alreadyRequested = myPendingRequestPodIds.has(podId)
 
-              return (
-                <li
-                  key={podId}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-[2px] border border-border bg-surface px-4 py-3"
-                >
-                  <div className="flex flex-col">
-                    <span className="text-sm text-ink">{memberNames(podId) || t('emptyPod')}</span>
-                    <span className="font-meta text-xs text-muted">{memberCount(podId)}</span>
-                  </div>
-                  {isFull ? (
-                    <span className="text-xs font-medium text-muted">{t('full')}</span>
-                  ) : alreadyRequested ? (
-                    <span className="text-xs font-medium text-muted">{t('requested')}</span>
-                  ) : (
-                    <RequestJoinButton podId={podId} />
-                  )}
-                </li>
-              )
-            })}
-          </ul>
-        )}
-      </div>
+                return (
+                  <li
+                    key={podId}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-[2px] border border-border bg-surface px-4 py-3"
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-sm text-ink">{memberNames(podId) || t('emptyPod')}</span>
+                      <span className="font-meta text-xs text-muted">{memberCount(podId)}</span>
+                    </div>
+                    {isFull ? (
+                      <span className="text-xs font-medium text-muted">{t('full')}</span>
+                    ) : alreadyRequested ? (
+                      <span className="text-xs font-medium text-muted">{t('requested')}</span>
+                    ) : (
+                      <RequestJoinButton podId={podId} />
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   )
 }

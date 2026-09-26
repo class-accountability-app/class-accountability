@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { activeTab, classesHref, isOutsideApp, tabHref } from './nav'
+import {
+  activeTab,
+  classesHref,
+  hidesTabBar,
+  isOutsideApp,
+  showsHeaderSignOutOnPhones,
+  tabHref,
+} from './nav'
 
 describe('classesHref', () => {
   it('opens the class directly when the student is in exactly one', () => {
@@ -41,7 +48,29 @@ describe('isOutsideApp', () => {
     expect(isOutsideApp(p)).toBe(true)
   })
 
-  it.each(['/', '/classes', '/settings', '/loginhelp', '/welcomepack'])('%s is inside', (p) => {
-    expect(isOutsideApp(p)).toBe(false)
+  it.each(['/', '/classes', '/settings', '/loginhelp', '/welcomepack', '/join/K7M3Q9TX'])(
+    '%s is inside',
+    (p) => {
+      expect(isOutsideApp(p)).toBe(false)
+    }
+  )
+})
+
+describe('hidesTabBar', () => {
+  it.each(['/login', '/auth/confirm', '/welcome', '/join/K7M3Q9TX', '/join'])('%s has no tab bar', (p) => {
+    expect(hidesTabBar(p)).toBe(true)
+  })
+
+  it.each(['/', '/classes/c1', '/joinus', '/settings'])('%s has the tab bar', (p) => {
+    expect(hidesTabBar(p)).toBe(false)
+  })
+})
+
+describe('showsHeaderSignOutOnPhones', () => {
+  it('only where there is no tab bar to reach 設定 from', () => {
+    expect(showsHeaderSignOutOnPhones('/welcome')).toBe(true)
+    expect(showsHeaderSignOutOnPhones('/join/K7M3Q9TX')).toBe(true)
+    expect(showsHeaderSignOutOnPhones('/')).toBe(false)
+    expect(showsHeaderSignOutOnPhones('/settings')).toBe(false)
   })
 })

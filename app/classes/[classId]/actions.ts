@@ -8,6 +8,33 @@ import { DB_CODES, logServerError, toErrorKey, type ActionResult } from '@/lib/e
 // enforced atomically; see 0004's comment on the accept race.
 const POD_SOFT_CAP = 6
 
+type Supabase = Awaited<ReturnType<typeof createClient>>
+
+// The active pod someone is in within a class, if any. One per class is a
+// hard rule (the one_pod_per_class trigger, 0012); the checks below that use
+// this only give a clearer message before the database would refuse. RLS lets
+// class members read the pod memberships of their class, so this works for a
+// classmate too.
+async function activePodInClass(
+  supabase: Supabase,
+  classId: string,
+  userId: string
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('pairing_members')
+    .select('pairing_id, pairings!inner(class_id, status)')
+    .eq('user_id', userId)
+    .eq('pairings.class_id', classId)
+    .eq('pairings.status', 'active')
+    .limit(1)
+
+  if (error) {
+    logServerError('activePodInClass', error)
+    return null
+  }
+  return data?.[0]?.pairing_id ?? null
+}
+
 export async function createPod(classId: string): Promise<ActionResult> {
   const supabase = await createClient()
   const {
@@ -18,25 +45,22 @@ export async function createPod(classId: string): Promise<ActionResult> {
     return { error: 'signedOut' }
   }
 
-  const { data: pod, error } = await supabase
-    .from('pairings')
-    .insert({ class_id: classId })
-    .select('id')
-    .single()
-
-  if (error) {
-    return { error: toErrorKey('createPod', error) }
+  if (await activePodInClass(supabase, classId, user.id)) {
+    return { error: 'alreadyInPod' }
   }
 
-  const { error: memberError } = await supabase
-    .from('pairing_members')
-    .insert({ pairing_id: pod.id, user_id: user.id })
+  // The pod and its first member in one transaction (0012), so a failure
+  // can't leave an empty pod behind.
+  const { error } = await supabase.rpc('create_pod', { target_class: classId })
 
-  if (memberError) {
-    return { error: toErrorKey('createPod.addMember', memberError) }
+  if (error) {
+    return {
+      error: toErrorKey('createPod', error, { [DB_CODES.onePodPerClass]: 'alreadyInPod' }),
+    }
   }
 
   revalidatePath(`/classes/${classId}`)
+  revalidatePath('/')
   return { error: null }
 }
 
@@ -59,6 +83,11 @@ export async function sendInvite(podId: string, inviteeId: string): Promise<Acti
   if (podError || !pod) {
     if (podError) logServerError('sendInvite.findPod', podError)
     return { error: 'podNotFound' }
+  }
+
+  const inviteePod = await activePodInClass(supabase, pod.class_id, inviteeId)
+  if (inviteePod) {
+    return { error: inviteePod === podId ? 'alreadyPodmate' : 'inviteeInPod' }
   }
 
   const { error } = await supabase.from('pod_invitations').insert({
@@ -100,6 +129,10 @@ export async function requestToJoin(podId: string): Promise<ActionResult> {
     return { error: 'podNotFound' }
   }
 
+  if (await activePodInClass(supabase, pod.class_id, user.id)) {
+    return { error: 'alreadyInPod' }
+  }
+
   const { error } = await supabase.from('pod_invitations').insert({
     pod_id: podId,
     class_id: pod.class_id,
@@ -130,7 +163,7 @@ export async function acceptInvitation(invitationId: string): Promise<ActionResu
 
   const { data: invitation, error: fetchError } = await supabase
     .from('pod_invitations')
-    .select('pod_id, class_id')
+    .select('pod_id, class_id, kind')
     .eq('id', invitationId)
     .single()
 
@@ -153,10 +186,16 @@ export async function acceptInvitation(invitationId: string): Promise<ActionResu
   })
 
   if (error) {
-    return { error: toErrorKey('acceptInvitation', error) }
+    // One pod per class (0012): accepting an invite means *you* are already
+    // in a pod; approving a request means the person asking is.
+    const inPod = invitation.kind === 'invite' ? 'alreadyInPod' : 'inviteeInPod'
+    return {
+      error: toErrorKey('acceptInvitation', error, { [DB_CODES.onePodPerClass]: inPod }),
+    }
   }
 
   revalidatePath(`/classes/${invitation.class_id}`)
+  revalidatePath('/')
   return { error: null }
 }
 
