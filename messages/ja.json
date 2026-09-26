@@ -30,8 +30,36 @@
   "home": {
     "greeting": "こんにちは、{name}さん",
     "greetingNoName": "こんにちは",
-    "goToClasses": "クラスを開く",
-    "signOut": "ログアウト"
+    "setup": {
+      "heading": "はじめの3ステップ",
+      "count": "{done} / {total} 完了",
+      "valueText": "{total}つ中{done}つ完了",
+      "doneMark": "（完了）",
+      "nextMark": "（次のステップ）",
+      "joinedClass": "{name} に参加しました",
+      "allDone": "準備ができました。あとは進み具合を記録していきましょう。",
+      "steps": {
+        "join": {
+          "title": "クラスに参加する",
+          "body": "授業で配られたリンクかQRコードから参加できます。",
+          "action": "クラスを探す"
+        },
+        "pod": {
+          "title": "ポッドに入る",
+          "body": "クラスの仲間を招待するか、届いた招待を受けましょう。",
+          "action": "クラスを開く"
+        },
+        "target": {
+          "title": "最初の目標を立てる",
+          "body": "レポートの文字数や勉強時間を、テンプレートから選べます。",
+          "action": "目標を立てる"
+        }
+      }
+    },
+    "classesHeading": "参加中のクラス",
+    "classMetaNoPod": "{term} · ポッド未参加",
+    "classMetaPod": "{term} · ポッド {count}人",
+    "findClasses": "ほかのクラスを探す"
   },
   "login": {
     "eyebrow": "ログイン",
@@ -93,7 +121,7 @@
     "invitedTo": "ポッドへの招待（{members}）",
     "emptyPod": "メンバーのいないポッド",
     "yourPod": "あなたのポッド",
-    "notInPod": "ポッドを作って仲間を招待するか、下のポッドに参加をリクエストしましょう。",
+    "notInPod": "ポッドを作って仲間を招待するか、招待が届くのを待ちましょう。ポッドは最大6人です。",
     "memberCount": "メンバー {count} / {max}人",
     "requestsHeading": "参加リクエスト",
     "podFull": "このポッドは満員です。",
@@ -108,7 +136,8 @@
     "inviteLabel": "招待するクラスメイト",
     "invite": "招待する",
     "inviting": "招待中…",
-    "noOneToInvite": "招待できるクラスメイトはもういません。"
+    "noOneToInvite": "招待できるクラスメイトはもういません。",
+    "notInPodTitle": "まだポッドに入っていません"
   },
   "units": {
     "word_count": "{count, number}語",
@@ -146,24 +175,40 @@
     "titleLabel": "タイトル",
     "titlePlaceholder": "例：期末レポート",
     "typeLabel": "種類",
-    "types": {
-      "task": "タスク（完了したら記録）",
-      "word_count": "語数",
-      "study_hours": "勉強時間",
-      "character_count": "文字数"
-    },
-    "amountLabel": {
-      "word_count": "目標の語数",
-      "study_hours": "目標の時間",
-      "character_count": "目標の文字数"
-    },
     "amountPlaceholder": {
       "word_count": "例：2000",
       "study_hours": "例：10",
       "character_count": "例：2000"
     },
     "deadlineLabel": "締め切り（任意）",
-    "submit": "目標を作成"
+    "submit": "目標を作成",
+    "pageTitle": "新しい目標",
+    "templatesHeading": "テンプレートから選ぶ",
+    "templates": {
+      "report2000": "レポート 2,000字",
+      "report4000": "レポート 4,000字",
+      "study10": "テスト勉強 10時間",
+      "submit": "課題を提出する",
+      "custom": "自分で決める"
+    },
+    "templatesHint": "選ぶと下の項目が入ります。あとから自由に変えられます。",
+    "templateTitles": {
+      "report": "期末レポート",
+      "examStudy": "テスト勉強",
+      "submit": "課題の提出"
+    },
+    "typeSegments": {
+      "character_count": "文字数",
+      "word_count": "語数",
+      "study_hours": "勉強時間",
+      "task": "やること"
+    },
+    "amountHeading": "目標",
+    "unitSuffix": {
+      "character_count": "字",
+      "word_count": "語",
+      "study_hours": "時間"
+    }
   },
   "logForm": {
     "needTarget": "記録する前に、上で目標を作成してください。",
@@ -234,7 +279,11 @@
     "resendTooSoon": "もう少し待ってから、コードを再送してください。",
     "displayNameRequired": "表示名を入力してください。",
     "displayNameTooLong": "表示名は20文字以内で入力してください。",
-    "displayNameInvalid": "表示名に改行などの特殊な文字は使えません。"
+    "displayNameInvalid": "表示名に改行などの特殊な文字は使えません。",
+    "alreadyInPod": "このクラスでは、すでにポッドに入っています。ポッドは1クラスに1つまでです。",
+    "inviteeInPod": "この人は、すでにこのクラスのほかのポッドに入っています。",
+    "alreadyPodmate": "この人は、すでにこのポッドのメンバーです。",
+    "joinCodeInvalid": "このリンクは使えません。もう一度リンクを確認してください。"
   },
   "welcome": {
     "eyebrow": "ようこそ",
@@ -283,5 +332,31 @@
     "title": "ページが見つかりません",
     "body": "リンクが古いか、ページが削除された可能性があります。",
     "home": "ホームへ戻る"
+  },
+  "join": {
+    "eyebrow": "クラスへの招待",
+    "meta": "{term} · メンバー {count}人",
+    "body": "参加すると、このクラスの人にあなたの表示名が表示されます。進み具合が見えるのは、同じポッドの仲間だけです。",
+    "submit": "このクラスに参加する",
+    "joining": "参加中…",
+    "cancel": "キャンセル",
+    "invalidTitle": "このリンクは使えません",
+    "invalidBody": "リンクが古いか、コードが間違っている可能性があります。先生やクラスの仲間に、もう一度リンクを確認してください。",
+    "home": "ホームへ戻る"
+  },
+  "invite": {
+    "heading": "クラスに招待する",
+    "body": "このリンクかQRコードを共有すると、受け取った人はこのクラスに直接参加できます。",
+    "linkLabel": "参加リンク",
+    "copy": "コピー",
+    "copied": "コピーしました",
+    "copyFailed": "コピーできませんでした。リンクを選択したので、そのままコピーしてください。",
+    "qrLabel": "{url} のQRコード",
+    "qrHint": "授業のスライドや掲示にそのまま使えます",
+    "savePng": "QRコードを保存",
+    "present": "授業で映す",
+    "anyMemberCanShare": "クラスのメンバーなら、誰でもこのリンクを共有できます。",
+    "close": "閉じる",
+    "codeLabel": "コード"
   }
 }

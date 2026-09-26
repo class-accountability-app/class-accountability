@@ -4,12 +4,16 @@ import { useEffect, type RefObject } from 'react'
 import { useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
 
-// Error under a field. The field points at it with aria-describedby.
+// Error under a field. The field points at it with aria-describedby, and
+// role="alert" announces it when it appears, also when focus doesn't move
+// (e.g. the nudge limit, which comes back from the server after sending).
+// Where useFocusFirstInvalid also moves focus to the field, some screen
+// readers read it twice; heard twice beats not heard at all.
 export function FieldError({ id, error }: { id: string; error: ErrorKey | undefined | null }) {
   const t = useTranslations('errors')
   if (!error) return null
   return (
-    <p id={id} className="text-sm text-red-700">
+    <p id={id} role="alert" className="text-sm text-red-700">
       {t(error)}
     </p>
   )

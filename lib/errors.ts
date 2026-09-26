@@ -13,11 +13,14 @@ const PG_FOREIGN_KEY_VIOLATION = '23503'
 const PG_INSUFFICIENT_PRIVILEGE = '42501'
 // Raised by the enforce_nudge_limit trigger (0011_display_name_and_nudge_limit.sql).
 const NUDGE_LIMIT = 'SP001'
+// Raised by the one_pod_per_class trigger (0012_class_links_and_one_pod.sql).
+const ONE_POD_PER_CLASS = 'SP002'
 
 export const DB_CODES = {
   uniqueViolation: PG_UNIQUE_VIOLATION,
   foreignKeyViolation: PG_FOREIGN_KEY_VIOLATION,
   nudgeLimit: NUDGE_LIMIT,
+  onePodPerClass: ONE_POD_PER_CLASS,
 } as const
 
 const EMAIL_PATTERN = /[^\s"'<>(),;:]+@[^\s"'<>(),;:]+/g

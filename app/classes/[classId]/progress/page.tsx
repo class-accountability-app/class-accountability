@@ -3,13 +3,13 @@ import { redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { sumProgress, computePace, project } from '@/lib/projection'
-import { formatDate, formatDateTime, formatDayAgo, formatTimeAgo, tokyoDaysAgo } from '@/lib/date'
+import { formatDate, formatDateTime, formatDayAgo, tokyoDaysAgo } from '@/lib/date'
 import { StatusStamp } from '@/components/status-stamp'
 import { ProgressBar } from '@/components/progress-bar'
-import { TargetForm } from './target-form'
 import { LogProgressForm } from './log-progress-form'
 import { CommentSection } from './comment-section'
 import { NudgeForm } from './nudge-form'
+import { NudgeList, NudgeListProvider } from './nudge-list'
 import { EmptyState, emptyActionClass } from '@/components/empty-state'
 
 const CHURN_THRESHOLD_DAYS = 7
@@ -272,220 +272,209 @@ export default async function ProgressPage({
   ]
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12 sm:items-start sm:pl-16">
-      <div className="flex w-full max-w-md flex-col gap-2">
-        <h1 className="font-heading text-xl font-semibold text-ink">{cls.name}</h1>
-        <p className="font-meta text-xs text-muted">{t('subtitle')}</p>
-      </div>
+    <NudgeListProvider nudges={(nudges as NudgeRow[] | null) ?? []}>
+      <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12 sm:items-start sm:pl-16">
+        <div className="flex w-full max-w-md flex-col gap-2">
+          <h1 className="font-heading text-xl font-semibold text-ink">{cls.name}</h1>
+          <p className="font-meta text-xs text-muted">{t('subtitle')}</p>
+        </div>
 
-      <div id="new-target" className="flex w-full max-w-md scroll-mt-4 flex-col gap-4">
-        <h2 className="font-heading text-lg font-semibold text-ink">{t('newTarget')}</h2>
-        <TargetForm classId={classId} />
-      </div>
+        <div className="w-full max-w-md">
+          <Link
+            href={`/classes/${classId}/targets/new`}
+            className="btn inline-flex h-11 items-center justify-center rounded-[2px] bg-accent px-[18px] text-sm font-semibold text-white"
+          >
+            {t('newTarget')}
+          </Link>
+        </div>
 
-      <div id="log-progress" className="flex w-full max-w-md scroll-mt-4 flex-col gap-4">
-        <h2 className="font-heading text-lg font-semibold text-ink">{t('logProgress')}</h2>
-        <LogProgressForm
-          classId={classId}
-          targets={(myTargets ?? []).map((target) => ({
-            id: target.id,
-            title: target.title,
-            target_type: target.target_type,
-          }))}
-        />
-      </div>
-
-      <div className="flex w-full max-w-md flex-col gap-3">
-        <h2 className="font-heading text-lg font-semibold text-ink">{t('yourTargets')}</h2>
-        {(myTargets ?? []).length === 0 ? (
-          <EmptyState
-            illustration="target"
-            body={tEmpty('noTargets')}
-            action={
-              <a href="#new-target" className={emptyActionClass}>
-                {tEmpty('createTarget')}
-              </a>
-            }
+        <div id="log-progress" className="flex w-full max-w-md scroll-mt-4 flex-col gap-4">
+          <h2 className="font-heading text-lg font-semibold text-ink">{t('logProgress')}</h2>
+          <LogProgressForm
+            classId={classId}
+            targets={(myTargets ?? []).map((target) => ({
+              id: target.id,
+              title: target.title,
+              target_type: target.target_type,
+            }))}
           />
-        ) : (
-          <ul className="flex flex-col gap-2">
-            {(myTargets ?? []).map((target) => (
-              <li
-                key={target.id}
-                className="flex flex-col gap-1 rounded-[2px] border border-border bg-surface px-4 py-3"
-              >
-                <span className="text-sm font-medium text-ink">{target.title}</span>
-                <span className="font-meta text-xs text-muted">
-                  {target.deadline
-                    ? t('due', { date: formatDate(target.deadline, locale) })
-                    : t('noDeadline')}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+        </div>
 
-      <div className="flex w-full max-w-md flex-col gap-6">
-        <h2 className="font-heading text-lg font-semibold text-ink">{t('podProgress')}</h2>
-        {!myPairingId ? (
-          <EmptyState
-            illustration="pod"
-            body={t('notInPod')}
-            action={
-              <Link href={`/classes/${classId}`} className={emptyActionClass}>
-                {tEmpty('findPod')}
-              </Link>
-            }
-          />
-        ) : (
-          orderedPodUserIds.map((memberId) => {
-            const targets = targetsByUser.get(memberId) ?? []
-            const recentLogs = recentLogsByUser.get(memberId) ?? []
-            const lastLogAt = lastLogAtByUser.get(memberId)
-            const isChurned =
-              lastLogAt !== undefined && tokyoDaysAgo(lastLogAt, now) >= CHURN_THRESHOLD_DAYS
-            const isMe = memberId === user.id
-            // A podmate with no targets: nudging them is the next step, so
-            // the nudge button moves from the header into the empty state.
-            const podmateHasNoTargets = !isMe && targets.length === 0
-            const churnLine = lastLogAt
-              ? t('lastLogged', { when: formatDayAgo(lastLogAt, locale, now) })
-              : t('noLogsYet')
-            return (
-              <div
-                key={memberId}
-                className="flex flex-col gap-3 rounded-[2px] border border-border bg-surface p-4"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <StatusStamp status={isChurned ? 'stale' : 'active'} />
-                    <div className="flex min-w-0 flex-col gap-0.5">
-                      <span className="font-heading text-sm font-semibold text-ink [overflow-wrap:anywhere]">
-                        {isMe ? t('you', { name: nameOf(memberId) }) : nameOf(memberId)}
-                      </span>
-                      <span className="font-meta text-xs text-muted">{churnLine}</span>
+        <div className="flex w-full max-w-md flex-col gap-3">
+          <h2 className="font-heading text-lg font-semibold text-ink">{t('yourTargets')}</h2>
+          {(myTargets ?? []).length === 0 ? (
+            <EmptyState
+              illustration="target"
+              body={tEmpty('noTargets')}
+              action={
+                <Link href={`/classes/${classId}/targets/new`} className={emptyActionClass}>
+                  {tEmpty('createTarget')}
+                </Link>
+              }
+            />
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {(myTargets ?? []).map((target) => (
+                <li
+                  key={target.id}
+                  className="flex flex-col gap-1 rounded-[2px] border border-border bg-surface px-4 py-3"
+                >
+                  <span className="text-sm font-medium text-ink">{target.title}</span>
+                  <span className="font-meta text-xs text-muted">
+                    {target.deadline
+                      ? t('due', { date: formatDate(target.deadline, locale) })
+                      : t('noDeadline')}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="flex w-full max-w-md flex-col gap-6">
+          <h2 className="font-heading text-lg font-semibold text-ink">{t('podProgress')}</h2>
+          {!myPairingId ? (
+            <EmptyState
+              illustration="pod"
+              body={t('notInPod')}
+              action={
+                <Link href={`/classes/${classId}`} className={emptyActionClass}>
+                  {tEmpty('findPod')}
+                </Link>
+              }
+            />
+          ) : (
+            orderedPodUserIds.map((memberId) => {
+              const targets = targetsByUser.get(memberId) ?? []
+              const recentLogs = recentLogsByUser.get(memberId) ?? []
+              const lastLogAt = lastLogAtByUser.get(memberId)
+              const isChurned =
+                lastLogAt !== undefined && tokyoDaysAgo(lastLogAt, now) >= CHURN_THRESHOLD_DAYS
+              const isMe = memberId === user.id
+              // A podmate with no targets: nudging them is the next step, so
+              // the nudge button moves from the header into the empty state.
+              const podmateHasNoTargets = !isMe && targets.length === 0
+              const churnLine = lastLogAt
+                ? t('lastLogged', { when: formatDayAgo(lastLogAt, locale, now) })
+                : t('noLogsYet')
+              return (
+                <div
+                  key={memberId}
+                  className="flex flex-col gap-3 rounded-[2px] border border-border bg-surface p-4"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <StatusStamp status={isChurned ? 'stale' : 'active'} />
+                      <div className="flex min-w-0 flex-col gap-0.5">
+                        <span className="font-heading text-sm font-semibold text-ink [overflow-wrap:anywhere]">
+                          {isMe ? t('you', { name: nameOf(memberId) }) : nameOf(memberId)}
+                        </span>
+                        <span className="font-meta text-xs text-muted">{churnLine}</span>
+                      </div>
                     </div>
+                    {!isMe && !podmateHasNoTargets && (
+                      <NudgeForm podId={myPairingId!} fromUserId={user.id} toUserId={memberId} />
+                    )}
                   </div>
-                  {!isMe && !podmateHasNoTargets && (
-                    <NudgeForm podId={myPairingId!} toUserId={memberId} />
+
+                  {podmateHasNoTargets ? (
+                    <EmptyState
+                      illustration="target"
+                      body={tEmpty('memberNoTargets', { name: nameOf(memberId) })}
+                      action={
+                        <NudgeForm podId={myPairingId!} fromUserId={user.id} toUserId={memberId} block />
+                      }
+                    />
+                  ) : targets.length === 0 ? (
+                    <p className="text-xs text-muted">{t('noTargets')}</p>
+                  ) : (
+                    <ul className="flex flex-col gap-2">
+                      {targets.map((target) => {
+                        const projection = targetProjectionLine(target)
+                        const totalLogged = sumProgress(logsByTarget.get(target.id) ?? [])
+                        const progressLine = targetProgressLine(target)
+                        return (
+                          <li key={target.id} className="flex flex-col gap-1">
+                            <span className="text-xs font-medium text-ink">{target.title}</span>
+                            <span className="text-xs text-muted">{progressLine}</span>
+                            {target.target_type !== 'task' && target.target_amount !== null && (
+                              <ProgressBar
+                                value={totalLogged}
+                                max={target.target_amount}
+                                valueText={progressLine}
+                              />
+                            )}
+                            {projection && (
+                              <span className="text-xs text-muted">{projection}</span>
+                            )}
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  )}
+
+                  {isMe && targets.length > 0 && recentLogs.length === 0 && (
+                    <EmptyState
+                      illustration="log"
+                      body={tEmpty('noLogs')}
+                      action={
+                        <a href="#log-progress" className={emptyActionClass}>
+                          {tEmpty('logProgress')}
+                        </a>
+                      }
+                    />
+                  )}
+
+                  {recentLogs.length > 0 && (
+                    <div className="flex flex-col gap-3 border-t border-dashed border-border pt-3">
+                      <span className="text-xs font-medium text-muted">{t('recentActivity')}</span>
+                      {recentLogs.map((log) => (
+                        <div key={log.id} className="flex flex-col gap-1.5">
+                          <div className="flex flex-col">
+                            <span className="text-xs text-ink">
+                              {t('logLine', { title: log.target.title, amount: logAmount(log) })}
+                            </span>
+                            {log.description && (
+                              <span className="text-xs text-muted">{log.description}</span>
+                            )}
+                            <span className="font-meta text-[10px] text-muted">
+                              {formatDateTime(log.logged_at, locale, now)}
+                            </span>
+                          </div>
+                          <CommentSection
+                            classId={classId}
+                            progressLogId={log.id}
+                            currentUserId={user.id}
+                            comments={(commentsByLog.get(log.id) ?? []).map((c) => ({
+                              id: c.id,
+                              author_id: c.author_id,
+                              body: c.body,
+                              created_at: c.created_at,
+                              authorName: c.profiles?.display_name ?? tCommon('unknownPerson'),
+                            }))}
+                          />
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
+              )
+            })
+          )}
+        </div>
 
-                {podmateHasNoTargets ? (
-                  <EmptyState
-                    illustration="target"
-                    body={tEmpty('memberNoTargets', { name: nameOf(memberId) })}
-                    action={<NudgeForm podId={myPairingId!} toUserId={memberId} block />}
-                  />
-                ) : targets.length === 0 ? (
-                  <p className="text-xs text-muted">{t('noTargets')}</p>
-                ) : (
-                  <ul className="flex flex-col gap-2">
-                    {targets.map((target) => {
-                      const projection = targetProjectionLine(target)
-                      const totalLogged = sumProgress(logsByTarget.get(target.id) ?? [])
-                      const progressLine = targetProgressLine(target)
-                      return (
-                        <li key={target.id} className="flex flex-col gap-1">
-                          <span className="text-xs font-medium text-ink">{target.title}</span>
-                          <span className="text-xs text-muted">{progressLine}</span>
-                          {target.target_type !== 'task' && target.target_amount !== null && (
-                            <ProgressBar
-                              value={totalLogged}
-                              max={target.target_amount}
-                              valueText={progressLine}
-                            />
-                          )}
-                          {projection && (
-                            <span className="text-xs text-muted">{projection}</span>
-                          )}
-                        </li>
-                      )
-                    })}
-                  </ul>
-                )}
-
-                {isMe && targets.length > 0 && recentLogs.length === 0 && (
-                  <EmptyState
-                    illustration="log"
-                    body={tEmpty('noLogs')}
-                    action={
-                      <a href="#log-progress" className={emptyActionClass}>
-                        {tEmpty('logProgress')}
-                      </a>
-                    }
-                  />
-                )}
-
-                {recentLogs.length > 0 && (
-                  <div className="flex flex-col gap-3 border-t border-dashed border-border pt-3">
-                    <span className="text-xs font-medium text-muted">{t('recentActivity')}</span>
-                    {recentLogs.map((log) => (
-                      <div key={log.id} className="flex flex-col gap-1.5">
-                        <div className="flex flex-col">
-                          <span className="text-xs text-ink">
-                            {t('logLine', { title: log.target.title, amount: logAmount(log) })}
-                          </span>
-                          {log.description && (
-                            <span className="text-xs text-muted">{log.description}</span>
-                          )}
-                          <span className="font-meta text-[10px] text-muted">
-                            {formatDateTime(log.logged_at, locale, now)}
-                          </span>
-                        </div>
-                        <CommentSection
-                          classId={classId}
-                          progressLogId={log.id}
-                          currentUserId={user.id}
-                          comments={(commentsByLog.get(log.id) ?? []).map((c) => ({
-                            id: c.id,
-                            author_id: c.author_id,
-                            body: c.body,
-                            created_at: c.created_at,
-                            authorName: c.profiles?.display_name ?? tCommon('unknownPerson'),
-                          }))}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
-          })
-        )}
+        <div className="flex w-full max-w-md flex-col gap-3">
+          <h2 className="font-heading text-lg font-semibold text-ink">{tNudges('heading')}</h2>
+          {!myPairingId ? (
+            <p className="text-sm text-muted">{t('notInPod')}</p>
+          ) : (
+            <NudgeList
+              names={Object.fromEntries(profileNames)}
+              unknownName={tCommon('unknownPerson')}
+            />
+          )}
+        </div>
       </div>
-
-      <div className="flex w-full max-w-md flex-col gap-3">
-        <h2 className="font-heading text-lg font-semibold text-ink">{tNudges('heading')}</h2>
-        {!myPairingId ? (
-          <p className="text-sm text-muted">{t('notInPod')}</p>
-        ) : (nudges ?? []).length === 0 ? (
-          <p className="text-sm text-muted">{tNudges('empty')}</p>
-        ) : (
-          <ul className="flex flex-col gap-2">
-            {(nudges as NudgeRow[]).map((n) => (
-              <li
-                key={n.id}
-                className="flex flex-col gap-1 rounded-[2px] border border-border bg-surface px-4 py-3"
-              >
-                <span className="text-xs text-ink">
-                  {tNudges.rich('line', {
-                    from: nameOf(n.from_user_id),
-                    to: nameOf(n.to_user_id),
-                    content: n.content ?? '',
-                    sender: (chunks) => <span className="font-medium text-accent-text">{chunks}</span>,
-                    recipient: (chunks) => <span className="font-medium">{chunks}</span>,
-                  })}
-                </span>
-                <span className="font-meta text-[10px] text-muted">
-                  {formatTimeAgo(n.created_at, locale, now)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
+    </NudgeListProvider>
   )
 }

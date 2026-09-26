@@ -6,14 +6,17 @@ import type { ErrorKey } from '@/lib/errors'
 import { FieldError, describedField, useFocusFirstInvalid } from '@/components/form-errors'
 import { emptyActionClass } from '@/components/empty-state'
 import { sendNudge } from './actions'
+import { useAddNudge } from './nudge-list'
 
 // `block` shows the closed state as a full-width button (an empty state's action).
 export function NudgeForm({
   podId,
+  fromUserId,
   toUserId,
   block = false,
 }: {
   podId: string
+  fromUserId: string
   toUserId: string
   block?: boolean
 }) {
@@ -25,6 +28,7 @@ export function NudgeForm({
   const formRef = useRef<HTMLFormElement>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<ErrorKey | null>(null)
+  const addNudge = useAddNudge()
   useFocusFirstInvalid(formRef, error)
 
   const fieldId = `${id}-message`
@@ -46,6 +50,15 @@ export function NudgeForm({
     }
 
     startTransition(async () => {
+      // Shown in the list right away; replaced by the saved row when the
+      // page's data refreshes, or removed again if sending fails.
+      addNudge({
+        id: `pending-${Date.now()}`,
+        from_user_id: fromUserId,
+        to_user_id: toUserId,
+        content,
+        created_at: new Date().toISOString(),
+      })
       const result = await sendNudge(podId, toUserId, formData)
       if (result.error) {
         setError(result.error)

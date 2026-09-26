@@ -3,7 +3,15 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { TAB_IDS, activeTab, isOutsideApp, tabHref, type TabId } from '@/lib/nav'
+import {
+  TAB_IDS,
+  activeTab,
+  hidesTabBar,
+  isOutsideApp,
+  showsHeaderSignOutOnPhones,
+  tabHref,
+  type TabId,
+} from '@/lib/nav'
 
 // Line icons from the mockups' tab bar (docs/mockups/phase1, 12 and 13).
 function TabIcon({ tab }: { tab: TabId }) {
@@ -55,7 +63,7 @@ function TabIcon({ tab }: { tab: TabId }) {
 export function TabBar({ classIds }: { classIds: string[] }) {
   const t = useTranslations('nav')
   const pathname = usePathname()
-  if (isOutsideApp(pathname)) return null
+  if (hidesTabBar(pathname)) return null
   const current = activeTab(pathname)
 
   return (
@@ -120,15 +128,16 @@ export function DesktopLinks({ classIds }: { classIds: string[] }) {
   )
 }
 
-// On phones, log out lives in 設定 (mockups 12, 13); the welcome screen has no
-// tab bar, so it keeps the header link (mockup 03). Desktop always has it.
+// On phones, log out lives in 設定 (mockups 12, 13); the welcome screen and
+// the class invitation have no tab bar, so they keep the header link
+// (mockups 03, 04). Desktop always has it.
 export function HeaderSignOut() {
   const t = useTranslations('nav')
   const pathname = usePathname()
-  const onWelcome = pathname === '/welcome'
+  const onPhonesToo = showsHeaderSignOutOnPhones(pathname)
 
   return (
-    <form action="/auth/signout" method="post" className={onWelcome ? undefined : 'hidden md:block'}>
+    <form action="/auth/signout" method="post" className={onPhonesToo ? undefined : 'hidden md:block'}>
       <button type="submit" className="nav-link min-h-11 px-2 font-meta text-xs text-muted">
         {t('signOut')}
       </button>

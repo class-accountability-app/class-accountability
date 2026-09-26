@@ -3,15 +3,9 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { DB_CODES, toErrorKey, type ActionResult } from '@/lib/errors'
-
-const TARGET_TYPES = ['task', 'word_count', 'study_hours', 'character_count'] as const
-type TargetType = (typeof TARGET_TYPES)[number]
+import { isTargetType } from '@/lib/targets'
 
 const MAX_TEXT_LENGTH = 280
-
-function isTargetType(value: string): value is TargetType {
-  return (TARGET_TYPES as readonly string[]).includes(value)
-}
 
 export async function createTarget(classId: string, formData: FormData): Promise<ActionResult> {
   const supabase = await createClient()
@@ -65,6 +59,7 @@ export async function createTarget(classId: string, formData: FormData): Promise
   }
 
   revalidatePath(`/classes/${classId}/progress`)
+  revalidatePath('/') // the Home checklist's 最初の目標を立てる
   return { error: null }
 }
 
