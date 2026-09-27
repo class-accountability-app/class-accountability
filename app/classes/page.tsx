@@ -7,12 +7,15 @@ import { CodeJoinForm } from '@/components/code-join-form'
 
 type MembershipRow = {
   class_id: string
+  role: 'student' | 'organizer'
   classes: { id: string; name: string; term: string } | null
 }
 
 // クラス: the classes I'm in, and joining another with its code. Other classes
 // aren't listed: since 0013 a class is visible only to its members, and the
-// code (link, QR or typed) is the only way in.
+// code (link, QR or typed) is the only way in. Only approved accounts
+// (profiles.can_create_classes, 0015) see the create form; everyone else is
+// told that teachers and organizers create classes.
 export default async function ClassesPage() {
   const supabase = await createClient()
   const {
@@ -23,23 +26,27 @@ export default async function ClassesPage() {
     redirect('/login')
   }
 
-  const [{ data: memberships }, t] = await Promise.all([
+  const [{ data: memberships }, { data: profile }, t] = await Promise.all([
     supabase
       .from('class_memberships')
-      .select('class_id, classes(id, name, term)')
+      .select('class_id, role, classes(id, name, term)')
       .eq('user_id', user.id)
       .order('joined_at'),
+    supabase.from('profiles').select('can_create_classes').eq('id', user.id).maybeSingle(),
     getTranslations('classes'),
   ])
 
+  const canCreate = profile?.can_create_classes === true
   const classes = ((memberships as MembershipRow[] | null) ?? [])
-    .map((m) => m.classes)
-    .filter((c): c is NonNullable<MembershipRow['classes']> => c !== null)
+    .filter((m) => m.classes !== null)
+    .map((m) => ({ ...m.classes!, organizer: m.role === 'organizer' }))
 
   return (
     <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
       <div className="flex w-full max-w-md flex-col gap-5">
         <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink">{t('title')}</h1>
+
+        {!canCreate && <p className="text-[15px] leading-[1.8] text-ink/85">{t('teachersCreate')}</p>}
 
         <section
           aria-labelledby="join-by-code"
@@ -67,7 +74,9 @@ export default async function ClassesPage() {
                   >
                     <span className="flex flex-col gap-0.5">
                       <span className="font-heading text-lg font-bold text-ink">{c.name}</span>
-                      <span className="font-meta text-xs text-muted">{c.term}</span>
+                      <span className="font-meta text-xs text-muted">
+                        {c.organizer ? t('organizerMeta', { term: c.term }) : c.term}
+                      </span>
                     </span>
                     <svg
                       aria-hidden
@@ -90,12 +99,14 @@ export default async function ClassesPage() {
           )}
         </section>
 
-        <section id="create-class" aria-labelledby="create-class-heading" className="flex scroll-mt-4 flex-col gap-3">
-          <h2 id="create-class-heading" className="font-heading text-lg font-semibold text-ink">
-            {t('createHeading')}
-          </h2>
-          <CreateClassForm />
-        </section>
+        {canCreate && (
+          <section id="create-class" aria-labelledby="create-class-heading" className="flex scroll-mt-4 flex-col gap-3">
+            <h2 id="create-class-heading" className="font-heading text-lg font-semibold text-ink">
+              {t('createHeading')}
+            </h2>
+            <CreateClassForm />
+          </section>
+        )}
       </div>
     </div>
   )

@@ -24,7 +24,7 @@ export default async function NewTargetPage({
     supabase.from('classes').select('id, name').eq('id', classId).maybeSingle(),
     supabase
       .from('class_memberships')
-      .select('class_id')
+      .select('role')
       .eq('class_id', classId)
       .eq('user_id', user.id)
       .maybeSingle(),
@@ -34,7 +34,8 @@ export default async function NewTargetPage({
   if (!cls) {
     redirect('/classes')
   }
-  if (!membership) {
+  // Not a student here (not in it, or its organizer, 0015): no targets.
+  if (membership?.role !== 'student') {
     redirect(`/classes/${classId}`)
   }
 

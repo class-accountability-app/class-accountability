@@ -72,14 +72,22 @@ export default async function ProgressPage({
     redirect('/login')
   }
 
-  const { data: cls } = await supabase
-    .from('classes')
-    .select('id, name')
-    .eq('id', classId)
-    .single()
+  const [{ data: cls }, { data: membership }] = await Promise.all([
+    supabase.from('classes').select('id, name').eq('id', classId).single(),
+    supabase
+      .from('class_memberships')
+      .select('role')
+      .eq('class_id', classId)
+      .eq('user_id', user.id)
+      .maybeSingle(),
+  ])
 
   if (!cls) {
     redirect('/classes')
+  }
+  // The organizer (0015) has no progress page: the class page is theirs.
+  if (membership?.role === 'organizer') {
+    redirect(`/classes/${classId}`)
   }
 
   // My targets here, with all my logs on them: the quick log's cards, totals

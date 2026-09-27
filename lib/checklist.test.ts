@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { buildChecklist, type HomeClass } from './checklist'
 
-const stats: HomeClass = { id: 'c1', name: '統計学 201', term: '2026 秋学期', podSize: null }
-const english: HomeClass = { id: 'c2', name: 'English II', term: '2026 秋学期', podSize: null }
+const stats: HomeClass = { id: 'c1', name: '統計学 201', term: '2026 秋学期', podSize: null, organizer: false }
+const english: HomeClass = { id: 'c2', name: 'English II', term: '2026 秋学期', podSize: null, organizer: false }
 
 describe('buildChecklist', () => {
   it('starts at 0 / 3 with joining a class next (by code, so no link)', () => {
@@ -40,5 +40,18 @@ describe('buildChecklist', () => {
     const c = buildChecklist([stats], true)
     expect(c.doneCount).toBe(2)
     expect(c.next).toBe('pod')
+  })
+
+  it('ignores classes you organize: an organizer-only account is still at step 1', () => {
+    const c = buildChecklist([{ ...stats, organizer: true }], false)
+    expect(c.doneCount).toBe(0)
+    expect(c.next).toBe('join')
+    expect(c.joinedClassName).toBeNull()
+  })
+
+  it('names and links the class you study in, not the one you organize', () => {
+    const c = buildChecklist([{ ...english, organizer: true }, stats], false)
+    expect(c.joinedClassName).toBe('統計学 201')
+    expect(c.nextHref).toBe('/classes/c1')
   })
 })

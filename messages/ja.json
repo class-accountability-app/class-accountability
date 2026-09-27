@@ -69,7 +69,8 @@
     "targetMeta": "{className} · 締め切り {date}",
     "targetMetaNoDeadline": "{className} · 締め切りなし",
     "moreTargets": "ほかに{count}件の目標があります",
-    "moreTargetsLink": "クラスのページで見る"
+    "moreTargetsLink": "クラスのページで見る",
+    "classMetaOrganizer": "{term} · 運営"
   },
   "login": {
     "eyebrow": "ログイン",
@@ -114,7 +115,9 @@
     "createHeading": "クラスを作成",
     "joinByCodeHeading": "コードで参加",
     "myClassesHeading": "参加中のクラス",
-    "noClasses": "まだクラスに参加していません。授業で配られたリンクかQRコードを開くか、上にコードを入力してください。"
+    "noClasses": "まだクラスに参加していません。授業で配られたリンクかQRコードを開くか、上にコードを入力してください。",
+    "teachersCreate": "クラスは先生や運営者が作ります。参加用のリンク、QRコード、またはコードで参加してください。",
+    "organizerMeta": "{term} · 運営"
   },
   "classForm": {
     "nameLabel": "クラス名",
@@ -146,7 +149,9 @@
     "invite": "招待する",
     "inviting": "招待中…",
     "noOneToInvite": "招待できるクラスメイトはもういません。",
-    "notInPodTitle": "まだポッドに入っていません"
+    "notInPodTitle": "まだポッドに入っていません",
+    "organizerNote": "あなたはこのクラスの運営者です。学生の進み具合や目標は表示されません。",
+    "studentCount": "参加している学生：{count}人"
   },
   "units": {
     "word_count": "{count, number}語",
@@ -277,7 +282,10 @@
     "logAmountInvalid": "1以上の整数を入力してください。",
     "logHoursInvalid": "0より大きい数を入力してください（小数は2桁まで。例：1.5）。",
     "logNotFound": "この記録は見つかりませんでした。すでに削除されている可能性があります。",
-    "logFailed": "記録できませんでした。通信を確認して、もう一度お試しください。"
+    "logFailed": "記録できませんでした。通信を確認して、もう一度お試しください。",
+    "classCreateNotAllowed": "クラスを作れるのは、許可されたアカウントだけです。参加用のリンク、QRコード、またはコードで参加してください。",
+    "organizerNoPod": "運営者はポッドに参加できません。",
+    "organizerNoTargets": "運営者はこのクラスで目標を作れません。"
   },
   "welcome": {
     "eyebrow": "ようこそ",
@@ -612,6 +620,8 @@
     "changesText": "内容を変更する場合は、このページの施行日を更新してお知らせします。",
     "priceHeading": "10. 料金",
     "priceText": "本サービスは現在無料です。有料の機能を導入する場合は、事前にお知らせします。",
-    "back": "← トップページへ戻る"
+    "back": "← トップページへ戻る",
+    "organizerLabel": "クラスを作った人（先生など）：",
+    "organizerText": "クラスの参加人数と参加用のリンク。あなたの進捗や目標は見えません。"
   }
 }

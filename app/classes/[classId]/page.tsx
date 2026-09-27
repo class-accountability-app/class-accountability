@@ -53,7 +53,7 @@ export default async function ClassPodsPage({
 
   const { data: membership } = await supabase
     .from('class_memberships')
-    .select('status')
+    .select('status, role')
     .eq('class_id', classId)
     .eq('user_id', user.id)
     .maybeSingle()
@@ -62,6 +62,41 @@ export default async function ClassPodsPage({
   // only with the code, at /join/{code}.
   if (!membership) {
     redirect('/classes')
+  }
+
+  const url = joinUrl(await appOrigin(), cls.join_code)
+  const shortUrl = shortJoinUrl(url)
+  const svg = await qrSvg(url)
+  const inviteCard = (
+    <InviteCard
+      url={url}
+      shortUrl={shortUrl}
+      code={cls.join_code}
+      groupedCode={groupedCode(cls.join_code)}
+      classTitle={cls.name}
+      qrSvg={svg}
+    />
+  )
+
+  // The organizer (0015) shares the link and QR and sees how many students
+  // have joined; never pods, progress or names (RLS hides them anyway).
+  if (membership.role === 'organizer') {
+    const { data: byCode } = await supabase
+      .rpc('class_by_join_code', { code: cls.join_code })
+      .maybeSingle<{ member_count: number }>()
+    return (
+      <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12 sm:items-start sm:pl-16">
+        <div className="flex w-full max-w-md flex-col gap-2">
+          <p className="font-meta text-[13px] text-muted">{cls.term}</p>
+          <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink">{cls.name}</h1>
+          <p className="font-meta text-sm text-ink">
+            {t('studentCount', { count: Number(byCode?.member_count ?? 0) })}
+          </p>
+          <p className="text-sm leading-[1.8] text-muted">{t('organizerNote')}</p>
+        </div>
+        <div className="w-full max-w-md">{inviteCard}</div>
+      </div>
+    )
   }
 
   const { data: pods } = await supabase
@@ -80,10 +115,12 @@ export default async function ClassPodsPage({
           .select('pairing_id, user_id, profiles(display_name)')
           .in('pairing_id', podIds)
       : Promise.resolve({ data: [] as PodMember[] }),
+    // Classmates to invite: students only (RLS already hides the organizer).
     supabase
       .from('class_memberships')
       .select('user_id, profiles(display_name)')
-      .eq('class_id', classId),
+      .eq('class_id', classId)
+      .eq('role', 'student'),
     supabase
       .from('pod_invitations')
       .select('id, pod_id, inviter_id, invitee_id, kind')
@@ -132,10 +169,6 @@ export default async function ClassPodsPage({
   // One pod per class (0012): anyone already in a pod here can't be invited.
   const inAPod = new Set(((members as PodMember[] | null) ?? []).map((m) => m.user_id))
 
-  const url = joinUrl(await appOrigin(), cls.join_code)
-  const shortUrl = shortJoinUrl(url)
-  const svg = await qrSvg(url)
-
   function memberNames(podId: string) {
     return (membersByPod.get(podId) ?? [])
       .map((m) => m.profiles?.display_name ?? unknown)
@@ -178,16 +211,7 @@ export default async function ClassPodsPage({
         </div>
       )}
 
-      <div className="w-full max-w-md">
-        <InviteCard
-          url={url}
-          shortUrl={shortUrl}
-          code={cls.join_code}
-          groupedCode={groupedCode(cls.join_code)}
-          classTitle={cls.name}
-          qrSvg={svg}
-        />
-      </div>
+      <div className="w-full max-w-md">{inviteCard}</div>
 
       <div className="flex w-full max-w-md flex-col gap-3">
         <h2 className="font-heading text-xl font-bold text-ink">{t('yourPod')}</h2>

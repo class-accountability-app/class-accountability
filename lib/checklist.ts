@@ -7,6 +7,9 @@ export type HomeClass = {
   term: string
   // Members in the student's active pod in this class, or null for no pod.
   podSize: number | null
+  // The class's organizer (0015): not a student there, so it doesn't count
+  // towards the checklist.
+  organizer: boolean
 }
 
 export type StepId = 'join' | 'pod' | 'target'
@@ -24,8 +27,10 @@ export type Checklist = {
   joinedClassName: string | null
 }
 
-// `classes` in the order the student joined them.
-export function buildChecklist(classes: HomeClass[], hasTarget: boolean): Checklist {
+// `classes` in the order the student joined them. Classes you organize are
+// left out: the steps are about studying in a class.
+export function buildChecklist(allClasses: HomeClass[], hasTarget: boolean): Checklist {
+  const classes = allClasses.filter((c) => !c.organizer)
   const withPod = classes.find((c) => c.podSize !== null)
   const withoutPod = classes.find((c) => c.podSize === null)
 

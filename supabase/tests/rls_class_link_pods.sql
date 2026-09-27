@@ -73,6 +73,10 @@ begin
   end;
 end $$;
 
+-- C creates a class below; since 0015 only approved accounts can.
+update public.profiles set can_create_classes = true
+where id = '00000000-0000-4000-8000-0000000000c3';
+
 -- K's code, for D below: since 0013 a non-member can't read it from classes.
 select set_config('rls_test.k_code',
   (select join_code from public.classes where id = '00000000-0000-4000-8000-00000000c1a5'), true);

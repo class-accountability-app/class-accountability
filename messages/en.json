@@ -69,7 +69,8 @@
     "targetMeta": "{className} · Due {date}",
     "targetMetaNoDeadline": "{className} · No deadline",
     "moreTargets": "{count, plural, one {# more target} other {# more targets}}",
-    "moreTargetsLink": "See them on your class pages"
+    "moreTargetsLink": "See them on your class pages",
+    "classMetaOrganizer": "{term} · Organizer"
   },
   "login": {
     "eyebrow": "Log in",
@@ -114,7 +115,9 @@
     "createHeading": "Create a class",
     "joinByCodeHeading": "Join with a code",
     "myClassesHeading": "Your classes",
-    "noClasses": "You haven't joined a class yet. Open the link or QR code from your class, or enter the code above."
+    "noClasses": "You haven't joined a class yet. Open the link or QR code from your class, or enter the code above.",
+    "teachersCreate": "Classes are created by teachers and organizers. Join with the link, QR code or class code you were given.",
+    "organizerMeta": "{term} · Organizer"
   },
   "classForm": {
     "nameLabel": "Class name",
@@ -146,7 +149,9 @@
     "invite": "Invite",
     "inviting": "Inviting…",
     "noOneToInvite": "No classmates left to invite.",
-    "notInPodTitle": "You're not in a pod yet"
+    "notInPodTitle": "You're not in a pod yet",
+    "organizerNote": "You organize this class. Students’ progress and targets aren’t shown to you.",
+    "studentCount": "{count, plural, one {# student has joined} other {# students have joined}}"
   },
   "units": {
     "word_count": "{count, plural, one {# word} other {# words}}",
@@ -277,7 +282,10 @@
     "logAmountInvalid": "Enter a whole number of 1 or more.",
     "logHoursInvalid": "Enter a number greater than 0 (up to two decimals, e.g. 1.5).",
     "logNotFound": "This log wasn’t found. It may already have been deleted.",
-    "logFailed": "Couldn’t save your log. Check your connection and try again."
+    "logFailed": "Couldn’t save your log. Check your connection and try again.",
+    "classCreateNotAllowed": "Only approved accounts can create classes. Join with the link, QR code or class code you were given.",
+    "organizerNoPod": "Class organizers can’t be in pods.",
+    "organizerNoTargets": "Class organizers can’t set targets in this class."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -612,6 +620,8 @@
     "changesText": "If this policy changes, we’ll update the effective date on this page.",
     "priceHeading": "10. Price",
     "priceText": "Study Pods is currently free. If paid features are ever introduced, we’ll tell you in advance.",
-    "back": "← Back to the home page"
+    "back": "← Back to the home page",
+    "organizerLabel": "Whoever created the class (e.g. a teacher):",
+    "organizerText": "the number of members and the join link. Not your progress or targets."
   }
 }
