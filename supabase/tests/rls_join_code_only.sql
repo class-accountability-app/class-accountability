@@ -68,6 +68,10 @@ insert into public.progress_comments (progress_log_id, author_id, body) values
   ('00000000-0000-4000-8000-00000000bb01', '00000000-0000-4000-8000-0000000000a1', 'A on B in K'),
   ('00000000-0000-4000-8000-00000000bb02', '00000000-0000-4000-8000-0000000000e5', 'E on B in L');
 
+-- D creates a class below; since 0015 only approved accounts can.
+update public.profiles set can_create_classes = true
+where id = '00000000-0000-4000-8000-0000000000d4';
+
 -- K's code, for the roles below (a non-member can't read it from classes).
 select set_config('rls_test.k_code',
   (select join_code from public.classes where id = '00000000-0000-4000-8000-00000000c1a5'), true);
@@ -266,8 +270,8 @@ begin
   returning id into new_class;
 
   if not exists (select 1 from public.class_memberships
-                 where class_id = new_class and user_id = d) then
-    raise exception 'FAIL: the creator did not become a member';
+                 where class_id = new_class and user_id = d and role = 'organizer') then
+    raise exception 'FAIL: the creator did not become the organizer';
   end if;
   if (select count(*) from public.classes where name like 'RLS test class %') <> 1 then
     raise exception 'FAIL: D should see only the class they created';

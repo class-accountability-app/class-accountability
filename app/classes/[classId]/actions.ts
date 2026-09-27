@@ -55,7 +55,10 @@ export async function createPod(classId: string): Promise<ActionResult> {
 
   if (error) {
     return {
-      error: toErrorKey('createPod', error, { [DB_CODES.onePodPerClass]: 'alreadyInPod' }),
+      error: toErrorKey('createPod', error, {
+        [DB_CODES.onePodPerClass]: 'alreadyInPod',
+        [DB_CODES.organizerNoPod]: 'organizerNoPod',
+      }),
     }
   }
 
@@ -190,7 +193,10 @@ export async function acceptInvitation(invitationId: string): Promise<ActionResu
     // in a pod; approving a request means the person asking is.
     const inPod = invitation.kind === 'invite' ? 'alreadyInPod' : 'inviteeInPod'
     return {
-      error: toErrorKey('acceptInvitation', error, { [DB_CODES.onePodPerClass]: inPod }),
+      error: toErrorKey('acceptInvitation', error, {
+        [DB_CODES.onePodPerClass]: inPod,
+        [DB_CODES.organizerNoPod]: 'organizerNoPod',
+      }),
     }
   }
 

@@ -15,12 +15,17 @@ const PG_INSUFFICIENT_PRIVILEGE = '42501'
 const NUDGE_LIMIT = 'SP001'
 // Raised by the one_pod_per_class trigger (0012_class_links_and_one_pod.sql).
 const ONE_POD_PER_CLASS = 'SP002'
+// Raised by create_pod and the pod-member trigger (0015_class_organizers.sql):
+// a class's organizer can't be in its pods.
+const ORGANIZER_NO_POD = 'SP003'
 
 export const DB_CODES = {
   uniqueViolation: PG_UNIQUE_VIOLATION,
   foreignKeyViolation: PG_FOREIGN_KEY_VIOLATION,
+  insufficientPrivilege: PG_INSUFFICIENT_PRIVILEGE,
   nudgeLimit: NUDGE_LIMIT,
   onePodPerClass: ONE_POD_PER_CLASS,
+  organizerNoPod: ORGANIZER_NO_POD,
 } as const
 
 const EMAIL_PATTERN = /[^\s"'<>(),;:]+@[^\s"'<>(),;:]+/g

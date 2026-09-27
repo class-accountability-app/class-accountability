@@ -33,6 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 type MembershipRow = {
   class_id: string
   joined_at: string
+  role: 'student' | 'organizer'
   classes: { id: string; name: string; term: string } | null
 }
 
@@ -57,7 +58,7 @@ export default async function Home() {
       supabase.from('profiles').select('display_name').eq('id', user.id).single(),
       supabase
         .from('class_memberships')
-        .select('class_id, joined_at, classes(id, name, term)')
+        .select('class_id, joined_at, role, classes(id, name, term)')
         .eq('user_id', user.id)
         .order('joined_at'),
       supabase
@@ -91,6 +92,7 @@ export default async function Home() {
         name: m.classes!.name,
         term: m.classes!.term,
         podSize: podId ? (podSize.get(podId) ?? 1) : null,
+        organizer: m.role === 'organizer',
       }
     })
 
@@ -226,7 +228,9 @@ export default async function Home() {
                     <span className="flex flex-col gap-0.5">
                       <span className="font-heading text-lg font-bold text-ink">{c.name}</span>
                       <span className="font-meta text-xs text-muted">
-                        {c.podSize === null
+                        {c.organizer
+                          ? t('classMetaOrganizer', { term: c.term })
+                          : c.podSize === null
                           ? t('classMetaNoPod', { term: c.term })
                           : t('classMetaPod', { term: c.term, count: c.podSize })}
                       </span>

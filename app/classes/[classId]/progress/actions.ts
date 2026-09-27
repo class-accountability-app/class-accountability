@@ -42,11 +42,11 @@ export async function createTarget(classId: string, formData: FormData): Promise
 
   const deadline = deadlineRaw || null
 
-  // Targets belong to one of your classes. The insert policy enforces it
-  // (0013); this check only gives a clear message instead of "not allowed".
+  // Targets belong to a class you study in. The insert policy enforces it
+  // (0013, 0015); this check only gives a clear message instead of "not allowed".
   const { data: membership, error: membershipError } = await supabase
     .from('class_memberships')
-    .select('class_id')
+    .select('role')
     .eq('class_id', classId)
     .eq('user_id', user.id)
     .maybeSingle()
@@ -56,6 +56,9 @@ export async function createTarget(classId: string, formData: FormData): Promise
   }
   if (!membership) {
     return { error: 'targetClassNotJoined' }
+  }
+  if (membership.role === 'organizer') {
+    return { error: 'organizerNoTargets' }
   }
 
   const { data, error } = await supabase
