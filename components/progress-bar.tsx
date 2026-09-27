@@ -28,7 +28,7 @@ export function ProgressBar({
       aria-valuetext={valueText}
       className="h-1.5 w-full overflow-hidden rounded-[2px] bg-border"
     >
-      <div className="progress-bar-fill h-full bg-ink" style={{ width: `${pct}%` }} />
+      <div className="progress-bar-fill h-full w-full bg-ink" style={{ transform: `scaleX(${pct / 100})` }} />
     </div>
   )
 }

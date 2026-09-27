@@ -2,8 +2,9 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { DB_CODES, toErrorKey, type ActionResult } from '@/lib/errors'
-import { isTargetType } from '@/lib/targets'
+import { DB_CODES, toErrorKey, type ActionResult, type ErrorKey } from '@/lib/errors'
+import { isTargetType, type TargetType } from '@/lib/targets'
+import { parseAmount } from '@/lib/quick-log'
 
 const MAX_TEXT_LENGTH = 280
 
@@ -79,7 +80,117 @@ export async function createTarget(classId: string, formData: FormData): Promise
   return { error: null }
 }
 
-export async function logProgress(classId: string, formData: FormData): Promise<ActionResult> {
+// Quick log (screen 10). What the sheet sends; `amount` is what the student
+// typed, parsed here with the same rules as in the sheet. A task has no
+// amount: its one log means 完了 (value 1).
+export type LogInput = {
+  amount: string
+  description: string
+}
+
+type LogResult = ActionResult & { id?: string }
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+type OwnTarget = { id: string; class_id: string; target_type: TargetType }
+
+// The value to store, or the error key for the field.
+function valueFor(
+  target: OwnTarget,
+  input: LogInput
+): { value: number; description: string | null } | { error: ErrorKey } {
+  const description = input.description.trim() || null
+  if (description && description.length > MAX_TEXT_LENGTH) return { error: 'tooLong' }
+  if (target.target_type === 'task') return { value: 1, description }
+  const value = parseAmount(input.amount, target.target_type)
+  if (value === null) {
+    return { error: target.target_type === 'study_hours' ? 'logHoursInvalid' : 'logAmountInvalid' }
+  }
+  return { value, description }
+}
+
+function revalidateLogPages(classId: string) {
+  revalidatePath(`/classes/${classId}/progress`)
+  revalidatePath('/') // Home's あなたの目標
+}
+
+// clientId is made once per opened sheet. A second tap, or a retry after a
+// network failure, sends the same one: the unique (user_id, client_id)
+// constraint (0014) stops a second row, and that counts as saved.
+export async function logProgress(
+  targetId: string,
+  clientId: string,
+  input: LogInput
+): Promise<LogResult> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'signedOut' }
+  }
+  if (!UUID.test(clientId)) {
+    return { error: 'generic' }
+  }
+
+  // RLS shows me my own targets; anyone else's comes back empty.
+  const { data: target } = await supabase
+    .from('targets')
+    .select('id, class_id, target_type')
+    .eq('id', targetId)
+    .eq('user_id', user.id)
+    .maybeSingle<OwnTarget>()
+
+  if (!target) {
+    return { error: 'notOwnTarget' }
+  }
+
+  const parsed = valueFor(target, input)
+  if ('error' in parsed) {
+    return { error: parsed.error }
+  }
+
+  const { data, error } = await supabase
+    .from('progress_logs')
+    .insert({
+      user_id: user.id,
+      target_id: target.id,
+      progress_value: parsed.value,
+      description: parsed.description,
+      client_id: clientId,
+    })
+    .select('id')
+    .single()
+
+  if (error?.code === DB_CODES.uniqueViolation) {
+    const { data: existing } = await supabase
+      .from('progress_logs')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('client_id', clientId)
+      .maybeSingle()
+    if (existing) {
+      return { error: null, id: existing.id }
+    }
+  }
+
+  if (error || !data) {
+    return {
+      error: toErrorKey('logProgress', error, { [DB_CODES.foreignKeyViolation]: 'notOwnTarget' }),
+    }
+  }
+
+  revalidateLogPages(target.class_id)
+  return { error: null, id: data.id }
+}
+
+type OwnLog = { id: string; targets: OwnTarget | null }
+
+// 編集 on あなたの最近の記録: the amount and the memo. A task's 完了 log
+// keeps its value; only the memo changes. The database refuses anything else
+// (keep_progress_log_identity, 0014).
+export async function updateLog(logId: string, input: LogInput): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
@@ -89,42 +200,72 @@ export async function logProgress(classId: string, formData: FormData): Promise<
     return { error: 'signedOut' }
   }
 
-  const targetId = formData.get('target_id')?.toString()
-  const progressValueRaw = formData.get('progress_value')?.toString().trim()
-  const descriptionRaw = formData.get('description')?.toString().trim()
+  const { data: log } = await supabase
+    .from('progress_logs')
+    // Two foreign keys point at targets (target_id, and 0009's owner check),
+    // so name the one to follow.
+    .select('id, targets!progress_logs_target_id_fkey(id, class_id, target_type)')
+    .eq('id', logId)
+    .eq('user_id', user.id)
+    .maybeSingle<OwnLog>()
 
-  if (!targetId) {
-    return { error: 'chooseTarget' }
+  if (!log?.targets) {
+    return { error: 'logNotFound' }
   }
 
-  const progressValue = progressValueRaw ? Number(progressValueRaw) : NaN
-  if (!Number.isFinite(progressValue) || progressValue <= 0) {
-    return { error: 'progressPositive' }
-  }
-
-  const description = descriptionRaw || null
-  if (description && description.length > MAX_TEXT_LENGTH) {
-    return { error: 'tooLong' }
+  const parsed = valueFor(log.targets, input)
+  if ('error' in parsed) {
+    return { error: parsed.error }
   }
 
   const { data, error } = await supabase
     .from('progress_logs')
-    .insert({
-      user_id: user.id,
-      target_id: targetId,
-      progress_value: progressValue,
-      description,
-    })
+    .update({ progress_value: parsed.value, description: parsed.description })
+    .eq('id', log.id)
+    .eq('user_id', user.id)
     .select('id')
-    .single()
 
-  if (error || !data) {
-    return {
-      error: toErrorKey('logProgress', error, { [DB_CODES.foreignKeyViolation]: 'notOwnTarget' }),
-    }
+  if (error) {
+    return { error: toErrorKey('updateLog', error) }
+  }
+  if (!data || data.length === 0) {
+    return { error: 'logNotFound' }
   }
 
-  revalidatePath(`/classes/${classId}/progress`)
+  revalidateLogPages(log.targets.class_id)
+  return { error: null }
+}
+
+// 削除 on あなたの最近の記録, and 取り消す in the toast. Comments on the log
+// go with it (on delete cascade, 0008); the confirm step says so.
+export async function deleteLog(logId: string): Promise<ActionResult> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'signedOut' }
+  }
+
+  const { data, error } = await supabase
+    .from('progress_logs')
+    .delete()
+    .eq('id', logId)
+    .eq('user_id', user.id)
+    .select('id, targets!progress_logs_target_id_fkey(class_id)')
+
+  if (error) {
+    return { error: toErrorKey('deleteLog', error) }
+  }
+  const deleted = (data ?? []) as unknown as { targets: { class_id: string } | null }[]
+  if (deleted.length === 0) {
+    return { error: 'logNotFound' }
+  }
+
+  const classId = deleted[0].targets?.class_id
+  if (classId) revalidateLogPages(classId)
+  else revalidatePath('/', 'layout')
   return { error: null }
 }
 

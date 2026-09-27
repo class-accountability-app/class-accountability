@@ -59,7 +59,12 @@
     "classesHeading": "参加中のクラス",
     "classMetaNoPod": "{term} · ポッド未参加",
     "classMetaPod": "{term} · ポッド {count}人",
-    "joinAnotherClass": "コードで別のクラスに参加"
+    "joinAnotherClass": "コードで別のクラスに参加",
+    "targetsHeading": "あなたの目標",
+    "targetMeta": "{className} · 締め切り {date}",
+    "targetMetaNoDeadline": "{className} · 締め切りなし",
+    "moreTargets": "ほかに{count}件の目標があります",
+    "moreTargetsLink": "クラスのページで見る"
   },
   "login": {
     "eyebrow": "ログイン",
@@ -209,26 +214,6 @@
       "study_hours": "時間"
     }
   },
-  "logForm": {
-    "needTarget": "記録する前に、上で目標を作成してください。",
-    "targetLabel": "目標",
-    "valueLabel": {
-      "task": "完了したら 1 を入力",
-      "word_count": "書いた語数",
-      "study_hours": "勉強した時間",
-      "character_count": "書いた文字数"
-    },
-    "valuePlaceholder": {
-      "task": "1",
-      "word_count": "例：300",
-      "study_hours": "例：1.5",
-      "character_count": "例：540"
-    },
-    "noteLabel": "ひとこと（任意）",
-    "notePlaceholder": "例：序論を書き終えた",
-    "submit": "記録する",
-    "logging": "記録中…"
-  },
   "comments": {
     "label": "コメント",
     "placeholder": "例：おつかれさまです！",
@@ -283,7 +268,11 @@
     "alreadyPodmate": "この人は、すでにこのポッドのメンバーです。",
     "joinCodeInvalid": "このリンクは使えません。もう一度リンクを確認してください。",
     "joinCodeFormat": "8文字のコードを入力してください（例：K7M3 Q9TX）。",
-    "targetClassNotJoined": "このクラスに参加していないため、目標を作れません。"
+    "targetClassNotJoined": "このクラスに参加していないため、目標を作れません。",
+    "logAmountInvalid": "1以上の整数を入力してください。",
+    "logHoursInvalid": "0より大きい数を入力してください（小数は2桁まで。例：1.5）。",
+    "logNotFound": "この記録は見つかりませんでした。すでに削除されている可能性があります。",
+    "logFailed": "記録できませんでした。通信を確認して、もう一度お試しください。"
   },
   "welcome": {
     "eyebrow": "ようこそ",
@@ -362,5 +351,70 @@
     "placeholder": "例：K7M3 Q9TX",
     "submit": "参加する",
     "hint": "先生から届いた8文字のコードです。リンクを貼り付けても大丈夫です。"
+  },
+  "quickLog": {
+    "open": "＋記録",
+    "openLabel": "{title}に記録",
+    "complete": "完了にする",
+    "completeLabel": "{title}を完了にする",
+    "sheetTitle": "{title}に記録",
+    "editTitle": "{title}の記録を編集",
+    "close": "閉じる",
+    "current": "いま {amount}",
+    "currentTaskOpen": "いま：まだ完了していません",
+    "currentTaskDone": "いま：完了",
+    "amountLabel": {
+      "character_count": "今日書いた文字数",
+      "word_count": "今日書いた語数",
+      "study_hours": "今日勉強した時間"
+    },
+    "editAmountLabel": {
+      "character_count": "書いた文字数",
+      "word_count": "書いた語数",
+      "study_hours": "勉強した時間"
+    },
+    "unit": {
+      "character_count": "字",
+      "word_count": "語",
+      "study_hours": "時間"
+    },
+    "chipsLabel": "よく使う量を足す",
+    "chip": "+{amount, number}",
+    "memoLabel": "ひとこと（任意）",
+    "memoPlaceholder": "例：序論を書き終えた",
+    "submit": "記録する",
+    "save": "保存する",
+    "preview": "記録すると {amount}（{percent}%）になります",
+    "previewNoGoal": "記録すると合計 {amount} になります",
+    "previewTask": "記録すると「完了」になります",
+    "editPreview": "変更すると {amount}（{percent}%）になります",
+    "editPreviewNoGoal": "変更すると合計 {amount} になります",
+    "editTaskNote": "完了の記録は、ひとことだけ編集できます。",
+    "toast": {
+      "logged": "{amount}を記録しました",
+      "loggedTask": "「{title}」を完了にしました",
+      "shared": "ポッドに共有されました",
+      "undo": "取り消す",
+      "undone": "記録を取り消しました",
+      "updated": "記録を更新しました",
+      "deleted": "記録を削除しました",
+      "retry": "もう一度",
+      "dismiss": "閉じる"
+    },
+    "recent": {
+      "heading": "あなたの最近の記録",
+      "empty": "まだ記録がありません。",
+      "amount": "+{amount}",
+      "taskDone": "「{title}」完了",
+      "meta": "{when} · {memo}",
+      "edit": "編集",
+      "editLabel": "{when}の記録を編集",
+      "delete": "削除",
+      "deleteLabel": "{when}の記録を削除",
+      "confirm": "この記録を削除しますか？",
+      "confirmComments": "コメント{count}件も一緒に消えます。",
+      "confirmYes": "削除する",
+      "confirmNo": "やめる"
+    }
   }
 }
