@@ -51,7 +51,16 @@ export function ToastSlot({ anchor }: { anchor: string }) {
       const base = p.key === mine?.key ? p : { key: mine?.key ?? 0, hover: false, focus: false }
       return { ...base, ...patch }
     })
-  const duration = !mine ? 0 : mine.kind === 'logged' ? LOGGED_MS : mine.kind === 'info' ? INFO_MS : 0
+  // No countdown while an undo is on its way: the toast waits for its result.
+  const duration = !mine
+    ? 0
+    : mine.kind === 'logged'
+      ? mine.undoing
+        ? 0
+        : LOGGED_MS
+      : mine.kind === 'info'
+        ? INFO_MS
+        : 0
 
   // A new toast starts a fresh countdown.
   useEffect(() => {
@@ -120,13 +129,19 @@ export function ToastSlot({ anchor }: { anchor: string }) {
             )}
           </div>
           {mine.kind === 'logged' && (
+            // aria-disabled, not disabled: a natively disabled button drops
+            // focus to <body>, and the keyboard user should stay here until
+            // the result arrives.
             <button
               type="button"
               data-toast-action
-              onClick={() => undo(mine.clientId)}
-              className="min-h-11 shrink-0 px-1 text-[15px] font-semibold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fbf6ea]"
+              aria-disabled={mine.undoing || undefined}
+              onClick={() => {
+                if (!mine.undoing) undo(mine.clientId)
+              }}
+              className="min-h-11 shrink-0 px-1 text-[15px] font-semibold underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fbf6ea] aria-disabled:cursor-default aria-disabled:no-underline aria-disabled:opacity-80"
             >
-              {t('undo')}
+              {mine.undoing ? t('undoing') : t('undo')}
             </button>
           )}
         </>
