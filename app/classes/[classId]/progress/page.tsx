@@ -6,7 +6,10 @@ import { sumProgress, computePace, project } from '@/lib/projection'
 import { formatDate, formatDateTime, formatDayAgo, tokyoDaysAgo } from '@/lib/date'
 import { StatusStamp } from '@/components/status-stamp'
 import { ProgressBar } from '@/components/progress-bar'
-import { LogProgressForm } from './log-progress-form'
+import { QuickLogProvider } from '@/components/quick-log/quick-log-provider'
+import { MyStamp, TargetCard, TargetProgress } from '@/components/quick-log/target-card'
+import { RecentLogs } from '@/components/quick-log/recent-logs'
+import { loadMyTargets } from '@/components/quick-log/load'
 import { CommentSection } from './comment-section'
 import { NudgeForm } from './nudge-form'
 import { NudgeList, NudgeListProvider } from './nudge-list'
@@ -79,12 +82,10 @@ export default async function ProgressPage({
     redirect('/classes')
   }
 
-  const { data: myTargets } = await supabase
-    .from('targets')
-    .select('id, user_id, title, target_type, target_amount, deadline')
-    .eq('user_id', user.id)
-    .eq('class_id', classId)
-    .order('created_at')
+  // My targets here, with all my logs on them: the quick log's cards, totals
+  // and あなたの最近の記録 (screens 10, 11).
+  const quick = await loadMyTargets(supabase, user.id, classId)
+  const myTargets = quick.rows
 
   // Find my pod for this class: active pairings, then the pairing_members
   // rows visible to me (mine + podmates', per RLS) for those pairings.
@@ -273,6 +274,7 @@ export default async function ProgressPage({
 
   return (
     <NudgeListProvider nudges={(nudges as NudgeRow[] | null) ?? []}>
+      <QuickLogProvider targets={quick.targets} logs={quick.logs}>
       <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12 sm:items-start sm:pl-16">
         <div className="flex w-full max-w-md flex-col gap-2">
           <h1 className="font-heading text-xl font-semibold text-ink">{cls.name}</h1>
@@ -288,21 +290,9 @@ export default async function ProgressPage({
           </Link>
         </div>
 
-        <div id="log-progress" className="flex w-full max-w-md scroll-mt-4 flex-col gap-4">
-          <h2 className="font-heading text-lg font-semibold text-ink">{t('logProgress')}</h2>
-          <LogProgressForm
-            classId={classId}
-            targets={(myTargets ?? []).map((target) => ({
-              id: target.id,
-              title: target.title,
-              target_type: target.target_type,
-            }))}
-          />
-        </div>
-
-        <div className="flex w-full max-w-md flex-col gap-3">
+        <div id="your-targets" className="flex w-full max-w-md scroll-mt-4 flex-col gap-3">
           <h2 className="font-heading text-lg font-semibold text-ink">{t('yourTargets')}</h2>
-          {(myTargets ?? []).length === 0 ? (
+          {myTargets.length === 0 ? (
             <EmptyState
               illustration="target"
               body={tEmpty('noTargets')}
@@ -313,19 +303,17 @@ export default async function ProgressPage({
               }
             />
           ) : (
-            <ul className="flex flex-col gap-2">
-              {(myTargets ?? []).map((target) => (
-                <li
+            <ul className="flex flex-col gap-3">
+              {myTargets.map((target) => (
+                <TargetCard
                   key={target.id}
-                  className="flex flex-col gap-1 rounded-[2px] border border-border bg-surface px-4 py-3"
-                >
-                  <span className="text-sm font-medium text-ink">{target.title}</span>
-                  <span className="font-meta text-xs text-muted">
-                    {target.deadline
+                  targetId={target.id}
+                  meta={
+                    target.deadline
                       ? t('due', { date: formatDate(target.deadline, locale) })
-                      : t('noDeadline')}
-                  </span>
-                </li>
+                      : t('noDeadline')
+                  }
+                />
               ))}
             </ul>
           )}
@@ -364,7 +352,11 @@ export default async function ProgressPage({
                 >
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="flex min-w-0 items-center gap-2">
-                      <StatusStamp status={isChurned ? 'stale' : 'active'} />
+                      {isMe ? (
+                        <MyStamp status={isChurned ? 'stale' : 'active'} />
+                      ) : (
+                        <StatusStamp status={isChurned ? 'stale' : 'active'} />
+                      )}
                       <div className="flex min-w-0 flex-col gap-0.5">
                         <span className="font-heading text-sm font-semibold text-ink [overflow-wrap:anywhere]">
                           {isMe ? t('you', { name: nameOf(memberId) }) : nameOf(memberId)}
@@ -396,13 +388,20 @@ export default async function ProgressPage({
                         return (
                           <li key={target.id} className="flex flex-col gap-1">
                             <span className="text-xs font-medium text-ink">{target.title}</span>
-                            <span className="text-xs text-muted">{progressLine}</span>
-                            {target.target_type !== 'task' && target.target_amount !== null && (
-                              <ProgressBar
-                                value={totalLogged}
-                                max={target.target_amount}
-                                valueText={progressLine}
-                              />
+                            {isMe ? (
+                              // Mine move with the quick log, before the server answers.
+                              <TargetProgress targetId={target.id} />
+                            ) : (
+                              <>
+                                <span className="text-xs text-muted">{progressLine}</span>
+                                {target.target_type !== 'task' && target.target_amount !== null && (
+                                  <ProgressBar
+                                    value={totalLogged}
+                                    max={target.target_amount}
+                                    valueText={progressLine}
+                                  />
+                                )}
+                              </>
                             )}
                             {projection && (
                               <span className="text-xs text-muted">{projection}</span>
@@ -418,7 +417,7 @@ export default async function ProgressPage({
                       illustration="log"
                       body={tEmpty('noLogs')}
                       action={
-                        <a href="#log-progress" className={emptyActionClass}>
+                        <a href="#your-targets" className={emptyActionClass}>
                           {tEmpty('logProgress')}
                         </a>
                       }
@@ -463,6 +462,8 @@ export default async function ProgressPage({
           )}
         </div>
 
+        {myTargets.length > 0 && <RecentLogs />}
+
         <div className="flex w-full max-w-md flex-col gap-3">
           <h2 className="font-heading text-lg font-semibold text-ink">{tNudges('heading')}</h2>
           {!myPairingId ? (
@@ -475,6 +476,7 @@ export default async function ProgressPage({
           )}
         </div>
       </div>
+      </QuickLogProvider>
     </NudgeListProvider>
   )
 }

@@ -124,8 +124,83 @@ html:lang(ja) body {
     box-shadow 0.1s ease;
 }
 
+/* Scales from the left instead of animating width, so the fill moves
+   without re-laying out the card on every frame. */
 .progress-bar-fill {
-  transition: width 0.4s ease;
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+/*
+ * Quick log (screen 10). A bottom sheet on phones, a centred dialog from sm
+ * up. It opens a few times a day, so a standard drawer entrance: slide up
+ * with the iOS-like drawer curve, 300ms; the desktop dialog fades and scales
+ * from 0.96 instead. Leaving reverses it where the browser supports
+ * transitioning display (allow-discrete); elsewhere it closes instantly.
+ */
+.quick-sheet {
+  transition:
+    transform 300ms cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 300ms cubic-bezier(0.32, 0.72, 0, 1),
+    overlay 300ms allow-discrete,
+    display 300ms allow-discrete;
+}
+
+.quick-sheet:not([open]) {
+  transform: translateY(100%);
+}
+
+@starting-style {
+  .quick-sheet[open] {
+    transform: translateY(100%);
+  }
+}
+
+.quick-sheet::backdrop {
+  background-color: rgba(58, 47, 34, 0.45);
+  transition:
+    opacity 300ms cubic-bezier(0.32, 0.72, 0, 1),
+    overlay 300ms allow-discrete,
+    display 300ms allow-discrete;
+}
+
+.quick-sheet:not([open])::backdrop {
+  opacity: 0;
+}
+
+@starting-style {
+  .quick-sheet[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+@media (min-width: 40rem) {
+  .quick-sheet:not([open]) {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  @starting-style {
+    .quick-sheet[open] {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+}
+
+/* The toast drops in from just above; it can fire several times in a row,
+   so a transition (it retargets) rather than keyframes. */
+.quick-toast {
+  transition:
+    opacity 400ms ease,
+    transform 400ms ease;
+}
+
+@starting-style {
+  .quick-toast {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
 }
 
 .btn:active:not(:disabled) {

@@ -59,7 +59,12 @@
     "classesHeading": "Your classes",
     "classMetaNoPod": "{term} · No pod yet",
     "classMetaPod": "{term} · Pod of {count}",
-    "joinAnotherClass": "Join another class with a code"
+    "joinAnotherClass": "Join another class with a code",
+    "targetsHeading": "Your targets",
+    "targetMeta": "{className} · Due {date}",
+    "targetMetaNoDeadline": "{className} · No deadline",
+    "moreTargets": "{count, plural, one {# more target} other {# more targets}}",
+    "moreTargetsLink": "See them on your class pages"
   },
   "login": {
     "eyebrow": "Log in",
@@ -209,26 +214,6 @@
       "study_hours": "hours"
     }
   },
-  "logForm": {
-    "needTarget": "Create a target above before you log progress.",
-    "targetLabel": "Target",
-    "valueLabel": {
-      "task": "Enter 1 when it's done",
-      "word_count": "Words written",
-      "study_hours": "Hours studied",
-      "character_count": "Characters written"
-    },
-    "valuePlaceholder": {
-      "task": "1",
-      "word_count": "e.g. 300",
-      "study_hours": "e.g. 1.5",
-      "character_count": "e.g. 540"
-    },
-    "noteLabel": "Note (optional)",
-    "notePlaceholder": "e.g. Finished the introduction",
-    "submit": "Log progress",
-    "logging": "Logging…"
-  },
   "comments": {
     "label": "Comment",
     "placeholder": "e.g. Nice work!",
@@ -283,7 +268,11 @@
     "alreadyPodmate": "This classmate is already in this pod.",
     "joinCodeInvalid": "This link doesn't work. Please check the link again.",
     "joinCodeFormat": "Enter the 8-character code (e.g. K7M3 Q9TX).",
-    "targetClassNotJoined": "You can't set a target in a class you haven't joined."
+    "targetClassNotJoined": "You can't set a target in a class you haven't joined.",
+    "logAmountInvalid": "Enter a whole number of 1 or more.",
+    "logHoursInvalid": "Enter a number greater than 0 (up to two decimals, e.g. 1.5).",
+    "logNotFound": "This log wasn’t found. It may already have been deleted.",
+    "logFailed": "Couldn’t save your log. Check your connection and try again."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -362,5 +351,70 @@
     "placeholder": "e.g. K7M3 Q9TX",
     "submit": "Join",
     "hint": "The 8-character code from your teacher. You can also paste the link."
+  },
+  "quickLog": {
+    "open": "+ Log",
+    "openLabel": "Log progress on {title}",
+    "complete": "Mark done",
+    "completeLabel": "Mark {title} done",
+    "sheetTitle": "Log {title}",
+    "editTitle": "Edit a log for {title}",
+    "close": "Close",
+    "current": "Now {amount}",
+    "currentTaskOpen": "Now: not done yet",
+    "currentTaskDone": "Now: done",
+    "amountLabel": {
+      "character_count": "Characters written today",
+      "word_count": "Words written today",
+      "study_hours": "Hours studied today"
+    },
+    "editAmountLabel": {
+      "character_count": "Characters written",
+      "word_count": "Words written",
+      "study_hours": "Hours studied"
+    },
+    "unit": {
+      "character_count": "chars",
+      "word_count": "words",
+      "study_hours": "hours"
+    },
+    "chipsLabel": "Add a common amount",
+    "chip": "+{amount, number}",
+    "memoLabel": "Note (optional)",
+    "memoPlaceholder": "e.g. Finished the introduction",
+    "submit": "Log it",
+    "save": "Save",
+    "preview": "You’ll be at {amount} ({percent}%)",
+    "previewNoGoal": "Your total will be {amount}",
+    "previewTask": "This marks it done",
+    "editPreview": "You’ll be at {amount} ({percent}%) after this change",
+    "editPreviewNoGoal": "Your total will be {amount} after this change",
+    "editTaskNote": "For a done log, only the note can be edited.",
+    "toast": {
+      "logged": "Logged {amount}",
+      "loggedTask": "Marked “{title}” done",
+      "shared": "Shared with your pod",
+      "undo": "Undo",
+      "undone": "Log undone",
+      "updated": "Log updated",
+      "deleted": "Log deleted",
+      "retry": "Try again",
+      "dismiss": "Dismiss"
+    },
+    "recent": {
+      "heading": "Your recent logs",
+      "empty": "No logs yet.",
+      "amount": "+{amount}",
+      "taskDone": "“{title}” done",
+      "meta": "{when} · {memo}",
+      "edit": "Edit",
+      "editLabel": "Edit the log from {when}",
+      "delete": "Delete",
+      "deleteLabel": "Delete the log from {when}",
+      "confirm": "Delete this log?",
+      "confirmComments": "{count, plural, one {# comment on it will be deleted too.} other {# comments on it will be deleted too.}}",
+      "confirmYes": "Delete",
+      "confirmNo": "Keep it"
+    }
   }
 }

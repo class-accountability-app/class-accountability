@@ -1,11 +1,16 @@
 import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { SETUP_SEEN_COOKIE, buildChecklist, type HomeClass, type StepId } from '@/lib/checklist'
+import { HOME_TARGET_LIMIT, sortHomeTargets } from '@/lib/home-targets'
+import { formatDate } from '@/lib/date'
 import { MarkSetupSeen } from './setup-seen'
 import { CodeJoinForm } from '@/components/code-join-form'
+import { QuickLogProvider } from '@/components/quick-log/quick-log-provider'
+import { TargetCard } from '@/components/quick-log/target-card'
+import { loadMyTargets } from '@/components/quick-log/load'
 
 type MembershipRow = {
   class_id: string
@@ -28,7 +33,7 @@ export default async function Home() {
     redirect('/login')
   }
 
-  const [{ data: profile }, { data: memberships }, { data: myPods }, { count: targetCount }] =
+  const [{ data: profile }, { data: memberships }, { data: myPods }, quick] =
     await Promise.all([
       supabase.from('profiles').select('display_name').eq('id', user.id).single(),
       supabase
@@ -41,10 +46,8 @@ export default async function Home() {
         .select('pairing_id, pairings!inner(class_id, status)')
         .eq('user_id', user.id)
         .eq('pairings.status', 'active'),
-      supabase
-        .from('targets')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id),
+      // あなたの目標 (screen 09): my targets and logs, for the cards' totals.
+      loadMyTargets(supabase, user.id),
     ])
 
   const podByClass = new Map<string, string>()
@@ -72,13 +75,31 @@ export default async function Home() {
       }
     })
 
-  const checklist = buildChecklist(classes, (targetCount ?? 0) > 0)
+  const checklist = buildChecklist(classes, quick.rows.length > 0)
   const seenAllDone = (await cookies()).get(SETUP_SEEN_COOKIE)?.value === user.id
   const showChecklist = !checklist.allDone || !seenAllDone
 
-  const t = await getTranslations('home')
+  const [t, locale] = await Promise.all([getTranslations('home'), getLocale()])
+
+  // Nearest deadline first, finished ones last; a handful on Home, the rest
+  // on each class's progress page.
+  const totals = new Map<string, number>()
+  for (const log of quick.logs) totals.set(log.targetId, (totals.get(log.targetId) ?? 0) + log.value)
+  const sortedTargets = sortHomeTargets(
+    quick.rows.map((r) => {
+      const total = totals.get(r.id) ?? 0
+      const finished =
+        r.target_type === 'task'
+          ? total >= 1
+          : r.target_amount !== null && total >= Number(r.target_amount)
+      return { ...r, finished, createdAt: r.created_at }
+    })
+  )
+  const homeTargets = sortedTargets.slice(0, HOME_TARGET_LIMIT)
+  const moreTargets = sortedTargets.length - homeTargets.length
 
   return (
+    <QuickLogProvider targets={quick.targets} logs={quick.logs}>
     <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
       <div className="flex w-full max-w-md flex-col gap-5">
         <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink">
@@ -139,6 +160,38 @@ export default async function Home() {
             </section>
           ))}
 
+        {homeTargets.length > 0 && (
+          <section aria-labelledby="targets-heading" className="flex flex-col gap-3">
+            <h2 id="targets-heading" className="font-heading text-xl font-bold text-ink">
+              {t('targetsHeading')}
+            </h2>
+            <ul className="flex flex-col gap-3">
+              {homeTargets.map((target) => {
+                const className = target.classes?.name ?? ''
+                return (
+                  <TargetCard
+                    key={target.id}
+                    targetId={target.id}
+                    meta={
+                      target.deadline
+                        ? t('targetMeta', { className, date: formatDate(target.deadline, locale) })
+                        : t('targetMetaNoDeadline', { className })
+                    }
+                  />
+                )
+              })}
+            </ul>
+            {moreTargets > 0 && (
+              <p className="flex flex-wrap gap-x-2 text-sm text-muted">
+                <span>{t('moreTargets', { count: moreTargets })}</span>
+                <Link href="/classes" className="font-semibold text-accent-text underline underline-offset-4">
+                  {t('moreTargetsLink')}
+                </Link>
+              </p>
+            )}
+          </section>
+        )}
+
         {classes.length > 0 && (
           <section aria-labelledby="classes-heading" className="flex flex-col gap-3">
             <h2 id="classes-heading" className="font-heading text-xl font-bold text-ink">
@@ -188,6 +241,7 @@ export default async function Home() {
         </Link>
       </div>
     </div>
+    </QuickLogProvider>
   )
 }
 

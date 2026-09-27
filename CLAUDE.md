@@ -58,6 +58,8 @@ Students log in with a 6-digit code or a button sent to their university email (
 
 0011: `profiles.name_chosen_at` is null until the student saves a display name (a trigger stamps it; clients may update only `display_name`). The proxy sends anyone with a null value to `/welcome`. Name rules: 1–20 graphemes in the app (`lib/display-name.ts`); the DB enforces trimmed, no control characters and ≤ 80 code points. Nudges: max 3 per sender→recipient in a rolling 24 hours (trigger, error code `SP001`), and `pairing_id` must be a pod both people are in.
 
+0014 (quick log): students can edit (amount and memo only) and delete their own `progress_logs`; `user_id`, `target_id`, `logged_at`, `client_id` and `source` never change (trigger), and a student's insert gets the server's `now()` as `logged_at`. `progress_value > 0` is a CHECK. `client_id` + `unique (user_id, client_id)` makes 記録する idempotent: `logProgress` treats that unique violation as already saved. Comments cascade with their log. Totals are always summed from the logs on read, never stored. The quick-log UI lives in `components/quick-log/`.
+
 ## Scope discipline
 
 **In (MVP):** auth, create/join class, student-formed pods (start, invite, request to join; up to 6), targets + deadlines, manual progress logging, shared pod view, one "stuck on" nudge, churn detection (display-only).
