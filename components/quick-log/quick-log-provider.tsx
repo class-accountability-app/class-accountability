@@ -83,6 +83,9 @@ export type Toast =
       clientId: string
       text: string
       shared: boolean
+      // 取り消す was pressed and the delete is on its way: the button shows
+      // 取り消しています…, ignores presses and keeps focus; the toast stays.
+      undoing?: boolean
     }
   | { kind: 'info'; anchor: string; key: number; text: string }
   | { kind: 'error'; anchor: string; key: number; error: ErrorKey; retry?: SheetState }
@@ -295,14 +298,21 @@ export function QuickLogProvider({
     })
   }
 
-  // 取り消す: waits for the insert if it is still in flight, then deletes
-  // that log. 取り消す itself goes away, so focus returns to ＋記録 (for a
-  // task, to 完了にする once it reappears).
+  // 取り消す: the button turns into 取り消しています… at once (a second press
+  // does nothing) and keeps focus while the undo waits for the insert, if it
+  // is still in flight, and then deletes that log. When the result arrives,
+  // 取り消す goes away and focus returns to ＋記録 (for a task, to 完了にする
+  // once it reappears).
   const undo = useCallback(
     (clientId: string) => {
+      if (toast?.kind === 'logged' && toast.undoing) return
       const pending = pendingLogs.current.get(clientId)
       const anchor = toast?.anchor ?? RECENT_ANCHOR
       const known = logs.find((l) => l.clientId === clientId && !l.id.startsWith('pending:'))?.id
+      setToast((current) =>
+        current?.kind === 'logged' && current.clientId === clientId ? { ...current, undoing: true } : current
+      )
+      setAnnouncement({ text: t('toast.undoing'), urgent: false, key: ++toastKey.current })
       guardFocus(anchor)
       startTransition(async () => {
         change({ kind: 'remove', clientId })

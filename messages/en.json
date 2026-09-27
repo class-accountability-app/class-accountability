@@ -395,6 +395,7 @@
       "loggedTask": "Marked “{title}” done",
       "shared": "Shared with your pod",
       "undo": "Undo",
+      "undoing": "Undoing…",
       "undone": "Log undone",
       "updated": "Log updated",
       "deleted": "Log deleted",
