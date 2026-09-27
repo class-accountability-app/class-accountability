@@ -73,6 +73,10 @@ begin
   end;
 end $$;
 
+-- K's code, for D below: since 0013 a non-member can't read it from classes.
+select set_config('rls_test.k_code',
+  (select join_code from public.classes where id = '00000000-0000-4000-8000-00000000c1a5'), true);
+
 -- For the UPDATE test below: an UPDATE policy on classes, as a later
 -- migration might add. It exists only inside this transaction.
 create policy "rls test: update classes" on public.classes
@@ -304,8 +308,7 @@ declare
   r record;
 begin
   -- Screen 04 works before joining: the class and a count, not membership.
-  select * into r from public.class_by_join_code(
-    (select join_code from public.classes where id = k));
+  select * into r from public.class_by_join_code(current_setting('rls_test.k_code'));
   if r.id is distinct from k or r.is_member or r.member_count <> 4 then
     raise exception 'FAIL: lookup for a non-member returned %', r;
   end if;

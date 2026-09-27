@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
-import { JoinButton } from '../join-button'
 import { CreatePodButton } from './create-pod-button'
 import { RequestJoinButton } from './request-join-button'
 import { InviteForm } from './invite-form'
@@ -59,16 +58,10 @@ export default async function ClassPodsPage({
     .eq('user_id', user.id)
     .maybeSingle()
 
+  // Only members (and the creator) can see a class (0013); joining happens
+  // only with the code, at /join/{code}.
   if (!membership) {
-    return (
-      <div className="flex flex-1 flex-col items-center gap-4 px-4 py-12 sm:items-start sm:pl-16">
-        <div className="flex w-full max-w-sm flex-col gap-3">
-          <h1 className="font-heading text-xl font-semibold text-ink">{cls.name}</h1>
-          <p className="text-sm text-muted">{t('joinToSee')}</p>
-          <JoinButton classId={cls.id} />
-        </div>
-      </div>
-    )
+    redirect('/classes')
   }
 
   const { data: pods } = await supabase

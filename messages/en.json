@@ -59,7 +59,7 @@
     "classesHeading": "Your classes",
     "classMetaNoPod": "{term} · No pod yet",
     "classMetaPod": "{term} · Pod of {count}",
-    "findClasses": "Find another class"
+    "joinAnotherClass": "Join another class with a code"
   },
   "login": {
     "eyebrow": "Log in",
@@ -101,10 +101,10 @@
   },
   "classes": {
     "title": "Classes",
-    "viewPods": "View pods",
     "createHeading": "Create a class",
-    "join": "Join",
-    "joining": "Joining…"
+    "joinByCodeHeading": "Join with a code",
+    "myClassesHeading": "Your classes",
+    "noClasses": "You haven't joined a class yet. Open the link or QR code from your class, or enter the code above."
   },
   "classForm": {
     "nameLabel": "Class name",
@@ -115,7 +115,6 @@
     "submit": "Create class"
   },
   "pods": {
-    "joinToSee": "Join this class to see pods and start your own.",
     "progressLink": "Targets & progress",
     "invitationsHeading": "Invitations for you",
     "invitedTo": "Invited to join a pod ({members})",
@@ -257,7 +256,6 @@
     "rateLimited": "Too many tries in a short time. Please wait a moment and try again.",
     "required": "Please fill this in.",
     "classFieldsRequired": "Please fill in the class name, university and term.",
-    "alreadyJoinedClass": "You've already joined this class.",
     "podNotFound": "We couldn't find that pod.",
     "invitePending": "You've already invited this person.",
     "requestPending": "You've already asked to join this pod.",
@@ -283,7 +281,9 @@
     "alreadyInPod": "You're already in a pod in this class. You can be in one pod per class.",
     "inviteeInPod": "This classmate is already in another pod in this class.",
     "alreadyPodmate": "This classmate is already in this pod.",
-    "joinCodeInvalid": "This link doesn't work. Please check the link again."
+    "joinCodeInvalid": "This link doesn't work. Please check the link again.",
+    "joinCodeFormat": "Enter the 8-character code (e.g. K7M3 Q9TX).",
+    "targetClassNotJoined": "You can't set a target in a class you haven't joined."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -318,8 +318,6 @@
     "rule": "You can nudge the same person up to 3 times in 24 hours."
   },
   "empty": {
-    "noClasses": "There are no classes to join yet.",
-    "createClass": "Create a class",
     "findPod": "Find a pod",
     "noTargets": "No targets yet.",
     "createTarget": "Create a target",
@@ -358,5 +356,11 @@
     "anyMemberCanShare": "Anyone in this class can share this link.",
     "close": "Close",
     "codeLabel": "Code"
+  },
+  "codeJoin": {
+    "label": "Class code",
+    "placeholder": "e.g. K7M3 Q9TX",
+    "submit": "Join",
+    "hint": "The 8-character code from your teacher. You can also paste the link."
   }
 }

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { DB_CODES, toErrorKey, type ActionResult } from '@/lib/errors'
+import { toErrorKey, type ActionResult } from '@/lib/errors'
 
 export async function createClass(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient()
@@ -30,30 +30,7 @@ export async function createClass(formData: FormData): Promise<ActionResult> {
     return { error: toErrorKey('createClass', error) }
   }
 
-  revalidatePath('/classes')
-  return { error: null }
-}
-
-export async function joinClass(classId: string): Promise<ActionResult> {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return { error: 'signedOut' }
-  }
-
-  const { error } = await supabase
-    .from('class_memberships')
-    .insert({ user_id: user.id, class_id: classId })
-
-  if (error) {
-    return {
-      error: toErrorKey('joinClass', error, { [DB_CODES.uniqueViolation]: 'alreadyJoinedClass' }),
-    }
-  }
-
-  revalidatePath('/classes')
+  // The creator is now its first member (0013), so Home and the tab bar change too.
+  revalidatePath('/', 'layout')
   return { error: null }
 }

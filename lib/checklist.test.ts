@@ -5,11 +5,11 @@ const stats: HomeClass = { id: 'c1', name: '統計学 201', term: '2026 秋学�
 const english: HomeClass = { id: 'c2', name: 'English II', term: '2026 秋学期', podSize: null }
 
 describe('buildChecklist', () => {
-  it('starts at 0 / 3 with joining a class next', () => {
+  it('starts at 0 / 3 with joining a class next (by code, so no link)', () => {
     const c = buildChecklist([], false)
     expect(c.doneCount).toBe(0)
     expect(c.next).toBe('join')
-    expect(c.nextHref).toBe('/classes')
+    expect(c.nextHref).toBeNull()
     expect(c.joinedClassName).toBeNull()
   })
 

@@ -42,7 +42,7 @@ Students log in with a 6-digit code or a button sent to their university email (
 
 1. **Every Postgres table has RLS enabled.** A table without `enable row level security` is publicly readable via the anon key (which ships to the browser). Every migration that runs `create table` must also enable RLS in the same file. CI fails the PR otherwise.
 2. **The `service_role` key is server-side only.** Never in client code, never in a `NEXT_PUBLIC_` var, never committed. The anon key is public by design and fine to use client-side — RLS is what protects data.
-3. **Authorization lives in the database, not the app.** The privacy rule (you see a person's data only if you're podmates) is enforced by RLS policies and the `is_podmate()` helper, not by frontend checks. Frontend checks are UX, not security.
+3. **Authorization lives in the database, not the app.** The privacy rule (you see a person's data only if you're podmates) is enforced by RLS policies, not by frontend checks. Targets, progress logs and comments use the `is_podmate_in_class()` helper (0013), so podmates see each other's work only within the pod's class. `is_podmate()` is unused, pending the tidy-up migration. Frontend checks are UX, not security.
 4. **The university-email restriction is enforced in a DB trigger**, not just the login form — the anon key lets anyone bypass the form.
 5. **Schema changes go in `supabase/migrations/*.sql`**, committed to the repo — never by clicking in the Supabase dashboard. Note the folder is spelled `migrations` (this bit us once).
 6. **`main` is protected.** Work on a branch, open a PR, let CI pass, merge. Never commit to `main` directly.

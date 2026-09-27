@@ -59,7 +59,7 @@
     "classesHeading": "参加中のクラス",
     "classMetaNoPod": "{term} · ポッド未参加",
     "classMetaPod": "{term} · ポッド {count}人",
-    "findClasses": "ほかのクラスを探す"
+    "joinAnotherClass": "コードで別のクラスに参加"
   },
   "login": {
     "eyebrow": "ログイン",
@@ -101,10 +101,10 @@
   },
   "classes": {
     "title": "クラス",
-    "viewPods": "ポッドを見る",
     "createHeading": "クラスを作成",
-    "join": "参加する",
-    "joining": "参加中…"
+    "joinByCodeHeading": "コードで参加",
+    "myClassesHeading": "参加中のクラス",
+    "noClasses": "まだクラスに参加していません。授業で配られたリンクかQRコードを開くか、上にコードを入力してください。"
   },
   "classForm": {
     "nameLabel": "クラス名",
@@ -115,7 +115,6 @@
     "submit": "クラスを作成"
   },
   "pods": {
-    "joinToSee": "このクラスに参加すると、ポッドを見たり作ったりできます。",
     "progressLink": "目標と進み具合",
     "invitationsHeading": "あなたへの招待",
     "invitedTo": "ポッドへの招待（{members}）",
@@ -257,7 +256,6 @@
     "rateLimited": "短い時間に何度も送信されました。少し待ってから、もう一度お試しください。",
     "required": "入力してください。",
     "classFieldsRequired": "クラス名・大学名・学期をすべて入力してください。",
-    "alreadyJoinedClass": "このクラスにはすでに参加しています。",
     "podNotFound": "ポッドが見つかりませんでした。",
     "invitePending": "この人にはすでに招待を送っています。",
     "requestPending": "このポッドにはすでに参加をリクエストしています。",
@@ -283,7 +281,9 @@
     "alreadyInPod": "このクラスでは、すでにポッドに入っています。ポッドは1クラスに1つまでです。",
     "inviteeInPod": "この人は、すでにこのクラスのほかのポッドに入っています。",
     "alreadyPodmate": "この人は、すでにこのポッドのメンバーです。",
-    "joinCodeInvalid": "このリンクは使えません。もう一度リンクを確認してください。"
+    "joinCodeInvalid": "このリンクは使えません。もう一度リンクを確認してください。",
+    "joinCodeFormat": "8文字のコードを入力してください（例：K7M3 Q9TX）。",
+    "targetClassNotJoined": "このクラスに参加していないため、目標を作れません。"
   },
   "welcome": {
     "eyebrow": "ようこそ",
@@ -318,8 +318,6 @@
     "rule": "同じ相手への声かけは、24時間で3回までです。"
   },
   "empty": {
-    "noClasses": "参加できるクラスはまだありません。",
-    "createClass": "クラスを作る",
     "findPod": "ポッドを探す",
     "noTargets": "まだ目標がありません。",
     "createTarget": "目標を作る",
@@ -358,5 +356,11 @@
     "anyMemberCanShare": "クラスのメンバーなら、誰でもこのリンクを共有できます。",
     "close": "閉じる",
     "codeLabel": "コード"
+  },
+  "codeJoin": {
+    "label": "クラスのコード",
+    "placeholder": "例：K7M3 Q9TX",
+    "submit": "参加する",
+    "hint": "先生から届いた8文字のコードです。リンクを貼り付けても大丈夫です。"
   }
 }
