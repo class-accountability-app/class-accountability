@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { setLocale } from '@/i18n/actions'
-import { DesktopLinks, HeaderSignOut } from '@/components/app-nav'
+import { DesktopLinks, HeaderLogIn, HeaderSignOut } from '@/components/app-nav'
 
 // Persistent shell nav: wordmark left; on desktop the page links, then the
 // language switch and sign-out. Phones get the page links from the tab bar.
@@ -12,7 +12,12 @@ export async function Nav({ signedIn, classIds }: { signedIn: boolean; classIds:
 
   return (
     <header className="border-b border-border bg-surface">
-      <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-2 sm:px-10">
+      {/* Logged out, the header spans the landing page's width (screens Main/Mobile). */}
+      <div
+        className={`mx-auto flex items-center justify-between gap-4 px-4 py-2 ${
+          signedIn ? 'max-w-3xl sm:px-10' : 'max-w-[1200px] sm:px-10 lg:h-[76px]'
+        }`}
+      >
         <Link
           href="/"
           className="font-heading text-lg font-semibold tracking-tight text-ink sm:text-xl"
@@ -33,7 +38,7 @@ export async function Nav({ signedIn, classIds }: { signedIn: boolean; classIds:
               {target === 'en' ? t('switchToEnglish') : t('switchToJapanese')}
             </button>
           </form>
-          {signedIn && <HeaderSignOut />}
+          {signedIn ? <HeaderSignOut /> : <HeaderLogIn />}
         </div>
       </div>
     </header>

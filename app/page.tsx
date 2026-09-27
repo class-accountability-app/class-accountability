@@ -1,6 +1,6 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { SETUP_SEEN_COOKIE, buildChecklist, type HomeClass, type StepId } from '@/lib/checklist'
@@ -11,6 +11,24 @@ import { CodeJoinForm } from '@/components/code-join-form'
 import { QuickLogProvider } from '@/components/quick-log/quick-log-provider'
 import { TargetCard } from '@/components/quick-log/target-card'
 import { loadMyTargets } from '@/components/quick-log/load'
+import { Landing } from '@/components/landing/landing'
+
+// / is the page crawlers and link previews see (always logged out), so it is
+// indexed and carries the landing title and description.
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('metadata')
+  return {
+    title: t('landingTitle'),
+    description: t('landingDescription'),
+    robots: { index: true, follow: true },
+    alternates: { canonical: '/' },
+    openGraph: {
+      title: t('landingTitle'),
+      description: t('landingDescription'),
+      url: '/',
+    },
+  }
+}
 
 type MembershipRow = {
   class_id: string
@@ -29,8 +47,9 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Logged out: the public landing page. Logged in: Home, as before.
   if (!user) {
-    redirect('/login')
+    return <Landing />
   }
 
   const [{ data: profile }, { data: memberships }, { data: myPods }, quick] =

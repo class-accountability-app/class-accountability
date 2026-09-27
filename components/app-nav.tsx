@@ -128,6 +128,25 @@ export function DesktopLinks({ classIds }: { classIds: string[] }) {
   )
 }
 
+// Logged-out visitors on the landing page and the privacy policy get the
+// design's ログイン button in the header. Not on /login itself.
+const SHOWS_HEADER_LOG_IN = new Set(['/', '/privacy'])
+
+export function HeaderLogIn() {
+  const t = useTranslations('nav')
+  const pathname = usePathname()
+  if (!SHOWS_HEADER_LOG_IN.has(pathname)) return null
+
+  return (
+    <Link
+      href="/login"
+      className="btn ml-1 inline-flex h-11 items-center rounded-[2px] bg-accent px-4 text-[15px] font-semibold text-white sm:px-[22px]"
+    >
+      {t('logIn')}
+    </Link>
+  )
+}
+
 // On phones, log out lives in 設定 (mockups 12, 13); the welcome screen and
 // the class invitation have no tab bar, so they keep the header link
 // (mockups 03, 04). Desktop always has it.

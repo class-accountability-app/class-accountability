@@ -208,6 +208,66 @@ html:lang(ja) body {
   box-shadow: 0 0 0 0 rgba(58, 47, 34, 0.35);
 }
 
+/*
+ * Landing page (docs/mockups/phase1/16-landing-*): the design's keyframes,
+ * prefixed lp-. The demo is one 17.5s loop of five 3.5s scenes, all CSS.
+ */
+@keyframes lp-rise { from { opacity: 0; transform: translateY(18px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes lp-draw { to { stroke-dashoffset: 0 } }
+@keyframes lp-lines { 0%, 10% { stroke-dashoffset: 1 } 60%, 100% { stroke-dashoffset: 0 } }
+@keyframes lp-restamp { 0% { opacity: 0; transform: rotate(-7deg) scale(2.2) } 7% { opacity: 1; transform: rotate(-7deg) scale(.92) } 11%, 100% { opacity: 1; transform: rotate(-7deg) scale(1) } }
+@keyframes lp-loopbar { 0% { transform: scaleX(.06) } 70%, 100% { transform: scaleX(1) } }
+@keyframes lp-wiggle { 0%, 100% { transform: rotate(-1.5deg) } 50% { transform: rotate(1.5deg) } }
+@keyframes lp-float { 0%, 100% { transform: translate(0, 0) rotate(-4deg) } 50% { transform: translate(5px, -7px) rotate(2deg) } }
+@keyframes lp-box { 0% { opacity: 0; transform: rotate(8deg) scale(2) } 60% { opacity: 1; transform: rotate(8deg) scale(.94) } 100% { opacity: 1; transform: rotate(8deg) scale(1) } }
+@keyframes lp-box-l { 0% { opacity: 0; transform: rotate(-6deg) scale(2) } 60% { opacity: 1; transform: rotate(-6deg) scale(.94) } 100% { opacity: 1; transform: rotate(-6deg) scale(1) } }
+@keyframes lp-scene { 0% { opacity: 0; transform: translateY(8px) } 3% { opacity: 1; transform: translateY(0) } 18% { opacity: 1; transform: translateY(0) } 21% { opacity: 0; transform: translateY(-6px) } 100% { opacity: 0; transform: translateY(-6px) } }
+@keyframes lp-dot { 0%, 19% { background: #3a2f22 } 20%, 100% { background: #d9c69a } }
+@keyframes lp-cursor { 0%, 1% { opacity: 0; transform: translate(70px, 60px) } 4% { opacity: 1; transform: translate(40px, 34px) } 8% { opacity: 1; transform: translate(0, 0) scale(1) } 9% { transform: translate(0, 0) scale(.82) } 10.5% { transform: translate(0, 0) scale(1) } 17% { opacity: 1; transform: translate(0, 0) } 19%, 100% { opacity: 0; transform: translate(0, 0) } }
+@keyframes lp-btn-out { 0%, 9% { opacity: 1 } 11%, 100% { opacity: 0 } }
+@keyframes lp-joined { 0%, 9% { opacity: 0; transform: rotate(-6deg) scale(2) } 12% { opacity: 1; transform: rotate(-6deg) scale(.94) } 14%, 100% { opacity: 1; transform: rotate(-6deg) scale(1) } }
+@keyframes lp-ap1 { 0%, 2% { opacity: 0; transform: translateY(6px) } 5%, 100% { opacity: 1; transform: translateY(0) } }
+@keyframes lp-ap2 { 0%, 5% { opacity: 0; transform: translateY(6px) } 8%, 100% { opacity: 1; transform: translateY(0) } }
+@keyframes lp-ap3 { 0%, 10% { opacity: 0; transform: translateY(6px) } 13%, 100% { opacity: 1; transform: translateY(0) } }
+@keyframes lp-chip { 0%, 8.5% { background: #fbf6ea; color: #3a2f22; border-color: #d9c69a } 10%, 100% { background: #3a2f22; color: #fbf6ea; border-color: #3a2f22 } }
+@keyframes lp-grow { 0%, 5% { transform: scaleX(.565) } 14%, 100% { transform: scaleX(1) } }
+@keyframes lp-out { 0%, 9% { opacity: 1 } 10%, 100% { opacity: 0 } }
+@keyframes lp-in { 0%, 9% { opacity: 0 } 10%, 100% { opacity: 1 } }
+@keyframes lp-stamp-late { 0%, 11% { opacity: 0; transform: rotate(-7deg) scale(2.2) } 14% { opacity: 1; transform: rotate(-7deg) scale(.92) } 16%, 100% { opacity: 1; transform: rotate(-7deg) scale(1) } }
+@keyframes lp-note-late { 0%, 9% { opacity: 0; transform: translateY(-10px) rotate(-5deg) } 13%, 100% { opacity: 1; transform: translateY(0) rotate(-1deg) } }
+
+/* Hand-drawn strokes start hidden and draw in. */
+.lp-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.lp-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.lp-faq details[open] .lp-faq-icon {
+  transform: rotate(45deg);
+}
+
+/*
+ * Reduced motion: nothing moves or loops. Every landing animation is
+ * switched off (not just shortened, which would still flash through the
+ * demo), strokes show drawn, and the demo stays on scene 4, whose static
+ * styles are the visible ones.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .landing *,
+  .landing *::before,
+  .landing *::after {
+    animation: none !important;
+  }
+
+  .landing .lp-draw {
+    stroke-dashoffset: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

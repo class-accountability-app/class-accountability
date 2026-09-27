@@ -2,6 +2,10 @@
 
 Phone mockups (390px wide) for the Study Pods app, Japanese UI.
 Each screen has a .png (how it looks) and an .html (exact copy, colours, spacing).
+Screens 16 and 17 are design-canvas source files (.dc.html, Japanese and
+English inside each): read them for layout, copy, colours, type and motion.
+The built pages differ on purpose where the app changed since (see the
+landing copy in messages/*.json).
 All names, numbers, emails and codes in them are fake examples.
 
 | Screen | Built in |
@@ -13,6 +17,7 @@ All names, numbers, emails and codes in them are fake examples.
 | 04-join-from-link, 05-home-checklist, 06-class-link-qr | Prompt 4 (class link and checklist) |
 | 07-new-target | Prompt 4 (templates only; the manual/auto choice is not built in phase 1) |
 | 09-home-after-logging, 10-quick-log, 11-pod-progress | Prompt 5 (quick log, edit and delete) |
+| 16-landing-desktop.dc.html (1440), 16-landing-mobile.dc.html (390), 17-privacy.dc.html | Prompt 6 (public landing page and privacy policy) |
 | 08-notifications-PHASE2 | Phase 2, do not build yet |
 
 Phase 2 details that appear in the mockups but are NOT built in phase 1:

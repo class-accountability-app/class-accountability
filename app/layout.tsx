@@ -9,8 +9,10 @@ import {
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
+import { appOrigin } from '@/lib/app-origin'
 import { Nav } from '@/components/nav'
 import { TabBar } from '@/components/app-nav'
+import { PublicFooter } from '@/components/public-footer'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -19,10 +21,13 @@ const fraunces = Fraunces({
   weight: ['500', '600'],
 })
 
+// 600 is the landing page's button and label weight (docs/mockups/phase1/16-*).
+// Schibsted Grotesk is a variable font: all three weights come from the same
+// file, so 600 adds no download, only a real semibold instead of a synthesized one.
 const schibstedGrotesk = Schibsted_Grotesk({
   variable: '--font-schibsted-grotesk',
   subsets: ['latin'],
-  weight: ['400', '500'],
+  weight: ['400', '500', '600'],
 })
 
 const courierPrime = Courier_Prime({
@@ -47,9 +52,23 @@ const shipporiMincho = Shippori_Mincho({
   preload: false,
 })
 
+// Everything behind the login is noindex; the landing page (/) and the
+// privacy policy override it. The link preview image is app/opengraph-image.png.
+// metadataBase is NEXT_PUBLIC_APP_URL in production (www.study-pods.org).
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('metadata')
-  return { title: t('title'), description: t('description') }
+  const [t, locale] = await Promise.all([getTranslations('metadata'), getLocale()])
+  return {
+    metadataBase: new URL(await appOrigin()),
+    title: t('title'),
+    description: t('description'),
+    robots: { index: false, follow: false },
+    openGraph: {
+      type: 'website',
+      siteName: 'Study Pods',
+      locale: locale === 'ja' ? 'ja_JP' : 'en_US',
+    },
+    twitter: { card: 'summary_large_image' },
+  }
 }
 
 // viewport-fit=cover lets the page draw under the iPhone home indicator, so
@@ -96,6 +115,7 @@ export default async function RootLayout({
             />
             <main className="flex flex-1 flex-col">{children}</main>
           </div>
+          <PublicFooter signedIn={!!user} />
           {user && <TabBar classIds={classIds} />}
         </NextIntlClientProvider>
       </body>

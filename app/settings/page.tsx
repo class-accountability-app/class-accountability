@@ -104,7 +104,6 @@ export default async function SettingsPage() {
             {t('privacyPolicy')}
             <Chevron />
           </Link>
-          {/* TODO: CONTACT_EMAIL in lib/contact.ts, address to come. */}
           <a
             href={dataDeletionHref(t('deleteDataSubject'))}
             className={`${rowClass} border-b border-dashed border-[#e3d4b0] text-ink`}

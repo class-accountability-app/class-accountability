@@ -1,14 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { isOutsideApp } from '@/lib/nav'
-
-const PUBLIC_ROUTE_PREFIXES = ['/login', '/auth']
-
-function isPublicRoute(pathname: string) {
-  return PUBLIC_ROUTE_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
-  )
-}
+import { isPublicPath, skipsNameCheck } from '@/lib/public-paths'
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -41,7 +34,7 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user && !isPublicRoute(request.nextUrl.pathname)) {
+  if (!user && !isPublicPath(request.nextUrl.pathname)) {
     // Remember where they were heading, so login can bring them back (e.g. a
     // class join link). safeNextPath checks it wherever it's read.
     const redirectUrl = request.nextUrl.clone()
@@ -98,7 +91,7 @@ const NAME_OK_COOKIE = 'name_ok'
 function needsNameCheck(request: NextRequest): boolean {
   const { pathname } = request.nextUrl
   if (request.method !== 'GET') return false
-  if (isOutsideApp(pathname)) return false
+  if (isOutsideApp(pathname) || skipsNameCheck(pathname)) return false
   const lastSegment = pathname.slice(pathname.lastIndexOf('/') + 1)
   return !lastSegment.includes('.')
 }
