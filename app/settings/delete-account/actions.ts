@@ -10,7 +10,8 @@ import { isConfirmWord } from '@/lib/delete-account'
 import { DB_CODES, toErrorKey, type ActionResult } from '@/lib/errors'
 
 // delete_my_account (0016) deletes the caller's auth.users row as postgres;
-// everything that belongs to them cascades. No service_role key anywhere.
+// everything that belongs to them cascades. No admin key is involved: this
+// runs as the signed-in student.
 export async function deleteAccount(formData: FormData): Promise<ActionResult> {
   // The button is disabled until the word matches; this is the real check.
   if (!isConfirmWord(formData.get('confirm'))) {
