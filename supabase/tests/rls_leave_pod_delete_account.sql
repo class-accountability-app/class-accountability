@@ -1,5 +1,5 @@
 -- =============================================================================
--- rls_leave_pod_delete_account.sql — tests for 0016 (leave_pod, delete_my_account)
+-- rls_leave_pod_delete_account.sql — tests for 0016 and 0017 (leave_pod, delete_my_account)
 -- =============================================================================
 -- ONE transaction that ends in ROLLBACK: it creates throwaway users, classes,
 -- pods, targets, logs, comments, nudges and invitations, impersonates each
@@ -264,6 +264,12 @@ insert into public.pod_invitations (pod_id, class_id, inviter_id, invitee_id, ki
   ('00000000-0000-4000-8000-000000003d03', '00000000-0000-4000-8000-00000000c301',
    '00000000-0000-4000-8000-0000000003e5', '00000000-0000-4000-8000-0000000003e5', 'request');
 
+-- Supabase Auth's login state, with no FK to auth.users (0017): one row for
+-- B, who deletes their account below, and one for A, who doesn't.
+insert into auth.flow_state (id, user_id, provider_type, authentication_method) values
+  ('00000000-0000-4000-8000-000000003a01', '00000000-0000-4000-8000-0000000003b2', 'email', 'otp'),
+  ('00000000-0000-4000-8000-000000003a02', '00000000-0000-4000-8000-0000000003a1', 'email', 'otp');
+
 insert into public.nudges (from_user_id, to_user_id, pairing_id, type) values
   ('00000000-0000-4000-8000-0000000003b2', '00000000-0000-4000-8000-0000000003c3',
    '00000000-0000-4000-8000-000000003d03', 'reaction'),
@@ -357,6 +363,7 @@ begin
   select (select count(*) from auth.users where id = b)
        + (select count(*) from auth.identities where user_id = b)
        + (select count(*) from auth.sessions where user_id = b)
+       + (select count(*) from auth.flow_state where user_id = b)
        + (select count(*) from public.profiles where id = b)
        + (select count(*) from public.class_memberships where user_id = b)
        + (select count(*) from public.pairing_members where user_id = b)
@@ -391,6 +398,12 @@ begin
   if not exists (select 1 from public.progress_comments
                  where author_id = '00000000-0000-4000-8000-0000000003a1') then
     raise exception 'FAIL: A''s comment on C''s log was deleted';
+  end if;
+  if exists (select 1 from auth.flow_state where id = '00000000-0000-4000-8000-000000003a01') then
+    raise exception 'FAIL: B''s auth.flow_state row survived (0017)';
+  end if;
+  if not exists (select 1 from auth.flow_state where id = '00000000-0000-4000-8000-000000003a02') then
+    raise exception 'FAIL: delete_my_account deleted another user''s auth.flow_state row';
   end if;
 
   -- P3 keeps C and E's request; P4 (B alone) is gone.
