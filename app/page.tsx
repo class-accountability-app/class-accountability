@@ -42,15 +42,21 @@ type PodRow = { pairing_id: string; pairings: { class_id: string } | null }
 // Home (screen 05): greeting, はじめの3ステップ while setting up, and the
 // classes the student is in. No email here (it lives only in 設定), and no
 // ログアウト (設定 on phones, the header on desktop).
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ deleted?: string }>
+}) {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Logged out: the public landing page. Logged in: Home, as before.
+  // Logged out: the public landing page (after deleting an account, with
+  // 「アカウントを削除しました」 on top). Logged in: Home, as before.
   if (!user) {
-    return <Landing />
+    const { deleted } = await searchParams
+    return <Landing accountDeleted={deleted === '1'} />
   }
 
   const [{ data: profile }, { data: memberships }, { data: myPods }, quick] =

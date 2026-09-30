@@ -67,6 +67,31 @@ export async function createPod(classId: string): Promise<ActionResult> {
   return { error: null }
 }
 
+// leave_pod (0016) removes only my own row, cancels the invites I sent for
+// the pod, and removes the pod if I was the last one in it. Afterwards I can
+// start or join another pod in this class.
+export async function leavePod(classId: string, podId: string): Promise<ActionResult> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'signedOut' }
+  }
+
+  const { error } = await supabase.rpc('leave_pod', { target_pod: podId })
+
+  if (error) {
+    return { error: toErrorKey('leavePod', error, { [DB_CODES.insufficientPrivilege]: 'podNotFound' }) }
+  }
+
+  revalidatePath(`/classes/${classId}`)
+  revalidatePath(`/classes/${classId}/progress`)
+  revalidatePath('/')
+  return { error: null }
+}
+
 export async function sendInvite(podId: string, inviteeId: string): Promise<ActionResult> {
   const supabase = await createClient()
   const {

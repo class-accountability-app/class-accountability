@@ -62,6 +62,10 @@ Students log in with a 6-digit code or a button sent to their university email (
 
 0015 (class organizers): only accounts with `profiles.can_create_classes` (set only by SQL as the project owner) can create classes. The creator's membership has `role = 'organizer'`; everyone who joins by code is `'student'` and `join_class_by_code` never changes a role. Organizers see their class, its join link and QR and the student count, nothing else: they aren't counted, can't be in, create, join or be invited to pods (`SP003`), can't create targets, and can't see students' memberships or profiles. Use `is_class_student` (not `is_class_member`) for anything about studying in a class.
 
+0016 (leave a pod, delete my account): `leave_pod(pod)` removes only the caller's `pairing_members` row, deletes the invites they sent for that pod that are still pending, and deletes the pod once it's empty (its invitations and nudges cascade; nudges in a pod that still has members stay). `delete_my_account()` deletes `auth.users where id = auth.uid()` as postgres and everything cascades from `profiles`. Pods left empty and the caller's classes without students are removed too. The organizer of a class that still has students is refused (`SP004`). No service_role key is involved. The UI is `app/settings/delete-account/`: it signs out, clears the `name_ok` and `setup_done_seen` cookies (they hold the user id) and lands on `/?deleted=1`.
+
+0017: `delete_my_account()` also deletes the caller's `auth.flow_state` rows (Supabase Auth's login state). That table has no foreign key to `auth.users`, so nothing cascades and Supabase never cleans it up. If Supabase adds another auth table with a user id but no FK, delete from it here too; the RLS test checks `flow_state`.
+
 ## Scope discipline
 
 **In (MVP):** auth, create/join class, student-formed pods (start, invite, request to join; up to 6), targets + deadlines, manual progress logging, shared pod view, one "stuck on" nudge, churn detection (display-only).

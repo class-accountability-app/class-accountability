@@ -18,6 +18,9 @@ const ONE_POD_PER_CLASS = 'SP002'
 // Raised by create_pod and the pod-member trigger (0015_class_organizers.sql):
 // a class's organizer can't be in its pods.
 const ORGANIZER_NO_POD = 'SP003'
+// Raised by delete_my_account (0016_leave_pod_delete_account.sql): the
+// organizer of a class that still has students can't delete their account.
+const ORGANIZER_HAS_STUDENTS = 'SP004'
 
 export const DB_CODES = {
   uniqueViolation: PG_UNIQUE_VIOLATION,
@@ -26,6 +29,7 @@ export const DB_CODES = {
   nudgeLimit: NUDGE_LIMIT,
   onePodPerClass: ONE_POD_PER_CLASS,
   organizerNoPod: ORGANIZER_NO_POD,
+  organizerHasStudents: ORGANIZER_HAS_STUDENTS,
 } as const
 
 const EMAIL_PATTERN = /[^\s"'<>(),;:]+@[^\s"'<>(),;:]+/g

@@ -151,7 +151,12 @@
     "noOneToInvite": "No classmates left to invite.",
     "notInPodTitle": "You're not in a pod yet",
     "organizerNote": "You organize this class. Students’ progress and targets aren’t shown to you.",
-    "studentCount": "{count, plural, one {# student has joined} other {# students have joined}}"
+    "studentCount": "{count, plural, one {# student has joined} other {# students have joined}}",
+    "leavePod": "Leave pod",
+    "leaveConfirm": "If you leave, your podmates can no longer see your progress. Your targets and logs stay.",
+    "leaveYes": "Leave",
+    "leaveNo": "Cancel",
+    "leaving": "Leaving…"
   },
   "units": {
     "word_count": "{count, plural, one {# word} other {# words}}",
@@ -285,7 +290,9 @@
     "logFailed": "Couldn’t save your log. Check your connection and try again.",
     "classCreateNotAllowed": "Only approved accounts can create classes. Join with the link, QR code or class code you were given.",
     "organizerNoPod": "Class organizers can’t be in pods.",
-    "organizerNoTargets": "Class organizers can’t set targets in this class."
+    "organizerNoTargets": "Class organizers can’t set targets in this class.",
+    "organizerHasStudents": "You organize a class that still has students, so you can’t delete your account. Please contact us.",
+    "confirmWordMismatch": "Type “delete” to confirm."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -308,9 +315,8 @@
     "email": "Email: {email} (not shown to anyone else)",
     "languageHeading": "Language",
     "privacyPolicy": "Privacy policy",
-    "deleteData": "Request data deletion",
-    "deleteDataSubject": "Data deletion request",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "deleteAccount": "Delete account"
   },
   "nudgesPage": {
     "title": "Nudges",
@@ -571,7 +577,8 @@
       "heading": "Start your next assignment in a pod.",
       "body": "No password needed. We’ll send a login code to your @andrew.ac.jp address.",
       "cta": "Log in with your university email"
-    }
+    },
+    "accountDeleted": "Your account has been deleted"
   },
   "privacy": {
     "effective": "Effective 1 October 2026",
@@ -614,7 +621,7 @@
     "researchHeading": "6. Research use",
     "researchText": "Study Pods is part of a university capstone project. The project report uses only aggregated usage figures that can’t identify you, such as how often progress is logged or how many people keep using the app. It never includes names, email addresses, or the text of memos or comments. If you don’t want your data included, email us at the address below and we’ll leave it out of the analysis; you can keep using the app. Whether you use Study Pods, and whether you opt out, has no effect on your grades.",
     "retentionHeading": "7. Keeping and deleting data",
-    "retentionText": "We keep your data while you use your account. To delete your account and its data, email us at the address below; we’ll delete it within 30 days, including backups. Accounts with no login for one year are deleted. If the service shuts down, all data is deleted within 30 days. Logs kept by our hosting providers follow their own retention periods.",
+    "retentionText": "We keep your data while you use your account. You can delete your account and its data at any time in 設定 → Delete account; it’s removed from our database immediately. You can also email us at the address below. Any copies, including backups, are gone within 30 days. Accounts with no login for one year are deleted. If the service shuts down, all data is deleted within 30 days. Logs kept by our hosting providers follow their own retention periods.",
     "contactHeading": "8. Contact",
     "changesHeading": "9. Changes to this policy",
     "changesText": "If this policy changes, we’ll update the effective date on this page.",
@@ -623,5 +630,24 @@
     "back": "← Back to the home page",
     "organizerLabel": "Whoever created the class (e.g. a teacher):",
     "organizerText": "the number of members and the join link. Not your progress or targets."
+  },
+  "deleteAccount": {
+    "title": "Delete account",
+    "intro": "Deleting your account removes all of the following. This can’t be undone.",
+    "itemProfile": "Your profile (display name and email address)",
+    "itemClasses": "The classes you’ve joined, and your place in pods",
+    "itemTargets": "Your targets and logs",
+    "itemComments": "Comments you wrote, and comments on your logs",
+    "itemNudges": "Nudges you sent and received",
+    "itemInvitations": "Pod invitations and join requests",
+    "othersNote": "Your podmates’ targets and logs are not affected.",
+    "emailOption": "You can also ask us by email:",
+    "emailSubject": "Account deletion request",
+    "confirmLabel": "To confirm, type “delete”",
+    "submit": "Delete my account",
+    "deleting": "Deleting…",
+    "back": "Back to settings",
+    "organizerBlocked": "You organize a class that still has students, so you can’t delete your account here. Please email us and we’ll help you hand the class over or delete it.",
+    "organizerSubject": "Account deletion (organizer)"
   }
 }

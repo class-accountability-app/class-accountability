@@ -82,8 +82,9 @@ export async function updateSession(request: NextRequest) {
   return supabaseResponse
 }
 
-// Set once the student has chosen a display name (see needsNameCheck).
-const NAME_OK_COOKIE = 'name_ok'
+// Set once the student has chosen a display name (see needsNameCheck). It
+// holds the user id, so deleting an account clears it (settings/delete-account).
+export const NAME_OK_COOKIE = 'name_ok'
 
 // Students who haven't chosen a name yet are sent to /welcome first. Only
 // page loads: never a server action (POST), never /login, /auth/* or /welcome
