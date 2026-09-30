@@ -192,6 +192,16 @@ describe('toErrorKey', () => {
     )
   })
 
+  it('maps delete_my_account refusing an organizer with students', () => {
+    captureLog()
+    const refusal = { code: DB_CODES.organizerHasStudents, message: 'organizer of a class with students' }
+    expect(
+      toErrorKey('deleteAccount', refusal, { [DB_CODES.organizerHasStudents]: 'organizerHasStudents' })
+    ).toBe('organizerHasStudents')
+    expect(ja.errors.organizerHasStudents).toBeTruthy()
+    expect(en.errors.organizerHasStudents).toBeTruthy()
+  })
+
   it('maps RLS denials and rate limits', () => {
     captureLog()
     expect(toErrorKey('x', { code: '42501', message: 'new row violates row-level security policy' })).toBe(

@@ -4,7 +4,7 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { setLocale } from '@/i18n/actions'
 import { locales } from '@/i18n/config'
-import { PRIVACY_POLICY_PATH, dataDeletionHref } from '@/lib/contact'
+import { DELETE_ACCOUNT_PATH, PRIVACY_POLICY_PATH } from '@/lib/contact'
 import { DisplayNameForm } from './display-name-form'
 
 const LANGUAGE_NAMES = { ja: '日本語', en: 'English' } as const
@@ -104,13 +104,14 @@ export default async function SettingsPage() {
             {t('privacyPolicy')}
             <Chevron />
           </Link>
-          <a
-            href={dataDeletionHref(t('deleteDataSubject'))}
+          {/* Deleting by email is still possible; the page says how. */}
+          <Link
+            href={DELETE_ACCOUNT_PATH}
             className={`${rowClass} border-b border-dashed border-[#e3d4b0] text-ink`}
           >
-            {t('deleteData')}
+            {t('deleteAccount')}
             <Chevron />
-          </a>
+          </Link>
           <form action="/auth/signout" method="post">
             <button type="submit" className={`${rowClass} text-left text-accent-text`}>
               {t('signOut')}

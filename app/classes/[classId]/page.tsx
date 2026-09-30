@@ -6,6 +6,7 @@ import { CreatePodButton } from './create-pod-button'
 import { RequestJoinButton } from './request-join-button'
 import { InviteForm } from './invite-form'
 import { InvitationActions } from './invitation-actions'
+import { LeavePodButton } from './leave-pod-button'
 import { EmptyState } from '@/components/empty-state'
 import { InviteCard } from './invite-card'
 import { appOrigin } from '@/lib/app-origin'
@@ -275,6 +276,8 @@ export default async function ClassPodsPage({
                 ) : (
                   <InviteForm podId={podId} eligibleClassmates={eligibleClassmates} />
                 )}
+
+                <LeavePodButton classId={classId} podId={podId} />
               </div>
             )
           })

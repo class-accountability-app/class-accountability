@@ -57,11 +57,22 @@ function ComingSoon({ children }: { children: ReactNode }) {
   )
 }
 
-export async function Landing() {
+export async function Landing({ accountDeleted = false }: { accountDeleted?: boolean }) {
   const [t, locale] = await Promise.all([getTranslations('landing'), getLocale()])
 
   return (
     <div className="landing flex flex-col overflow-x-clip text-ink">
+      {/* After 設定 → アカウントを削除 (lib/contact ACCOUNT_DELETED_PATH). */}
+      {accountDeleted && (
+        <div className="mx-auto w-full max-w-[1440px] px-5 pt-6 lg:px-[120px]">
+          <p
+            role="status"
+            className="rounded-[2px] border border-accent-text bg-surface px-4 py-3 text-[15px] font-semibold text-ink"
+          >
+            {t('accountDeleted')}
+          </p>
+        </div>
+      )}
       {/* Hero */}
       <section
         aria-labelledby="landing-title"
