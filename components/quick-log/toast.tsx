@@ -93,7 +93,7 @@ export function ToastSlot({ anchor }: { anchor: string }) {
       onBlur={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget)) setPaused({ focus: false })
       }}
-      className="quick-toast fixed inset-x-4 top-[72px] z-40 mx-auto flex max-w-md items-center gap-3 rounded-[2px] bg-ink px-4 py-3.5 text-[#fbf6ea] shadow-[0_4px_16px_rgba(58,47,34,0.25)]"
+      className="quick-toast fixed top-[72px] right-[max(1rem,env(safe-area-inset-right))] left-[max(1rem,env(safe-area-inset-left))] z-40 mx-auto flex max-w-md items-center gap-3 rounded-[2px] bg-ink px-4 py-3.5 text-[#fbf6ea] shadow-[0_4px_16px_rgba(58,47,34,0.25)]"
     >
       {mine.kind === 'error' ? (
         <>

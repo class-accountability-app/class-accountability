@@ -162,7 +162,7 @@ export function QuickLogSheet({
         <form
           onSubmit={handleSubmit}
           noValidate
-          className="flex flex-col gap-3.5 px-5 pt-3 pb-[calc(28px+env(safe-area-inset-bottom))]"
+          className="flex flex-col gap-3.5 pt-3 pr-[max(1.25rem,env(safe-area-inset-right))] pb-[calc(28px+env(safe-area-inset-bottom))] pl-[max(1.25rem,env(safe-area-inset-left))]"
         >
           <span aria-hidden className="h-1 w-10 self-center rounded-[2px] bg-border sm:hidden" />
 

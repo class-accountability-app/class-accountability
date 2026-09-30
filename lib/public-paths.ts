@@ -6,8 +6,17 @@
 const PUBLIC_PREFIXES = ['/login', '/auth']
 
 // Single pages: the landing page (logged in, / is Home: the page decides),
-// the privacy policy, and what crawlers ask for.
-const PUBLIC_EXACT = new Set(['/', '/privacy', '/robots.txt', '/sitemap.xml'])
+// the privacy policy, what crawlers ask for, and the installed-app files
+// (the proxy's matcher already skips those; this is the backstop).
+const PUBLIC_EXACT = new Set([
+  '/',
+  '/privacy',
+  '/robots.txt',
+  '/sitemap.xml',
+  '/manifest.webmanifest',
+  '/sw.js',
+  '/offline.html',
+])
 
 export function isPublicPath(pathname: string): boolean {
   if (PUBLIC_EXACT.has(pathname)) return true

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { useStandalone } from '@/components/pwa'
 import { createClient } from '@/lib/supabase/client'
 import { FieldError, FormError, describedField } from '@/components/form-errors'
 import { codeErrorKeyFor, resendErrorKeyFor, type ErrorKey } from '@/lib/errors'
@@ -29,6 +30,7 @@ export function CodeStep({
 }) {
   const t = useTranslations('login')
   const tCommon = useTranslations('common')
+  const standalone = useStandalone()
 
   const codeRef = useRef<HTMLInputElement>(null)
   const [code, setCode] = useState('')
@@ -138,6 +140,13 @@ export function CodeStep({
           strong: (chunks) => <strong className="break-all text-ink">{chunks}</strong>,
         })}
       </p>
+      {/* The installed app has its own cookies: the email's button logs in
+          Safari, not the app. Only the code works here. */}
+      {standalone && (
+        <p className="rounded-[2px] border border-accent-text bg-surface px-3.5 py-2.5 text-sm text-ink">
+          {t('appUseCode')}
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
         <div className="mt-2 flex flex-col gap-2">

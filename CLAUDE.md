@@ -66,6 +66,15 @@ Students log in with a 6-digit code or a button sent to their university email (
 
 0017: `delete_my_account()` also deletes the caller's `auth.flow_state` rows (Supabase Auth's login state). That table has no foreign key to `auth.users`, so nothing cascades and Supabase never cleans it up. If Supabase adds another auth table with a user id but no FK, delete from it here too; the RLS test checks `flow_state`.
 
+## Installed app (PWA)
+
+- `app/manifest.ts` (served at `/manifest.webmanifest`), icons in `public/icons/` plus `app/apple-icon.png` and `app/favicon.ico` (the favicon is only the S, for tabs). Single theme: no dark mode.
+- `public/sw.js` is a plain file with no build step, and Prompt 10's push handlers go in it too. It handles only same-origin GETs. Page loads (`mode: 'navigate'`) go to the network; if the network fails it serves `/offline.html`, never on a 404 or 500. Cache-first for hashed `/_next/static` (status 200 only, newest 150 kept) and for the offline page and icons. **Nothing else is ever cached**: no page, no `?_rsc` data, no server action, no Supabase. So sign-out and account deletion leave nothing of the student's behind. Bump `VERSION` when the cached files change; activate deletes old caches. `next.config.ts` serves it with `no-cache`.
+- `public/offline.html` is static and bilingual on purpose: every App Router page renders the header and tab bar with the student's classes, so it must never be cached.
+- The proxy skips `manifest.webmanifest`, `sw.js` and `offline.html` (`proxy.ts` matcher), and they're in `PUBLIC_EXACT` too. They must never redirect to /login.
+- `components/pwa.tsx` registers the worker in production builds only (in dev it unregisters any old one) and catches `beforeinstallprompt`. `lib/install-hint.ts` decides 設定's 「ホーム画面に追加」 row.
+- Installed iPhone apps have their own cookies: the email's button logs in Safari, not the app. The code screen tells students to use the 6-digit code there.
+
 ## Scope discipline
 
 **In (MVP):** auth, create/join class, student-formed pods (start, invite, request to join; up to 6), targets + deadlines, manual progress logging, shared pod view, one "stuck on" nudge, churn detection (display-only).

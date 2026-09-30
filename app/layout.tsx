@@ -13,6 +13,7 @@ import { appOrigin } from '@/lib/app-origin'
 import { Nav } from '@/components/nav'
 import { TabBar } from '@/components/app-nav'
 import { PublicFooter } from '@/components/public-footer'
+import { PwaSupport } from '@/components/pwa'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -68,15 +69,24 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: locale === 'ja' ? 'ja_JP' : 'en_US',
     },
     twitter: { card: 'summary_large_image' },
+    // The installed app on iPhone (the manifest is app/manifest.ts; the
+    // favicon and apple-icon come from app/favicon.ico and app/apple-icon.png).
+    // 'default' keeps the status bar light with dark text and the page below
+    // it; 'black-translucent' would put white text over the cream header.
+    appleWebApp: { capable: true, title: 'Study Pods', statusBarStyle: 'default' },
   }
 }
 
-// viewport-fit=cover lets the page draw under the iPhone home indicator, so
-// env(safe-area-inset-bottom) is non-zero and the tab bar can pad for it.
+// viewport-fit=cover lets the page draw under the iPhone home indicator and,
+// in landscape, beside the notch, so env(safe-area-inset-*) is non-zero and
+// the tab bar and page gutters can pad for it (globals.css). themeColor is the
+// header's surface colour: the status bar and title bar match the header.
+// Single theme: no dark-mode variant.
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
+  themeColor: '#fbf6e8',
 }
 
 export default async function RootLayout({
@@ -117,6 +127,7 @@ export default async function RootLayout({
           </div>
           <PublicFooter signedIn={!!user} />
           {user && <TabBar classIds={classIds} />}
+          <PwaSupport />
         </NextIntlClientProvider>
       </body>
     </html>
