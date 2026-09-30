@@ -6,6 +6,7 @@ import { setLocale } from '@/i18n/actions'
 import { locales } from '@/i18n/config'
 import { DELETE_ACCOUNT_PATH, PRIVACY_POLICY_PATH } from '@/lib/contact'
 import { DisplayNameForm } from './display-name-form'
+import { InstallRow } from './install-row'
 
 const LANGUAGE_NAMES = { ja: '日本語', en: 'English' } as const
 
@@ -100,6 +101,7 @@ export default async function SettingsPage() {
         </section>
 
         <section className={`${sectionClass} px-[18px] py-1.5`}>
+          <InstallRow rowClass={rowClass} />
           <Link href={PRIVACY_POLICY_PATH} className={`${rowClass} border-b border-dashed border-[#e3d4b0] text-ink`}>
             {t('privacyPolicy')}
             <Chevron />

@@ -9,6 +9,11 @@ describe('isPublicPath', () => {
     }
   )
 
+  // The browser fetches these in the background, logged out too.
+  it.each(['/manifest.webmanifest', '/sw.js', '/offline.html'])('installed-app file %s is public', (path) => {
+    expect(isPublicPath(path)).toBe(true)
+  })
+
   it.each([
     '/classes',
     '/classes/abc/progress',
@@ -20,6 +25,8 @@ describe('isPublicPath', () => {
     '/privacyx',
     '/loginx',
     '/authorize',
+    '/sw.js/x',
+    '/offline',
   ])('%s still needs a login', (path) => {
     expect(isPublicPath(path)).toBe(false)
   })

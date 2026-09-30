@@ -66,6 +66,11 @@ body {
   );
   color: var(--ink);
   font-family: var(--font-body);
+  /* Landscape on a notched iPhone (viewport-fit=cover, app/layout.tsx): keep
+     everything clear of the notch. 0 everywhere else. Fixed elements (tab
+     bar, sheet, toast) pad for it themselves. */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 html:lang(ja) body {

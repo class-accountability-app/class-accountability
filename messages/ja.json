@@ -94,7 +94,8 @@
     "resendIn": "再送できるまで あと {seconds}秒",
     "resend": "コードを再送する",
     "resent": "新しいコードを送りました。",
-    "changeEmail": "別のアドレスを使う"
+    "changeEmail": "別のアドレスを使う",
+    "appUseCode": "アプリでは、メールのボタンではなく6桁のコードを入力してください。"
   },
   "confirm": {
     "eyebrow": "メールのボタンから",
@@ -316,7 +317,16 @@
     "languageHeading": "言語",
     "privacyPolicy": "プライバシーポリシー",
     "signOut": "ログアウト",
-    "deleteAccount": "アカウントを削除"
+    "deleteAccount": "アカウントを削除",
+    "install": {
+      "row": "ホーム画面に追加",
+      "iosIntro": "次の順にタップすると、アプリのように開けます。",
+      "iosStep1": "画面下の共有ボタン<icon></icon>をタップ",
+      "iosStep2": "メニューを下にスクロールして「ホーム画面に追加」をタップ",
+      "iosStep3": "右上の「追加」をタップ",
+      "iosInApp": "LINE や Instagram の中のブラウザでは追加できません。メニューから「Safari で開く」を選んでから、もう一度お試しください。",
+      "inApp": "LINE や Instagram の中のブラウザでは追加できません。メニューから「ブラウザで開く」を選び、Chrome で開いてから、もう一度お試しください。"
+    }
   },
   "nudgesPage": {
     "title": "声かけ",

@@ -94,7 +94,8 @@
     "resendIn": "You can resend in {seconds}s",
     "resend": "Resend the code",
     "resent": "We sent a new code.",
-    "changeEmail": "Use a different address"
+    "changeEmail": "Use a different address",
+    "appUseCode": "In the app, enter the 6-digit code instead of using the button in the email."
   },
   "confirm": {
     "eyebrow": "From the email button",
@@ -316,7 +317,16 @@
     "languageHeading": "Language",
     "privacyPolicy": "Privacy policy",
     "signOut": "Sign out",
-    "deleteAccount": "Delete account"
+    "deleteAccount": "Delete account",
+    "install": {
+      "row": "Add to Home Screen",
+      "iosIntro": "Tap these in order to open it like an app:",
+      "iosStep1": "The share button<icon></icon> at the bottom of the screen",
+      "iosStep2": "Scroll down the menu and tap “Add to Home Screen”",
+      "iosStep3": "“Add” in the top right",
+      "iosInApp": "LINE’s and Instagram’s own browsers can’t add to the home screen. Choose “Open in Safari” from the menu, then try again.",
+      "inApp": "LINE’s and Instagram’s own browsers can’t add to the home screen. Choose “Open in browser” from the menu to open it in Chrome, then try again."
+    }
   },
   "nudgesPage": {
     "title": "Nudges",

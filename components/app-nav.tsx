@@ -71,7 +71,7 @@ export function TabBar({ classIds }: { classIds: string[] }) {
       <div aria-hidden className="h-[calc(68px+env(safe-area-inset-bottom))] shrink-0 md:hidden" />
       <nav
         aria-label={t('main')}
-        className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:hidden"
+        className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] md:hidden"
       >
         <ul className="grid h-[68px] grid-cols-4">
           {TAB_IDS.map((tab) => {
