@@ -14,6 +14,7 @@ import { Nav } from '@/components/nav'
 import { TabBar } from '@/components/app-nav'
 import { PublicFooter } from '@/components/public-footer'
 import { PwaSupport } from '@/components/pwa'
+import { PushSync } from '@/components/push'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -128,6 +129,7 @@ export default async function RootLayout({
           <PublicFooter signedIn={!!user} />
           {user && <TabBar classIds={classIds} />}
           <PwaSupport />
+          {user && <PushSync />}
         </NextIntlClientProvider>
       </body>
     </html>

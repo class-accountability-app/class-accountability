@@ -7,6 +7,8 @@ import { locales } from '@/i18n/config'
 import { DELETE_ACCOUNT_PATH, PRIVACY_POLICY_PATH } from '@/lib/contact'
 import { DisplayNameForm } from './display-name-form'
 import { InstallRow } from './install-row'
+import { PushRow } from './push-row'
+import { SignOutForm } from '@/components/sign-out-form'
 
 const LANGUAGE_NAMES = { ja: '日本語', en: 'English' } as const
 
@@ -31,7 +33,8 @@ function Chevron() {
   )
 }
 
-// Screen 13, without the notification switches (phase 2).
+// Screen 13. Of its two notification switches only 声かけの通知 is built
+// (Prompt 10); there are no email nudges, so no 「メールでも受け取る」.
 export default async function SettingsPage() {
   const supabase = await createClient()
   const {
@@ -67,7 +70,17 @@ export default async function SettingsPage() {
           </p>
         </section>
 
-        <section aria-labelledby="settings-language" className={`${sectionClass} gap-2.5 p-[18px]`}>
+        <section
+          aria-labelledby="settings-notifications"
+          className={`${sectionClass} px-[18px] pt-1.5 pb-2.5`}
+        >
+          <h2 id="settings-notifications" className="mt-3 font-heading text-xl font-bold text-ink">
+            {t('notificationsHeading')}
+          </h2>
+          <PushRow />
+        </section>
+
+        <section aria-labelledby="settings-language"className={`${sectionClass} gap-2.5 p-[18px]`}>
           <h2 id="settings-language" className="font-heading text-xl font-bold text-ink">
             {t('languageHeading')}
           </h2>
@@ -114,12 +127,10 @@ export default async function SettingsPage() {
             {t('deleteAccount')}
             <Chevron />
           </Link>
-          <form action="/auth/signout" method="post">
-            <button type="submit" className={`${rowClass} text-left text-accent-text`}>
-              {t('signOut')}
-              <Chevron />
-            </button>
-          </form>
+          <SignOutForm buttonClassName={`${rowClass} text-left text-accent-text`}>
+            {t('signOut')}
+            <Chevron />
+          </SignOutForm>
         </section>
       </div>
     </div>

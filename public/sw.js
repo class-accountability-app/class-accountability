@@ -1,5 +1,5 @@
 // Study Pods service worker. A plain file with no build step, so every rule
-// below is visible here (Prompt 10 adds push to this same file).
+// below is visible here. Caching first; push notifications at the end.
 //
 // The privacy rule: nothing that belongs to a student is ever stored. Only
 // three things are cached:
@@ -98,3 +98,55 @@ async function trim(cache) {
   const extra = keys.length - STATIC_MAX_ENTRIES
   for (let i = 0; i < extra; i++) await cache.delete(keys[i])
 }
+
+// --- Push notifications (声かけ) ----------------------------------------------
+//
+// The send-nudge-push Edge Function sends { title, body } only: who nudged,
+// never the memo (lock screens are visible to others). Every push shows a
+// notification; iOS cancels the subscription of a site that receives a push
+// without showing one. The tag makes a new nudge replace the previous
+// notification instead of stacking. Nothing here touches Cache Storage.
+
+const NUDGES_URL = '/nudges'
+
+self.addEventListener('push', (event) => {
+  let data = {}
+  try {
+    data = event.data ? event.data.json() : {}
+  } catch {
+    data = {}
+  }
+  const title = typeof data.title === 'string' ? data.title : 'Study Pods'
+  const body = typeof data.body === 'string' ? data.body : ''
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon: '/icons/icon-192.png',
+      tag: 'nudge',
+      renotify: true,
+    }),
+  )
+})
+
+// Always opens 声かけ (the payload carries no URL, so a push can't send the
+// student anywhere else). An open window of the app is focused and taken
+// there; if none is open, a new one is. matchAll returns only windows this
+// worker controls (every page after activate's clients.claim), and only
+// those can be navigated.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  const target = new URL(NUDGES_URL, self.location.origin).href
+
+  event.waitUntil(
+    (async () => {
+      const [open] = await self.clients.matchAll({ type: 'window' })
+      if (open) {
+        const focused = await open.focus()
+        if (focused.url !== target) await focused.navigate(target)
+        return
+      }
+      await self.clients.openWindow(target)
+    })(),
+  )
+})

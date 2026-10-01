@@ -1,17 +1,33 @@
 'use client'
 
-import { useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { promptInstall, useInstallHint } from '@/components/pwa'
 
+// The anchor the 声かけの通知 messages link to ("add it first").
+export const INSTALL_ROW_ID = 'install'
+
 // 設定's 「ホーム画面に追加」 row (lib/install-hint.ts decides which kind).
 // Hidden when already installed or when this browser can't install; renders
-// nothing until hydrated, so it never flashes the wrong kind.
+// nothing until hydrated, so it never flashes the wrong kind. Opens by itself
+// when the page is opened at #install.
 export function InstallRow({ rowClass }: { rowClass: string }) {
   const t = useTranslations('settings.install')
   const hint = useInstallHint()
   const [open, setOpen] = useState(false)
   const stepsId = useId()
+
+  useEffect(() => {
+    function openOnHash() {
+      if (window.location.hash === `#${INSTALL_ROW_ID}`) setOpen(true)
+    }
+    const timer = setTimeout(openOnHash, 0)
+    window.addEventListener('hashchange', openOnHash)
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('hashchange', openOnHash)
+    }
+  }, [])
 
   if (hint === null || hint === 'installed' || hint === 'none') return null
 
@@ -19,7 +35,7 @@ export function InstallRow({ rowClass }: { rowClass: string }) {
 
   if (hint === 'prompt') {
     return (
-      <button type="button" onClick={() => void promptInstall()} className={row}>
+      <button id={INSTALL_ROW_ID} type="button" onClick={() => void promptInstall()} className={row}>
         {t('row')}
         <PlusIcon />
       </button>
@@ -28,7 +44,7 @@ export function InstallRow({ rowClass }: { rowClass: string }) {
 
   // iPhone steps, or "open this in Safari / a browser first": both expand in place.
   return (
-    <div className="border-b border-dashed border-[#e3d4b0]">
+    <div id={INSTALL_ROW_ID} className="scroll-mt-20 border-b border-dashed border-[#e3d4b0]">
       <button
         type="button"
         aria-expanded={open}
