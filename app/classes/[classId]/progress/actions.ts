@@ -33,8 +33,10 @@ export async function createTarget(classId: string, formData: FormData): Promise
 
   let targetAmount: number | null = null
   if (targetType !== 'task') {
-    const parsed = targetAmountRaw ? Number(targetAmountRaw) : NaN
-    if (!Number.isFinite(parsed) || parsed <= 0) {
+    // The field is text (no scroll-wheel changes), so parse it the way the
+    // ＋記録 sheet does: full-width digits and "2,000" are fine, "1e3" isn't.
+    const parsed = targetAmountRaw ? parseAmount(targetAmountRaw, targetType) : null
+    if (parsed === null) {
       return { error: 'targetAmountPositive' }
     }
     targetAmount = parsed
@@ -79,7 +81,7 @@ export async function createTarget(classId: string, formData: FormData): Promise
   }
 
   revalidatePath(`/classes/${classId}/progress`)
-  revalidatePath('/') // the Home checklist's 最初の目標を立てる
+  revalidatePath('/') // Home's targets and 次にやること
   return { error: null }
 }
 

@@ -1,17 +1,15 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { cookies } from 'next/headers'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
 import { createClient } from '@/lib/supabase/server'
-import { SETUP_SEEN_COOKIE, buildChecklist, type HomeClass, type StepId } from '@/lib/checklist'
+import { loggedOnTokyoDay, nextStep } from '@/lib/next-step'
 import { HOME_TARGET_LIMIT, sortHomeTargets } from '@/lib/home-targets'
 import { formatDateWithWeekday, tokyoWeekStart } from '@/lib/date'
 import { weekTotal } from '@/lib/progress-stats'
 import { tidyTotal, type AmountType } from '@/lib/quick-log'
-import { MarkSetupSeen } from './setup-seen'
-import { CodeJoinForm } from '@/components/code-join-form'
-import { RuleSnap } from '@/components/rule-snap'
+import { NextStepCard } from '@/components/next-step-card'
+import { secondaryButtonClass } from '@/components/buttons'
 import { QuickLogProvider } from '@/components/quick-log/quick-log-provider'
 import { FinishedTargets, StickyLog, TargetCard } from '@/components/quick-log/target-card'
 import { WeekSummary } from '@/components/quick-log/week-summary'
@@ -59,11 +57,19 @@ type MateTargetRow = {
   last: { logged_at: string }[]
 }
 
+type HomeClass = {
+  id: string
+  name: string
+  term: string
+  podSize: number | null
+  organizer: boolean
+}
+
 const AMOUNT_TYPES: AmountType[] = ['character_count', 'word_count', 'study_hours']
 const NUDGE_LIMIT = 3 // per sender → recipient in a rolling 24 hours (0011)
 
-// Home (screen 05, redesigned in Prompt 11): greeting with today's date, the
-// 3 steps while setting up, 今週, my targets (most urgent first, finished
+// Home (screen 05, redesigned in Prompt 11): greeting with today's date,
+// 次にやること (Prompt 11b, lib/next-step.ts), 今週, my targets (most urgent first, finished
 // ones folded away), ポッドの様子 and my classes. On a phone the first screen
 // shows the greeting, the most urgent target and ＋記録; from 1024px, targets
 // on the left and the pod on the right. Everything sits on the notebook rule
@@ -129,7 +135,7 @@ export default async function Home({
     return (data as MateTargetRow[] | null) ?? []
   })
 
-  const [{ data: profile }, { data: memberships }, pods, quick, { data: sentNudges }, mateTargets] =
+  const [{ data: profile }, { data: memberships }, pods, quick, { data: sentNudges }, mateTargets, { data: invites }] =
     await Promise.all([
       supabase.from('profiles').select('display_name').eq('id', user.id).single(),
       supabase
@@ -144,6 +150,13 @@ export default async function Home({
       }),
       supabase.from('nudges').select('to_user_id').eq('from_user_id', user.id).gte('created_at', dayAgo),
       matesRead,
+      // 次にやること: a pending invitation to a pod (for 招待を見る).
+      supabase
+        .from('pod_invitations')
+        .select('class_id')
+        .eq('invitee_id', user.id)
+        .eq('kind', 'invite')
+        .eq('status', 'pending'),
     ])
 
   const podByClass = new Map(pods.map((p) => [p.pairings!.class_id, p.pairings!.pairing_members]))
@@ -158,9 +171,6 @@ export default async function Home({
       organizer: m.role === 'organizer',
     }))
 
-  const checklist = buildChecklist(classes, quick.rows.length > 0)
-  const seenAllDone = (await cookies()).get(SETUP_SEEN_COOKIE)?.value === user.id
-  const showChecklist = !checklist.allDone || !seenAllDone
 
   const [t, tCommon, locale] = await Promise.all([
     getTranslations('home'),
@@ -186,6 +196,29 @@ export default async function Home({
   const homeTargets = openTargets.slice(0, HOME_TARGET_LIMIT)
   const moreTargets = openTargets.length - homeTargets.length
   const finishedTargets = sortedTargets.filter((x) => x.finished)
+
+  const invitedTo = new Set((invites ?? []).map((i) => i.class_id))
+  const step = nextStep({
+    classes: classes.map((c) => ({ ...c, invited: invitedTo.has(c.id) })),
+    targets: sortedTargets.map((x) => ({
+      id: x.id,
+      classId: x.class_id,
+      title: x.title,
+      type: x.target_type,
+      targetAmount: x.target_amount === null ? null : Number(x.target_amount),
+      deadline: x.deadline,
+      createdAt: x.created_at,
+      total: tidyTotal(totals.get(x.id) ?? 0),
+    })),
+    loggedToday: loggedOnTokyoDay(
+      quick.logs.map((l) => l.loggedAt),
+      now
+    ),
+    now,
+  })
+  // 新しい目標 goes to a class I study in, preferring one with a pod.
+  const newTargetClass =
+    classes.find((c) => c.podSize !== null && !c.organizer) ?? classes.find((c) => !c.organizer)
 
   // ポッドの様子: podmates in the order they joined (never by amount).
   const nudgesTo = new Map<string, number>()
@@ -236,68 +269,28 @@ export default async function Home({
             </time>
           </div>
 
-          <div className="flex min-w-0 flex-col gap-7">
-            {showChecklist &&
-              (checklist.allDone ? (
-                <section className="rule-card px-3.5 py-3.5">
-                  <p role="status" className="text-[15px] leading-7 font-semibold text-ink">
-                    {t('setup.allDone')}
-                  </p>
-                  <MarkSetupSeen userId={user.id} />
-                </section>
-              ) : (
-                <section aria-labelledby="setup-heading" className="rule-card px-4 py-3.5">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <h2 id="setup-heading" className="font-heading text-lg leading-7 font-bold text-ink">
-                      {t('setup.heading')}
-                    </h2>
-                    <span className="shrink-0 font-meta text-xs leading-7 text-muted">
-                      {t('setup.count', { done: checklist.doneCount, total: 3 })}
-                    </span>
-                  </div>
-                  <div className="flex h-7 items-center">
-                    <div
-                      role="progressbar"
-                      aria-label={t('setup.heading')}
-                      aria-valuemin={0}
-                      aria-valuemax={3}
-                      aria-valuenow={checklist.doneCount}
-                      aria-valuetext={t('setup.valueText', { done: checklist.doneCount, total: 3 })}
-                      className="h-1.5 w-full overflow-hidden rounded-[2px] bg-border"
-                    >
-                      <div className="h-full bg-ink" style={{ width: `${(checklist.doneCount / 3) * 100}%` }} />
-                    </div>
-                  </div>
-                  <ol>
-                    {checklist.steps.map((step, i) => (
-                      <Step
-                        key={step.id}
-                        id={step.id}
-                        number={i + 1}
-                        done={step.done}
-                        isNext={checklist.next === step.id}
-                        isLast={i === checklist.steps.length - 1}
-                        href={checklist.next === step.id ? checklist.nextHref : null}
-                        joinedClassName={checklist.joinedClassName}
-                      />
-                    ))}
-                  </ol>
-                </section>
-              ))}
+          <div className="min-w-0 lg:col-span-2">
+            <NextStepCard step={step} />
+          </div>
 
+          {/* Hidden while empty (no targets yet), so it adds no gap on phones. */}
+          <div className="flex min-w-0 flex-col gap-7 empty:hidden">
             {quick.rows.length > 0 && <WeekSummary />}
 
             {sortedTargets.length > 0 && (
               <section aria-labelledby="targets-heading" className="flex flex-col gap-7">
                 <div className="-mb-7 flex items-start justify-between gap-3 px-0.5">
-                  <h2 id="targets-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
-                    {t('targetsHeading')}
-                  </h2>
-                  {checklist.nextHref === null && classes.some((c) => !c.organizer) && (
-                    <Link
-                      href={`/classes/${(classes.find((c) => c.podSize !== null && !c.organizer) ?? classes.find((c) => !c.organizer))!.id}/targets/new`}
-                      className="-mt-[5px] -mb-[11px] inline-flex min-h-11 items-center text-sm leading-7 font-semibold text-accent-text underline-offset-4 hover:underline"
-                    >
+                  <div className="min-w-0">
+                    <h2 id="targets-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
+                      {t('targetsHeading')}
+                    </h2>
+                    <p className="text-[13px] leading-7 text-muted">{t('targetsWhy')}</p>
+                  </div>
+                  {newTargetClass && (
+                    <Link href={`/classes/${newTargetClass.id}/targets/new`} className={`${secondaryButtonClass} mt-1.5`}>
+                      <svg aria-hidden width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                        <path d="M8 3v10M3 8h10" />
+                      </svg>
                       {t('newTarget')}
                     </Link>
                   )}
@@ -363,91 +356,5 @@ export default async function Home({
         <StickyLog targetId={openTargets[0]?.id ?? null} />
       </div>
     </QuickLogProvider>
-  )
-}
-
-async function Step({
-  id,
-  number,
-  done,
-  isNext,
-  isLast,
-  href,
-  joinedClassName,
-}: {
-  id: StepId
-  number: number
-  done: boolean
-  isNext: boolean
-  isLast: boolean
-  href: string | null
-  joinedClassName: string | null
-}) {
-  const t = await getTranslations('home')
-  const detail =
-    done && id === 'join' && joinedClassName
-      ? t('setup.joinedClass', { name: joinedClassName })
-      : t(`setup.steps.${id}.body`)
-
-  return (
-    <li
-      className={
-        isNext
-          ? '-mx-3.5 flex gap-3.5 rounded-[2px] bg-page-bg px-3.5 py-3.5 shadow-[inset_0_0_0_1px_var(--accent-text)]'
-          : `flex gap-3.5 py-3.5 ${isLast ? '' : 'bg-[repeating-linear-gradient(90deg,#e3d4b0_0_4px,transparent_4px_8px)] bg-[length:100%_1px] bg-bottom bg-no-repeat'}`
-      }
-    >
-      <span
-        aria-hidden
-        className={`inline-flex size-[30px] shrink-0 items-center justify-center rounded-full font-meta text-[13px] ${
-          done
-            ? '-rotate-[7deg] border-[1.5px] border-status-active text-status-active'
-            : isNext
-              ? '-rotate-[7deg] border-[1.5px] border-accent-text text-accent-text'
-              : 'border-[1.5px] border-dashed border-[#b9a57c] text-muted'
-        }`}
-      >
-        {done ? (
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M3.5 8.5l3 3 6-7" />
-          </svg>
-        ) : (
-          number
-        )}
-      </span>
-      <div className="flex grow flex-col">
-        <span className={`text-base leading-7 font-semibold ${done ? 'text-muted' : 'text-ink'}`}>
-          {t(`setup.steps.${id}.title`)}
-          <span className="sr-only">
-            {done ? t('setup.doneMark') : isNext ? t('setup.nextMark') : ''}
-          </span>
-        </span>
-        <span className="text-sm leading-7 text-ink/85">{detail}</span>
-        {isNext && id === 'join' && (
-          <RuleSnap>
-            <div className="pt-2">
-              <CodeJoinForm />
-            </div>
-          </RuleSnap>
-        )}
-        {href && (
-          <Link
-            href={href}
-            className="btn my-1.5 inline-flex h-11 items-center justify-center self-start rounded-[2px] bg-accent px-[18px] text-sm font-semibold text-white"
-          >
-            {t(`setup.steps.${id}.action`)}
-          </Link>
-        )}
-      </div>
-    </li>
   )
 }

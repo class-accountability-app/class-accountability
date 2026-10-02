@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study Pods · 次にやること (Prompt 11b mockup)</title>
+<!--
+  Prompt 11b: always show a student what to do next, and make 目標 and
+  進み具合 easy to find. One file, both languages, both widths.
+    next-step.html?view=states&lang=ja        every state's 「次にやること」 card (390)
+    next-step.html?view=home&frame=390&lang=ja   Home, state 4 (has targets, nothing logged today)
+    next-step.html?view=class&frame=1440&lang=en the class page, reordered
+  Colours, fonts, the 28px notebook rule and .rule-card are the app's own.
+  Example data only; all names and numbers are fake.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Schibsted+Grotesk:wght@400;500;600&family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{
+  --page-bg:#f6ecd6;--surface:#fbf6e8;--border:#d9c69a;--rule:#e3d3ac;--dash:#e3d4b0;
+  --ink:#3a2f22;--muted:#6b5636;--accent:#b5583f;--accent-text:#9c4830;
+  --active:#6f8556;--active-text:#556b40;--stale:#948e78;--field:#fffdf7;
+  --heading:'Fraunces','Shippori Mincho',serif;
+  --body:'Schibsted Grotesk','Zen Kaku Gothic New',sans-serif;
+  --meta:'Courier Prime','Zen Kaku Gothic New',monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#8f8a80;font-family:var(--body);color:var(--ink);padding:24px;display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+body.single{padding:0;background:var(--page-bg);display:block}
+.label{font:600 14px/1.4 var(--body);color:#fff;margin:0 0 8px}
+body.single .label{display:none}
+:lang(ja){word-break:auto-phrase}
+
+.frame{position:relative;background-color:var(--page-bg);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25);container-type:inline-size}
+body.single .frame{box-shadow:none;width:100% !important}
+.frame[data-w="390"]{width:390px}
+.frame[data-w="1440"]{width:1440px}
+.ruled{background-image:repeating-linear-gradient(transparent 0,transparent 22px,var(--rule) 22px,var(--rule) 23px,transparent 23px,transparent 28px)}
+
+/* Header and tab bar: as in the app. */
+.hdr{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--surface);border-bottom:1px solid var(--border)}
+.brand{font:600 20px var(--heading)}
+.hdr nav{display:none;gap:22px;font-size:14px;color:var(--muted)}
+.hdr nav b{color:var(--accent-text)}
+.lang{font:13px var(--meta);color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.tabs{height:68px;display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--border)}
+.tabs span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:var(--muted)}
+.tabs span.on{color:var(--accent-text);font-weight:700;box-shadow:inset 0 3px 0 var(--accent-text)}
+.tabs svg{width:22px;height:22px}
+
+/* The page: everything in 28px lines. */
+.page{padding:28px 16px}
+.col{display:flex;flex-direction:column;gap:28px;max-width:448px}
+.hello{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.hello h1{margin:0;font:700 22px/28px var(--heading)}
+.hello time,.term{font:13px/28px var(--meta);color:var(--muted)}
+h2{margin:0;font:700 17px/28px var(--heading)}
+.sec{display:flex;flex-direction:column;gap:0}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.sec-why{margin:0;font-size:13px;line-height:28px;color:var(--muted)}
+.card{border-radius:2px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:14px}
+.stack{display:flex;flex-direction:column;gap:28px}
+.l{line-height:28px}
+.meta{font:12px/28px var(--meta);color:var(--muted)}
+
+/* Buttons: one primary (filled) per area; everything else outlined. */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:44px;padding:0 16px;border-radius:2px;font:600 15px var(--body);white-space:nowrap;text-decoration:none}
+.btn.primary{background:var(--accent);color:#fff;box-shadow:0 2px 0 rgba(58,47,34,.35)}
+.btn.secondary{background:var(--field);color:var(--ink);box-shadow:inset 0 0 0 1px #b9a57c}
+.btn.block{width:100%}
+.btn svg{width:16px;height:16px}
+
+/* 次にやること */
+.next{position:relative;padding:14px 14px 14px 18px;box-shadow:inset 0 0 0 1px var(--border),inset 4px 0 0 var(--accent)}
+.next .k{font:700 12px/28px var(--meta);color:var(--accent-text);letter-spacing:.04em}
+.next h3{margin:0;font:700 17px/28px var(--heading)}
+.next p{margin:0;font-size:14px;line-height:28px;color:var(--ink)}
+.next .acts{display:flex;flex-wrap:wrap;align-items:center;gap:0 16px;padding-top:6px;padding-bottom:6px}
+.next .acts .link{font-size:14px;font-weight:600;color:var(--accent-text);text-decoration:underline;text-underline-offset:4px;line-height:44px}
+.next .hint{font-size:13px;line-height:28px;color:var(--muted)}
+.code-row{display:flex;gap:8px;padding:6px 0}
+.code-row input{flex:1;min-width:0;height:44px;border:1px solid #b9a57c;border-radius:2px;background:var(--field);font:16px var(--meta);padding:0 12px;color:var(--ink)}
+.only-wide{display:none}
+@container (min-width:768px){.only-wide{display:inline-flex}.only-narrow{display:none}}
+
+/* Target card (as built in Prompt 11). */
+.t{display:flex;flex-direction:column}
+.t-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.t h3{margin:0;font:700 17px/28px var(--heading)}
+.nums{display:flex;justify-content:space-between;font:13px/28px var(--meta)}
+.nums b{font-size:18px}
+.plus{color:var(--active-text);font-weight:700}
+.barrow{height:28px;display:flex;align-items:center}
+.bar{position:relative;width:100%;height:8px;background:#d9c69a;border-radius:2px;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--ink)}
+.hints{font-size:13px;line-height:28px;color:var(--muted)}
+.urgent{color:var(--accent-text);font-weight:700}
+
+/* Card links (one tap to a page). */
+.cardlink{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;padding:0 14px;color:var(--ink);text-decoration:none}
+.cardlink b{font-size:15px}
+.cardlink span{display:block;font-size:12px;line-height:20px;color:var(--muted)}
+.chev{width:20px;height:20px;flex:none;color:var(--accent-text)}
+
+.mate{display:flex;align-items:center;gap:10px;height:56px;background:repeating-linear-gradient(90deg,var(--dash) 0 4px,transparent 4px 8px) bottom/100% 1px no-repeat}
+.mate:last-child{background:none}
+.stamp{width:26px;height:26px;flex:none;border-radius:50%;border:1.5px solid var(--active);display:flex;align-items:center;justify-content:center;transform:rotate(-7deg)}
+.stamp::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--active)}
+.stamp.stale{border-color:var(--stale)}.stamp.stale::after{background:var(--stale)}
+.who{flex:1}
+.who b{display:block;font-size:15px;line-height:28px}
+.who span{display:block;font-size:12px;line-height:28px;color:var(--muted)}
+
+.sticky{position:absolute;left:16px;right:16px;bottom:78px}
+.sticky .btn{width:100%;height:48px;font-size:16px}
+@container (min-width:768px){.sticky,.tabs{display:none}}
+
+/* Desktop. */
+@container (min-width:1024px){
+  .hdr{padding:0 48px}
+  .hdr nav{display:flex}
+  .page{padding:28px 64px 56px}
+  .col{max-width:1120px;margin:0 auto}
+  .grid2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px 32px;align-items:start}
+  .grid2 > .span{grid-column:1 / -1}
+  .hello h1{font-size:26px}
+  .next{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:24px}
+  .next .acts{justify-content:flex-end}
+}
+
+/* The states page. */
+.states{display:grid;grid-template-columns:repeat(2,390px);gap:24px}
+.state{background:var(--page-bg);padding:14px 16px 16px}
+.state .tag{font:700 12px/28px var(--meta);color:var(--muted)}
+.state .now{font-size:12px;line-height:20px;color:var(--muted);margin:0 0 8px}
+body.single .states{grid-template-columns:repeat(auto-fill,390px);padding:16px;gap:16px;justify-content:center}
+</style>
+</head>
+<body>
+<script>
+const T = {
+  ja: {
+    otherLang:'EN', home:'ホーム', classes:'クラス', nudges:'声かけ', settings:'設定', signOut:'ログアウト',
+    hello:'こんにちは、あきさん', today:'10月2日（金）', nextK:'次にやること',
+    s1h:'クラスに参加しましょう', s1p:'授業で配られたコードを入力すると、同じ授業の仲間とつながれます。', s1b:'参加する', s1ph:'例：K7M3 Q9TX', s1l:'クラスのコード',
+    s2h:'ポッドを作りましょう', s2p:'統計学 201 で、仲間と進み具合を見せ合えるようになります。', s2b:'ポッドを作る', s2l:'ほかのポッドに参加を申し込む',
+    s2ih:'ポッドに招待されています', s2ip:'佐藤さんから、統計学 201 のポッドへの招待が届いています。', s2ib:'招待を見る',
+    s3h:'最初の目標を作りましょう', s3p:'レポートの文字数や勉強時間を決めると、毎日の記録が進み具合になります。', s3b:'最初の目標を作る',
+    s4h:'今日の分を記録しましょう', s4p:'期末レポート：あと400字（残り2日）。', s4b:'今日の分を記録する', s4hint:'画面下の ＋記録 から記録できます。', s4hintWide:'下の目標の ＋記録 から記録できます。',
+    s5h:'今日の記録は済みました', s5p:'仲間の様子も見てみましょう。声をかけるきっかけになります。', s5b:'ポッドの様子を見る',
+    s5ah:'仲間を誘いましょう', s5ap:'ポッドにはまだあなただけです。リンクを送ると、同じ授業の人が参加できます。', s5ab:'仲間を招待する',
+    s6h:'すべての目標を達成しました', s6p:'おつかれさまでした。次の課題があれば、目標を作りましょう。', s6b:'次の目標を作る',
+    s7h:'参加リンクを共有しましょう', s7p:'学生はリンクかQRコードから、このクラスに参加します。', s7b:'リンクとQRを表示',
+    st1:'1  クラスに未参加', st2:'2  クラスに参加・ポッドなし', st2i:'2′ 招待が届いている', st3:'3  ポッドあり・目標なし', st4:'4  目標あり・今日はまだ', st5:'5  今日は記録済み', st5a:'5′ 記録済み・ポッドに自分だけ', st6:'6  目標をすべて達成', st7:'7  運営（教員）',
+    now1:'今：はじめの3ステップ（コード欄つき）', now2:'今：3ステップの「クラスを開く」', now2i:'今：クラスページの上部に招待', now3:'今：3ステップの「目標を立てる」', now4:'今：なし（目標カードの ＋記録 のみ）', now5:'今：なし', now5a:'今：なし', now6:'今：なし（完了した目標が折りたたまれるだけ）', now7:'今：はじめの3ステップ（「クラスに参加」）',
+    targets:'あなたの目標', targetsWhy:'毎日の記録は ＋記録 から。', newTarget:'新しい目標', log:'＋記録',
+    t1:'期末レポート', t1m:'統計学 201 · 10月4日まで · ', t1u:'残り2日', t1n:'1,600', t1of:'/ 2,000字', t1w:'今週 +600字', t1h:'あと400字　1日あたり約200字で間に合います',
+    pod:'ポッドの様子', podWhy:'仲間がどこまで進んだか。', podClass:'統計学 201',
+    m1:'佐藤さん', m1w:'最終記録：2時間前', m1s:'今週 +800字', m2:'田中さん', m2w:'最終記録：4日前', nudge:'声かけする',
+    podLink:'ポッドの進み具合を見る', podLinkSub:'目標・最近の記録・コメント',
+    sticky:'＋記録：期末レポート',
+    clsTerm:'2026年 秋学期', clsName:'統計学 201',
+    myPod:'あなたのポッド', myPodWhy:'進み具合を見せ合う、最大6人のグループ。', podMembers:'あき（あなた）、佐藤、田中', podCount:'3 / 6人',
+    invite:'仲間を招待する', inviteWhy:'同じ授業の人に、リンクかQRコードを送ります。', inviteBtn:'リンクとQRを表示', inviteForm:'クラスの人を選んで招待',
+    leave:'ポッドを抜ける'
+  },
+  en: {
+    otherLang:'日本語', home:'Home', classes:'Classes', nudges:'Nudges', settings:'Settings', signOut:'Sign out',
+    hello:'Hi, Aki', today:'Fri, Oct 2', nextK:'NEXT STEP',
+    s1h:'Join your class', s1p:'Enter the code from your class to connect with your classmates.', s1b:'Join', s1ph:'e.g. K7M3 Q9TX', s1l:'Class code',
+    s2h:'Start a pod', s2p:'In Statistics 201, you and your classmates can then see each other’s progress.', s2b:'Start a pod', s2l:'Ask to join another pod',
+    s2ih:'You’re invited to a pod', s2ip:'Sato invited you to a pod in Statistics 201.', s2ib:'See the invitation',
+    s3h:'Set your first target', s3p:'Choose a report length or study hours, and every log becomes progress.', s3b:'Set your first target',
+    s4h:'Log today’s work', s4p:'Final report: 400 to go (2 days left).', s4b:'Log today’s work', s4hint:'Use + Log at the bottom of the screen.', s4hintWide:'Use + Log on the target below.',
+    s5h:'You’ve logged today', s5p:'Have a look at your pod. It’s a good moment to check in on someone.', s5b:'See your pod',
+    s5ah:'Invite classmates', s5ap:'You’re the only one in your pod so far. Send the link and classmates can join.', s5ab:'Invite classmates',
+    s6h:'All targets reached', s6p:'Well done. When the next assignment comes, set a target for it.', s6b:'Set your next target',
+    s7h:'Share the join link', s7p:'Students join this class with the link or the QR code.', s7b:'Show link and QR',
+    st1:'1  Not in a class', st2:'2  In a class, no pod', st2i:'2′ Invited to a pod', st3:'3  In a pod, no target', st4:'4  Targets, nothing logged today', st5:'5  Logged today', st5a:'5′ Logged, alone in the pod', st6:'6  Every target reached', st7:'7  Organizer (teacher)',
+    now1:'Now: Getting started (code field)', now2:'Now: “Open the class” in Getting started', now2i:'Now: invitation at the top of the class page', now3:'Now: “Set a target” in Getting started', now4:'Now: nothing (only the cards’ + Log)', now5:'Now: nothing', now5a:'Now: nothing', now6:'Now: nothing (finished targets fold away)', now7:'Now: Getting started (“Join a class”)',
+    targets:'Your targets', targetsWhy:'Log each day with + Log.', newTarget:'New target', log:'+ Log',
+    t1:'Final report', t1m:'Statistics 201 · Due Oct 4 · ', t1u:'2 days left', t1n:'1,600', t1of:'/ 2,000 characters', t1w:'+600 this week', t1h:'400 to go  About 200 a day gets you there',
+    pod:'Your pod', podWhy:'How far everyone has got.', podClass:'Statistics 201',
+    m1:'Sato', m1w:'Last logged: 2 hours ago', m1s:'+800 this week', m2:'Tanaka', m2w:'Last logged: 4 days ago', nudge:'Nudge',
+    podLink:'See your pod’s progress', podLinkSub:'Targets, recent logs, comments',
+    sticky:'+ Log: Final report',
+    clsTerm:'Fall 2026', clsName:'Statistics 201',
+    myPod:'Your pod', myPodWhy:'Up to 6 people who see each other’s progress.', podMembers:'Aki (you), Sato, Tanaka', podCount:'3 / 6',
+    invite:'Invite classmates', inviteWhy:'Send classmates the link or the QR code.', inviteBtn:'Show link and QR', inviteForm:'Invite someone from the class',
+    leave:'Leave the pod'
+  }
+}
+const chev = '<svg class="chev" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4.5L13.5 10 8 15.5"/></svg>'
+const plus = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>'
+
+function nextCard(t, s) {
+  const k = `<div class="k">${t.nextK}</div>`
+  const txt = (h, p) => `<div>${k}<h3>${t[h]}</h3><p>${t[p]}</p></div>`
+  switch (s) {
+    case 1: return `<section class="next">${txt('s1h','s1p')}<div class="acts" style="display:block"><label class="meta" style="color:var(--ink);font-weight:700">${t.s1l}</label><div class="code-row"><input placeholder="${t.s1ph}"><a class="btn primary">${t.s1b}</a></div></div></section>`
+    case 2: return `<section class="next">${txt('s2h','s2p')}<div class="acts"><a class="btn primary">${t.s2b}</a><a class="link">${t.s2l}</a></div></section>`
+    case '2i': return `<section class="next">${txt('s2ih','s2ip')}<div class="acts"><a class="btn primary">${t.s2ib}</a></div></section>`
+    case 3: return `<section class="next">${txt('s3h','s3p')}<div class="acts"><a class="btn primary">${plus}${t.s3b}</a></div></section>`
+    case 4: return `<section class="next">${txt('s4h','s4p')}<div class="acts"><span class="hint only-narrow">${t.s4hint}</span><span class="hint only-wide">${t.s4hintWide}</span></div></section>`
+    case 5: return `<section class="next">${txt('s5h','s5p')}<div class="acts"><a class="btn secondary">${t.s5b}${chev}</a></div></section>`
+    case '5a': return `<section class="next">${txt('s5ah','s5ap')}<div class="acts"><a class="btn secondary">${t.s5ab}${chev}</a></div></section>`
+    case 6: return `<section class="next">${txt('s6h','s6p')}<div class="acts"><a class="btn primary">${plus}${t.s6b}</a></div></section>`
+    case 7: return `<section class="next">${txt('s7h','s7p')}<div class="acts"><a class="btn primary">${t.s7b}</a></div></section>`
+  }
+}
+
+function header(t, active) {
+  return `<header class="hdr"><span class="brand">Study Pods</span><nav>${['home','classes','nudges','settings'].map(k => k === active ? `<b>${t[k]}</b>` : `<span>${t[k]}</span>`).join('')}<span class="lang">${t.otherLang}</span><span>${t.signOut}</span></nav><span class="lang mob">${t.otherLang}</span></header>`
+}
+function tabs(t, active) {
+  const ic = {home:'<path d="M3 10.5L12 3l9 7.5"/><path d="M5.5 9v11h13V9"/>', classes:'<path d="M4 4.5h7a2 2 0 0 1 2 2V20a1.5 1.5 0 0 0-1.5-1.5H4z"/><path d="M20 4.5h-7a2 2 0 0 0-2 2V20a1.5 1.5 0 0 1 1.5-1.5H20z"/>', nudges:'<path d="M4 5h16v11H9l-4 3.5V16H4z"/>', settings:'<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>'}
+  return `<nav class="tabs">${Object.keys(ic).map(k => `<span class="${k === active ? 'on' : ''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">${ic[k]}</svg>${t[k]}</span>`).join('')}</nav>`
+}
+const targetCard = (t) => `<li class="card t"><div class="t-top"><div><h3>${t.t1}</h3><div class="meta">${t.t1m}<span class="urgent">${t.t1u}</span></div></div><a class="btn primary">${t.log}</a></div><div class="nums"><span><b>${t.t1n}</b> ${t.t1of}</span><span class="plus">${t.t1w}</span></div><div class="barrow"><div class="bar"><i style="width:80%"></i></div></div><div class="hints">${t.t1h}</div></li>`
+
+function home(t) {
+  return `${header(t,'home')}<main class="page ruled"><div class="col grid2">
+    <div class="hello span"><h1>${t.hello}</h1><time>${t.today}</time></div>
+    <div class="span">${nextCard(t,4)}</div>
+    <div class="stack">
+      <section class="sec"><div class="sec-head"><div><h2>${t.targets}</h2><p class="sec-why">${t.targetsWhy}</p></div><a class="btn secondary">${plus}${t.newTarget}</a></div>
+        <ul style="list-style:none;margin:0;padding:0" class="stack">${targetCard(t)}</ul></section>
+    </div>
+    <div class="stack">
+      <section class="sec"><div><h2>${t.pod}</h2><p class="sec-why">${t.podWhy}</p></div>
+        <div class="card" style="padding:14px"><div class="meta">${t.podClass}</div>
+          <div class="mate"><span class="stamp"></span><div class="who"><b>${t.m1}</b><span>${t.m1w}</span></div><span class="meta plus">${t.m1s}</span></div>
+          <div class="mate"><span class="stamp stale"></span><div class="who"><b>${t.m2}</b><span>${t.m2w}</span></div><a class="meta" style="color:var(--accent-text);font:600 14px var(--body)">${t.nudge}</a></div>
+        </div>
+        <a class="card cardlink" style="margin-top:28px;padding:0 14px"><div><b>${t.podLink}</b><span>${t.podLinkSub}</span></div>${chev}</a>
+      </section>
+    </div>
+  </div><div style="height:140px"></div></main><div class="sticky"><a class="btn primary">${t.sticky}</a></div>${tabs(t,'home')}`
+}
+
+function cls(t) {
+  return `${header(t,'classes')}<main class="page ruled"><div class="col grid2">
+    <div class="span"><div class="term">${t.clsTerm}</div><h1 style="margin:0;font:700 26px/28px var(--heading)">${t.clsName}</h1></div>
+    <div class="span">${nextCard(t,4)}</div>
+    <div class="stack">
+      <section class="sec"><div class="sec-head"><div><h2>${t.targets}</h2><p class="sec-why">${t.targetsWhy}</p></div><a class="btn secondary">${plus}${t.newTarget}</a></div>
+        <ul style="list-style:none;margin:0;padding:0" class="stack">${targetCard(t)}</ul></section>
+    </div>
+    <div class="stack">
+      <section class="sec"><div><h2>${t.myPod}</h2><p class="sec-why">${t.myPodWhy}</p></div>
+        <div class="card"><div class="l" style="font-weight:600">${t.podMembers}</div><div class="meta">${t.podCount}</div></div>
+        <a class="card cardlink" style="margin-top:28px"><div><b>${t.podLink}</b><span>${t.podLinkSub}</span></div>${chev}</a>
+      </section>
+      <section class="sec"><div><h2>${t.invite}</h2><p class="sec-why">${t.inviteWhy}</p></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px 12px;padding:6px 0"><a class="btn secondary">${t.inviteBtn}</a><a class="btn secondary">${t.inviteForm}</a></div>
+        <a class="meta" style="font:13px/28px var(--body);color:var(--muted);text-decoration:underline">${t.leave}</a>
+      </section>
+    </div>
+  </div><div style="height:140px"></div></main><div class="sticky"><a class="btn primary">${t.sticky}</a></div>${tabs(t,'classes')}`
+}
+
+function states(t) {
+  const list = [[1,'st1','now1'],[2,'st2','now2'],['2i','st2i','now2i'],[3,'st3','now3'],[4,'st4','now4'],[5,'st5','now5'],['5a','st5a','now5a'],[6,'st6','now6'],[7,'st7','now7']]
+  return `<div class="states">${list.map(([s,k,n]) => `<div class="state frame" data-w="390"><div class="tag">${t[k]}</div><p class="now">${t[n]}</p>${nextCard(t,s)}</div>`).join('')}</div>`
+}
+
+// Only known values from the URL: they end up in innerHTML below.
+const q = new URLSearchParams(location.search)
+const pick = (value, allowed, fallback) => (allowed.includes(value) ? value : fallback)
+const view = pick(q.get('view'), ['states', 'home', 'class'], null)
+const lang = pick(q.get('lang'), ['ja', 'en'], 'ja')
+const w = pick(q.get('frame'), ['390', '1440'], '390') === '1440' ? 1440 : 390
+function render(view, lang, w) {
+  const t = T[lang]
+  const wrap = document.createElement('div')
+  wrap.innerHTML = `<p class="label">${view} · ${w}px · ${lang}</p>` + (view === 'states' ? states(t) : `<div class="frame" data-w="${w}" lang="${lang}">${view === 'home' ? home(t) : cls(t)}</div>`)
+  wrap.lang = lang
+  document.body.append(wrap)
+  if (w > 1000) wrap.querySelectorAll('.mob').forEach(e => e.remove())
+}
+if (view) {
+  document.body.classList.add('single'); document.documentElement.lang = lang; render(view, lang, w)
+} else {
+  render('states','ja',390); render('home','ja',390); render('class','ja',390)
+  render('home','en',1440); render('class','en',1440)
+}
+</script>
+</body>
+</html>
