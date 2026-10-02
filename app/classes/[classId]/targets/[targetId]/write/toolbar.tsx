@@ -165,6 +165,12 @@ const ITEMS: (Item | 'sep')[] = [
 
 const buttons = ITEMS.filter((i): i is Item => i !== 'sep')
 
+function buttonStates(e: Editor) {
+  return Object.fromEntries(
+    buttons.map((b) => [b.key, { pressed: b.pressed?.(e) ?? null, enabled: b.enabled?.(e) ?? true }])
+  )
+}
+
 function isApple(): boolean {
   return /Mac|iPhone|iPad|iPod/.test(navigator.platform) || navigator.userAgent.includes('Mac OS X')
 }
@@ -178,16 +184,16 @@ export function Toolbar({ editor }: { editor: Editor | null }) {
     setApple(isApple())
   }, [])
 
-  const state = useEditorState({
+  const selected = useEditorState({
     editor,
-    selector: ({ editor: e }) =>
-      e
-        ? Object.fromEntries(
-            buttons.map((b) => [b.key, { pressed: b.pressed?.(e) ?? null, enabled: b.enabled?.(e) ?? true }])
-          )
-        : null,
+    selector: ({ editor: e }) => (e ? buttonStates(e) : null),
     equalityFn: (a, b) => JSON.stringify(a) === JSON.stringify(b),
   })
+  // useEditorState's snapshot keeps `editor: null` from the first render
+  // until the first transaction (Tiptap 3.31: watch() swaps the editor in
+  // without a new snapshot), so undo and redo looked available on a fresh
+  // page. Until then, read the editor directly.
+  const state = selected ?? (editor ? buttonStates(editor) : null)
 
   const keysText = (keys: string) =>
     keys
