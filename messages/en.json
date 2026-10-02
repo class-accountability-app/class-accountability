@@ -215,6 +215,15 @@
       "character_count": "characters",
       "word_count": "words",
       "study_hours": "hours"
+    },
+    "inputModeLabel": "How to log",
+    "inputModes": {
+      "manual": "Log it myself",
+      "document": "Write in Study Pods"
+    },
+    "inputModeHint": {
+      "manual": "You enter the characters you wrote with + Log.",
+      "document": "Write on this target’s page and the character count is logged automatically. Only you can read the text; your podmates see only the count."
     }
   },
   "comments": {
@@ -280,7 +289,13 @@
     "organizerNoPod": "Class organizers can’t be in pods.",
     "organizerNoTargets": "Class organizers can’t set targets in this class.",
     "organizerHasStudents": "You organize a class that still has students, so you can’t delete your account. Please contact us.",
-    "confirmWordMismatch": "Type “delete” to confirm."
+    "confirmWordMismatch": "Type “delete” to confirm.",
+    "documentTooLong": "A document can be up to 100,000 characters. Please shorten it a little.",
+    "documentInvalid": "This couldn’t be saved. Please reload the page. What you wrote is still on this device.",
+    "documentModeLocked": "A target that already has logs can’t switch to Write in Study Pods.",
+    "documentTargetNoLog": "This target is logged automatically from what you write.",
+    "documentNotFound": "This document wasn’t found.",
+    "versionNotFound": "This version wasn’t found. Please open History again."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -462,10 +477,14 @@
       "confirm": "Delete this log?",
       "confirmComments": "{count, plural, one {# comment on it will be deleted too.} other {# comments on it will be deleted too.}}",
       "confirmYes": "Delete",
-      "confirmNo": "Keep it"
+      "confirmNo": "Keep it",
+      "amountMinus": "−{amount}",
+      "fromEditor": "Logged automatically from your writing"
     },
     "stickyOpen": "+ Log: {title}",
-    "stickyComplete": "Mark as done: {title}"
+    "stickyComplete": "Mark as done: {title}",
+    "write": "Write",
+    "stickyWrite": "Keep writing: {title}"
   },
   "publicFooter": {
     "tagline": "A project built and run by a student.",
@@ -682,7 +701,8 @@
     "deleting": "Deleting…",
     "back": "Back to settings",
     "organizerBlocked": "You organize a class that still has students, so you can’t delete your account here. Please email us and we’ll help you hand the class over or delete it.",
-    "organizerSubject": "Account deletion (organizer)"
+    "organizerSubject": "Account deletion (organizer)",
+    "itemDocuments": "Text you wrote in Study Pods, and its history"
   },
   "targetCard": {
     "due": "Due {date}",
@@ -760,7 +780,9 @@
       "whyWhen": "{title} ({when}).",
       "why": "{title}.",
       "hintPhone": "Use + Log at the bottom of the screen.",
-      "hintWide": "Use + Log on the target below."
+      "hintWide": "Use + Log on the target below.",
+      "writeTitle": "Keep writing",
+      "writeAction": "Keep writing"
     },
     "invite": {
       "title": "Invite classmates",
@@ -776,6 +798,93 @@
       "title": "All targets reached",
       "why": "Well done. When the next assignment comes, set a target for it.",
       "action": "Set your next target"
+    }
+  },
+  "signOut": {
+    "unsavedTitle": "Some writing isn’t saved yet",
+    "unsavedBody": "If you log out, writing on this device that hasn’t been saved will be deleted. To be safe, open the document first and wait until it says Saved.",
+    "confirm": "Log out",
+    "cancel": "Cancel"
+  },
+  "editor": {
+    "metaTitle": "Write: {title}",
+    "back": "Back to class",
+    "label": "Text",
+    "countHint": "Characters are counted without spaces or line breaks, like Word’s “Characters (no spaces)”.",
+    "privacyNote": "Only you can read this text. Your podmates see only the count.",
+    "status": {
+      "saved": "Saved ({time})",
+      "auto": "Changes save automatically",
+      "saving": "Saving…",
+      "retrying": "Not saved yet (trying again)",
+      "retryingNote": "What you wrote is still on this device.",
+      "saveNow": "Save now",
+      "conflict": "Changed somewhere else"
+    },
+    "toolbar": {
+      "label": "Formatting",
+      "shortcut": "{label} ({keys})",
+      "heading1": "Heading 1",
+      "heading2": "Heading 2",
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "bulletList": "Bulleted list",
+      "orderedList": "Numbered list",
+      "indent": "Indent",
+      "outdent": "Decrease indent",
+      "undo": "Undo",
+      "redo": "Redo"
+    },
+    "conflict": {
+      "title": "This was saved somewhere else",
+      "body": "This document was saved from another tab or device. Which one do you want to use? The other one stays in History.",
+      "mine": "Use this screen’s text",
+      "mineCount": "This screen: {count}",
+      "theirs": "Open the saved text",
+      "theirsCount": "Saved text: {count} ({time})",
+      "working": "Working…"
+    },
+    "draft": {
+      "title": "You have unsaved changes",
+      "body": "What you last wrote on this device wasn’t saved ({time}, {count}).",
+      "restore": "Restore",
+      "discard": "Discard"
+    },
+    "history": {
+      "open": "History",
+      "title": "History",
+      "close": "Close",
+      "intro": "While you write, a copy is kept every 10 minutes (the latest 50).",
+      "empty": "No history yet.",
+      "loading": "Loading…",
+      "item": "{when} · {count}",
+      "reason": {
+        "autosave": "Autosave",
+        "before_restore": "Before a restore",
+        "conflict": "Saved somewhere else at the same time"
+      },
+      "preview": "View",
+      "previewTitle": "Text from {when}",
+      "restore": "Restore this version",
+      "restoreConfirm": "Restore this version? The current text stays in History too.",
+      "restoreYes": "Restore",
+      "restoreNo": "Cancel",
+      "restoreWait": "You can restore once saving has finished.",
+      "restored": "Restored this version"
+    },
+    "export": {
+      "open": "Export",
+      "word": "Word (.docx)",
+      "pdf": "PDF (opens the print page)",
+      "working": "Preparing…",
+      "failed": "Couldn’t export. Please try again."
+    },
+    "print": {
+      "title": "Print: {title}",
+      "print": "Print / Save as PDF",
+      "hint": "In the print dialog, choose “Save as PDF” as the destination to get a PDF.",
+      "back": "Back to the document"
     }
   }
 }

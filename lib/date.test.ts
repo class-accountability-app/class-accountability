@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDate, formatDateTime, formatDayAgo, formatTimeAgo, tokyoDaysAgo } from './date'
+import { formatClock, formatDate, formatDateTime, formatDayAgo, formatTimeAgo, tokyoDaysAgo } from './date'
 
 // Instants are written in UTC; comments give the Tokyo (UTC+9) wall time.
 const at = (iso: string) => new Date(iso)
@@ -89,5 +89,13 @@ describe('formatDateTime', () => {
   it('uses the date for anything older', () => {
     expect(formatDateTime('2026-01-02T13:10:00Z', 'ja', now)).toBe('1月2日 22:10')
     expect(formatDateTime('2026-01-02T13:10:00Z', 'en', now)).toMatch(/^Jan 2, 10:10\sPM$/)
+  })
+})
+
+describe('formatClock', () => {
+  it('is Tokyo time, whatever the machine’s zone', () => {
+    // 05:05 UTC is 14:05 in Tokyo (the tests run in Los Angeles time).
+    expect(formatClock('2026-10-02T05:05:00Z', 'ja')).toBe('14:05')
+    expect(formatClock('2026-10-02T05:05:00Z', 'en')).toBe('2:05 PM')
   })
 })

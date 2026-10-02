@@ -21,6 +21,14 @@ const ORGANIZER_NO_POD = 'SP003'
 // Raised by delete_my_account (0016_leave_pod_delete_account.sql): the
 // organizer of a class that still has students can't delete their account.
 const ORGANIZER_HAS_STUDENTS = 'SP004'
+// Raised by save_document and keep_document_version (0019_documents.sql):
+// over 100,000 characters or 1 MB of JSON.
+const DOCUMENT_TOO_LONG = 'SP005'
+// Raised by keep_target_input_mode (0019): a target with logs can't become a
+// document, and a document with text can't go back.
+const DOCUMENT_MODE_LOCKED = 'SP006'
+// Raised by guard_document_progress (0019): ＋記録 on a document target.
+const DOCUMENT_TARGET_NO_LOG = 'SP007'
 
 export const DB_CODES = {
   uniqueViolation: PG_UNIQUE_VIOLATION,
@@ -30,6 +38,9 @@ export const DB_CODES = {
   onePodPerClass: ONE_POD_PER_CLASS,
   organizerNoPod: ORGANIZER_NO_POD,
   organizerHasStudents: ORGANIZER_HAS_STUDENTS,
+  documentTooLong: DOCUMENT_TOO_LONG,
+  documentModeLocked: DOCUMENT_MODE_LOCKED,
+  documentTargetNoLog: DOCUMENT_TARGET_NO_LOG,
 } as const
 
 const EMAIL_PATTERN = /[^\s"'<>(),;:]+@[^\s"'<>(),;:]+/g
