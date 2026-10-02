@@ -58,3 +58,11 @@ export function activeTab(pathname: string): TabId | null {
   if (isUnder(pathname, '/settings')) return 'settings'
   return null
 }
+
+// Page transitions (app/template.tsx): moving to a tab to the right slides
+// the content left ('tab-forward'), to the left slides it right. The current
+// tab itself, or a page outside the tabs, gets the plain fade (no type).
+export function tabTransitionTypes(from: TabId | null, to: TabId): string[] | undefined {
+  if (from === null || from === to) return undefined
+  return [TAB_IDS.indexOf(to) > TAB_IDS.indexOf(from) ? 'tab-forward' : 'tab-back']
+}

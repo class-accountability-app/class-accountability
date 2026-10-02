@@ -16,6 +16,7 @@ import { useTranslations } from 'next-intl'
 import type { TargetType } from '@/lib/targets'
 import type { ErrorKey } from '@/lib/errors'
 import { tidyTotal } from '@/lib/quick-log'
+import { milestoneCrossed } from '@/lib/progress-stats'
 import {
   deleteLog,
   logProgress,
@@ -36,6 +37,8 @@ export type QuickTarget = {
   title: string
   type: TargetType
   targetAmount: number | null
+  deadline: string | null // 'YYYY-MM-DD', a Tokyo date
+  className: string
   inPod: boolean
 }
 
@@ -83,6 +86,9 @@ export type Toast =
       clientId: string
       text: string
       shared: boolean
+      // The log crossed 25/50/75/100% (Prompt 11): the stamp gets a short
+      // extra pulse, none under reduced motion.
+      milestone?: boolean
       // 取り消す was pressed and the delete is on its way: the button shows
       // 取り消しています…, ignores presses and keeps focus; the toast stays.
       undoing?: boolean
@@ -99,6 +105,11 @@ type QuickLogContext = {
   targets: Map<string, QuickTarget>
   logs: MyLog[]
   totalFor: (targetId: string) => number
+  // The server's time when the page was rendered: "this week" and "days
+  // left" use it, so the server's HTML and the browser's first render agree.
+  now: Date
+  // The sticky ＋記録 hides while the sheet is open.
+  sheetOpen: boolean
   stampKey: number
   toast: Toast | null
   dismissToast: () => void
@@ -129,14 +140,18 @@ type LogResult = Awaited<ReturnType<typeof logProgress>>
 export function QuickLogProvider({
   targets,
   logs: serverLogs,
+  now: nowIso,
   children,
 }: {
   targets: QuickTarget[]
   logs: MyLog[]
+  now: string
   children: ReactNode
 }) {
   const t = useTranslations('quickLog')
   const tUnits = useTranslations('units')
+  const tAmounts = useTranslations('amounts')
+  const now = useMemo(() => new Date(nowIso), [nowIso])
   const tErrors = useTranslations('errors')
   const [, startTransition] = useTransition()
   const [logs, change] = useOptimistic(serverLogs, applyChange)
@@ -241,12 +256,27 @@ export function QuickLogProvider({
     const input: LogInput = { amount: state.amount, description: state.description }
     const anchor = targetAnchor(target.id)
 
+    // Crossing 25/50/75/100% says so instead of the plain line.
+    const before = totalFor(target.id)
+    const after = tidyTotal(before + value)
+    const milestone = target.type === 'task' ? null : milestoneCrossed(before, after, target.targetAmount)
     const text =
       target.type === 'task'
         ? t('toast.loggedTask', { title: target.title })
-        : t('toast.logged', { amount: tUnits(target.type, { count: value }) })
+        : milestone !== null && target.targetAmount !== null
+          ? t(`toast.milestone.${milestone}`, {
+              progress: tAmounts(target.type, { logged: after, target: target.targetAmount }),
+            })
+          : t('toast.logged', { amount: tUnits(target.type, { count: value }) })
     show(
-      { kind: 'logged', anchor, clientId: state.clientId, text, shared: target.inPod },
+      {
+        kind: 'logged',
+        anchor,
+        clientId: state.clientId,
+        text,
+        shared: target.inPod,
+        milestone: milestone !== null,
+      },
       target.inPod ? `${text}。${t('toast.shared')}` : text
     )
     setStampKey((k) => k + 1)
@@ -357,6 +387,8 @@ export function QuickLogProvider({
       targets: targetMap,
       logs,
       totalFor,
+      now,
+      sheetOpen: sheet !== null,
       stampKey,
       toast,
       dismissToast,
@@ -366,7 +398,7 @@ export function QuickLogProvider({
       remove,
       retry,
     }),
-    [targetMap, logs, totalFor, stampKey, toast, dismissToast, openCreate, openEdit, undo, remove, retry]
+    [targetMap, logs, totalFor, now, sheet, stampKey, toast, dismissToast, openCreate, openEdit, undo, remove, retry]
   )
 
   return (

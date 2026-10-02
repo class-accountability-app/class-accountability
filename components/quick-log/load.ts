@@ -29,7 +29,13 @@ type LogRow = {
 // with their comment counts (for the delete warning), and whether I'm in a
 // pod in each target's class (for ポッドに共有されました). RLS limits every
 // read to what I may see; the user_id filters say what the page wants.
-export async function loadMyTargets(supabase: Supabase, userId: string, classId?: string) {
+// Home already reads my pods, so it passes their classes in (podClasses)
+// instead of this function asking again.
+export async function loadMyTargets(
+  supabase: Supabase,
+  userId: string,
+  { classId, podClasses }: { classId?: string; podClasses?: Promise<Set<string>> } = {}
+) {
   let query = supabase
     .from('targets')
     .select('id, class_id, title, target_type, target_amount, deadline, created_at, classes(name)')
@@ -40,7 +46,7 @@ export async function loadMyTargets(supabase: Supabase, userId: string, classId?
   const rows = (targetData as MyTargetRow[] | null) ?? []
   const ids = rows.map((r) => r.id)
 
-  const [{ data: logData }, { data: podData }] = await Promise.all([
+  const [{ data: logData }, inPodClasses] = await Promise.all([
     ids.length > 0
       ? supabase
           .from('progress_logs')
@@ -49,25 +55,30 @@ export async function loadMyTargets(supabase: Supabase, userId: string, classId?
           .in('target_id', ids)
           .order('logged_at', { ascending: false })
       : Promise.resolve({ data: [] as LogRow[] }),
-    supabase
-      .from('pairing_members')
-      .select('pairings!inner(class_id, status)')
-      .eq('user_id', userId)
-      .eq('pairings.status', 'active'),
+    podClasses ??
+      supabase
+        .from('pairing_members')
+        .select('pairings!inner(class_id, status)')
+        .eq('user_id', userId)
+        .eq('pairings.status', 'active')
+        .then(
+          ({ data }) =>
+            new Set(
+              ((data as { pairings: { class_id: string } | null }[] | null) ?? []).flatMap((p) =>
+                p.pairings ? [p.pairings.class_id] : []
+              )
+            )
+        ),
   ])
-
-  const podClasses = new Set(
-    ((podData as { pairings: { class_id: string } | null }[] | null) ?? [])
-      .map((p) => p.pairings?.class_id)
-      .filter(Boolean)
-  )
 
   const targets: QuickTarget[] = rows.map((r) => ({
     id: r.id,
     title: r.title,
     type: r.target_type,
     targetAmount: r.target_amount === null ? null : Number(r.target_amount),
-    inPod: podClasses.has(r.class_id),
+    deadline: r.deadline,
+    className: r.classes?.name ?? '',
+    inPod: inPodClasses.has(r.class_id),
   }))
 
   const logs: MyLog[] = ((logData as LogRow[] | null) ?? []).map((l) => ({

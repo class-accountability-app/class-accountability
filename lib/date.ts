@@ -37,6 +37,42 @@ export function tokyoDaysAgo(value: DateInput, now: Date = new Date()): number {
   return tokyoDayNumber(now) - tokyoDayNumber(toDate(value))
 }
 
+// Whole Tokyo calendar days from `now` until `value` (a deadline): 0 on the
+// day itself, negative once it has passed.
+export function tokyoDaysUntil(value: DateInput, now: Date = new Date()): number {
+  return tokyoDayNumber(toDate(value)) - tokyoDayNumber(now)
+}
+
+const TOKYO_OFFSET_MS = 9 * 60 * 60 * 1000
+
+// The start of the Tokyo week containing `now`: Monday 00:00 JST. Tokyo has
+// no daylight saving, so a fixed +9 hours is exact.
+export function tokyoWeekStart(now: Date = new Date()): Date {
+  const day = tokyoDayNumber(now) // days since 1970-01-01 (a Thursday)
+  const weekday = (day + 3) % 7 // 0 = Monday … 6 = Sunday
+  return new Date((day - weekday) * DAY_MS - TOKYO_OFFSET_MS)
+}
+
+// Monday = 0 … Sunday = 6, for the Tokyo day containing `value`.
+export function tokyoWeekday(value: DateInput): number {
+  return (tokyoDayNumber(toDate(value)) + 3) % 7
+}
+
+// 10月2日（金） / Fri, Oct 2
+export function formatDateWithWeekday(value: DateInput, locale: Locale): string {
+  const date = toDate(value)
+  if (locale === 'ja') {
+    const weekday = new Intl.DateTimeFormat('ja', { timeZone: APP_TIME_ZONE, weekday: 'short' }).format(date)
+    return `${formatDate(date, locale)}（${weekday}）`
+  }
+  return new Intl.DateTimeFormat('en', {
+    timeZone: APP_TIME_ZONE,
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }).format(date)
+}
+
 // ICU puts a space in Japanese relative times ("8 日前"); Japanese text sets
 // the number flush against the unit ("8日前").
 function tidy(text: string, locale: Locale): string {
