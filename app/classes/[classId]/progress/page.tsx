@@ -3,11 +3,12 @@ import { redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { sumProgress, computePace, project } from '@/lib/projection'
-import { formatDate, formatDateTime, formatDayAgo, tokyoDaysAgo } from '@/lib/date'
+import { formatDate, formatDateTime, formatDayAgo, tokyoDaysAgo, tokyoWeekStart } from '@/lib/date'
+import { tidyTotal } from '@/lib/quick-log'
 import { StatusStamp } from '@/components/status-stamp'
 import { ProgressBar } from '@/components/progress-bar'
 import { QuickLogProvider } from '@/components/quick-log/quick-log-provider'
-import { MyStamp, TargetCard, TargetProgress } from '@/components/quick-log/target-card'
+import { FinishedTargets, MyStamp, StickyLog, TargetCard, TargetProgress } from '@/components/quick-log/target-card'
 import { RecentLogs } from '@/components/quick-log/recent-logs'
 import { loadMyTargets } from '@/components/quick-log/load'
 import { CommentSection } from './comment-section'
@@ -92,7 +93,7 @@ export default async function ProgressPage({
 
   // My targets here, with all my logs on them: the quick log's cards, totals
   // and あなたの最近の記録 (screens 10, 11).
-  const quick = await loadMyTargets(supabase, user.id, classId)
+  const quick = await loadMyTargets(supabase, user.id, { classId })
   const myTargets = quick.rows
 
   // Find my pod for this class: active pairings, then the pairing_members
@@ -280,9 +281,35 @@ export default async function ProgressPage({
     ...podUserIds.filter((id) => id !== user.id),
   ]
 
+  // Unfinished first (in the order they were made), finished ones folded at
+  // the bottom; the sticky ＋記録 is for the first unfinished one.
+  const myTotal = (id: string) =>
+    tidyTotal(quick.logs.filter((l) => l.targetId === id).reduce((sum, l) => sum + l.value, 0))
+  const isDone = (target: (typeof myTargets)[number]) =>
+    target.target_type === 'task'
+      ? myTotal(target.id) >= 1
+      : target.target_amount !== null && myTotal(target.id) >= Number(target.target_amount)
+  const openTargets = myTargets.filter((target) => !isDone(target))
+  const finishedTargets = myTargets.filter(isDone)
+
+  // ポッド全体で今週 +○ (Prompt 11): the whole pod's week, one number per
+  // unit, never split by person.
+  const weekStart = tokyoWeekStart(now).getTime()
+  const podWeek = (['character_count', 'word_count', 'study_hours'] as const).flatMap((type) => {
+    const amount = tidyTotal(
+      ((podLogs as ProgressLog[] | null) ?? [])
+        .filter(
+          (l) =>
+            targetById.get(l.target_id)?.target_type === type && new Date(l.logged_at).getTime() >= weekStart
+        )
+        .reduce((sum, l) => sum + Number(l.progress_value), 0)
+    )
+    return amount > 0 ? [tUnits(type, { count: amount })] : []
+  })
+
   return (
     <NudgeListProvider nudges={(nudges as NudgeRow[] | null) ?? []}>
-      <QuickLogProvider targets={quick.targets} logs={quick.logs}>
+      <QuickLogProvider targets={quick.targets} logs={quick.logs} now={now.toISOString()}>
       <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12 sm:items-start sm:pl-16">
         <div className="flex w-full max-w-md flex-col gap-2">
           <h1 className="font-heading text-xl font-semibold text-ink">{cls.name}</h1>
@@ -311,24 +338,28 @@ export default async function ProgressPage({
               }
             />
           ) : (
-            <ul className="flex flex-col gap-3">
-              {myTargets.map((target) => (
-                <TargetCard
-                  key={target.id}
-                  targetId={target.id}
-                  meta={
-                    target.deadline
-                      ? t('due', { date: formatDate(target.deadline, locale) })
-                      : t('noDeadline')
-                  }
-                />
-              ))}
-            </ul>
+            <>
+              {openTargets.length > 0 && (
+                <ul className="flex flex-col gap-2.5">
+                  {openTargets.map((target) => (
+                    <TargetCard key={target.id} targetId={target.id} />
+                  ))}
+                </ul>
+              )}
+              <FinishedTargets targetIds={finishedTargets.map((target) => target.id)} />
+            </>
           )}
         </div>
 
         <div className="flex w-full max-w-md flex-col gap-6">
-          <h2 className="font-heading text-lg font-semibold text-ink">{t('podProgress')}</h2>
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+            <h2 className="font-heading text-lg font-semibold text-ink">{t('podProgress')}</h2>
+            {myPairingId && podWeek.length > 0 && (
+              <p className="font-meta text-[13px] font-bold text-[#556b40]">
+                {t('podWeek', { amount: podWeek.join(tCommon('listSeparator')) })}
+              </p>
+            )}
+          </div>
           {!myPairingId ? (
             <EmptyState
               illustration="pod"
@@ -356,7 +387,8 @@ export default async function ProgressPage({
               return (
                 <div
                   key={memberId}
-                  className="flex flex-col gap-3 rounded-[2px] border border-border bg-surface p-4"
+                  id={`member-${memberId}`}
+                  className="flex scroll-mt-4 flex-col gap-3 rounded-[2px] border border-border bg-surface p-4"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="flex min-w-0 items-center gap-2">
@@ -483,6 +515,7 @@ export default async function ProgressPage({
             />
           )}
         </div>
+        <StickyLog targetId={openTargets[0]?.id ?? null} />
       </div>
       </QuickLogProvider>
     </NudgeListProvider>

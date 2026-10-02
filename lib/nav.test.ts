@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   activeTab,
+  tabTransitionTypes,
   classesHref,
   hidesTabBar,
   isOutsideApp,
@@ -72,5 +73,17 @@ describe('showsHeaderSignOutOnPhones', () => {
     expect(showsHeaderSignOutOnPhones('/join/K7M3Q9TX')).toBe(true)
     expect(showsHeaderSignOutOnPhones('/')).toBe(false)
     expect(showsHeaderSignOutOnPhones('/settings')).toBe(false)
+  })
+})
+
+describe('tabTransitionTypes', () => {
+  it('slides towards the tab that was tapped', () => {
+    expect(tabTransitionTypes('home', 'nudges')).toEqual(['tab-forward'])
+    expect(tabTransitionTypes('settings', 'classes')).toEqual(['tab-back'])
+  })
+
+  it('fades for the current tab and for pages outside the tabs', () => {
+    expect(tabTransitionTypes('classes', 'classes')).toBeUndefined()
+    expect(tabTransitionTypes(null, 'home')).toBeUndefined()
   })
 })

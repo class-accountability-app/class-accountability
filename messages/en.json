@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Study Pods",
-    "description": "Quiet, class-based study pods where classmates can see each other's progress.",
+    "description": "Small study pods for your course: keep going, together with your classmates.",
     "landingTitle": "Study Pods | Small study groups, scoped to your class",
     "landingDescription": "Study Pods puts 2–6 students from the same class into a pod, so you can see how far along everyone is on assignments and reports.",
     "ogImageAlt": "Study Pods: small study groups, scoped to your class",
@@ -70,7 +70,9 @@
     "targetMetaNoDeadline": "{className} · No deadline",
     "moreTargets": "{count, plural, one {# more target} other {# more targets}}",
     "moreTargetsLink": "See them on your class pages",
-    "classMetaOrganizer": "{term} · Organizer"
+    "classMetaOrganizer": "{term} · Organizer",
+    "newTarget": "+ New target",
+    "organizerMark": "Organizer"
   },
   "login": {
     "eyebrow": "Log in",
@@ -189,7 +191,8 @@
     "targetReached": "Target reached.",
     "noRecentProgress": "Nothing logged in the last 7 days.",
     "projection": "At {pace} a day over the last 7 days, you'd finish around {finish}.",
-    "projectionWithDeadline": "At {pace} a day over the last 7 days, you'd finish around {finish}. The deadline is {deadline}."
+    "projectionWithDeadline": "At {pace} a day over the last 7 days, you'd finish around {finish}. The deadline is {deadline}.",
+    "podWeek": "Your pod this week: +{amount}"
   },
   "targetForm": {
     "titleLabel": "Title",
@@ -429,7 +432,13 @@
       "updated": "Log updated",
       "deleted": "Log deleted",
       "retry": "Try again",
-      "dismiss": "Dismiss"
+      "dismiss": "Dismiss",
+      "milestone": {
+        "25": "A quarter of the way there ({progress})",
+        "50": "Halfway there ({progress})",
+        "75": "Three quarters done ({progress})",
+        "100": "Target reached! ({progress})"
+      }
     },
     "recent": {
       "heading": "Your recent logs",
@@ -445,7 +454,9 @@
       "confirmComments": "{count, plural, one {# comment on it will be deleted too.} other {# comments on it will be deleted too.}}",
       "confirmYes": "Delete",
       "confirmNo": "Keep it"
-    }
+    },
+    "stickyOpen": "+ Log: {title}",
+    "stickyComplete": "Mark as done: {title}"
   },
   "publicFooter": {
     "tagline": "A project built and run by a student.",
@@ -456,9 +467,9 @@
   "landing": {
     "hero": {
       "eyebrow": "Small study groups, scoped to your class",
-      "titleLine1": "Don’t carry it alone.",
-      "titleLine2": "Keep pace with your classmates,",
-      "titleLine3": "quietly.",
+      "titleLine1": "You don’t have to carry it alone.",
+      "titleLine2": "Keep going, together",
+      "titleLine3": "with classmates from your course.",
       "body": "Study Pods puts 2–6 students from the same class into a pod, so you can see how far along everyone is on assignments and reports. No rankings. No competition.",
       "cta": "Log in with your university email",
       "note": "start here!",
@@ -526,7 +537,7 @@
       "barTitle": "A progress bar",
       "barBody": "How much of your report is written, or how many hours you’ve studied, at a glance. The report itself is never shared.",
       "activeLabel": "active",
-      "staleLabel": "quiet for a while",
+      "staleLabel": "no log for a while",
       "recentTitle": "Recent activity",
       "recentBody": "When a podmate hasn’t logged in a while, their stamp changes color. It’s a cue to check in, not a mark against them.",
       "nudgeSample": "“Where are you stuck?”",
@@ -659,5 +670,42 @@
     "back": "Back to settings",
     "organizerBlocked": "You organize a class that still has students, so you can’t delete your account here. Please email us and we’ll help you hand the class over or delete it.",
     "organizerSubject": "Account deletion (organizer)"
+  },
+  "targetCard": {
+    "due": "Due {date}",
+    "noDeadline": "No deadline",
+    "dueToday": "Due today",
+    "daysLeft": "{count, plural, one {# day} other {# days}} left",
+    "overdue": "Past the deadline",
+    "week": "+{amount} this week",
+    "remaining": "{amount} to go",
+    "pace": "About {amount} a day gets you there",
+    "paceToday": "{amount} today gets you there",
+    "next": "{amount} more to reach {percent}%",
+    "done": "Done",
+    "barLabel": "{progress} ({percent}%)",
+    "finished": "Finished targets ({count})"
+  },
+  "week": {
+    "heading": "This week",
+    "nothingYet": "Nothing logged yet",
+    "daysLogged": "{count, plural, one {# day} other {# days}} with a log this week",
+    "first": "+{amount}",
+    "more": " · {amount}",
+    "daysNone": "No logs yet this week"
+  },
+  "podGlance": {
+    "heading": "Your pod",
+    "noPod": "Join a pod to see your podmates here.",
+    "findPod": "Open your classes",
+    "alone": "No one else here yet.",
+    "invite": "Invite classmates",
+    "lastLogged": "Last logged: {when}",
+    "noLogs": "No logs yet",
+    "week": "+{amount} this week",
+    "separator": " · ",
+    "nudge": "Nudge",
+    "nudgeWho": ": {name}",
+    "nudgeLimit": "Nudges are limited to 3 per 24 hours"
   }
 }

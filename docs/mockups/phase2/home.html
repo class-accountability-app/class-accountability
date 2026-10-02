@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study Pods · Home (Prompt 11 mockup)</title>
+<!--
+  Prompt 11: the logged-in Home, tighter, with progress motivation.
+  One file, both languages, both widths. Open it plain to see all four
+  frames, or one frame at a time for screenshots:
+    home.html?frame=390&lang=ja   home.html?frame=1440&lang=en
+  Colours, fonts and the ruled-paper background are the app's own
+  (app/globals.css). Example data: today is Fri 2 Oct; the week is
+  Mon 28 Sep – Sun 4 Oct (JST). All names and numbers are fake.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Schibsted+Grotesk:wght@400;500;600&family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{
+  --page-bg:#f6ecd6;--surface:#fbf6e8;--border:#d9c69a;--rule:#e3d3ac;--dash:#e3d4b0;
+  --ink:#3a2f22;--muted:#6b5636;--accent:#b5583f;--accent-text:#9c4830;
+  --active:#6f8556;--active-text:#556b40;--stale:#948e78;--field:#fffdf7;
+  --heading:'Fraunces','Shippori Mincho',serif;
+  --body:'Schibsted Grotesk','Zen Kaku Gothic New',sans-serif;
+  --meta:'Courier Prime','Zen Kaku Gothic New',monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#8f8a80;font-family:var(--body);color:var(--ink);padding:32px;display:flex;flex-direction:column;gap:40px;align-items:flex-start}
+body.single{padding:0;background:var(--page-bg);align-items:stretch}
+.label{font:600 14px/1.4 var(--body);color:#fff;margin:0 0 8px}
+body.single .label{display:none}
+
+/* A frame is a fake viewport: container queries stand in for media queries. */
+.frame{position:relative;background-color:var(--page-bg);background-image:repeating-linear-gradient(var(--page-bg),var(--page-bg) 27px,var(--rule) 28px);container-type:inline-size;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+body.single .frame{box-shadow:none;width:100% !important}
+.frame[data-w="390"]{width:390px}
+.frame[data-w="1440"]{width:1440px}
+:lang(ja){word-break:auto-phrase}
+
+/* Header and tab bar: unchanged from phase 1. */
+.hdr{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--surface);border-bottom:1px solid var(--border)}
+.brand{font:600 20px var(--heading)}
+.hdr nav{display:none;gap:22px;font-size:14px;color:var(--muted)}
+.hdr nav b{color:var(--accent-text)}
+.lang{font:13px var(--meta);color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.tabs{position:absolute;left:0;right:0;bottom:0;height:68px;display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--border)}
+.tabs span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:var(--muted)}
+.tabs span.on{color:var(--accent-text);font-weight:700;box-shadow:inset 0 3px 0 -0px var(--accent-text)}
+.tabs svg{width:22px;height:22px}
+.margin-rule{display:none;position:absolute;top:0;bottom:0;left:24px;width:1px;background:rgba(181,88,63,.45)}
+@container (min-width:640px){.margin-rule{display:block}}
+
+/* Page */
+.page{padding:16px 16px 152px 16px}
+.grid{display:flex;flex-direction:column;gap:14px;max-width:448px}
+.col{display:flex;flex-direction:column;gap:14px}
+
+.hello{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:2px 2px 0}
+.hello h1{margin:0;font:700 22px/1.4 var(--heading)}
+.hello time{font:13px var(--meta);color:var(--muted);white-space:nowrap}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:2px}
+h2{margin:0;font:700 17px/1.4 var(--heading)}
+.sec{display:flex;flex-direction:column;gap:8px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 2px}
+.sec-head a{font-size:13px;font-weight:600;color:var(--accent-text)}
+
+/* This week */
+.week{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px}
+.week .num{display:flex;flex-direction:column;gap:1px}
+.week .k{font-size:12px;color:var(--muted)}
+.week .v{font:700 20px/1.2 var(--meta)}
+.week .v small{font:13px var(--body);color:var(--muted);margin-left:6px}
+.days{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.days ol{display:flex;gap:6px;margin:0;padding:0;list-style:none}
+.days li{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;line-height:1;color:var(--muted)}
+.dot{width:14px;height:14px;border-radius:50%;border:1.5px solid #b9a57c}
+.dot.on{background:var(--active);border-color:var(--active)}
+.dot.today{outline:2px solid var(--ink);outline-offset:1.5px}
+.days p{margin:0;font-size:11px;color:var(--muted)}
+
+/* Target card */
+.targets{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.t{padding:12px 14px 12px;display:flex;flex-direction:column;gap:6px}
+.t-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.t h3{margin:0;font:700 17px/1.35 var(--heading)}
+.t .meta{font:12px/1.6 var(--meta);color:var(--muted)}
+.due-soon{color:var(--accent-text);font-weight:700;white-space:nowrap}
+.due-soon::before{content:"!";display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;margin-right:4px;border:1.5px solid currentColor;border-radius:50%;font:700 10px/1 var(--body);vertical-align:1px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 14px;border:0;border-radius:2px;background:var(--accent);color:#fff;font:600 15px var(--body);box-shadow:0 2px 0 rgba(58,47,34,.35);white-space:nowrap}
+.btn.ghost{background:var(--field);color:var(--ink);border:1px solid #b9a57c;box-shadow:none}
+.nums{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.nums b{font:700 18px var(--meta)}
+.nums b small{font:13px var(--meta);color:var(--muted)}
+.plus{font:700 13px var(--meta);color:var(--active-text)}
+.bar{position:relative;height:8px;background:#e6d6ad;border-radius:2px}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--ink);border-radius:2px}
+.bar u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--surface);text-decoration:none}
+.bar u::after{content:"";position:absolute;left:-1px;top:3px;bottom:3px;width:2px;background:#b9a57c}
+.bar u.passed::after{background:var(--surface)}
+.left{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:13px;line-height:1.6;color:var(--muted)}
+.left b{color:var(--ink);font-weight:600}
+.task-state{font-size:13px;color:var(--muted)}
+.done-list{padding:0 14px}
+.done-list summary{min-height:44px;display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:600;cursor:pointer;list-style:none}
+.done-list summary::after{content:"";width:8px;height:8px;border-right:1.8px solid var(--muted);border-bottom:1.8px solid var(--muted);transform:rotate(45deg) translateY(-3px)}
+
+/* Pod */
+.pod{padding:2px 14px}
+.pod h3{margin:10px 0 0;font:12px var(--meta);color:var(--muted);font-weight:400}
+.mate{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed var(--dash)}
+.mate:last-child{border-bottom:0}
+.stamp{width:26px;height:26px;flex:none;border-radius:50%;border:1.5px solid var(--active);display:flex;align-items:center;justify-content:center;transform:rotate(-7deg)}
+.stamp::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--active)}
+.stamp.stale{border-color:var(--stale)}
+.stamp.stale::after{background:var(--stale)}
+.who{flex:1;min-width:0;display:flex;flex-direction:column}
+.who b{font-size:15px}
+.who span{font-size:12px;color:var(--muted)}
+.mate .side{text-align:right;font-size:13px}
+.mate a{display:inline-flex;min-height:44px;align-items:center;font-weight:600;color:var(--accent-text)}
+.limit{font-size:12px;color:var(--muted);max-width:9.5em;display:inline-block;line-height:1.5}
+
+.classes{display:flex;flex-wrap:wrap;gap:6px 16px;padding:0 2px;font-size:14px}
+.classes a{display:inline-flex;min-height:44px;align-items:center;color:var(--accent-text);font-weight:600}
+
+/* Sticky ＋記録 (phones only), above the tab bar and the home indicator. */
+.sticky{position:absolute;left:16px;right:16px;bottom:calc(68px + 12px);display:flex}
+.sticky .btn{flex:1;min-height:48px;font-size:16px}
+/* One frame at a time (?frame=): fixed to the viewport, as on a phone. */
+body.single .sticky{position:fixed;bottom:calc(68px + 12px)}
+body.single .tabs{position:fixed}
+body.single .fold{display:none}
+.fold{position:absolute;left:0;right:0;top:708px;border-top:2px dashed #c33;pointer-events:none}
+.fold span{position:absolute;right:6px;top:2px;font:11px var(--meta);color:#c33;background:var(--page-bg);padding:0 4px}
+
+/* The milestone toast (screen 09's toast, new text): shown only with ?toast=1. */
+.toast-sample{display:none !important}
+body.show-toast .toast-sample{display:flex !important}
+.toast{margin:0 0 2px;display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--ink);color:#fbf6e8;border-radius:2px}
+.toast .ring{width:26px;height:26px;border:1.5px solid #fbf6e8;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+.toast .ring::after{content:"";width:9px;height:9px;border-radius:50%;background:#fbf6e8}
+.toast p{margin:0;font-size:14px;line-height:1.5}
+.toast small{display:block;font-size:12px;opacity:.85}
+.toast u{margin-left:auto;font-weight:600;text-underline-offset:3px}
+
+/* Desktop: two columns, centred, no empty band. */
+@container (min-width:1024px){
+  .hdr{padding:0 48px}
+  .hdr nav{display:flex}
+  .tabs,.sticky,.fold{display:none}
+  .margin-rule{left:40px}
+  .page{padding:28px 64px 48px}
+  .grid{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:24px 32px;align-items:start}
+  .grid > .hello{grid-column:1 / -1}
+  .hello h1{font-size:26px}
+  .t{padding:14px 18px}
+}
+</style>
+</head>
+<body>
+
+<template id="screen">
+  <div class="frame">
+    <div class="margin-rule"></div>
+    <header class="hdr">
+      <span class="brand">Study Pods</span>
+      <nav><b data-t="tabHome"></b><span data-t="tabClasses"></span><span data-t="tabNudges"></span><span data-t="tabSettings"></span><span class="lang" data-t="otherLang"></span><span data-t="signOut"></span></nav>
+      <span class="lang mobile-lang" data-t="otherLang"></span>
+    </header>
+    <main class="page">
+      <div class="grid">
+        <div class="hello"><h1 data-t="greeting"></h1><time data-t="today"></time></div>
+
+        <div class="col">
+          <div class="toast toast-sample" role="status">
+            <span class="ring"></span>
+            <p><span data-t="toastLine"></span><small data-t="toastSub"></small></p>
+            <u data-t="undo"></u>
+          </div>
+
+          <section class="card week" aria-labelledby="wk">
+            <div class="num"><span class="k" id="wk" data-t="thisWeek"></span><span class="v"><span data-t="weekPlus"></span><small data-t="weekHours"></small></span></div>
+            <div class="days">
+              <ol aria-hidden="true">
+                <li><span class="dot on"></span><span data-t="d1"></span></li>
+                <li><span class="dot"></span><span data-t="d2"></span></li>
+                <li><span class="dot on"></span><span data-t="d3"></span></li>
+                <li><span class="dot"></span><span data-t="d4"></span></li>
+                <li><span class="dot on today"></span><span data-t="d5"></span></li>
+                <li><span class="dot"></span><span data-t="d6"></span></li>
+                <li><span class="dot"></span><span data-t="d7"></span></li>
+              </ol>
+              <p data-t="daysText"></p>
+            </div>
+          </section>
+
+          <section class="sec" aria-labelledby="tg">
+            <div class="sec-head"><h2 id="tg" data-t="targets"></h2><a data-t="newTarget"></a></div>
+            <ul class="targets">
+              <li class="card t">
+                <div class="t-top">
+                  <div><h3 data-t="t1"></h3><div class="meta"><span data-t="t1meta"></span> · <span class="due-soon" data-t="t1due"></span></div></div>
+                  <span class="btn" data-t="log"></span>
+                </div>
+                <div class="nums"><b>1,240 <small data-t="t1of"></small></b><span class="plus" data-t="t1week"></span></div>
+                <div class="bar" role="img" data-t-aria="t1aria"><i style="width:62%"></i><u class="passed" style="left:25%"></u><u class="passed" style="left:50%"></u><u style="left:75%"></u></div>
+                <div class="left"><span data-t="t1left"></span><span data-t="t1pace"></span></div>
+              </li>
+              <li class="card t">
+                <div class="t-top">
+                  <div><h3 data-t="t2"></h3><div class="meta" data-t="t2meta"></div></div>
+                  <span class="btn" data-t="log"></span>
+                </div>
+                <div class="nums"><b>3 <small data-t="t2of"></small></b><span class="plus" data-t="t2week"></span></div>
+                <div class="bar" role="img" data-t-aria="t2aria"><i style="width:30%"></i><u class="passed" style="left:25%"></u><u style="left:50%"></u><u style="left:75%"></u></div>
+                <div class="left"><span data-t="t2left"></span><span data-t="t2pace"></span></div>
+              </li>
+              <li class="card t">
+                <div class="t-top">
+                  <div><h3 data-t="t3"></h3><div class="meta" data-t="t3meta"></div></div>
+                  <span class="btn ghost" data-t="complete"></span>
+                </div>
+                <div class="task-state" data-t="t3state"></div>
+              </li>
+            </ul>
+            <details class="card done-list"><summary data-t="doneList"></summary></details>
+          </section>
+        </div>
+
+        <div class="col">
+          <section class="sec" aria-labelledby="pd">
+            <div class="sec-head"><h2 id="pd" data-t="pod"></h2></div>
+            <div class="card pod">
+              <h3 data-t="podClass"></h3>
+              <div class="mate"><span class="stamp"></span><div class="who"><b data-t="m1"></b><span data-t="m1when"></span></div><div class="side plus" data-t="m1week"></div></div>
+              <div class="mate"><span class="stamp stale"></span><div class="who"><b data-t="m2"></b><span data-t="m2when"></span></div><div class="side"><a data-t="nudge"></a></div></div>
+              <div class="mate"><span class="stamp stale"></span><div class="who"><b data-t="m3"></b><span data-t="m3when"></span></div><div class="side"><span class="limit" data-t="limit"></span></div></div>
+            </div>
+          </section>
+          <section class="sec" aria-labelledby="cl">
+            <div class="sec-head"><h2 id="cl" data-t="classes"></h2></div>
+            <div class="classes"><a data-t="c1"></a><a data-t="c2"></a><a data-t="join"></a></div>
+          </section>
+        </div>
+      </div>
+    </main>
+    <div class="sticky"><span class="btn" data-t="stickyLog"></span></div>
+    <nav class="tabs" aria-hidden="true">
+      <span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 10.5L12 3l9 7.5"/><path d="M5.5 9v11h13V9"/><path d="M10 20v-6h4v6"/></svg><span data-t="tabHome"></span></span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4.5h7a2 2 0 0 1 2 2V20a1.5 1.5 0 0 0-1.5-1.5H4z"/><path d="M20 4.5h-7a2 2 0 0 0-2 2V20a1.5 1.5 0 0 1 1.5-1.5H20z"/></svg><span data-t="tabClasses"></span></span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v11H9l-4 3.5V16H4z"/></svg><span data-t="tabNudges"></span></span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span data-t="tabSettings"></span></span>
+    </nav>
+    <div class="fold"><span data-t="fold"></span></div>
+  </div>
+</template>
+
+<script>
+const T = {
+  ja: {
+    otherLang:'EN', tabHome:'ホーム', tabClasses:'クラス', tabNudges:'声かけ', tabSettings:'設定', signOut:'ログアウト',
+    greeting:'こんにちは、あきさん', today:'10月2日（金）',
+    toastLine:'半分まで来ました（1,240 / 2,000字）', toastSub:'ポッドに共有されました', undo:'取り消す',
+    thisWeek:'今週', weekPlus:'+540字', weekHours:'・ 1.5時間',
+    d1:'月',d2:'火',d3:'水',d4:'木',d5:'金',d6:'土',d7:'日', daysText:'今週は3日記録しました',
+    targets:'あなたの目標', newTarget:'＋ 新しい目標',
+    t1:'期末レポート', t1meta:'統計学 201 · 10月4日まで', t1due:'残り2日', t1of:'/ 2,000字', t1week:'今週 +540字',
+    t1aria:'1,240 / 2,000字（62%）', t1left:'あと 760字', t1pace:'1日あたり約380字で間に合います',
+    t2:'テスト勉強', t2meta:'統計学 201 · 10月28日まで · 残り26日', t2of:'/ 10時間', t2week:'今週 +1.5時間',
+    t2aria:'3 / 10時間（30%）', t2left:'あと 7時間', t2pace:'1日あたり約0.3時間で間に合います',
+    t3:'課題を提出する', t3meta:'英語 II · 10月9日まで · 残り7日', t3state:'まだ完了していません', complete:'完了にする',
+    doneList:'完了した目標（1）', log:'＋記録',
+    pod:'ポッドの様子', podClass:'統計学 201',
+    m1:'佐藤さん', m1when:'2時間前に記録', m1week:'今週 +800字',
+    m2:'田中さん', m2when:'4日前に記録', nudge:'声かけする',
+    m3:'鈴木さん', m3when:'5日前に記録', limit:'今日はもう3回声をかけました',
+    classes:'クラス', c1:'統計学 201', c2:'英語 II', join:'コードで参加',
+    stickyLog:'＋記録：期末レポート', fold:'390×844：ここまでが1画面目（下に＋記録とタブバー）'
+  },
+  en: {
+    otherLang:'日本語', tabHome:'Home', tabClasses:'Classes', tabNudges:'Nudges', tabSettings:'Settings', signOut:'Sign out',
+    greeting:'Hi, Aki', today:'Fri, Oct 2',
+    toastLine:'Halfway there (1,240 / 2,000 characters)', toastSub:'Shared with your pod', undo:'Undo',
+    thisWeek:'This week', weekPlus:'+540 chars', weekHours:'· 1.5 h',
+    d1:'M',d2:'T',d3:'W',d4:'T',d5:'F',d6:'S',d7:'S', daysText:'Logged on 3 days this week',
+    targets:'Your targets', newTarget:'+ New target',
+    t1:'Final report', t1meta:'Statistics 201 · due Oct 4', t1due:'2 days left', t1of:'/ 2,000 chars', t1week:'+540 this week',
+    t1aria:'1,240 / 2,000 characters (62%)', t1left:'760 to go', t1pace:'About 380 a day gets you there',
+    t2:'Exam study', t2meta:'Statistics 201 · due Oct 28 · 26 days left', t2of:'/ 10 h', t2week:'+1.5 h this week',
+    t2aria:'3 / 10 hours (30%)', t2left:'7 h to go', t2pace:'About 0.3 h a day gets you there',
+    t3:'Hand in the assignment', t3meta:'English II · due Oct 9 · 7 days left', t3state:'Not done yet', complete:'Mark as done',
+    doneList:'Finished targets (1)', log:'+ Log',
+    pod:'Your pod', podClass:'Statistics 201',
+    m1:'Sato', m1when:'Logged 2 hours ago', m1week:'+800 this week',
+    m2:'Tanaka', m2when:'Logged 4 days ago', nudge:'Nudge',
+    m3:'Suzuki', m3when:'Logged 5 days ago', limit:'You’ve nudged 3 times today',
+    classes:'Classes', c1:'Statistics 201', c2:'English II', join:'Join with a code',
+    stickyLog:'+ Log: Final report', fold:'390×844: first screen ends here (＋Log and tab bar below)'
+  }
+}
+
+function render(width, lang) {
+  const node = document.getElementById('screen').content.cloneNode(true)
+  const frame = node.querySelector('.frame')
+  frame.dataset.w = String(width)
+  frame.lang = lang
+  for (const el of node.querySelectorAll('[data-t]')) el.textContent = T[lang][el.dataset.t]
+  for (const el of node.querySelectorAll('[data-t-aria]')) el.setAttribute('aria-label', T[lang][el.dataset.tAria])
+  if (width > 1000) node.querySelector('.mobile-lang').remove()
+  const wrap = document.createElement('div')
+  const label = document.createElement('p')
+  label.className = 'label'
+  label.textContent = `${width}px · ${lang === 'ja' ? '日本語' : 'English'}`
+  wrap.append(label, node)
+  document.body.append(wrap)
+}
+
+const q = new URLSearchParams(location.search)
+if (q.get('frame')) {
+  document.body.classList.add('single')
+  if (q.get('toast')) document.body.classList.add('show-toast')
+  document.documentElement.lang = q.get('lang') || 'ja'
+  render(Number(q.get('frame')), q.get('lang') || 'ja')
+} else {
+  render(390, 'ja'); render(390, 'en'); render(1440, 'ja'); render(1440, 'en')
+}
+</script>
+</body>
+</html>
