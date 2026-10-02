@@ -179,13 +179,16 @@ export function TargetForm({ classId }: { classId: string }) {
               <div className="flex items-center gap-2.5">
                 <input
                   id={ids.amount}
-                  type="number"
+                  // Text with a number keyboard, not type="number": a number
+                  // field changes its value when a student scrolls the page
+                  // with the pointer over it. Same as the ＋記録 sheet; the
+                  // server action parses it with parseAmount().
+                  type="text"
                   name="target_amount"
                   value={draft.amount}
                   onChange={(e) => setDraft({ ...draft, amount: e.target.value })}
-                  min={isStudyHours ? '0.1' : '1'}
-                  step={isStudyHours ? 'any' : '1'}
                   inputMode={isStudyHours ? 'decimal' : 'numeric'}
+                  autoComplete="off"
                   placeholder={t(`amountPlaceholder.${draft.type}`)}
                   className={controlClass}
                   {...describedField(fieldError('target_amount'), `${ids.amount}-error`)}
