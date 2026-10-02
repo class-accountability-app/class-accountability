@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { formatTimeAgo } from '@/lib/date'
 import { EmptyState, emptyActionClass } from '@/components/empty-state'
+import { PushCard } from './push-card'
 
 const NUDGES_SHOWN = 50
 
@@ -52,6 +53,9 @@ export default async function NudgesPage() {
     <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
       <div className="flex w-full max-w-md flex-col gap-5">
         <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink">{t('title')}</h1>
+
+        {/* Offered only once a nudge has actually arrived. */}
+        {(nudges ?? []).length > 0 && <PushCard />}
 
         {(nudges ?? []).length === 0 ? (
           <EmptyState

@@ -318,6 +318,16 @@
     "saved": "Saved.",
     "email": "Email: {email} (not shown to anyone else)",
     "languageHeading": "Language",
+    "notificationsHeading": "Notifications",
+    "push": {
+      "label": "Nudge notifications",
+      "hint": "Sent to this device",
+      "iosInstallFirst": "On iPhone, add the app to your Home Screen first. Open Study Pods from there to turn notifications on.",
+      "iosInstallLink": "How to add to Home Screen",
+      "denied": "Notifications are blocked. On iPhone, allow them in Settings → Notifications → Study Pods; on a computer or Android, in the browser’s site settings.",
+      "unsupported": "This browser can’t receive notifications.",
+      "failed": "Couldn’t change the notification setting. Please try again."
+    },
     "privacyPolicy": "Privacy policy",
     "signOut": "Sign out",
     "deleteAccount": "Delete account",
@@ -336,7 +346,22 @@
     "emptyTitle": "No nudges yet",
     "emptyBody": "When a podmate nudges you, it shows up here. If someone in your pod hasn't logged anything for a while, you can nudge them too.",
     "viewPod": "View your pod",
-    "rule": "You can nudge the same person up to 3 times in 24 hours."
+    "rule": "You can nudge the same person up to 3 times in 24 hours.",
+    "pushCard": {
+      "title": "Get nudges from your pod as notifications",
+      "body": "We only notify you when a nudge arrives. No promotions or recommendations.",
+      "turnOn": "Turn on notifications",
+      "later": "Not now",
+      "iosTitle": "On iPhone, add the app to your Home Screen first",
+      "iosLink": "How to add to Home Screen",
+      "footnote": "You can turn them off in Settings at any time."
+    }
+  },
+  "push": {
+    "title": "Study Pods",
+    "one": "{name} sent you a nudge",
+    "oneUnknown": "A podmate sent you a nudge",
+    "many": "{count} nudges arrived overnight"
   },
   "empty": {
     "findPod": "Find a pod",
@@ -603,6 +628,7 @@
   },
   "privacy": {
     "effective": "Effective 1 October 2026",
+    "updated": "Last updated 1 October 2026",
     "title": "Privacy policy",
     "intro": "Study Pods (“the service”) is a study app built and run by a student. This page explains what the service collects, how it’s used, and who can see it.",
     "collectHeading": "1. What we collect",
@@ -614,8 +640,10 @@
     "contentText": "targets, progress logs, comments and nudges",
     "googleLabel": "If you connect Google Docs (a planned feature):",
     "googleText": "the character count and last-modified time of the documents you choose, and the Google access token needed to keep the connection working",
+    "notifyLabel": "If you turn on notifications:",
+    "notifyText": "your device’s push address (an address and encryption keys issued by your browser), your display language and the kind of device (e.g. Safari on iPhone), so we can deliver them. Notifications are off until you turn them on, and you can turn them off in 設定 at any time. Turning them off or logging out deletes that device’s address.",
     "cookieLabel": "Cookies:",
-    "cookieText": "only to keep you logged in, remember your language, and remember two small display settings (whether you’ve chosen a display name, and whether you’ve seen the setup-complete message). No advertising or analytics cookies.",
+    "cookieText": "only to keep you logged in, remember your language, and remember two small display settings (whether you’ve chosen a display name, and whether you’ve seen the setup-complete message). No advertising or analytics cookies. Whether you’ve closed the notification suggestion is saved only in this device’s browser, not in a cookie.",
     "noText": "We never store the text of your reports or assignments.",
     "useHeading": "2. How we use it",
     "useText": "Only to run the service (sharing progress with your pod, nudges and similar features) and for the research use in section 6. We don’t use your data for advertising, and we don’t sell it.",
@@ -634,10 +662,11 @@
     "devLabel": "The developer:",
     "devText": "can access the database to run the service and fix problems.",
     "servicesHeading": "5. Services we use",
-    "serviceSupabase": "Supabase: database and login (Tokyo region)",
+    "serviceSupabase": "Supabase: database, login and sending notifications (database in the Tokyo region)",
     "serviceVercel": "Vercel: hosting the website (Tokyo region)",
     "serviceResend": "Resend: sending login emails",
     "serviceGoogle": "Google: only if you connect Google Docs",
+    "servicePush": "Push services (Apple, Google, Mozilla, Microsoft): only if you turn on notifications. Notifications are delivered through your browser’s push service. They’re encrypted, so the service sees only that a message was sent to your device, and when.",
     "servicesNote": "Supabase, Vercel and Resend are US companies. The database is stored in their Tokyo region.",
     "researchHeading": "6. Research use",
     "researchText": "Study Pods is part of a university capstone project. The project report uses only aggregated usage figures that can’t identify you, such as how often progress is logged or how many people keep using the app. It never includes names, email addresses, or the text of memos or comments. If you don’t want your data included, email us at the address below and we’ll leave it out of the analysis; you can keep using the app. Whether you use Study Pods, and whether you opt out, has no effect on your grades.",

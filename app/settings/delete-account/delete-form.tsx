@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
 import { isConfirmWord } from '@/lib/delete-account'
 import { FieldError, describedField, useFocusFirstInvalid } from '@/components/form-errors'
+import { releaseThisDevice } from '@/components/push'
 import { deleteAccount } from './actions'
 
 // Type 「削除」 / "delete" to enable the button. On success the action signs
@@ -31,6 +32,9 @@ export function DeleteAccountForm() {
     }
     const formData = new FormData(e.currentTarget)
     startTransition(async () => {
+      // The push rows cascade with the account (0018); this drops the
+      // browser's side too, so nothing is left subscribed on this device.
+      await releaseThisDevice()
       const result = await deleteAccount(formData)
       if (result?.error) setError(result.error)
     })

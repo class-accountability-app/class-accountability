@@ -46,7 +46,8 @@ export default async function PrivacyPage() {
 
   return (
     <article className={`mx-auto w-full max-w-[760px] px-5 pt-12 pb-16 text-[#4a3d2c] lg:px-0 lg:pt-[88px] lg:pb-28 ${bodyText}`}>
-      <p className="mb-3 font-meta text-sm text-muted">{t('effective')}</p>
+      <p className="font-meta text-sm text-muted">{t('effective')}</p>
+      <p className="mb-3 font-meta text-sm text-muted">{t('updated')}</p>
       <h1 className="font-heading text-[34px] leading-[1.35] font-bold text-ink lg:text-[42px]">{t('title')}</h1>
       <p className="mt-6">{t('intro')}</p>
 
@@ -56,6 +57,7 @@ export default async function PrivacyPage() {
         <Labelled label={t('membershipLabel')}>{space + t('membershipText')}</Labelled>
         <Labelled label={t('contentLabel')}>{space + t('contentText')}</Labelled>
         <Labelled label={t('googleLabel')}>{space + t('googleText')}</Labelled>
+        <Labelled label={t('notifyLabel')}>{space + t('notifyText')}</Labelled>
         <Labelled label={t('cookieLabel')}>{space + t('cookieText')}</Labelled>
       </ul>
       <p className="mt-3">{t('noText')}</p>
@@ -95,6 +97,7 @@ export default async function PrivacyPage() {
         <li>{t('serviceVercel')}</li>
         <li>{t('serviceResend')}</li>
         <li>{t('serviceGoogle')}</li>
+        <li>{t('servicePush')}</li>
       </ul>
       <p className="mt-3">{t('servicesNote')}</p>
 

@@ -13,6 +13,7 @@ import {
   tabTransitionTypes,
   type TabId,
 } from '@/lib/nav'
+import { SignOutForm } from '@/components/sign-out-form'
 
 // Line icons from the mockups' tab bar (docs/mockups/phase1, 12 and 13).
 function TabIcon({ tab }: { tab: TabId }) {
@@ -159,10 +160,11 @@ export function HeaderSignOut() {
   const onPhonesToo = showsHeaderSignOutOnPhones(pathname)
 
   return (
-    <form action="/auth/signout" method="post" className={onPhonesToo ? undefined : 'hidden md:block'}>
-      <button type="submit" className="nav-link min-h-11 px-2 font-meta text-xs text-muted">
-        {t('signOut')}
-      </button>
-    </form>
+    <SignOutForm
+      className={onPhonesToo ? undefined : 'hidden md:block'}
+      buttonClassName="nav-link min-h-11 px-2 font-meta text-xs text-muted"
+    >
+      {t('signOut')}
+    </SignOutForm>
   )
 }

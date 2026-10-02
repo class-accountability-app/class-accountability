@@ -18,11 +18,11 @@ All names, numbers, emails and codes in them are fake examples.
 | 07-new-target | Prompt 4 (templates only; the manual/auto choice is not built in phase 1) |
 | 09-home-after-logging, 10-quick-log, 11-pod-progress | Prompt 5 (quick log, edit and delete) |
 | 16-landing-desktop.dc.html (1440), 16-landing-mobile.dc.html (390), 17-privacy.dc.html | Prompt 6 (public landing page and privacy policy) |
-| 08-notifications-PHASE2 | Phase 2, do not build yet |
+| 08-notifications-PHASE2 | Prompt 10, as a one-time card on 声かけ (not a full screen); 13's 声かけの通知 switch too |
 
 Phase 2 details that appear in the mockups but are NOT built in phase 1
 (the ones marked "built" came in phase 2):
-- the notification screen (08) and the notification switches in settings (13)
+- 08 as a full screen, its sample showing the memo (notifications never show it), and its "also by email" line; the email switch in settings (13). There are no email nudges.
 - milestone ticks at 25/50/75%, the passed-milestone dots, and the "あと○字" label (09, 11): built in Prompt 11
 - "今週 +○字" and "今週記録した日" (09, 11): built in Prompt 11
 
