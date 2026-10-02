@@ -122,7 +122,7 @@ export default async function RootLayout({
           <div className="ruled relative flex flex-1 flex-col">
             <div
               aria-hidden
-              className="pointer-events-none fixed inset-y-0 left-6 hidden w-px bg-accent/60 sm:left-10 sm:block"
+              className="print-hidden pointer-events-none fixed inset-y-0 left-6 hidden w-px bg-accent/60 sm:left-10 sm:block"
             />
             <main className="flex flex-1 flex-col">{children}</main>
           </div>
