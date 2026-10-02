@@ -89,6 +89,15 @@ async function withStore<T>(mode: IDBTransactionMode, run: (store: IDBObjectStor
   }
 }
 
+// Set by sign-out and account deletion: the page is about to go away, and
+// the editor's pagehide/beforeunload handlers must not write the draft back
+// after it was cleared (found in the dev test). Lasts for this page only.
+let sealed = false
+
+export function draftsSealed(): boolean {
+  return sealed
+}
+
 // Private windows and some in-app browsers have no IndexedDB, or refuse it.
 // The editor still works there; only the safety net is missing.
 function available(): boolean {
@@ -105,7 +114,7 @@ export async function readDraft(userId: string, targetId: string): Promise<Local
 }
 
 export async function writeDraft(draft: LocalDraft): Promise<boolean> {
-  if (!available()) return false
+  if (!available() || sealed) return false
   try {
     await withStore('readwrite', (s) => s.put(draft, draftKey(draft.userId, draft.targetId)))
     return true
@@ -137,7 +146,11 @@ export async function hasAnyDraft(): Promise<boolean> {
   }
 }
 
-export async function clearAll(): Promise<void> {
+// `seal`: for sign-out and account deletion, nothing is written again on this
+// page. /login clears without sealing: the student goes on to write after
+// logging in, in the same page.
+export async function clearAll({ seal = false }: { seal?: boolean } = {}): Promise<void> {
+  if (seal) sealed = true
   if (!available()) return
   try {
     await withStore('readwrite', (s) => s.clear())

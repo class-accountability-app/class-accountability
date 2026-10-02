@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { DRAFT_MAX_AGE_MS, decideDraft, draftKey, type LocalDraft } from './local-draft'
+import { DRAFT_MAX_AGE_MS, clearAll, decideDraft, draftKey, draftsSealed, type LocalDraft } from './local-draft'
 
 const doc = (text: string) => ({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] })
 const NOW = Date.UTC(2026, 9, 2, 6, 0)
@@ -46,5 +46,16 @@ describe('decideDraft', () => {
 
   it('keys are per student and target', () => {
     expect(draftKey('u', 't')).toBe('u:t')
+  })
+})
+
+describe('clearAll', () => {
+  // Sign-out and account deletion: the editor's pagehide/beforeunload must not
+  // write the draft back after it was cleared.
+  it('only seals when asked (/login clears without sealing)', async () => {
+    await clearAll()
+    expect(draftsSealed()).toBe(false)
+    await clearAll({ seal: true })
+    expect(draftsSealed()).toBe(true)
   })
 })

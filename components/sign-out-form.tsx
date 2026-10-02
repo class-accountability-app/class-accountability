@@ -35,7 +35,7 @@ export function SignOutForm({
   async function signOut() {
     if (releasing.current) return
     releasing.current = true
-    await clearAll()
+    await clearAll({ seal: true })
     const endpoint = await releaseThisDevice()
     if (endpointRef.current) endpointRef.current.value = endpoint ?? ''
     formRef.current?.submit()

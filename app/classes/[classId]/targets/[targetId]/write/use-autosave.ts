@@ -12,7 +12,7 @@ import {
   type AutosaveState,
   type Theirs,
 } from '@/lib/autosave'
-import { deleteDraft, writeDraft, type LocalDraft } from '@/lib/local-draft'
+import { deleteDraft, draftsSealed, writeDraft, type LocalDraft } from '@/lib/local-draft'
 import { keepMine, saveDocument, type SaveResult } from './actions'
 
 // The editor's autosave: lib/autosave.ts decides, this hook does. It owns the
@@ -149,8 +149,9 @@ export function useAutosave({ editor, userId, targetId, initialVersion, initialS
     }
     // The browser's own "leave this page?" prompt while anything is unsaved.
     // The draft is in IndexedDB either way.
+    // Not after 「ログアウトする」: the student already chose to leave it.
     const beforeunload = (e: BeforeUnloadEvent) => {
-      if (!hasUnsaved(stateRef.current.status)) return
+      if (!hasUnsaved(stateRef.current.status) || draftsSealed()) return
       saveDraftNow()
       e.preventDefault()
       e.returnValue = ''

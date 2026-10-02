@@ -38,7 +38,7 @@ export function DeleteAccountForm() {
       await releaseThisDevice()
       // Unsaved writing in this browser (Prompt 12); the saved text goes
       // with the account (0019's cascades).
-      await clearAll()
+      await clearAll({ seal: true })
       const result = await deleteAccount(formData)
       if (result?.error) setError(result.error)
     })
