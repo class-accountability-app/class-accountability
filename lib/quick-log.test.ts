@@ -27,6 +27,33 @@ describe('parseAmount', () => {
   ] as const)('%s (%s) is rejected', (raw, type) => {
     expect(parseAmount(raw, type)).toBeNull()
   })
+
+  // 新しい目標's amount is a text field since 11b (no scroll-wheel changes)
+  // and createTarget parses it with parseAmount, so these are target inputs.
+  describe('as a target amount', () => {
+    it.each([
+      ['2,000', 'character_count', 2000],
+      ['２，０００', 'character_count', 2000],
+      ['２０００', 'character_count', 2000],
+      ['1.5', 'study_hours', 1.5],
+      ['10', 'study_hours', 10],
+    ] as const)('%s (%s) is %s', (raw, type, expected) => {
+      expect(parseAmount(raw, type)).toBe(expected)
+    })
+
+    it.each([
+      ['', 'character_count'],
+      ['0', 'character_count'],
+      ['-5', 'character_count'],
+      ['1e3', 'character_count'],
+      ['0x10', 'character_count'],
+      ['Infinity', 'character_count'],
+      ['1.5', 'word_count'],
+      ['-1.5', 'study_hours'],
+    ] as const)('%s (%s) is rejected', (raw, type) => {
+      expect(parseAmount(raw, type)).toBeNull()
+    })
+  })
 })
 
 describe('addChip', () => {
