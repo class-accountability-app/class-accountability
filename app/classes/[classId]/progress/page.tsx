@@ -15,6 +15,7 @@ import { CommentSection } from './comment-section'
 import { NudgeForm } from './nudge-form'
 import { NudgeList, NudgeListProvider } from './nudge-list'
 import { EmptyState, emptyActionClass } from '@/components/empty-state'
+import { secondaryButtonClass } from '@/components/buttons'
 
 const CHURN_THRESHOLD_DAYS = 7
 
@@ -317,10 +318,11 @@ export default async function ProgressPage({
         </div>
 
         <div className="w-full max-w-md">
-          <Link
-            href={`/classes/${classId}/targets/new`}
-            className="btn inline-flex h-11 items-center justify-center rounded-[2px] bg-accent px-[18px] text-sm font-semibold text-white"
-          >
+          {/* Secondary (Prompt 11b): ＋記録 on the cards is this page's primary. */}
+          <Link href={`/classes/${classId}/targets/new`} className={secondaryButtonClass}>
+            <svg aria-hidden width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              <path d="M8 3v10M3 8h10" />
+            </svg>
             {t('newTarget')}
           </Link>
         </div>

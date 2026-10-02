@@ -35,32 +35,6 @@
   "home": {
     "greeting": "こんにちは、{name}さん",
     "greetingNoName": "こんにちは",
-    "setup": {
-      "heading": "はじめの3ステップ",
-      "count": "{done} / {total} 完了",
-      "valueText": "{total}つ中{done}つ完了",
-      "doneMark": "（完了）",
-      "nextMark": "（次のステップ）",
-      "joinedClass": "{name} に参加しました",
-      "allDone": "準備ができました。あとは進み具合を記録していきましょう。",
-      "steps": {
-        "join": {
-          "title": "クラスに参加する",
-          "body": "授業で配られたリンクかQRコードから参加できます。",
-          "action": "クラスを探す"
-        },
-        "pod": {
-          "title": "ポッドに入る",
-          "body": "クラスの仲間を招待するか、届いた招待を受けましょう。",
-          "action": "クラスを開く"
-        },
-        "target": {
-          "title": "最初の目標を立てる",
-          "body": "レポートの文字数や勉強時間を、テンプレートから選べます。",
-          "action": "目標を立てる"
-        }
-      }
-    },
     "classesHeading": "参加中のクラス",
     "classMetaNoPod": "{term} · ポッド未参加",
     "classMetaPod": "{term} · ポッド {count}人",
@@ -71,8 +45,9 @@
     "moreTargets": "ほかに{count}件の目標があります",
     "moreTargetsLink": "クラスのページで見る",
     "classMetaOrganizer": "{term} · 運営",
-    "newTarget": "＋ 新しい目標",
-    "organizerMark": "運営"
+    "newTarget": "新しい目標",
+    "organizerMark": "運営",
+    "targetsWhy": "毎日の記録は ＋記録 から。"
   },
   "login": {
     "eyebrow": "ログイン",
@@ -131,7 +106,6 @@
     "submit": "クラスを作成"
   },
   "pods": {
-    "progressLink": "目標と進み具合",
     "invitationsHeading": "あなたへの招待",
     "invitedTo": "ポッドへの招待（{members}）",
     "emptyPod": "メンバーのいないポッド",
@@ -159,7 +133,17 @@
     "leaveConfirm": "ポッドを抜けると、仲間はあなたの進み具合を見られなくなります。あなたの目標と記録は残ります。",
     "leaveYes": "抜ける",
     "leaveNo": "やめる",
-    "leaving": "抜けています…"
+    "leaving": "抜けています…",
+    "targetsWhy": "毎日の記録は ＋記録 から。",
+    "newTarget": "新しい目標",
+    "noTargets": "まだ目標がありません。",
+    "yourPodWhy": "進み具合を見せ合う、最大6人のグループ。",
+    "podProgressLink": "ポッドの進み具合を見る",
+    "podProgressSub": "目標・最近の記録・コメント",
+    "inviteHeading": "仲間を招待する",
+    "inviteWhy": "同じ授業の人に、リンクかQRコードを送ります。",
+    "showLinkQr": "リンクとQRを表示",
+    "yourTargets": "あなたの目標"
   },
   "units": {
     "word_count": "{count, number}語",
@@ -735,6 +719,63 @@
     "separator": "・",
     "nudge": "声かけする",
     "nudgeWho": "：{name}",
-    "nudgeLimit": "声かけは24時間に3回までです"
+    "nudgeLimit": "声かけは24時間に3回までです",
+    "why": "仲間がどこまで進んだか。",
+    "progressLink": "ポッドの進み具合を見る",
+    "progressLinkSub": "{className}：目標・最近の記録・コメント"
+  },
+  "nextStep": {
+    "label": "次にやること",
+    "join": {
+      "title": "クラスに参加しましょう",
+      "why": "授業で配られたコードを入力すると、同じ授業の仲間とつながれます。"
+    },
+    "share": {
+      "title": "参加リンクを共有しましょう",
+      "why": "学生は {className} のリンクかQRコードから参加します。",
+      "action": "リンクとQRを表示"
+    },
+    "invitation": {
+      "title": "ポッドに招待されています",
+      "why": "{className} のポッドへの招待が届いています。",
+      "action": "招待を見る"
+    },
+    "pod": {
+      "title": "ポッドを作りましょう",
+      "why": "{className} で、仲間と進み具合を見せ合えるようになります。",
+      "other": "ほかのポッドに参加を申し込む"
+    },
+    "firstTarget": {
+      "title": "最初の目標を作りましょう",
+      "why": "{className} のレポートの文字数や勉強時間を決めると、毎日の記録が進み具合になります。",
+      "action": "最初の目標を作る"
+    },
+    "logToday": {
+      "title": "今日の分を記録しましょう",
+      "daysLeft": "残り{count}日",
+      "dueToday": "今日まで",
+      "overdue": "締め切りを過ぎています",
+      "whyAmountWhen": "{title}：あと{amount}（{when}）。",
+      "whyAmount": "{title}：あと{amount}。",
+      "whyWhen": "{title}（{when}）。",
+      "why": "{title}。",
+      "hintPhone": "画面下の ＋記録 から記録できます。",
+      "hintWide": "下の目標の ＋記録 から記録できます。"
+    },
+    "invite": {
+      "title": "仲間を誘いましょう",
+      "why": "ポッドにはまだあなただけです。リンクを送ると、同じ授業の人が参加できます。",
+      "action": "仲間を招待する"
+    },
+    "seePod": {
+      "title": "今日の記録は済みました",
+      "why": "仲間の様子も見てみましょう。声をかけるきっかけになります。",
+      "action": "ポッドの様子を見る"
+    },
+    "nextTarget": {
+      "title": "すべての目標を達成しました",
+      "why": "おつかれさまでした。次の課題があれば、目標を作りましょう。",
+      "action": "次の目標を作る"
+    }
   }
 }
