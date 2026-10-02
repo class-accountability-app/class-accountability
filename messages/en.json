@@ -35,32 +35,6 @@
   "home": {
     "greeting": "Hi, {name}",
     "greetingNoName": "Hi there",
-    "setup": {
-      "heading": "Getting started",
-      "count": "{done} / {total} done",
-      "valueText": "{done} of {total} done",
-      "doneMark": " (done)",
-      "nextMark": " (next step)",
-      "joinedClass": "You joined {name}",
-      "allDone": "You're all set. From here, just keep logging your progress.",
-      "steps": {
-        "join": {
-          "title": "Join a class",
-          "body": "Use the link or QR code from your class.",
-          "action": "Find a class"
-        },
-        "pod": {
-          "title": "Join a pod",
-          "body": "Invite classmates, or accept an invitation you've received.",
-          "action": "Open the class"
-        },
-        "target": {
-          "title": "Set your first target",
-          "body": "Pick a report length or study hours from a template.",
-          "action": "Set a target"
-        }
-      }
-    },
     "classesHeading": "Your classes",
     "classMetaNoPod": "{term} · No pod yet",
     "classMetaPod": "{term} · Pod of {count}",
@@ -71,8 +45,9 @@
     "moreTargets": "{count, plural, one {# more target} other {# more targets}}",
     "moreTargetsLink": "See them on your class pages",
     "classMetaOrganizer": "{term} · Organizer",
-    "newTarget": "+ New target",
-    "organizerMark": "Organizer"
+    "newTarget": "New target",
+    "organizerMark": "Organizer",
+    "targetsWhy": "Log each day with + Log."
   },
   "login": {
     "eyebrow": "Log in",
@@ -131,7 +106,6 @@
     "submit": "Create class"
   },
   "pods": {
-    "progressLink": "Targets & progress",
     "invitationsHeading": "Invitations for you",
     "invitedTo": "Invited to join a pod ({members})",
     "emptyPod": "Empty pod",
@@ -159,7 +133,17 @@
     "leaveConfirm": "If you leave, your podmates can no longer see your progress. Your targets and logs stay.",
     "leaveYes": "Leave",
     "leaveNo": "Cancel",
-    "leaving": "Leaving…"
+    "leaving": "Leaving…",
+    "targetsWhy": "Log each day with + Log.",
+    "newTarget": "New target",
+    "noTargets": "No targets yet.",
+    "yourPodWhy": "Up to 6 people who see each other’s progress.",
+    "podProgressLink": "See your pod’s progress",
+    "podProgressSub": "Targets, recent logs, comments",
+    "inviteHeading": "Invite classmates",
+    "inviteWhy": "Send classmates the link or the QR code.",
+    "showLinkQr": "Show link and QR",
+    "yourTargets": "Your targets"
   },
   "units": {
     "word_count": "{count, plural, one {# word} other {# words}}",
@@ -735,6 +719,63 @@
     "separator": " · ",
     "nudge": "Nudge",
     "nudgeWho": ": {name}",
-    "nudgeLimit": "Nudges are limited to 3 per 24 hours"
+    "nudgeLimit": "Nudges are limited to 3 per 24 hours",
+    "why": "How far everyone has got.",
+    "progressLink": "See your pod’s progress",
+    "progressLinkSub": "{className}: targets, recent logs, comments"
+  },
+  "nextStep": {
+    "label": "Next step",
+    "join": {
+      "title": "Join your class",
+      "why": "Enter the code from your class to connect with your classmates."
+    },
+    "share": {
+      "title": "Share the join link",
+      "why": "Students join {className} with the link or the QR code.",
+      "action": "Show link and QR"
+    },
+    "invitation": {
+      "title": "You’re invited to a pod",
+      "why": "You have an invitation to a pod in {className}.",
+      "action": "See the invitation"
+    },
+    "pod": {
+      "title": "Start a pod",
+      "why": "In {className}, you and your classmates can then see each other’s progress.",
+      "other": "Ask to join another pod"
+    },
+    "firstTarget": {
+      "title": "Set your first target",
+      "why": "Choose a report length or study hours for {className}, and every log becomes progress.",
+      "action": "Set your first target"
+    },
+    "logToday": {
+      "title": "Log today’s work",
+      "daysLeft": "{count, plural, one {# day} other {# days}} left",
+      "dueToday": "due today",
+      "overdue": "past the deadline",
+      "whyAmountWhen": "{title}: {amount} to go ({when}).",
+      "whyAmount": "{title}: {amount} to go.",
+      "whyWhen": "{title} ({when}).",
+      "why": "{title}.",
+      "hintPhone": "Use + Log at the bottom of the screen.",
+      "hintWide": "Use + Log on the target below."
+    },
+    "invite": {
+      "title": "Invite classmates",
+      "why": "You’re the only one in your pod so far. Send the link and classmates can join.",
+      "action": "Invite classmates"
+    },
+    "seePod": {
+      "title": "You’ve logged today",
+      "why": "Have a look at your pod. It’s a good moment to check in on someone.",
+      "action": "See your pod"
+    },
+    "nextTarget": {
+      "title": "All targets reached",
+      "why": "Well done. When the next assignment comes, set a target for it.",
+      "action": "Set your next target"
+    }
   }
 }

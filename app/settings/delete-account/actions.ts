@@ -4,7 +4,6 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { NAME_OK_COOKIE } from '@/lib/supabase/middleware'
-import { SETUP_SEEN_COOKIE } from '@/lib/checklist'
 import { ACCOUNT_DELETED_PATH } from '@/lib/contact'
 import { isConfirmWord } from '@/lib/delete-account'
 import { DB_CODES, toErrorKey, type ActionResult } from '@/lib/errors'
@@ -49,7 +48,9 @@ export async function deleteAccount(formData: FormData): Promise<ActionResult> {
     if (name.startsWith('sb-')) jar.delete(name)
   }
   jar.delete(NAME_OK_COOKIE)
-  jar.delete(SETUP_SEEN_COOKIE)
+  // はじめの3ステップ's cookie: retired in Prompt 11b (nothing sets it any
+  // more), still cleared for browsers that kept one from before.
+  jar.delete('setup_done_seen')
 
   redirect(ACCOUNT_DELETED_PATH)
 }

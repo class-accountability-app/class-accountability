@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import Link from 'next/link'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
@@ -5,6 +6,7 @@ import { formatTimeAgo, tokyoDaysAgo } from '@/lib/date'
 import { needsNudge } from '@/lib/progress-stats'
 import type { AmountType } from '@/lib/quick-log'
 import { StatusStamp } from '@/components/status-stamp'
+import { PodProgressLink } from '@/components/pod-progress-link'
 
 // The same 7 days as the class page's stamps (CHURN_THRESHOLD_DAYS there),
 // so a podmate's stamp looks the same on both pages.
@@ -30,7 +32,9 @@ export type GlancePod = {
 // every podmate's name, when they last logged and their 今週 +○. Only what
 // RLS already lets podmates see. No ranking and no order by amount: podmates
 // keep the order they joined in. A podmate with no log for 3+ days gets a
-// quiet 「声かけする」 to the nudge form on the class page. On the ruled page
+// quiet 「声かけする」 to the nudge form on the class page. Under each pod, a
+// card link to that class's progress page (Prompt 11b), so podmates' full
+// progress is one tap from Home. On the ruled page
 // every line is 28px: the heading sits on a line, each podmate takes two,
 // and the links keep a 44px tap area through negative margins without
 // adding height. The dashed separator is a background, not a border.
@@ -43,9 +47,12 @@ export async function PodGlance({ pods, now }: { pods: GlancePod[]; now: Date })
 
   return (
     <section aria-labelledby="pod-heading" className="flex flex-col gap-7">
-      <h2 id="pod-heading" className="-mb-7 px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
-        {t('heading')}
-      </h2>
+      <div className="-mb-7 px-0.5">
+        <h2 id="pod-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
+          {t('heading')}
+        </h2>
+        <p className="text-[13px] leading-7 text-muted">{t('why')}</p>
+      </div>
       {pods.length === 0 ? (
         <p className="rule-card px-3.5 py-3.5 text-sm leading-7 text-muted">
           {t('noPod')}{' '}
@@ -55,15 +62,9 @@ export async function PodGlance({ pods, now }: { pods: GlancePod[]; now: Date })
         </p>
       ) : (
         pods.map((pod) => (
-          <div key={pod.classId} className="rule-card px-3.5 py-3.5">
-            <h3 className="flex font-meta text-xs leading-7 text-muted">
-              <Link
-                href={`/classes/${pod.classId}/progress`}
-                className="-my-2 inline-flex min-h-11 items-center underline-offset-4 hover:underline"
-              >
-                {pod.className}
-              </Link>
-            </h3>
+          <Fragment key={pod.classId}>
+          <div className="rule-card px-3.5 py-3.5">
+            <h3 className="font-meta text-xs leading-7 text-muted">{pod.className}</h3>
             {pod.mates.length === 0 ? (
               <p className="text-sm leading-7 text-muted">
                 {t('alone')}{' '}
@@ -118,6 +119,12 @@ export async function PodGlance({ pods, now }: { pods: GlancePod[]; now: Date })
               </ul>
             )}
           </div>
+          <PodProgressLink
+            href={`/classes/${pod.classId}/progress`}
+            title={t('progressLink')}
+            sub={t('progressLinkSub', { className: pod.className })}
+          />
+          </Fragment>
         ))
       )}
     </section>

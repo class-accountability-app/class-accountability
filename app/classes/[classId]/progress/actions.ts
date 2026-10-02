@@ -79,7 +79,7 @@ export async function createTarget(classId: string, formData: FormData): Promise
   }
 
   revalidatePath(`/classes/${classId}/progress`)
-  revalidatePath('/') // the Home checklist's 最初の目標を立てる
+  revalidatePath('/') // Home's targets and 次にやること
   return { error: null }
 }
 
