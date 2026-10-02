@@ -11,9 +11,23 @@ import { PrintButton } from './print-button'
 
 type Params = Promise<{ classId: string; targetId: string }>
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('editor.print')
-  return { title: t('print') }
+// The page title is the target's title alone: Chrome's "Save as PDF" names
+// the file after it (期末レポート.pdf).
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { classId, targetId } = await params
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return {}
+  const { data } = await supabase
+    .from('targets')
+    .select('title')
+    .eq('id', targetId)
+    .eq('class_id', classId)
+    .eq('user_id', user.id)
+    .maybeSingle<{ title: string }>()
+  return data ? { title: data.title } : {}
 }
 
 // The PDF view (Prompt 12): the saved text alone, on A4 (globals.css @page),
