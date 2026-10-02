@@ -133,14 +133,17 @@ self.addEventListener('push', (event) => {
 // student anywhere else). An open window of the app is focused and taken
 // there; if none is open, a new one is. matchAll returns only windows this
 // worker controls (every page after activate's clients.claim), and only
-// those can be navigated.
+// those can be navigated. With several app tabs open, the one the student is
+// looking at wins: focused first, then visible, then any.
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
   const target = new URL(NUDGES_URL, self.location.origin).href
 
   event.waitUntil(
     (async () => {
-      const [open] = await self.clients.matchAll({ type: 'window' })
+      const windows = await self.clients.matchAll({ type: 'window' })
+      const open =
+        windows.find((w) => w.focused) ?? windows.find((w) => w.visibilityState === 'visible') ?? windows[0]
       if (open) {
         const focused = await open.focus()
         if (focused.url !== target) await focused.navigate(target)
