@@ -88,7 +88,8 @@ const URGENT_DAYS = 3
 // simpler: done or not, and its deadline. All of it comes from the
 // provider's (optimistic) logs, so it moves the moment 記録する is pressed.
 // The toast for a log made here renders right after the button in the tab
-// order.
+// order. On the ruled page (globals.css): every line inside is 28px and the
+// padding 14 + 14, so the card is always a whole number of lines tall.
 export function TargetCard({ targetId, showClass = false }: { targetId: string; showClass?: boolean }) {
   const { targets, totalFor, now } = useQuickLog()
   const t = useTranslations('targetCard')
@@ -117,22 +118,23 @@ export function TargetCard({ targetId, showClass = false }: { targetId: string; 
   return (
     <li
       data-anchor={targetAnchor(targetId)}
-      className="flex flex-col gap-1.5 rounded-[2px] border border-border bg-surface px-3.5 py-3 lg:px-[18px] lg:py-3.5"
+      className="rule-card flex flex-col px-3.5 py-3.5 lg:px-[18px]"
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <h3 className="font-heading text-[17px] leading-[1.35] font-bold text-ink [overflow-wrap:anywhere]">
+        <div className="flex min-w-0 flex-col">
+          <h3 className="font-heading text-[17px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">
             {target.title}
           </h3>
-          <span className="font-meta text-xs text-muted">
+          <span className="font-meta text-xs leading-7 text-muted">
             {showClass && target.className && <>{target.className} · </>}
             {deadlineParts.map((part, i) => (
               <span key={part.text}>
                 {i > 0 && ' · '}
                 {part.urgent ? (
-                  <span className="inline-flex items-center gap-1 font-bold whitespace-nowrap text-accent-text">
+                  <span className="font-bold whitespace-nowrap text-accent-text">
                     <svg
                       aria-hidden
+                      className="mr-1 inline align-[-2px]"
                       width="14"
                       height="14"
                       viewBox="0 0 14 14"
@@ -157,7 +159,7 @@ export function TargetCard({ targetId, showClass = false }: { targetId: string; 
         <ToastSlot anchor={targetAnchor(targetId)} />
       </div>
       {target.type === 'task' ? (
-        <span className="text-sm text-muted">{finished ? tProgress('done') : tProgress('notDone')}</span>
+        <span className="text-sm leading-7 text-muted">{finished ? tProgress('done') : tProgress('notDone')}</span>
       ) : (
         <NumericProgress target={target} total={total} finished={finished} />
       )}
@@ -182,13 +184,15 @@ function NumericProgress({ target, total, finished }: { target: QuickTarget; tot
     now
   )
   const weekLine = week > 0 && (
-    <span className="font-meta text-[13px] font-bold whitespace-nowrap text-[#556b40]">{t('week', { amount: amount(week) })}</span>
+    <span className="font-meta text-[13px] leading-7 font-bold whitespace-nowrap text-[#556b40]">{t('week', { amount: amount(week) })}</span>
   )
 
   if (target.targetAmount === null) {
     return (
-      <div className="flex items-baseline justify-between gap-3">
-        <b className="font-meta text-lg text-ink">{amount(total)}</b>
+      <div className="flex flex-wrap items-start justify-between gap-x-3">
+        <b className="font-meta text-lg leading-7 text-ink">
+          <span className="leading-none">{amount(total)}</span>
+        </b>
         {weekLine}
       </div>
     )
@@ -209,23 +213,25 @@ function NumericProgress({ target, total, finished }: { target: QuickTarget; tot
 
   return (
     <>
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-        <span className="font-meta whitespace-nowrap text-ink">
-          <b className="text-lg">{new Intl.NumberFormat(locale).format(total)}</b>{' '}
-          <span className="text-[13px] text-muted">/ {amount(target.targetAmount)}</span>
+      <div className="flex flex-wrap items-start justify-between gap-x-3">
+        <span className="font-meta leading-7 whitespace-nowrap text-ink">
+          <b className="text-lg leading-none">{new Intl.NumberFormat(locale).format(total)}</b>{' '}
+          <span className="text-[13px] leading-none text-muted">/ {amount(target.targetAmount)}</span>
         </span>
         {weekLine}
       </div>
-      <ProgressBar
-        value={total}
-        max={target.targetAmount}
-        ticks
-        valueText={t('barLabel', {
-          progress: tAmounts(type, { logged: total, target: target.targetAmount }),
-          percent: percentOf(total, target.targetAmount),
-        })}
-      />
-      <p className="flex flex-wrap gap-x-2.5 text-[13px] leading-[1.6] text-muted">
+      <div className="flex h-7 items-center">
+        <ProgressBar
+          value={total}
+          max={target.targetAmount}
+          ticks
+          valueText={t('barLabel', {
+            progress: tAmounts(type, { logged: total, target: target.targetAmount }),
+            percent: percentOf(total, target.targetAmount),
+          })}
+        />
+      </div>
+      <p className="flex flex-wrap gap-x-2.5 text-[13px] leading-7 text-muted">
         {hints.map((hint) => (
           <span key={hint}>{hint}</span>
         ))}
@@ -239,8 +245,8 @@ export function FinishedTargets({ targetIds, showClass = false }: { targetIds: s
   const t = useTranslations('targetCard')
   if (targetIds.length === 0) return null
   return (
-    <details className="group rounded-[2px] border border-border bg-surface px-3.5">
-      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
+    <details className="rule-card group px-3.5">
+      <summary className="flex h-14 cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
         {t('finished', { count: targetIds.length })}
         <svg
           aria-hidden
@@ -257,7 +263,7 @@ export function FinishedTargets({ targetIds, showClass = false }: { targetIds: s
           <path d="M4 6l4 4 4-4" />
         </svg>
       </summary>
-      <ul className="flex flex-col gap-2.5 pb-3.5">
+      <ul className="flex flex-col gap-7 pb-7">
         {targetIds.map((id) => (
           <TargetCard key={id} targetId={id} showClass={showClass} />
         ))}

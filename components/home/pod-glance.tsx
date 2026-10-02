@@ -30,7 +30,10 @@ export type GlancePod = {
 // every podmate's name, when they last logged and their 今週 +○. Only what
 // RLS already lets podmates see. No ranking and no order by amount: podmates
 // keep the order they joined in. A podmate with no log for 3+ days gets a
-// quiet 「声かけする」 to the nudge form on the class page.
+// quiet 「声かけする」 to the nudge form on the class page. On the ruled page
+// every line is 28px: the heading sits on a line, each podmate takes two,
+// and the links keep a 44px tap area through negative margins without
+// adding height. The dashed separator is a background, not a border.
 export async function PodGlance({ pods, now }: { pods: GlancePod[]; now: Date }) {
   const [t, tUnits, locale] = await Promise.all([
     getTranslations('podGlance'),
@@ -39,12 +42,12 @@ export async function PodGlance({ pods, now }: { pods: GlancePod[]; now: Date })
   ])
 
   return (
-    <section aria-labelledby="pod-heading" className="flex flex-col gap-2">
-      <h2 id="pod-heading" className="px-0.5 font-heading text-[17px] font-bold text-ink">
+    <section aria-labelledby="pod-heading" className="flex flex-col gap-7">
+      <h2 id="pod-heading" className="-mb-7 px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
         {t('heading')}
       </h2>
       {pods.length === 0 ? (
-        <p className="rounded-[2px] border border-border bg-surface px-3.5 py-3 text-sm text-muted">
+        <p className="rule-card px-3.5 py-3.5 text-sm leading-7 text-muted">
           {t('noPod')}{' '}
           <Link href="/classes" className="font-semibold text-accent-text underline underline-offset-4">
             {t('findPod')}
@@ -52,14 +55,17 @@ export async function PodGlance({ pods, now }: { pods: GlancePod[]; now: Date })
         </p>
       ) : (
         pods.map((pod) => (
-          <div key={pod.classId} className="rounded-[2px] border border-border bg-surface px-3.5">
-            <h3 className="pt-2.5 font-meta text-xs text-muted">
-              <Link href={`/classes/${pod.classId}/progress`} className="underline-offset-4 hover:underline">
+          <div key={pod.classId} className="rule-card px-3.5 py-3.5">
+            <h3 className="flex font-meta text-xs leading-7 text-muted">
+              <Link
+                href={`/classes/${pod.classId}/progress`}
+                className="-my-2 inline-flex min-h-11 items-center underline-offset-4 hover:underline"
+              >
                 {pod.className}
               </Link>
             </h3>
             {pod.mates.length === 0 ? (
-              <p className="py-2.5 text-sm text-muted">
+              <p className="text-sm leading-7 text-muted">
                 {t('alone')}{' '}
                 <Link href={`/classes/${pod.classId}`} className="font-semibold text-accent-text underline underline-offset-4">
                   {t('invite')}
@@ -74,12 +80,12 @@ export async function PodGlance({ pods, now }: { pods: GlancePod[]; now: Date })
                   return (
                     <li
                       key={mate.id}
-                      className="flex items-center gap-2.5 border-b border-dashed border-[#e3d4b0] py-2 last:border-b-0"
+                      className="flex items-center gap-2.5 bg-[repeating-linear-gradient(90deg,#e3d4b0_0_4px,transparent_4px_8px)] bg-[length:100%_1px] bg-bottom bg-no-repeat last:bg-none"
                     >
                       <StatusStamp status={stale ? 'stale' : 'active'} />
                       <div className="flex min-w-0 flex-1 flex-col">
-                        <span className="text-[15px] font-semibold text-ink [overflow-wrap:anywhere]">{mate.name}</span>
-                        <span className="text-xs text-muted">
+                        <span className="text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{mate.name}</span>
+                        <span className="text-xs leading-7 text-muted">
                           {mate.lastLoggedAt
                             ? t('lastLogged', { when: formatTimeAgo(mate.lastLoggedAt, locale, now) })
                             : t('noLogs')}
@@ -87,7 +93,7 @@ export async function PodGlance({ pods, now }: { pods: GlancePod[]; now: Date })
                       </div>
                       <div className="flex shrink-0 flex-col items-end text-right">
                         {mate.week.length > 0 && (
-                          <span className="font-meta text-[13px] font-bold text-[#556b40]">
+                          <span className="font-meta text-[13px] leading-7 font-bold text-[#556b40]">
                             {t('week', {
                               amount: mate.week.map((w) => tUnits(w.type, { count: w.amount })).join(t('separator')),
                             })}
@@ -95,11 +101,11 @@ export async function PodGlance({ pods, now }: { pods: GlancePod[]; now: Date })
                         )}
                         {nudge &&
                           (mate.nudgeLimitReached ? (
-                            <span className="max-w-[10em] text-xs leading-[1.5] text-muted">{t('nudgeLimit')}</span>
+                            <span className="max-w-[10em] text-xs leading-7 text-muted">{t('nudgeLimit')}</span>
                           ) : (
                             <Link
                               href={`/classes/${pod.classId}/progress#member-${mate.id}`}
-                              className="inline-flex min-h-11 items-center text-sm font-semibold text-accent-text underline-offset-4 hover:underline"
+                              className="-my-2 inline-flex min-h-11 items-center text-sm leading-7 font-semibold text-accent-text underline-offset-4 hover:underline"
                             >
                               {t('nudge')}
                               <span className="sr-only">{t('nudgeWho', { name: mate.name })}</span>

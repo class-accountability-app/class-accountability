@@ -13,7 +13,9 @@ const DAY_MS = 24 * 60 * 60 * 1000
 // unit, and 今週記録した日 — seven marks, Monday to Sunday, filled on days
 // with a log, today outlined. About showing up, not a streak: no counts of
 // days in a row and nothing about missed days. Screen readers get one line
-// (今週は3日記録しました) instead of the marks.
+// (今週は3日記録しました) instead of the marks. On the ruled page: two 28px
+// lines a side and 14 + 14px padding (three lines); on a narrow phone in
+// English the marks wrap under the total (five lines).
 export function WeekSummary() {
   const { logs, targets, now } = useQuickLog()
   const t = useTranslations('week')
@@ -43,26 +45,26 @@ export function WeekSummary() {
   return (
     <section
       aria-labelledby="week-heading"
-      className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-[2px] border border-border bg-surface px-3.5 py-3"
+      className="rule-card flex flex-wrap items-start justify-between gap-x-3 px-3.5 py-3.5"
     >
       <div className="flex min-w-0 flex-col">
-        <h2 id="week-heading" className="text-xs text-muted">
+        <h2 id="week-heading" className="text-xs leading-7 text-muted">
           {t('heading')}
         </h2>
-        <p className="font-meta text-ink">
+        <p className="font-meta leading-7 text-ink">
           {parts.length === 0 ? (
-            <span className="text-sm text-muted">{t('nothingYet')}</span>
+            <span className="text-sm leading-7 text-muted">{t('nothingYet')}</span>
           ) : (
             parts.map((part, i) => (
-              <span key={part} className={i === 0 ? 'text-lg font-bold whitespace-nowrap' : 'ml-1.5 font-body text-[13px] whitespace-nowrap text-muted'}>
+              <span key={part} className={i === 0 ? 'text-lg leading-none font-bold whitespace-nowrap' : 'ml-1.5 font-body text-[13px] leading-none whitespace-nowrap text-muted'}>
                 {i === 0 ? t('first', { amount: part }) : t('more', { amount: part })}
               </span>
             ))
           )}
         </p>
       </div>
-      <div className="flex shrink-0 flex-col items-end gap-1">
-        <ol aria-hidden className="flex gap-1.5">
+      <div className="flex shrink-0 flex-col items-end">
+        <ol aria-hidden className="flex h-7 items-center gap-1.5">
           {days.map((logged, i) => (
             <li key={i} className="flex flex-col items-center gap-0.5 text-[10px] leading-none text-muted">
               <span
@@ -74,7 +76,7 @@ export function WeekSummary() {
             </li>
           ))}
         </ol>
-        <p className="text-[11px] text-muted">{count === 0 ? t('daysNone') : t('daysLogged', { count })}</p>
+        <p className="text-[11px] leading-7 text-muted">{count === 0 ? t('daysNone') : t('daysLogged', { count })}</p>
       </div>
     </section>
   )

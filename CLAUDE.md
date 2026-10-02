@@ -4,7 +4,7 @@ Context for Claude Code. Read this before doing anything in this repo.
 
 ## What this project is
 
-A class-scoped accountability app for university students. Students in the same class form small **pods of up to 6** and can passively see each other's progress. No chat, no coordination — mutual accountability, together. Solo-built capstone project, 7-week timeline (14 Jul – 28 Aug 2026).
+A class-scoped accountability app for university students. Students in the same class form small **pods of up to 6** and can passively see each other's progress. No coordination — mutual accountability, together, without chat. Solo-built capstone project, 7-week timeline (14 Jul – 28 Aug 2026).
 
 Pods are formed by the students themselves, not auto-paired: anyone in a class can start a pod, invite classmates, or ask to join an existing pod; the invitee or the pod accepts or declines. The cap of 6 is a soft cap checked in the server action, not a DB constraint (see 0003/0004).
 
@@ -87,7 +87,9 @@ Students log in with a 6-digit code or a button sent to their university email (
 
 - This is a learning project the author must be able to defend. Explain what you're doing and why; don't just emit code.
 - Ask before writing files or running commands that change things. Prefer showing a plan first for anything touching more than ~2 files.
+- Never capture, read or move a user's session cookie or token, not even a test account's and not even into a temp file. For Lighthouse (or any tool) on a logged-in page, ask the author to run it in Chrome DevTools themselves.
 - Keep UI minimal — visual polish is deferred to the final sprint, except Home, which was redesigned in Prompt 11 (`docs/mockups/phase2/home.html`). Don't spend effort on aesthetics elsewhere.
+- The notebook rule: the ruled lines are drawn on the content wrapper in `app/layout.tsx` (`.ruled`), every 28px (`--rule`) from the top of the page content, with the line at `--rule-line`. Text on the page background uses 28px lines (`leading-7`) and gaps in multiples of 28 so it sits on the lines; cards use `.rule-card` (edge drawn with an inset shadow, no border) with 14px padding and 28px lines inside, so they are whole lines tall. Home follows this fully; other pages get the same lines but their spacing hasn't been reworked yet.
 - Page transitions are React `<ViewTransition>` in `components/page-transition.tsx` (no animation library), used by `template.tsx` at every level that has pages of its own (`app/`, `app/classes/`, `app/classes/[classId]/`, `app/settings/`): a template remounts only when the segment right below it changes, so a new folder with several pages needs its own. A fade between pages, a slide between the bottom tabs (`tabTransitionTypes` in `lib/nav.ts`), nothing under reduced motion. The header, tab bar and sticky ＋記録 are named in `globals.css` so they stay still; never wrap `{children}` in a layout with another `<ViewTransition>` (page enter/exit would stop firing).
 - The link preview image `app/opengraph-image.png` is rendered from `docs/og-image/og-image.html`; change both together with the landing hero copy.
 - Decisions of record live in Notion, not here. If a real architectural choice comes up, flag it so the author can log it.

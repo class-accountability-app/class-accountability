@@ -11,6 +11,7 @@ import { weekTotal } from '@/lib/progress-stats'
 import { tidyTotal, type AmountType } from '@/lib/quick-log'
 import { MarkSetupSeen } from './setup-seen'
 import { CodeJoinForm } from '@/components/code-join-form'
+import { RuleSnap } from '@/components/rule-snap'
 import { QuickLogProvider } from '@/components/quick-log/quick-log-provider'
 import { FinishedTargets, StickyLog, TargetCard } from '@/components/quick-log/target-card'
 import { WeekSummary } from '@/components/quick-log/week-summary'
@@ -65,7 +66,9 @@ const NUDGE_LIMIT = 3 // per sender → recipient in a rolling 24 hours (0011)
 // 3 steps while setting up, 今週, my targets (most urgent first, finished
 // ones folded away), ポッドの様子 and my classes. On a phone the first screen
 // shows the greeting, the most urgent target and ＋記録; from 1024px, targets
-// on the left and the pod on the right. No email here (it lives only in
+// on the left and the pod on the right. Everything sits on the notebook rule
+// (--rule, 28px): text on the page is in 28px lines just above a ruled line,
+// cards are whole lines tall, and every gap is one line. No email here (it lives only in
 // 設定), and no ログアウト (設定 on phones, the header on desktop).
 export default async function Home({
   searchParams,
@@ -222,46 +225,48 @@ export default async function Home({
 
   return (
     <QuickLogProvider targets={quick.targets} logs={quick.logs} now={now.toISOString()}>
-      <div className="flex flex-1 flex-col px-4 pt-4 pb-6 sm:px-6 sm:pl-16 lg:px-16 lg:pt-7 lg:pb-12">
-        <div className="mx-auto grid w-full max-w-md gap-3.5 md:max-w-xl lg:max-w-[1120px] lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start lg:gap-x-8 lg:gap-y-5">
-          <div className="flex items-baseline justify-between gap-3 px-0.5 lg:col-span-2">
-            <h1 className="font-heading text-[22px] leading-[1.4] font-bold text-ink lg:text-[26px]">
+      <div className="flex flex-1 flex-col px-4 py-7 sm:px-6 sm:pl-16 lg:px-16 lg:pb-14">
+        <div className="mx-auto grid w-full max-w-md gap-7 md:max-w-xl lg:max-w-[1120px] lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start lg:gap-x-8">
+          <div className="flex items-start justify-between gap-3 px-0.5 lg:col-span-2">
+            <h1 className="font-heading text-[22px] leading-7 font-bold text-ink lg:relative lg:-top-0.5 lg:text-[26px]">
               {profile?.display_name ? t('greeting', { name: profile.display_name }) : t('greetingNoName')}
             </h1>
-            <time dateTime={now.toISOString()} className="shrink-0 font-meta text-[13px] text-muted">
+            <time dateTime={now.toISOString()} className="relative top-1 shrink-0 font-meta text-[13px] leading-7 text-muted">
               {formatDateWithWeekday(now, locale)}
             </time>
           </div>
 
-          <div className="flex min-w-0 flex-col gap-3.5">
+          <div className="flex min-w-0 flex-col gap-7">
             {showChecklist &&
               (checklist.allDone ? (
-                <section className="rounded-[2px] border border-border bg-surface px-3.5 py-3">
-                  <p role="status" className="text-[15px] leading-[1.8] font-semibold text-ink">
+                <section className="rule-card px-3.5 py-3.5">
+                  <p role="status" className="text-[15px] leading-7 font-semibold text-ink">
                     {t('setup.allDone')}
                   </p>
                   <MarkSetupSeen userId={user.id} />
                 </section>
               ) : (
-                <section aria-labelledby="setup-heading" className="rounded-[2px] border border-border bg-surface p-4">
+                <section aria-labelledby="setup-heading" className="rule-card px-4 py-3.5">
                   <div className="flex items-baseline justify-between gap-3">
-                    <h2 id="setup-heading" className="font-heading text-lg font-bold text-ink">
+                    <h2 id="setup-heading" className="font-heading text-lg leading-7 font-bold text-ink">
                       {t('setup.heading')}
                     </h2>
-                    <span className="shrink-0 font-meta text-xs text-muted">
+                    <span className="shrink-0 font-meta text-xs leading-7 text-muted">
                       {t('setup.count', { done: checklist.doneCount, total: 3 })}
                     </span>
                   </div>
-                  <div
-                    role="progressbar"
-                    aria-label={t('setup.heading')}
-                    aria-valuemin={0}
-                    aria-valuemax={3}
-                    aria-valuenow={checklist.doneCount}
-                    aria-valuetext={t('setup.valueText', { done: checklist.doneCount, total: 3 })}
-                    className="mt-3 mb-2 h-1.5 overflow-hidden rounded-[2px] bg-border"
-                  >
-                    <div className="h-full bg-ink" style={{ width: `${(checklist.doneCount / 3) * 100}%` }} />
+                  <div className="flex h-7 items-center">
+                    <div
+                      role="progressbar"
+                      aria-label={t('setup.heading')}
+                      aria-valuemin={0}
+                      aria-valuemax={3}
+                      aria-valuenow={checklist.doneCount}
+                      aria-valuetext={t('setup.valueText', { done: checklist.doneCount, total: 3 })}
+                      className="h-1.5 w-full overflow-hidden rounded-[2px] bg-border"
+                    >
+                      <div className="h-full bg-ink" style={{ width: `${(checklist.doneCount / 3) * 100}%` }} />
+                    </div>
                   </div>
                   <ol>
                     {checklist.steps.map((step, i) => (
@@ -283,29 +288,29 @@ export default async function Home({
             {quick.rows.length > 0 && <WeekSummary />}
 
             {sortedTargets.length > 0 && (
-              <section aria-labelledby="targets-heading" className="flex flex-col gap-2">
-                <div className="flex items-baseline justify-between gap-3 px-0.5">
-                  <h2 id="targets-heading" className="font-heading text-[17px] font-bold text-ink">
+              <section aria-labelledby="targets-heading" className="flex flex-col gap-7">
+                <div className="-mb-7 flex items-start justify-between gap-3 px-0.5">
+                  <h2 id="targets-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
                     {t('targetsHeading')}
                   </h2>
                   {checklist.nextHref === null && classes.some((c) => !c.organizer) && (
                     <Link
                       href={`/classes/${(classes.find((c) => c.podSize !== null && !c.organizer) ?? classes.find((c) => !c.organizer))!.id}/targets/new`}
-                      className="inline-flex min-h-11 items-center text-sm font-semibold text-accent-text underline-offset-4 hover:underline"
+                      className="-mt-[5px] -mb-[11px] inline-flex min-h-11 items-center text-sm leading-7 font-semibold text-accent-text underline-offset-4 hover:underline"
                     >
                       {t('newTarget')}
                     </Link>
                   )}
                 </div>
                 {homeTargets.length > 0 && (
-                  <ul className="flex flex-col gap-2.5">
+                  <ul className="flex flex-col gap-7">
                     {homeTargets.map((target) => (
                       <TargetCard key={target.id} targetId={target.id} showClass />
                     ))}
                   </ul>
                 )}
                 {moreTargets > 0 && (
-                  <p className="flex flex-wrap gap-x-2 px-0.5 text-sm text-muted">
+                  <p className="flex flex-wrap gap-x-2 px-0.5 text-sm leading-7 text-muted">
                     <span>{t('moreTargets', { count: moreTargets })}</span>
                     <Link href="/classes" className="font-semibold text-accent-text underline underline-offset-4">
                       {t('moreTargetsLink')}
@@ -317,20 +322,23 @@ export default async function Home({
             )}
           </div>
 
-          <div className="flex min-w-0 flex-col gap-3.5">
+          <div className="flex min-w-0 flex-col gap-7">
             {classes.some((c) => !c.organizer) && <PodGlance pods={glance} now={now} />}
 
             {classes.length > 0 && (
-              <section aria-labelledby="classes-heading" className="flex flex-col gap-1">
-                <h2 id="classes-heading" className="px-0.5 font-heading text-[17px] font-bold text-ink">
+              <section aria-labelledby="classes-heading" className="flex flex-col">
+                <h2 id="classes-heading" className="px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
                   {t('classesHeading')}
                 </h2>
-                <ul className="flex flex-wrap gap-x-4 px-0.5">
+                {/* Rows of links one line apart, so their 44px tap areas never
+                    overlap. Their negative margins (-5 / -11px) keep each to
+                    one 28px line and drop the text onto the ruled line. */}
+                <ul className="flex flex-wrap gap-x-4 gap-y-7 px-0.5">
                   {classes.map((c) => (
                     <li key={c.id}>
                       <Link
                         href={`/classes/${c.id}`}
-                        className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-accent-text underline-offset-4 hover:underline"
+                        className="-mt-[5px] -mb-[11px] inline-flex min-h-11 items-center gap-1.5 text-sm leading-7 font-semibold text-accent-text underline-offset-4 hover:underline"
                       >
                         {c.name}
                         {c.organizer && (
@@ -342,7 +350,7 @@ export default async function Home({
                   <li>
                     <Link
                       href="/classes"
-                      className="inline-flex min-h-11 items-center text-sm font-semibold text-accent-text underline underline-offset-4"
+                      className="-mt-[5px] -mb-[11px] inline-flex min-h-11 items-center text-sm leading-7 font-semibold text-accent-text underline underline-offset-4"
                     >
                       {t('joinAnotherClass')}
                     </Link>
@@ -385,8 +393,8 @@ async function Step({
     <li
       className={
         isNext
-          ? '-mx-3.5 my-2 flex gap-3.5 rounded-[2px] border border-accent-text bg-page-bg px-3.5 py-4'
-          : `flex gap-3.5 py-3.5 ${isLast ? '' : 'border-b border-dashed border-[#e3d4b0]'}`
+          ? '-mx-3.5 flex gap-3.5 rounded-[2px] bg-page-bg px-3.5 py-3.5 shadow-[inset_0_0_0_1px_var(--accent-text)]'
+          : `flex gap-3.5 py-3.5 ${isLast ? '' : 'bg-[repeating-linear-gradient(90deg,#e3d4b0_0_4px,transparent_4px_8px)] bg-[length:100%_1px] bg-bottom bg-no-repeat'}`
       }
     >
       <span
@@ -416,23 +424,25 @@ async function Step({
           number
         )}
       </span>
-      <div className="flex grow flex-col gap-1">
-        <span className={`text-base font-semibold ${done ? 'text-muted' : 'text-ink'}`}>
+      <div className="flex grow flex-col">
+        <span className={`text-base leading-7 font-semibold ${done ? 'text-muted' : 'text-ink'}`}>
           {t(`setup.steps.${id}.title`)}
           <span className="sr-only">
             {done ? t('setup.doneMark') : isNext ? t('setup.nextMark') : ''}
           </span>
         </span>
-        <span className="text-sm leading-[1.7] text-ink/85">{detail}</span>
+        <span className="text-sm leading-7 text-ink/85">{detail}</span>
         {isNext && id === 'join' && (
-          <div className="mt-2">
-            <CodeJoinForm />
-          </div>
+          <RuleSnap>
+            <div className="pt-2">
+              <CodeJoinForm />
+            </div>
+          </RuleSnap>
         )}
         {href && (
           <Link
             href={href}
-            className="btn mt-2 inline-flex h-11 items-center justify-center self-start rounded-[2px] bg-accent px-[18px] text-sm font-semibold text-white"
+            className="btn my-1.5 inline-flex h-11 items-center justify-center self-start rounded-[2px] bg-accent px-[18px] text-sm font-semibold text-white"
           >
             {t(`setup.steps.${id}.action`)}
           </Link>
