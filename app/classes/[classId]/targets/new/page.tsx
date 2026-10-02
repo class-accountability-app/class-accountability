@@ -3,8 +3,9 @@ import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { TargetForm } from './target-form'
 
-// Screen 07: 新しい目標, with template chips. The manual/automatic choice in
-// the mockup is phase 3 and not built.
+// Screen 07: 新しい目標, with template chips. 記録のしかた offers
+// 「Study Pods で書く」 for a character count (Prompt 12); the mockup's Google
+// Docs option is phase 3 and not built.
 export default async function NewTargetPage({
   params,
 }: {

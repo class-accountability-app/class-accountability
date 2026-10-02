@@ -54,6 +54,7 @@ export default async function DeleteAccountPage() {
     t('itemProfile'),
     t('itemClasses'),
     t('itemTargets'),
+    t('itemDocuments'),
     t('itemComments'),
     t('itemNudges'),
     t('itemInvitations'),

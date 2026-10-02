@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import type { Locale } from '@/i18n/config'
 import { formatDate } from '@/lib/date'
@@ -48,14 +49,32 @@ export function isFinished(target: QuickTarget, total: number) {
     : target.targetAmount !== null && total >= target.targetAmount
 }
 
+export function writePath(target: QuickTarget) {
+  return `/classes/${target.classId}/targets/${target.id}/write`
+}
+
 // ＋記録 (or 完了にする for a task, hidden once it's done). The visible text
 // starts the accessible name; the target's title follows for screen readers.
+// A 「Study Pods で書く」 target gets 書く instead, a link to its editor
+// (Prompt 12), in the same place and look: it is that card's one action.
 export function LogButton({ targetId }: { targetId: string }) {
   const { targets, totalFor, openCreate } = useQuickLog()
   const t = useTranslations('quickLog')
   const target = targets.get(targetId)
   if (!target || isTaskDone(target, totalFor(targetId))) return null
   const isTask = target.type === 'task'
+
+  if (target.inputMode === 'document') {
+    return (
+      <Link
+        href={writePath(target)}
+        className="btn inline-flex h-11 shrink-0 items-center justify-center rounded-[2px] bg-accent px-3.5 text-[15px] font-semibold text-white"
+      >
+        {t('write')}
+        <span className="sr-only">：{target.title}</span>
+      </Link>
+    )
+  }
 
   return (
     <button
@@ -283,6 +302,8 @@ export function StickyLog({ targetId }: { targetId: string | null }) {
   const target = targetId ? targets.get(targetId) : undefined
   if (!target || isFinished(target, totalFor(target.id))) return null
   const isTask = target.type === 'task'
+  const buttonClass =
+    'btn flex h-12 w-full items-center justify-center rounded-[2px] bg-accent px-4 text-base font-semibold text-white'
 
   return (
     <>
@@ -292,14 +313,21 @@ export function StickyLog({ targetId }: { targetId: string | null }) {
           sheetOpen ? 'hidden' : ''
         }`}
       >
-        <button
-          type="button"
-          data-quick-log-opener
-          onClick={(e) => openCreate(target.id, e.currentTarget)}
-          className="btn flex h-12 w-full items-center justify-center rounded-[2px] bg-accent px-4 text-base font-semibold text-white"
-        >
-          <span className="truncate">{t(isTask ? 'stickyComplete' : 'stickyOpen', { title: target.title })}</span>
-        </button>
+        {target.inputMode === 'document' ? (
+          // 続きを書く：… (Prompt 12): the editor instead of the sheet.
+          <Link href={writePath(target)} className={buttonClass}>
+            <span className="truncate">{t('stickyWrite', { title: target.title })}</span>
+          </Link>
+        ) : (
+          <button
+            type="button"
+            data-quick-log-opener
+            onClick={(e) => openCreate(target.id, e.currentTarget)}
+            className={buttonClass}
+          >
+            <span className="truncate">{t(isTask ? 'stickyComplete' : 'stickyOpen', { title: target.title })}</span>
+          </button>
+        )}
       </div>
     </>
   )

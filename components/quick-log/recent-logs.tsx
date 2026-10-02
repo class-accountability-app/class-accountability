@@ -23,8 +23,11 @@ export function RecentLogs() {
   function amount(log: MyLog): string {
     const target = targets.get(log.targetId)
     if (!target) return ''
-    return target.type === 'task'
-      ? t('taskDone', { title: target.title })
+    if (target.type === 'task') return t('taskDone', { title: target.title })
+    // A writing session can end with fewer characters than it began
+    // (deleted text, Prompt 12): −30字, not +-30字.
+    return log.value < 0
+      ? t('amountMinus', { amount: tUnits(target.type, { count: -log.value }) })
       : t('amount', { amount: tUnits(target.type, { count: log.value }) })
   }
 
@@ -107,8 +110,11 @@ function LogRow({
           <span className="font-meta text-xs text-muted [overflow-wrap:anywhere]">
             {log.description ? t('meta', { when, memo: log.description }) : when}
           </span>
+          {log.fromEditor && <span className="text-xs text-muted">{t('fromEditor')}</span>}
         </div>
-        {!pending && !confirming && (
+        {/* The editor's rows change only with the text (0019 refuses an edit
+            or delete), so they get no 編集 or 削除. */}
+        {!pending && !confirming && !log.fromEditor && (
           <div className="flex shrink-0 gap-1">
             <button
               type="button"

@@ -12,7 +12,9 @@ import type { TargetType } from './targets'
 //   invited to a pod        → see the invitation
 //   a class without a pod   → start (or ask to join) a pod
 //   a pod without a target  → set a first target in that class
-//   nothing logged today    → log today (the card points at ＋記録; no button)
+//   nothing logged today    → log today (the card points at ＋記録; no button),
+//                             or, for a 「Study Pods で書く」 target, keep
+//                             writing (an outlined 続きを書く button)
 //   logged today, alone     → invite classmates
 //   logged today            → see the pod's progress
 //   every target finished   → set the next target
@@ -36,6 +38,7 @@ export type NextStepTarget = {
   deadline: string | null
   createdAt: string
   total: number
+  inputMode: 'manual' | 'document'
 }
 
 export type NextStep =
@@ -44,7 +47,15 @@ export type NextStep =
   | { kind: 'invitation'; classId: string; className: string }
   | { kind: 'pod'; classId: string; className: string }
   | { kind: 'firstTarget'; classId: string; className: string }
-  | { kind: 'logToday'; classId: string; target: NextStepTarget; remaining: number | null; daysLeft: number | null }
+  | {
+      kind: 'logToday'
+      classId: string
+      target: NextStepTarget
+      remaining: number | null
+      daysLeft: number | null
+      // The target is written in the app: 続きを書く opens its editor.
+      write: boolean
+    }
   | { kind: 'invite'; classId: string; className: string }
   | { kind: 'seePod'; classId: string; className: string }
   | { kind: 'nextTarget'; classId: string; className: string }
@@ -106,6 +117,7 @@ export function nextStep({
           ? null
           : Math.round((urgent.targetAmount - urgent.total) * 100) / 100,
       daysLeft: urgent.deadline === null ? null : tokyoDaysUntil(urgent.deadline, now),
+      write: urgent.inputMode === 'document',
     }
   }
 

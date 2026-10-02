@@ -12,6 +12,7 @@ export type MyTargetRow = {
   target_amount: number | null
   deadline: string | null
   created_at: string
+  input_mode: 'manual' | 'document'
   classes: { name: string } | null
 }
 
@@ -22,6 +23,7 @@ type LogRow = {
   progress_value: number
   description: string | null
   logged_at: string
+  source: string
   progress_comments: { count: number }[]
 }
 
@@ -38,7 +40,7 @@ export async function loadMyTargets(
 ) {
   let query = supabase
     .from('targets')
-    .select('id, class_id, title, target_type, target_amount, deadline, created_at, classes(name)')
+    .select('id, class_id, title, target_type, target_amount, deadline, created_at, input_mode, classes(name)')
     .eq('user_id', userId)
     .order('created_at')
   if (classId) query = query.eq('class_id', classId)
@@ -50,7 +52,7 @@ export async function loadMyTargets(
     ids.length > 0
       ? supabase
           .from('progress_logs')
-          .select('id, client_id, target_id, progress_value, description, logged_at, progress_comments(count)')
+          .select('id, client_id, target_id, progress_value, description, logged_at, source, progress_comments(count)')
           .eq('user_id', userId)
           .in('target_id', ids)
           .order('logged_at', { ascending: false })
@@ -79,6 +81,8 @@ export async function loadMyTargets(
     deadline: r.deadline,
     className: r.classes?.name ?? '',
     inPod: inPodClasses.has(r.class_id),
+    classId: r.class_id,
+    inputMode: r.input_mode,
   }))
 
   const logs: MyLog[] = ((logData as LogRow[] | null) ?? []).map((l) => ({
@@ -88,6 +92,7 @@ export async function loadMyTargets(
     value: Number(l.progress_value),
     description: l.description,
     loggedAt: l.logged_at,
+    fromEditor: l.source === 'document',
     commentCount: l.progress_comments?.[0]?.count ?? 0,
   }))
 
