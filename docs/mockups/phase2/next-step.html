@@ -264,8 +264,12 @@ function states(t) {
   return `<div class="states">${list.map(([s,k,n]) => `<div class="state frame" data-w="390"><div class="tag">${t[k]}</div><p class="now">${t[n]}</p>${nextCard(t,s)}</div>`).join('')}</div>`
 }
 
+// Only known values from the URL: they end up in innerHTML below.
 const q = new URLSearchParams(location.search)
-const view = q.get('view'), lang = q.get('lang') || 'ja', w = Number(q.get('frame') || 390)
+const pick = (value, allowed, fallback) => (allowed.includes(value) ? value : fallback)
+const view = pick(q.get('view'), ['states', 'home', 'class'], null)
+const lang = pick(q.get('lang'), ['ja', 'en'], 'ja')
+const w = pick(q.get('frame'), ['390', '1440'], '390') === '1440' ? 1440 : 390
 function render(view, lang, w) {
   const t = T[lang]
   const wrap = document.createElement('div')
