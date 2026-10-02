@@ -3,7 +3,7 @@
 import type { JSONContent } from '@tiptap/core'
 import { createClient } from '@/lib/supabase/server'
 import { DB_CODES, toErrorKey, type ErrorKey } from '@/lib/errors'
-import { checkDocument } from '@/lib/doc-schema'
+import { checkDocument, checkDocumentJson } from '@/lib/doc-schema'
 import type { RejectReason, Theirs } from '@/lib/autosave'
 
 // 「Study Pods で書く」 (Prompt 12). Every write goes through 0019's
@@ -89,7 +89,8 @@ async function save(
 export async function saveDocument(
   targetId: string,
   expectedVersion: number,
-  content: unknown,
+  // JSON.stringify(editor.getJSON()); see checkDocumentJson.
+  contentJson: string,
   keepCurrent: 'conflict' | null
 ): Promise<SaveResult> {
   const { supabase, user } = await signedIn()
@@ -97,7 +98,7 @@ export async function saveDocument(
   if (!UUID.test(targetId) || !Number.isInteger(expectedVersion) || expectedVersion < 0) {
     return { status: 'rejected', reason: 'documentInvalid' }
   }
-  const checked = checkDocument(content)
+  const checked = checkDocumentJson(contentJson)
   if (!checked.ok) return { status: 'rejected', reason: checked.error }
   return save(
     supabase,
@@ -114,12 +115,12 @@ export async function saveDocument(
 // a version first, then the editor loads the saved one.
 export async function keepMine(
   targetId: string,
-  content: unknown
+  contentJson: string
 ): Promise<{ error: ErrorKey | null; theirs?: Theirs }> {
   const { supabase, user } = await signedIn()
   if (!user) return { error: 'signedOut' }
   if (!UUID.test(targetId)) return { error: 'documentNotFound' }
-  const checked = checkDocument(content)
+  const checked = checkDocumentJson(contentJson)
   if (!checked.ok) return { error: checked.error }
 
   const { error } = await supabase.rpc('keep_document_version', {

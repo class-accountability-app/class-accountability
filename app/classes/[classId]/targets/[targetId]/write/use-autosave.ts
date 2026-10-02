@@ -93,7 +93,7 @@ export function useAutosave({ editor, userId, targetId, initialVersion, initialS
     sentRequest.current = state.request
     const request = state.request
     const sentRev = rev.current
-    const content = ed.getJSON()
+    const content = JSON.stringify(ed.getJSON())
     clearTimeout(quietTimer.current)
     if (maxTimer.current) clearTimeout(maxTimer.current)
     maxTimer.current = null
@@ -195,7 +195,7 @@ export function useAutosave({ editor, userId, targetId, initialVersion, initialS
       const ed = editorRef.current
       if (!ed || ed.isDestroyed || s.blocked || s.status === 'saved' || s.status === 'conflict') return
       saveDraftNow()
-      const content = ed.getJSON()
+      const content = JSON.stringify(ed.getJSON())
       const sentRev = rev.current
       void (inflight.current ?? Promise.resolve()).then(async () => {
         const result = await saveDocument(targetId, stateRef.current.version, content, stateRef.current.keepCurrent)
@@ -211,7 +211,7 @@ export function useAutosave({ editor, userId, targetId, initialVersion, initialS
   const chooseTheirs = useCallback(async () => {
     const ed = editorRef.current
     if (!ed) return { error: 'generic' as const }
-    const result = await keepMine(targetId, ed.getJSON())
+    const result = await keepMine(targetId, JSON.stringify(ed.getJSON()))
     if (result.error || !result.theirs) return { error: result.error ?? ('generic' as const) }
     load(result.theirs)
     dispatch({ type: 'THEIRS_LOADED', version: result.theirs.version, savedAt: result.theirs.updatedAt })

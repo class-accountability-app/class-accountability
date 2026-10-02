@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MAX_DEPTH, checkDocument } from './doc-schema'
+import { MAX_DEPTH, checkDocument, checkDocumentJson } from './doc-schema'
 
 const p = (text: string, attrs?: Record<string, unknown>) => ({
   type: 'paragraph',
@@ -99,5 +99,40 @@ describe('checkDocument', () => {
       type: 'doc',
       content: [{ type: 'paragraph', attrs: { indent: 0 }, content: [{ type: 'text', text: 'x' }] }],
     })
+  })
+})
+
+describe('checkDocumentJson (what the browser sends)', () => {
+  it('parses a JSON string and checks it', () => {
+    const text = JSON.stringify({ type: 'doc', content: [{ type: 'heading', attrs: { level: 2, indent: 0 }, content: [{ type: 'text', text: '背景' }] }] })
+    expect(checkDocumentJson(text)).toMatchObject({ ok: true, count: 2 })
+  })
+
+  it('keeps attributes that a null-prototype object would lose in transit', () => {
+    const attrs = Object.assign(Object.create(null), { level: 2, indent: 1 })
+    const text = JSON.stringify({ type: 'doc', content: [{ type: 'heading', attrs, content: [{ type: 'text', text: 'x' }] }] })
+    const result = checkDocumentJson(text)
+    expect(result.ok && result.content.content?.[0].attrs).toEqual({ indent: 1, level: 2 })
+  })
+
+  it.each([
+    ['an object instead of a string', { type: 'doc', content: [] }],
+    ['not JSON', '{"type":"doc",'],
+    ['null', null],
+  ])('refuses %s', (_name, input) => {
+    expect(checkDocumentJson(input)).toEqual({ ok: false, error: 'documentInvalid' })
+  })
+
+  it('refuses a string over 1 MB before parsing it', () => {
+    expect(checkDocumentJson('"' + 'x'.repeat(1_000_001) + '"')).toEqual({ ok: false, error: 'documentTooLong' })
+  })
+})
+
+describe('the stored JSON', () => {
+  it('is plain objects all the way down (a server action can return it)', () => {
+    const result = checkDocument({ type: 'doc', content: [{ type: 'heading', attrs: { level: 1 }, content: [{ type: 'text', text: 'x' }] }] })
+    const plain = (v: unknown): boolean =>
+      typeof v !== 'object' || v === null || (Array.isArray(v) ? v.every(plain) : Object.getPrototypeOf(v) === Object.prototype && Object.values(v).every(plain))
+    expect(result.ok && plain(result.content)).toBe(true)
   })
 })

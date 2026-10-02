@@ -114,7 +114,9 @@ export function checkDocument(input: unknown): DocumentCheck {
   try {
     const node = editorSchema().nodeFromJSON(input)
     node.check()
-    content = node.toJSON() as JSONContent
+    // A plain copy: ProseMirror's attrs have a null prototype, which a
+    // server action can't send back to the browser (restoreVersion does).
+    content = JSON.parse(JSON.stringify(node.toJSON())) as JSONContent
   } catch {
     return { ok: false, error: 'documentInvalid' }
   }
@@ -123,6 +125,23 @@ export function checkDocument(input: unknown): DocumentCheck {
   if (count > MAX_DOCUMENT_CHARS) return { ok: false, error: 'documentTooLong' }
   if (byteLength(content) > MAX_DOCUMENT_BYTES) return { ok: false, error: 'documentTooLong' }
   return { ok: true, content, count }
+}
+
+// The browser sends the document as a JSON string, not an object: ProseMirror
+// builds attrs with a null prototype, which a server action's serializer
+// doesn't pass on as plain objects (headings arrived without their level).
+// A string is also measured before anything parses it.
+export function checkDocumentJson(text: unknown): DocumentCheck {
+  if (typeof text !== 'string') return { ok: false, error: 'documentInvalid' }
+  // A UTF-16 length over the byte limit is over it in UTF-8 too.
+  if (text.length > MAX_DOCUMENT_BYTES) return { ok: false, error: 'documentTooLong' }
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(text)
+  } catch {
+    return { ok: false, error: 'documentInvalid' }
+  }
+  return checkDocument(parsed)
 }
 
 export const EMPTY_DOCUMENT: JSONContent = { type: 'doc', content: [{ type: 'paragraph' }] }
