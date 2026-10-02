@@ -121,7 +121,9 @@ export function ToastSlot({ anchor }: { anchor: string }) {
         </>
       ) : (
         <>
-          <StatusStamp status="active" />
+          <span className={mine.kind === 'logged' && mine.milestone ? 'milestone-pulse' : 'contents'}>
+            <StatusStamp status="active" />
+          </span>
           <div className="flex flex-1 flex-col">
             <p className="text-[15px] leading-[1.5]">{mine.text}</p>
             {mine.kind === 'logged' && mine.shared && (

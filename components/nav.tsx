@@ -11,7 +11,7 @@ export async function Nav({ signedIn, classIds }: { signedIn: boolean; classIds:
   const target = locale === 'ja' ? 'en' : 'ja'
 
   return (
-    <header className="border-b border-border bg-surface">
+    <header className="site-header border-b border-border bg-surface">
       {/* Logged out, the header spans the landing page's width (screens Main/Mobile). */}
       <div
         className={`mx-auto flex items-center justify-between gap-4 px-4 py-2 ${

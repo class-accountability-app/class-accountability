@@ -10,6 +10,7 @@ import {
   isOutsideApp,
   showsHeaderSignOutOnPhones,
   tabHref,
+  tabTransitionTypes,
   type TabId,
 } from '@/lib/nav'
 import { SignOutForm } from '@/components/sign-out-form'
@@ -72,7 +73,7 @@ export function TabBar({ classIds }: { classIds: string[] }) {
       <div aria-hidden className="h-[calc(68px+env(safe-area-inset-bottom))] shrink-0 md:hidden" />
       <nav
         aria-label={t('main')}
-        className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] md:hidden"
+        className="tab-bar fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] md:hidden"
       >
         <ul className="grid h-[68px] grid-cols-4">
           {TAB_IDS.map((tab) => {
@@ -81,6 +82,7 @@ export function TabBar({ classIds }: { classIds: string[] }) {
               <li key={tab} className="flex">
                 <Link
                   href={tabHref(tab, classIds)}
+                  transitionTypes={tabTransitionTypes(current, tab)}
                   aria-current={isCurrent ? 'page' : undefined}
                   className={`relative flex min-h-12 flex-1 flex-col items-center justify-center gap-[3px] text-[11px] ${
                     isCurrent ? 'font-bold text-accent-text' : 'font-medium text-muted'
@@ -115,6 +117,7 @@ export function DesktopLinks({ classIds }: { classIds: string[] }) {
           <li key={tab}>
             <Link
               href={tabHref(tab, classIds)}
+              transitionTypes={tabTransitionTypes(current, tab)}
               aria-current={tab === current ? 'page' : undefined}
               className={`nav-link inline-flex min-h-11 items-center px-2 text-sm ${
                 tab === current ? 'font-semibold text-accent-text' : 'text-muted'

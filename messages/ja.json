@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Study Pods",
-    "description": "同じクラスの仲間と、静かに進み具合を見せ合う学習ポッドです。",
+    "description": "同じ授業の仲間と、いっしょに進める小さな学習ポッドです。",
     "landingTitle": "Study Pods｜同じ授業の、小さな学習グループ",
     "landingDescription": "同じ授業を受けている2〜6人の小さなグループで、課題やレポートの進み具合をゆるやかに見せ合うアプリです。",
     "ogImageAlt": "Study Pods：同じ授業の、小さな学習グループ",
@@ -70,7 +70,9 @@
     "targetMetaNoDeadline": "{className} · 締め切りなし",
     "moreTargets": "ほかに{count}件の目標があります",
     "moreTargetsLink": "クラスのページで見る",
-    "classMetaOrganizer": "{term} · 運営"
+    "classMetaOrganizer": "{term} · 運営",
+    "newTarget": "＋ 新しい目標",
+    "organizerMark": "運営"
   },
   "login": {
     "eyebrow": "ログイン",
@@ -189,7 +191,8 @@
     "targetReached": "目標を達成しました。",
     "noRecentProgress": "この7日間は記録がありません。",
     "projection": "この7日間は1日あたり{pace}のペースです。このままだと{finish}ごろに達成できそうです。",
-    "projectionWithDeadline": "この7日間は1日あたり{pace}のペースです。このままだと{finish}ごろに達成できそうです（締め切りは{deadline}）。"
+    "projectionWithDeadline": "この7日間は1日あたり{pace}のペースです。このままだと{finish}ごろに達成できそうです（締め切りは{deadline}）。",
+    "podWeek": "ポッド全体で今週 +{amount}"
   },
   "targetForm": {
     "titleLabel": "タイトル",
@@ -454,7 +457,13 @@
       "updated": "記録を更新しました",
       "deleted": "記録を削除しました",
       "retry": "もう一度",
-      "dismiss": "閉じる"
+      "dismiss": "閉じる",
+      "milestone": {
+        "25": "4分の1まで来ました（{progress}）",
+        "50": "半分まで来ました（{progress}）",
+        "75": "あと4分の1です（{progress}）",
+        "100": "目標達成！（{progress}）"
+      }
     },
     "recent": {
       "heading": "あなたの最近の記録",
@@ -470,7 +479,9 @@
       "confirmComments": "コメント{count}件も一緒に消えます。",
       "confirmYes": "削除する",
       "confirmNo": "やめる"
-    }
+    },
+    "stickyOpen": "＋記録：{title}",
+    "stickyComplete": "完了にする：{title}"
   },
   "publicFooter": {
     "tagline": "学生が開発・運営しているプロジェクトです。",
@@ -483,7 +494,7 @@
       "eyebrow": "同じ授業の、小さな学習グループ",
       "titleLine1": "ひとりで抱えこまない。",
       "titleLine2": "同じ授業の仲間と、",
-      "titleLine3": "静かに進める。",
+      "titleLine3": "いっしょに進める。",
       "body": "Study Pods は、同じ授業を受けている2〜6人の小さなグループ「ポッド」で、課題やレポートの進み具合をゆるやかに見せ合うアプリです。ランキングも、競争もありません。",
       "cta": "大学のメールでログイン",
       "note": "ここから！",
@@ -688,5 +699,42 @@
     "back": "設定に戻る",
     "organizerBlocked": "学生が参加しているクラスの運営者は、ここからアカウントを削除できません。クラスの引き継ぎか削除をお手伝いしますので、下記までご連絡ください。",
     "organizerSubject": "アカウント削除（運営者）"
+  },
+  "targetCard": {
+    "due": "{date}まで",
+    "noDeadline": "締め切りなし",
+    "dueToday": "今日まで",
+    "daysLeft": "残り{count}日",
+    "overdue": "締め切りを過ぎました",
+    "week": "今週 +{amount}",
+    "remaining": "あと{amount}",
+    "pace": "1日あたり約{amount}で間に合います",
+    "paceToday": "今日あと{amount}で間に合います",
+    "next": "あと{amount}で{percent}%",
+    "done": "完了",
+    "barLabel": "{progress}（{percent}%）",
+    "finished": "完了した目標（{count}）"
+  },
+  "week": {
+    "heading": "今週",
+    "nothingYet": "まだ記録がありません",
+    "daysLogged": "今週は{count}日記録しました",
+    "first": "+{amount}",
+    "more": "・{amount}",
+    "daysNone": "今週はまだ記録していません"
+  },
+  "podGlance": {
+    "heading": "ポッドの様子",
+    "noPod": "ポッドに入ると、仲間の様子がここに表示されます。",
+    "findPod": "クラスを開く",
+    "alone": "まだほかのメンバーがいません。",
+    "invite": "仲間を招待する",
+    "lastLogged": "最終記録：{when}",
+    "noLogs": "まだ記録がありません",
+    "week": "今週 +{amount}",
+    "separator": "・",
+    "nudge": "声かけする",
+    "nudgeWho": "：{name}",
+    "nudgeLimit": "声かけは24時間に3回までです"
   }
 }

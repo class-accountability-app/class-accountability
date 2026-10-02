@@ -119,7 +119,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col font-body">
         <NextIntlClientProvider>
           <Nav signedIn={!!user} classIds={classIds} />
-          <div className="relative flex flex-1 flex-col">
+          <div className="ruled relative flex flex-1 flex-col">
             <div
               aria-hidden
               className="pointer-events-none fixed inset-y-0 left-6 hidden w-px bg-accent/60 sm:left-10 sm:block"
