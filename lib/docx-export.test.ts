@@ -35,12 +35,13 @@ function paragraphsOf(xml: string): string[] {
 }
 
 function textOf(paragraph: string): string {
-  return (paragraph.match(/<w:t(?: [^>]*)?>([^<]*)<\/w:t>/g) ?? [])
-    .map((t) => t.replace(/<[^>]*>/g, ''))
+  // The text is the capture group, so no tags are stripped. &amp; is decoded
+  // last: decoding it first would turn a typed "&lt;" into "<".
+  return Array.from(paragraph.matchAll(/<w:t(?: [^>]*)?>([^<]*)<\/w:t>/g), (m) => m[1])
     .join('')
-    .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
 }
 
 describe('buildDocx', () => {
@@ -121,6 +122,12 @@ describe('buildDocx', () => {
   it('an empty document is a valid file with no text', async () => {
     const { document } = await unzip({ type: 'doc', content: [{ type: 'paragraph', attrs: { indent: 0 } }] } as typeof DOC)
     expect(paragraphsOf(document).map(textOf)).toEqual([''])
+  })
+
+  it('text that looks like markup or an entity is written as typed', async () => {
+    const typed = 'a < b & c > d, &lt;p&gt; and &amp;'
+    const { document } = await unzip({ type: 'doc', content: [p(text(typed))] } as typeof DOC)
+    expect(paragraphsOf(document).map(textOf)).toEqual([typed])
   })
 })
 

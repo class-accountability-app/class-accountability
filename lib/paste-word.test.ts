@@ -55,6 +55,16 @@ describe('wordListsToHtml', () => {
     )
   })
 
+  it('whitespace and Word’s comments between two items keep one list', () => {
+    const html = bullet(1, 'a') + '\r\n<!--[if gte mso 9]><xml>x</xml><![endif]-->\r\n<!-- a -->' + bullet(1, 'b')
+    expect(strip(wordListsToHtml(html))).toBe('<ul><li><p>a</p></li><li><p>b</p></li></ul>')
+  })
+
+  it('an unclosed comment between two items keeps them apart', () => {
+    const html = bullet(1, 'a') + '<!-- a ' + bullet(1, 'b')
+    expect(strip(wordListsToHtml(html))).toBe('<ul><li><p>a</p></li></ul><!-- a <ul><li><p>b</p></li></ul>')
+  })
+
   it('keeps bold and italic inside an item', () => {
     const html = bullet(1, '<b>太字</b>と<i>斜体</i>')
     expect(strip(wordListsToHtml(html))).toBe('<ul><li><p><b>太字</b>と<i>斜体</i></p></li></ul>')

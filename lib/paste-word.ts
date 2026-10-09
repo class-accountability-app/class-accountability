@@ -14,6 +14,9 @@ const PARAGRAPH = /<p\b([^>]*)>([\s\S]*?)<\/p>/gi
 const MSO_LIST = /mso-list:\s*l\d+\s+level(\d+)/i
 // Old Word: <![if !supportLists]>…<![endif]>. Newer Word: the same as comments.
 const MARKER = /<!(?:--)?\[if !supportLists\](?:--)?>([\s\S]*?)<!(?:--)?\[endif\](?:--)?>/i
+// Only whitespace and Word's comments. A comment can't contain "-->", so
+// there is one way to match and no slow backtracking.
+const GAP = /^(?:\s|<!--(?:(?!-->)[\s\S])*-->)*$/
 
 type ListTag = 'ul' | 'ol'
 
@@ -28,9 +31,22 @@ function decodeEntities(text: string): string {
     .replace(/&amp;/g, '&')
 }
 
+// Tags removed until none are left: removing one can join the text around
+// it into another.
+function stripTags(html: string): string {
+  let out = html
+  let previous: string
+  do {
+    previous = out
+    out = out.replace(/<[^>]*>/g, '')
+  } while (out !== previous)
+  return out
+}
+
 // What Word typed in front of the item, as text: "1.", "(2)", "a)", "①", "·".
+// Only ever compared with listTagFor's patterns, never put back into HTML.
 function markerText(html: string): string {
-  return decodeEntities(html.replace(/<[^>]*>/g, '')).replace(/\s+/g, '')
+  return decodeEntities(stripTags(html)).replace(/\s+/g, '')
 }
 
 const ORDERED = [
@@ -102,7 +118,7 @@ export function wordListsToHtml(html: string): string {
     }
 
     // Only whitespace (or Word's comments) between two items keeps one list.
-    if (run.length > 0 && between.replace(/<!--[\s\S]*?-->/g, '').trim() !== '') {
+    if (run.length > 0 && !GAP.test(between)) {
       flush()
     }
     if (run.length === 0) out += between
