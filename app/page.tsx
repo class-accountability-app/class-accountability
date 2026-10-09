@@ -209,6 +209,7 @@ export default async function Home({
       deadline: x.deadline,
       createdAt: x.created_at,
       total: tidyTotal(totals.get(x.id) ?? 0),
+      inputMode: x.input_mode,
     })),
     loggedToday: loggedOnTokyoDay(
       quick.logs.map((l) => l.loggedAt),

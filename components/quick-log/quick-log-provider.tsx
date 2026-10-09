@@ -40,6 +40,9 @@ export type QuickTarget = {
   deadline: string | null // 'YYYY-MM-DD', a Tokyo date
   className: string
   inPod: boolean
+  classId: string
+  // 「Study Pods で書く」 (Prompt 12): logged by the editor, not ＋記録.
+  inputMode: 'manual' | 'document'
 }
 
 export type MyLog = {
@@ -49,6 +52,8 @@ export type MyLog = {
   value: number
   description: string | null
   loggedAt: string
+  // Written by save_document (0019): the student can't edit or delete it.
+  fromEditor: boolean
   commentCount: number
 }
 
@@ -292,6 +297,7 @@ export function QuickLogProvider({
           value,
           description: state.description.trim() || null,
           loggedAt: new Date().toISOString(),
+          fromEditor: false,
           commentCount: 0,
         },
       })

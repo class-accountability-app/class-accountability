@@ -444,3 +444,121 @@ html:lang(ja) body {
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * 「Study Pods で書く」 (Prompt 12): the document's text, the same in the
+ * editor (.ProseMirror), the history preview and the print page (DocView).
+ * 28px lines, like the rest of the notebook. Headings are the editor's
+ * 見出し1/2; indent is 2em per level (attrs.indent, inline style).
+ */
+.doc-body {
+  font-family: var(--font-shippori-mincho), "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif;
+  font-size: 16px;
+  line-height: 28px;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.doc-body p {
+  min-height: 28px;
+}
+.doc-body h1,
+.doc-body h2,
+.doc-body h3 {
+  font-weight: 700;
+  margin-top: 28px;
+}
+/* 見出し1 and 見出し2, whatever element shows them (h1/h2 in the editor,
+   h2/h3 under a page title). */
+.doc-body .ProseMirror > h1,
+.doc-body > h2 {
+  font-size: 22px;
+  line-height: 42px;
+}
+.doc-body .ProseMirror > h2,
+.doc-body > h3 {
+  font-size: 18px;
+  line-height: 28px;
+}
+.doc-body :is(h1, h2, h3):first-child {
+  margin-top: 0;
+}
+.doc-body ul,
+.doc-body ol {
+  padding-left: 2em;
+}
+.doc-body ul {
+  list-style: disc;
+}
+.doc-body ul ul {
+  list-style: circle;
+}
+.doc-body ul ul ul {
+  list-style: square;
+}
+.doc-body ol {
+  list-style: decimal;
+}
+.doc-body .ProseMirror {
+  min-height: calc(var(--rule) * 12);
+  outline: none;
+  white-space: pre-wrap;
+}
+
+/*
+ * The print page (…/write/print): only the document, on A4, with page
+ * numbers at the bottom (page-margin boxes: Chrome and Edge 131+; other
+ * browsers print without numbers).
+ */
+@page {
+  size: A4;
+  margin: 25mm 30mm;
+}
+@page {
+  @bottom-center {
+    content: counter(page);
+    font-size: 9pt;
+  }
+}
+@media print {
+  .site-header,
+  .tab-bar,
+  body > footer,
+  .print-hidden {
+    display: none !important;
+  }
+  body,
+  .ruled {
+    background: #fff !important;
+  }
+  .doc-print {
+    font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "MS Mincho", serif;
+    font-size: 10.5pt;
+    line-height: 1.75;
+    color: #000;
+  }
+  .doc-print p {
+    min-height: 0;
+  }
+  /* Unlayered, like .rule-card itself, so Tailwind's print: utilities
+     couldn't undo its edge. */
+  .rule-card {
+    box-shadow: none;
+    background: transparent;
+  }
+  .doc-print > h2,
+  .doc-print > h3 {
+    break-after: avoid;
+    line-height: 1.5;
+  }
+  .doc-print > h2 {
+    font-size: 14pt;
+  }
+  .doc-print > h3 {
+    font-size: 12pt;
+  }
+  .doc-print li,
+  .doc-print p {
+    orphans: 2;
+    widows: 2;
+  }
+}

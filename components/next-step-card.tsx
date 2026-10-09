@@ -27,6 +27,7 @@ function Plus() {
 // Primary for a step nothing else on the screen offers; secondary once ＋記録
 // is the primary; none at all for "log today", which points at ＋記録 (the
 // sticky one on phones, the card's on wider screens) instead of repeating it.
+// "Keep writing" (a document target) gets a secondary 続きを書く.
 // On the ruled page: 28px lines, 14px padding, the actions row 56px.
 export async function NextStepCard({ step }: { step: NextStep }) {
   const [t, tUnits] = await Promise.all([getTranslations('nextStep'), getTranslations('units')])
@@ -91,7 +92,7 @@ export async function NextStepCard({ step }: { step: NextStep }) {
       )
       break
     case 'logToday': {
-      title = t('logToday.title')
+      title = step.write ? t('logToday.writeTitle') : t('logToday.title')
       const { target, remaining, daysLeft } = step
       const amount =
         remaining !== null && target.type !== 'task' ? tUnits(target.type, { count: remaining }) : null
@@ -110,7 +111,14 @@ export async function NextStepCard({ step }: { step: NextStep }) {
         : when
           ? t('logToday.whyWhen', { title: target.title, when })
           : t('logToday.why', { title: target.title })
-      actions = (
+      // A document target (Prompt 12): 続きを書く opens its editor. Outlined,
+      // since the card's 書く and the sticky 続きを書く are the filled ones.
+      actions = step.write ? (
+        <Link href={`/classes/${target.classId}/targets/${target.id}/write`} className={secondaryButtonClass}>
+          {t('logToday.writeAction')}
+          <Chevron />
+        </Link>
+      ) : (
         <p className="text-[13px] leading-7 text-muted">
           <span className="md:hidden">{t('logToday.hintPhone')}</span>
           <span className="hidden md:inline">{t('logToday.hintWide')}</span>
@@ -167,7 +175,7 @@ export async function NextStepCard({ step }: { step: NextStep }) {
       </div>
       <div
         className={
-          step.kind === 'join' || step.kind === 'logToday'
+          step.kind === 'join' || (step.kind === 'logToday' && !step.write)
             ? 'min-w-0'
             : 'flex flex-wrap items-center gap-x-4 py-1.5 lg:justify-end'
         }

@@ -22,6 +22,7 @@ const target = (id: string, classId: string, over: Partial<NextStepTarget> = {})
   deadline: '2026-10-09',
   createdAt: '2026-09-01T00:00:00Z',
   total: 0,
+  inputMode: 'manual',
   ...over,
 })
 
@@ -96,6 +97,34 @@ describe('nextStep: the seven states', () => {
     expect(
       nextStep({ classes: [cls('O', { organizer: true, podSize: null })], targets: [], loggedToday: false, now })
     ).toEqual({ kind: 'share', classId: 'O', className: 'Class O' })
+  })
+})
+
+describe('nextStep: 「Study Pods で書く」', () => {
+  it('the most urgent target is a document → keep writing', () => {
+    const step = nextStep({
+      classes: [cls('A')],
+      targets: [target('doc', 'A', { inputMode: 'document', deadline: '2026-10-04' }), target('later', 'A')],
+      loggedToday: false,
+      now,
+    })
+    expect(step).toMatchObject({ kind: 'logToday', write: true, target: { id: 'doc' }, remaining: 1000, daysLeft: 2 })
+  })
+
+  it('a document that isn’t the most urgent → log today as usual', () => {
+    const step = nextStep({
+      classes: [cls('A')],
+      targets: [target('doc', 'A', { inputMode: 'document' }), target('soon', 'A', { deadline: '2026-10-03' })],
+      loggedToday: false,
+      now,
+    })
+    expect(step).toMatchObject({ kind: 'logToday', write: false, target: { id: 'soon' } })
+  })
+
+  it('writing today counts as logging today', () => {
+    expect(
+      nextStep({ classes: [cls('A')], targets: [target('doc', 'A', { inputMode: 'document' })], loggedToday: true, now })
+    ).toMatchObject({ kind: 'seePod' })
   })
 })
 

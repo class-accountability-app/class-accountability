@@ -101,6 +101,11 @@ function formatTime(date: Date, locale: Locale): string {
   }).format(date)
 }
 
+// 14:05 / 2:05 PM, Tokyo time (the editor's 保存しました（14:05）).
+export function formatClock(value: DateInput, locale: Locale): string {
+  return formatTime(toDate(value), locale)
+}
+
 // 今日 / Today, 昨日 / Yesterday, 8日前 / 8 days ago
 export function formatDayAgo(value: DateInput, locale: Locale, now: Date = new Date()): string {
   return relative(locale, Math.max(0, tokyoDaysAgo(value, now)), 'day')

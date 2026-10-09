@@ -8,7 +8,12 @@ import { parseAmount } from '@/lib/quick-log'
 
 const MAX_TEXT_LENGTH = 280
 
-export async function createTarget(classId: string, formData: FormData): Promise<ActionResult> {
+// On success, the new target's id and whether it is written in the app
+// (then the form opens the editor).
+export async function createTarget(
+  classId: string,
+  formData: FormData
+): Promise<ActionResult & { id?: string; document?: boolean }> {
   const supabase = await createClient()
   const {
     data: { user },
@@ -22,6 +27,10 @@ export async function createTarget(classId: string, formData: FormData): Promise
   const targetType = formData.get('target_type')?.toString()
   const targetAmountRaw = formData.get('target_amount')?.toString().trim()
   const deadlineRaw = formData.get('deadline')?.toString().trim()
+  // 記録のしかた (Prompt 12): only a character count can be written in the
+  // app (0019's targets_document_counts_characters says the same).
+  const inputMode =
+    targetType === 'character_count' && formData.get('input_mode') === 'document' ? 'document' : 'manual'
 
   if (!title) {
     return { error: 'titleRequired' }
@@ -72,6 +81,7 @@ export async function createTarget(classId: string, formData: FormData): Promise
       target_type: targetType,
       target_amount: targetAmount,
       deadline,
+      input_mode: inputMode,
     })
     .select('id')
     .single()
@@ -82,7 +92,7 @@ export async function createTarget(classId: string, formData: FormData): Promise
 
   revalidatePath(`/classes/${classId}/progress`)
   revalidatePath('/') // Home's targets and 次にやること
-  return { error: null }
+  return { error: null, id: data.id, document: inputMode === 'document' }
 }
 
 // Quick log (screen 10). What the sheet sends; `amount` is what the student
@@ -182,7 +192,10 @@ export async function logProgress(
 
   if (error || !data) {
     return {
-      error: toErrorKey('logProgress', error, { [DB_CODES.foreignKeyViolation]: 'notOwnTarget' }),
+      error: toErrorKey('logProgress', error, {
+        [DB_CODES.foreignKeyViolation]: 'notOwnTarget',
+        [DB_CODES.documentTargetNoLog]: 'documentTargetNoLog',
+      }),
     }
   }
 

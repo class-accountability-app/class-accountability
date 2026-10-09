@@ -6,6 +6,7 @@ import type { ErrorKey } from '@/lib/errors'
 import { isConfirmWord } from '@/lib/delete-account'
 import { FieldError, describedField, useFocusFirstInvalid } from '@/components/form-errors'
 import { releaseThisDevice } from '@/components/push'
+import { clearAll } from '@/lib/local-draft'
 import { deleteAccount } from './actions'
 
 // Type 「削除」 / "delete" to enable the button. On success the action signs
@@ -35,6 +36,9 @@ export function DeleteAccountForm() {
       // The push rows cascade with the account (0018); this drops the
       // browser's side too, so nothing is left subscribed on this device.
       await releaseThisDevice()
+      // Unsaved writing in this browser (Prompt 12); the saved text goes
+      // with the account (0019's cascades).
+      await clearAll({ seal: true })
       const result = await deleteAccount(formData)
       if (result?.error) setError(result.error)
     })
