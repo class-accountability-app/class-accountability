@@ -76,20 +76,39 @@ function Drawing({ name }: { name: Illustration }) {
 
 // Every list that can be empty: a drawing, one short sentence, one button for
 // the next step. `title` only where the mockup has one (the 声かけ page).
+//
+// `ruled`: on the notebook rule (the class page and 声かけ, Prompt 13a). A
+// .rule-card with 14px padding and whole lines inside: the drawing in three
+// lines, title and text on 28px lines, the button in two. The other pages
+// keep the plain card until their spacing is reworked.
 export function EmptyState({
   illustration,
   title,
   body,
   action,
   headingLevel = 'h2',
+  ruled = false,
 }: {
   illustration: Illustration
   title?: string
   body: string
   action?: ReactNode
   headingLevel?: 'h1' | 'h2' | 'h3'
+  ruled?: boolean
 }) {
   const Heading = headingLevel
+  if (ruled) {
+    return (
+      <div className="rule-card flex w-full flex-col items-center px-5 py-3.5 text-center">
+        <div className="flex h-[84px] items-center">
+          <Drawing name={illustration} />
+        </div>
+        {title && <Heading className="font-heading text-lg leading-7 font-bold text-ink">{title}</Heading>}
+        <p className="text-sm leading-7 text-ink/85">{body}</p>
+        {action && <div className="flex h-14 w-full items-center">{action}</div>}
+      </div>
+    )
+  }
   return (
     <div className="flex w-full flex-col items-center gap-3 rounded-[2px] border border-border bg-surface px-5 py-6 text-center">
       <Drawing name={illustration} />

@@ -38,7 +38,8 @@ export function InviteDisclosure({ label, children }: { label: string; children:
           <path d="M8 4.5L13.5 10 8 15.5" />
         </svg>
       </summary>
-      <div className="pt-1.5 pb-7">{children}</div>
+      {/* The summary is 6 + 44 + 6px, two lines, so the card starts on a line. */}
+      <div className="pb-7">{children}</div>
     </details>
   )
 }

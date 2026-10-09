@@ -49,10 +49,12 @@ export default async function NudgesPage() {
   const classIds = (memberships ?? []).map((m) => m.class_id)
   const podHref = classIds.length === 1 ? `/classes/${classIds[0]}/progress` : '/classes'
 
+  // On the notebook rule (Prompt 13a), like Home: text on 28px lines, gaps
+  // of one line, and cards (.rule-card, 14px padding) whole lines tall.
   return (
     <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
-      <div className="flex w-full max-w-md flex-col gap-5">
-        <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink">{t('title')}</h1>
+      <div className="flex w-full max-w-md flex-col gap-7">
+        <h1 className="font-heading text-[27px] leading-7 font-bold text-ink">{t('title')}</h1>
 
         {/* Offered only once a nudge has actually arrived. */}
         {(nudges ?? []).length > 0 && <PushCard />}
@@ -67,29 +69,29 @@ export default async function NudgesPage() {
                 {t('viewPod')}
               </Link>
             }
+            ruled
           />
         ) : (
-          <ul className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-7">
             {(nudges ?? []).map((n) => (
-              <li
-                key={n.id}
-                className="flex flex-col gap-1 rounded-[2px] border border-border bg-surface px-4 py-3"
-              >
+              <li key={n.id} className="rule-card flex flex-col px-4 py-3.5">
                 <div className="flex items-baseline justify-between gap-3">
-                  <span className="font-heading text-sm font-semibold text-accent-text [overflow-wrap:anywhere]">
+                  <span className="font-heading text-sm leading-7 font-semibold text-accent-text [overflow-wrap:anywhere]">
                     {senderNames.get(n.from_user_id) ?? tCommon('unknownPerson')}
                   </span>
-                  <span className="shrink-0 font-meta text-xs text-muted">
+                  {/* leading-none: a second 28px line in another size would
+                      make the row taller than one line. */}
+                  <span className="shrink-0 font-meta text-xs leading-none text-muted">
                     {formatTimeAgo(n.created_at, locale, now)}
                   </span>
                 </div>
-                {n.content && <p className="text-sm text-ink [overflow-wrap:anywhere]">{n.content}</p>}
+                {n.content && <p className="text-sm leading-7 text-ink [overflow-wrap:anywhere]">{n.content}</p>}
               </li>
             ))}
           </ul>
         )}
 
-        <p className="text-[13px] text-muted">{t('rule')}</p>
+        <p className="text-[13px] leading-7 text-muted">{t('rule')}</p>
       </div>
     </div>
   )

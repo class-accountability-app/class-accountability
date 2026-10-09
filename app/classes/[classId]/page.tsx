@@ -329,7 +329,7 @@ export default async function ClassPodsPage({
               {sectionHead('pod-heading', t('yourPod'), t('yourPodWhy'))}
               {myPods.length === 0 ? (
                 // 次にやること above already offers ポッドを作る; no second one here.
-                <EmptyState illustration="pod" title={t('notInPodTitle')} headingLevel="h3" body={t('notInPod')} />
+                <EmptyState illustration="pod" title={t('notInPodTitle')} headingLevel="h3" body={t('notInPod')} ruled />
               ) : (
                 myPods.map((podId) => {
                   const podMembers = membersByPod.get(podId) ?? []
