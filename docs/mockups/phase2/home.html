@@ -316,12 +316,18 @@ function render(width, lang) {
   document.body.append(wrap)
 }
 
+// Only known values from the URL (as in next-step.html): anything else falls
+// back to the default.
 const q = new URLSearchParams(location.search)
-if (q.get('frame')) {
+const pick = (value, allowed, fallback) => (allowed.includes(value) ? value : fallback)
+const frame = pick(q.get('frame'), ['390', '1440'], null)
+const lang = pick(q.get('lang'), ['ja', 'en'], 'ja')
+const toast = pick(q.get('toast'), ['1'], null)
+if (frame) {
   document.body.classList.add('single')
-  if (q.get('toast')) document.body.classList.add('show-toast')
-  document.documentElement.lang = q.get('lang') || 'ja'
-  render(Number(q.get('frame')), q.get('lang') || 'ja')
+  if (toast) document.body.classList.add('show-toast')
+  document.documentElement.lang = lang
+  render(Number(frame), lang)
 } else {
   render(390, 'ja'); render(390, 'en'); render(1440, 'ja'); render(1440, 'en')
 }

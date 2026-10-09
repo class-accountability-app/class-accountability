@@ -53,7 +53,9 @@ export function WeekSummary() {
         </h2>
         <p className="font-meta leading-7 text-ink">
           {parts.length === 0 ? (
-            <span className="text-sm leading-7 text-muted">{t('nothingYet')}</span>
+            // leading-none like the totals: a 14px span with its own 28px line
+            // inside the 16px one made the line 28.8px, and the card 84.8.
+            <span className="text-sm leading-none text-muted">{t('nothingYet')}</span>
           ) : (
             parts.map((part, i) => (
               <span key={part} className={i === 0 ? 'text-lg leading-none font-bold whitespace-nowrap' : 'ml-1.5 font-body text-[13px] leading-none whitespace-nowrap text-muted'}>

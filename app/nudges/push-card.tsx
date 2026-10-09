@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { emptyActionClass } from '@/components/empty-state'
+import { RuleSnap } from '@/components/rule-snap'
 import { turnOnPush, usePushDevice } from '@/components/push'
 import { INSTALL_ROW_ID } from '@/app/settings/install-row'
 
@@ -60,44 +61,49 @@ export function PushCard() {
     setDismissed(true)
   }
 
+  // On the notebook rule (Prompt 13a): a .rule-card with 14px padding and
+  // text on 28px lines. Two 48px buttons and four 11px gaps make 140px, five
+  // lines (the iPhone note is 76px, so it adds up the same); RuleSnap only
+  // steps in if something wraps unexpectedly.
   return (
-    <section
-      aria-labelledby="push-card-title"
-      className="flex flex-col gap-3 rounded-[2px] border border-border bg-surface p-[18px]"
-    >
-      <h2 id="push-card-title" className="font-heading text-xl leading-[1.45] font-bold text-ink">
-        {t('title')}
-      </h2>
-      <p className="text-sm leading-[1.8] text-ink">{t('body')}</p>
+    <section aria-labelledby="push-card-title" className="rule-card px-[18px] py-3.5">
+      <RuleSnap>
+        <div className="flex flex-col gap-[11px]">
+          <h2 id="push-card-title" className="font-heading text-xl leading-7 font-bold text-ink">
+            {t('title')}
+          </h2>
+          <p className="text-sm leading-7 text-ink">{t('body')}</p>
 
-      {device.state === 'ios-install-first' && (
-        <div className="rounded-[2px] border border-[#e3d4b0] bg-[#fffdf7] px-4 py-3 text-sm leading-[1.8]">
-          <p className="font-semibold text-ink">{t('iosTitle')}</p>
-          <Link
-            href={`/settings#${INSTALL_ROW_ID}`}
-            className="text-accent-text underline underline-offset-4"
+          {device.state === 'ios-install-first' && (
+            <div className="rounded-[2px] bg-[#fffdf7] px-4 py-2.5 text-sm leading-7 shadow-[inset_0_0_0_1px_#e3d4b0]">
+              <p className="font-semibold text-ink">{t('iosTitle')}</p>
+              <Link
+                href={`/settings#${INSTALL_ROW_ID}`}
+                className="text-accent-text underline underline-offset-4"
+              >
+                {t('iosLink')}
+              </Link>
+            </div>
+          )}
+
+          {device.state === 'available' && (
+            <button type="button" onClick={() => void turnOn()} disabled={busy} className={`${emptyActionClass} disabled:opacity-50`}>
+              {t('turnOn')}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={later}
+            className="flex min-h-12 w-full items-center justify-center rounded-[2px] border border-border bg-[#fffdf7] text-[15px] font-semibold text-ink"
           >
-            {t('iosLink')}
-          </Link>
+            {t('later')}
+          </button>
+
+          <p role="status" className="text-[13px] leading-7 text-muted">
+            {failed ? tSettings('failed') : t('footnote')}
+          </p>
         </div>
-      )}
-
-      {device.state === 'available' && (
-        <button type="button" onClick={() => void turnOn()} disabled={busy} className={`${emptyActionClass} disabled:opacity-50`}>
-          {t('turnOn')}
-        </button>
-      )}
-      <button
-        type="button"
-        onClick={later}
-        className="flex min-h-12 w-full items-center justify-center rounded-[2px] border border-border bg-[#fffdf7] text-[15px] font-semibold text-ink"
-      >
-        {t('later')}
-      </button>
-
-      <p role="status" className="text-[13px] leading-[1.7] text-muted">
-        {failed ? tSettings('failed') : t('footnote')}
-      </p>
+      </RuleSnap>
     </section>
   )
 }
