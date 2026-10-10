@@ -78,10 +78,17 @@ jobs:
             # Strip -- comments so a mention of RLS in a comment can't satisfy the check,
             # then flatten to one lowercase line for scanning.
             code=$(sed 's/--.*$//' "$f" | tr '\n' ' ' | tr -s ' ' | tr '[:upper:]' '[:lower:]')
-            tables=$(echo "$code" | grep -oE 'create table (if not exists )?(public\.)?[a-z_][a-z0-9_]*' \
-              | sed -E 's/create table (if not exists )?(public\.)?//')
+            # Table names with their schema: "public." is dropped (optional in
+            # the RLS line too); any other schema, e.g. private (0020), is kept
+            # and must be named in the RLS line.
+            tables=$(echo "$code" | grep -oE 'create table (if not exists )?([a-z_][a-z0-9_]*\.)?[a-z_][a-z0-9_]*' \
+              | sed -E 's/create table (if not exists )?//; s/^public\.//')
             for t in $tables; do
-              if ! echo "$code" | grep -qE "alter table (public\.)?$t enable row level security"; then
+              case "$t" in
+                *.*) rls="alter table ${t//./\\.} enable row level security" ;;
+                *)   rls="alter table (public\.)?$t enable row level security" ;;
+              esac
+              if ! echo "$code" | grep -qE "$rls"; then
                 echo "::error file=$f::Table '$t' is created but never has RLS enabled. A table without RLS is publicly readable."
                 fail=1
               fi
