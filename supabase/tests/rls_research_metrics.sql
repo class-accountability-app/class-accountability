@@ -1,5 +1,5 @@
 -- =============================================================================
--- rls_research_metrics.sql — tests for 0020 (research metrics)
+-- rls_research_metrics.sql — tests for 0020 and 0021 (research metrics)
 -- =============================================================================
 -- ONE transaction that ends in ROLLBACK. Nothing it writes survives, and it
 -- prints nothing about anyone: failures name test-cast numbers only.
@@ -50,6 +50,23 @@ as $$ select date_trunc('week', now() at time zone 'Asia/Tokyo') - interval '21 
 create function pg_temp.rt_at(offset_ interval) returns timestamptz
 language sql stable
 as $$ select (pg_temp.rt_w0() + offset_) at time zone 'Asia/Tokyo' $$;
+
+-- The weekly table starts on a fixed Monday (0021), never on a join date.
+-- Inside this transaction only, the start moves to W0 so the cast's weeks
+-- are in range whatever today is.
+do $$
+begin
+  if private.research_start() <> date '2026-09-28' then
+    raise exception 'FAIL: research_start() should be 2026-09-28 (got %)', private.research_start();
+  end if;
+end $$;
+
+create or replace function private.research_start()
+returns date
+language sql
+stable
+set search_path = ''
+as $$ select (date_trunc('week', now() at time zone 'Asia/Tokyo') - interval '21 days')::date $$;
 
 do $$
 declare
@@ -224,8 +241,10 @@ begin
     delete from private.research_excluded_users where user_id = pg_temp.rt_uid(11);
     select active_students into got from private.research_weekly() where week_start = w0;
     select min(week_start) into first_week from private.research_weekly();
-    if got <> '11' or first_week <> w0 - 7 then
-      raise exception 'FAIL: without the opt_out row, W0 should count 11 active from W0-7 (got %, %)', got, first_week;
+    -- X_opt joined a week before W0: counted now, but the table still starts
+    -- at the fixed start, not at anyone's join date (0021).
+    if got <> '11' or first_week <> w0 then
+      raise exception 'FAIL: without the opt_out row, W0 should count 11 active and the weeks still start at W0 (got %, %)', got, first_week;
     end if;
     raise exception 'undo' using errcode = 'RT001';
   exception when sqlstate 'RT001' then null;
@@ -287,7 +306,8 @@ begin
     if has_function_privilege(r, 'private.research_weekly()', 'execute')
        or has_function_privilege(r, 'private.research_retention()', 'execute')
        or has_function_privilege(r, 'private.research_count(bigint, bigint)', 'execute')
-       or has_function_privilege(r, 'private.research_pct(bigint, bigint, bigint, bigint, integer)', 'execute') then
+       or has_function_privilege(r, 'private.research_pct(bigint, bigint, bigint, bigint, integer)', 'execute')
+       or has_function_privilege(r, 'private.research_start()', 'execute') then
       raise exception 'FAIL: % can execute a research function', r;
     end if;
   end loop;
