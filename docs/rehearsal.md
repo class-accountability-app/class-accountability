@@ -3,7 +3,7 @@
 Study Pods を実際の学生に使ってもらう前に、本物のスマホで一通り試すためのチェックリストです。
 A checklist for trying everything on real phones before real students use Study Pods.
 
-- **日付 / Date:** ＿＿＿＿＿＿　**クラス / Class:** （パイロットクラス名 / pilot class name）
+- **日付 / Date:** ＿＿＿＿＿＿　**クラス / Class:** Zemi 2026 Autumn（参加コードは「授業で映す」で確認 / the join code is on Show in class）
 - **端末 / Devices:**
   - iPhone（iOS 16.4 以上、ホーム画面に追加したアプリ）: iOS ＿＿＿
   - Android（Chrome）: Android ＿＿＿
@@ -34,18 +34,19 @@ For any item that fails, send these:
 運営者（23b1808）のパソコンで、クラスのページ →「リンクとQRを表示」→「授業で映す」。
 On the organizer's computer (23b1808): the class page → Show link and QR → Show in class.
 
-- [ ] 1-1 iPhone のカメラで QR を読むと、クラスへの招待画面（「このクラスに参加する」）が開く
-      Scanning the QR with the iPhone camera opens the class invitation (Join this class)
-- [ ] 1-2 Android でも同じ。LINE で送ったリンクからも開ける
+- [ ] 1-1 ログインしていない iPhone のカメラで QR を読む：まずログイン画面が開く（クラス名はまだ出ない。これで正しい動作）
+      Scan the QR with a logged-out iPhone's camera: the login screen opens first (no class name yet; that's correct)
+- [ ] 1-2 ログインすると、クラスへの招待画面（「Zemi 2026 Autumn」「このクラスに参加する」）に戻ってくる
+      After logging in, you're brought back to the class invitation (Zemi 2026 Autumn, Join this class)
+- [ ] 1-3 Android でも同じ。LINE で送ったリンクからも同じ流れになる
       The same on Android, and from the link sent in LINE
-- [ ] 1-3 ログインしていない状態でも、クラス名と人数が表示される
-      Logged out, the class name and member count still show
-- [ ] 1-4 「このクラスに参加する」→ ログイン後、そのクラスのページに戻る
-      Join this class → after logging in, you land on that class's page
+- [ ] 1-4 「このクラスに参加する」→ そのクラスのページが開き、人数が1人増える
+      Join this class → the class page opens, and the member count goes up by one
 
 **失敗したら / If it fails:**
 - どの端末で、QR とリンクのどちらで、どの画面で止まったか ／ which device, QR or link, and which screen it stopped on
-- 「このリンクは使えません」が出た場合は、映しているコード（8文字）も ／ if "This link doesn't work" appears, also the 8-character code on the screen
+- ログイン後に招待画面ではなくホームに戻った場合は、そう書く ／ if login lands on Home instead of the invitation, say so
+- 「このリンクは使えません」が出た場合は、映しているコード（8文字）も（コードは LINE などのグループには貼らない）／ if "This link doesn't work" appears, also the 8-character code on screen (don't paste the code into a group chat)
 
 ## 2. 6桁のコードでログイン（アプリ内）／ Log in with the 6-digit code (inside the app)
 
