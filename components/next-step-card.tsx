@@ -29,7 +29,10 @@ function Plus() {
 // sticky one on phones, the card's on wider screens) instead of repeating it.
 // "Keep writing" (a document target) gets a secondary 続きを書く.
 // On the ruled page: 28px lines, 14px padding, the actions row 56px.
-export async function NextStepCard({ step }: { step: NextStep }) {
+//
+// `podPrimary` (Home, Prompt 15 PR 2): false draws the pod step's button
+// outlined, under a hero target card that owns the filled button.
+export async function NextStepCard({ step, podPrimary = true }: { step: NextStep; podPrimary?: boolean }) {
   const [t, tUnits] = await Promise.all([getTranslations('nextStep'), getTranslations('units')])
 
   let title: string
@@ -71,7 +74,10 @@ export async function NextStepCard({ step }: { step: NextStep }) {
       why = t('pod.why', { className: step.className })
       actions = (
         <>
-          <CreatePodButton classId={step.classId} buttonClassName={primaryButtonClass} />
+          <CreatePodButton
+            classId={step.classId}
+            buttonClassName={podPrimary ? primaryButtonClass : secondaryButtonClass}
+          />
           <Link
             href={`/classes/${step.classId}#other-pods`}
             className="-my-2 inline-flex min-h-11 items-center text-sm leading-7 font-semibold text-accent-text underline underline-offset-4"

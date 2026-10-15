@@ -47,7 +47,10 @@
     "classMetaOrganizer": "{term} · 運営",
     "newTarget": "新しい目標",
     "organizerMark": "運営",
-    "targetsWhy": "毎日の記録は ＋記録 から。"
+    "targetsWhy": "毎日の記録は ＋記録 から。",
+    "heroLabel": "今日の目標",
+    "logAgain": "もう一度記録",
+    "recentLogs": "最近の記録（編集・削除）"
   },
   "login": {
     "eyebrow": "ログイン",
