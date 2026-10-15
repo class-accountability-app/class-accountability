@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study Pods · Notebook background (mockup)</title>
+<!--
+  Three ways to fix the notebook background. One file, both languages, both widths.
+    notebook-background.html                         all three side by side (390 row, then 1440 row, scaled)
+    notebook-background.html?variant=a&frame=1440&lang=en    one frame at full size
+  O  the app today, for reference only (variant=o)
+  A  ruled lines, fixed:  one --rule for every line-height, lines drawn from the CONTENT box
+     (background-origin: content-box), background-attachment: local on scrolling areas, and
+     every control in a whole number of lines (a 56px slot for a 48px field).
+  B  dot grid, same paper.
+  C  plain paper with a faint left margin line.
+  Colours, fonts and the 44px targets are the app's own (app/globals.css). Example data only.
+  The app has no dark mode (globals.css: "Single theme, no dark mode"), so there is none here.
+  Nothing animates, so prefers-reduced-motion only switches off the hover transition.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Schibsted+Grotesk:wght@400;500;600&family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{
+  --page-bg:#f6ecd6;--surface:#fbf6e8;--border:#d9c69a;--rule-color:#e3d3ac;--dash:#e3d4b0;
+  --ink:#3a2f22;--muted:#6b5636;--accent:#b5583f;--accent-text:#9c4830;--field:#fffdf7;
+  --active-text:#556b40;
+  --heading:'Fraunces','Shippori Mincho',serif;
+  --body:'Schibsted Grotesk','Zen Kaku Gothic New',sans-serif;
+  --meta:'Courier Prime','Zen Kaku Gothic New',monospace;
+  --mincho:'Shippori Mincho','Yu Mincho',serif;
+  /* THE one rhythm. Every line-height, gap and slot below is a whole number of these. */
+  --rule:28px;
+  --rule-line:22px;     /* where the 1px line sits in each band: just under the baseline */
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#8f8a80;font-family:var(--body);color:var(--ink);padding:24px;display:flex;flex-direction:column;gap:28px;align-items:flex-start}
+body.single{padding:0;background:var(--page-bg);display:block}
+.row{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap}
+.cell .label{font:600 14px/1.4 var(--body);color:#fff;margin:0 0 8px}
+body.single .label{display:none}
+:lang(ja){word-break:auto-phrase}
+
+.frame{position:relative;background:var(--page-bg);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25);container-type:inline-size}
+.frame[data-w="390"]{width:390px}
+.frame[data-w="1440"]{width:1440px}
+body.single .frame{box-shadow:none;width:100%!important}
+.scaled{width:360px;height:calc(var(--h)*.25px);overflow:hidden}
+.scaled .frame{transform:scale(.25);transform-origin:0 0}
+
+.hdr{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--surface);border-bottom:1px solid var(--border)}
+.brand{font:600 20px var(--heading)}
+.lang{font:13px var(--meta);color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- the page: every line-height is a multiple of --rule ---------- */
+.page{padding:var(--rule) 16px;display:block}
+.col{max-width:448px;display:flex;flex-direction:column;gap:var(--rule)}
+.col>*{margin:0}
+.t-meta{font:13px/var(--rule) var(--meta);color:var(--muted)}
+.t-h1{font:700 26px/var(--rule) var(--heading)}
+.t-h2{font:700 17px/var(--rule) var(--heading)}
+.t-body{font-size:15px;line-height:var(--rule);color:var(--ink)}
+.t-help{font-size:13px;line-height:var(--rule);color:var(--muted)}
+.card{border-radius:2px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:calc(var(--rule)/2) 14px}   /* 14 + 14: a whole number of lines tall */
+.card .l{line-height:var(--rule)}
+.nums{display:flex;justify-content:space-between;font:13px/var(--rule) var(--meta)}
+.nums b{font-size:18px}.plus{color:var(--active-text);font-weight:700}
+.bar{height:var(--rule);display:flex;align-items:center}
+.bar i{display:block;width:100%;height:8px;background:var(--border);border-radius:2px;position:relative}
+.bar i::after{content:"";position:absolute;inset:0 auto 0 0;width:80%;background:var(--ink);border-radius:2px}
+
+/* A control keeps its own height inside a slot of whole lines: a 48px field in a 56px slot. */
+.slot{display:flex;flex-direction:column;justify-content:center;min-height:calc(var(--rule)*2)}
+.field-label{font:600 14px/var(--rule) var(--body)}
+.field{height:48px;width:100%;border:1px solid #b9a57c;border-radius:2px;background:var(--field);font:16px var(--body);padding:0 14px;color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 16px;border-radius:2px;font:600 15px var(--body);background:var(--accent);color:#fff;box-shadow:0 2px 0 rgba(58,47,34,.35);transition:filter .15s}
+.btn-slot{display:flex;align-items:center;min-height:calc(var(--rule)*2)}
+@media (hover:hover){.btn:hover{filter:brightness(.96)}}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+
+/* The writing area: Shippori Mincho 16/28, like .doc-body. It scrolls, so its lines scroll with it. */
+.doc{font:16px/var(--rule) var(--mincho);color:var(--ink);overflow-wrap:anywhere}
+.doc p{margin:0;min-height:var(--rule)}
+.doc h3{margin:var(--rule) 0 0;font:700 22px/var(--rule) var(--mincho)}   /* 28 + 28 margin = 2 whole lines (the app has 42px + 28px = 2.5 lines) */
+.doc h3:first-child{margin-top:0}
+.editor{border-radius:2px;box-shadow:inset 0 0 0 1px var(--border);padding:calc(var(--rule)/2) 14px;max-height:calc(var(--rule)*7 + var(--rule));overflow:auto}
+
+@container (min-width:1024px){
+  .page{padding:var(--rule) 64px calc(var(--rule)*2)}
+  .col{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:var(--rule) 32px;align-items:start}
+  .col>.span{grid-column:1/-1}
+  .hdr{padding:0 48px}
+  .t-h1{font-size:26px}
+}
+
+/* ============ O: the app today (reference, not a proposal) ============ */
+/* Same page-level lines as the app (app/globals.css .ruled), but its real text rules: ja body
+   line-height 1.8, text-sm/xs 1.8, 48px fields, 20px gaps, headings 1.45 and 42px lines. */
+.vo .page{
+  background-image:repeating-linear-gradient(transparent 0,transparent var(--rule-line),var(--rule-color) var(--rule-line),var(--rule-color) calc(var(--rule-line) + 1px),transparent calc(var(--rule-line) + 1px),transparent var(--rule));
+}
+.vo .col,.vo .col>div{gap:20px}
+.vo .t-meta{line-height:1.8}
+.vo .t-h1{line-height:1.45}
+.vo .t-body{line-height:1.8}
+.vo .t-help{line-height:1.8}
+.vo .field-label{line-height:1.8}
+.vo .slot,.vo .btn-slot{min-height:0}
+.vo .card{padding:14px}
+.vo .card .l,.vo .nums,.vo .t-meta,.vo .bar{line-height:1.8;height:auto}
+.vo .bar{height:20px}
+.vo .doc h3{line-height:42px}
+.vo .editor{background:var(--surface)}
+
+/* ============ A: ruled lines, fixed ============ */
+.va .page{
+  /* One gradient, one variable. The page wrapper scrolls with the page (attachment: scroll
+     is right there); anything that scrolls INSIDE draws its own lines with `local`. */
+  background-image:linear-gradient(to bottom,transparent var(--rule-line),var(--rule-color) var(--rule-line),var(--rule-color) calc(var(--rule-line) + 1px),transparent calc(var(--rule-line) + 1px));
+  background-size:100% var(--rule);
+  background-repeat:repeat-y;
+}
+/* Lines inside the writing area start at its CONTENT box, so padding can't push them off the text. */
+.va .editor{
+  background-color:var(--surface);
+  background-image:linear-gradient(to bottom,transparent var(--rule-line),var(--rule-color) var(--rule-line),var(--rule-color) calc(var(--rule-line) + 1px),transparent calc(var(--rule-line) + 1px));
+  background-size:100% var(--rule);
+  background-origin:content-box;
+  background-clip:content-box;
+  background-attachment:local;
+}
+.va .editor{box-shadow:inset 0 0 0 1px var(--border)}
+
+/* ============ B: dot grid ============ */
+/* Dots stay in --rule-color: muted text over a --border dot would be 4.15:1; over this it is 4.71:1. */
+.vb .page{
+  background-image:radial-gradient(circle at 1px 1px,var(--rule-color) 1.2px,transparent 1.6px);
+  background-size:var(--rule) var(--rule);
+  background-position:0 0;
+}
+.vb .editor{
+  background-color:var(--surface);
+  background-image:radial-gradient(circle at 1px 1px,var(--rule-color) 1.2px,transparent 1.6px);
+  background-size:var(--rule) var(--rule);
+  background-origin:content-box;
+  background-clip:content-box;
+  background-attachment:local;
+}
+
+/* ============ C: plain paper, faint margin line ============ */
+.vc .page{position:relative}
+.vc .page::before{content:"";position:absolute;top:0;bottom:0;left:10px;width:1px;background:color-mix(in srgb,var(--accent) 35%,transparent)}
+@container (min-width:768px){.vc .page::before{left:40px}}
+.vc .editor{background:var(--surface)}
+
+.vname{font:700 14px/1.3 var(--heading)}
+</style>
+</head>
+<body>
+<script>
+const T = {
+  ja: {
+    otherLang:'EN', term:'2026年 秋学期', h1:'設定', body:'この名前は、同じクラスやポッドの仲間に表示されます。メールアドレスは仲間には見えません。いまの表示名は、メールアドレスの一部です。', help:'ニックネームでも大丈夫です。あとから変えられます。',
+    cardH:'期末レポート', cardMeta:'統計学 201 · 10月4日まで · 残り2日', n:'1,600', of:'/ 2,000字', week:'今週 +600字', hint:'あと400字　1日あたり約200字で間に合います',
+    label:'表示名', save:'保存する', edH:'はじめに', ed1:'本稿では、少人数の学習グループが課題の進み具合に与える影響について考える。まず、先行研究を整理し、次に調査の方法を述べる。', ed2:'毎日の記録は、小さくても続けることが大切である。', ed3:'調査は、同じクラスの学生六人を一組として行った。', ed4:'結果として、仲間の様子が見えることが、次の一歩を踏み出す助けになったと考えられる。', ed5:'以上を踏まえ、次章では結果を詳しく見ていく。',
+    nameO:'いまのアプリ（参考）', nameA:'A 罫線を直す', nameB:'B ドット', nameC:'C 無地＋余白線'
+  },
+  en: {
+    otherLang:'日本語', term:'Fall 2026', h1:'Settings', body:'This name is shown to classmates in your class and pod. Your email address is not shown to them. Right now your name is part of your email address.', help:'A nickname is fine. You can change it later.',
+    cardH:'Final report', cardMeta:'Statistics 201 · Due Oct 4 · 2 days left', n:'1,600', of:'/ 2,000 characters', week:'+600 this week', hint:'400 to go  About 200 a day gets you there',
+    label:'Display name', save:'Save', edH:'Introduction', ed1:'This paper looks at how small study groups affect progress on coursework. It first reviews earlier work, then describes the method used in the survey.', ed2:'Logging a little each day matters more than logging a lot once.', ed3:'The survey ran with groups of six classmates from the same course.', ed4:'The results suggest that seeing how others are doing helps people take the next step.', ed5:'With that in mind, the next chapter looks at the results in detail.',
+    nameO:'The app today (reference)', nameA:'A Ruled lines, fixed', nameB:'B Dot grid', nameC:'C Plain paper + margin line'
+  }
+}
+function frame(t, v) {
+  return `<header class="hdr"><span class="brand">Study Pods</span><span class="lang">${t.otherLang}</span></header>
+  <main class="page"><div class="col">
+    <div class="span"><p class="t-meta">${t.term}</p><h1 class="t-h1" style="margin:0">${t.h1}</h1></div>
+    <div style="display:flex;flex-direction:column;gap:var(--rule)">
+      <p class="t-body">${t.body}</p>
+      <div class="slot"><label class="field-label">${t.label}</label><input class="field" value="あき"></div>
+      <p class="t-help">${t.help}</p>
+      <div class="btn-slot"><a class="btn">${t.save}</a></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:var(--rule)">
+      <section class="card"><h2 class="t-h2" style="margin:0">${t.cardH}</h2><div class="t-meta">${t.cardMeta}</div>
+        <div class="nums"><span><b>${t.n}</b> ${t.of}</span><span class="plus">${t.week}</span></div>
+        <div class="bar"><i></i></div><div class="t-help">${t.hint}</div></section>
+      <div class="editor doc"><h3>${t.edH}</h3><p>${t.ed1}</p><p>${t.ed2}</p><p>${t.ed3}</p><p>${t.ed4}</p><p>${t.ed5}</p></div>
+    </div>
+  </div></main>`
+}
+const q = new URLSearchParams(location.search)
+const pick = (value, allowed, fallback) => (allowed.includes(value) ? value : fallback)
+const lang = pick(q.get('lang'), ['ja', 'en'], 'ja')
+const variant = pick(q.get('variant'), ['o', 'a', 'b', 'c'], null)
+const w = pick(q.get('frame'), ['390', '1440'], '390') === '1440' ? 1440 : 390
+const cell = (v, w, lang, scaled) => {
+  const t = T[lang]
+  const f = `<div class="frame v${v}" data-w="${w}" lang="${lang}">${frame(t, v)}</div>`
+  return `<div class="cell"><p class="label">${t['name' + v.toUpperCase()]} · ${w}px · ${lang}</p>${scaled ? `<div class="scaled" style="--h:1150">${f}</div>` : f}</div>`
+}
+document.documentElement.lang = lang
+if (variant) {
+  document.body.classList.add('single'); document.body.innerHTML += cell(variant, w, lang, false)
+} else {
+  const row = (w, scaled) => `<div class="row">${['o','a','b','c'].map(v => cell(v, w, lang, scaled)).join('')}</div>`
+  document.body.innerHTML += row(390, false) + row(1440, true)
+}
+</script>
+</body>
+</html>
