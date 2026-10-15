@@ -2,6 +2,9 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
+import { startsFirstRun } from '@/lib/first-run'
+import { readFirstRunFacts } from '@/lib/first-run-facts'
+import { StepHead } from '@/components/first-run/step-head'
 import { EmptyState, emptyActionClass } from '@/components/empty-state'
 import { JoinForm } from './join-form'
 
@@ -16,7 +19,10 @@ type ClassByCode = {
 
 // Screen 04: /join/{code}, from the class link or its QR code.
 // Logged out, the proxy sends the student to /login?next=/join/{code}; without
-// a chosen name, to /welcome?next=… first. Both come back here.
+// a chosen name, to /welcome?next=… first (which then names the class and
+// joins in one step). Both come back here when the join didn't happen there,
+// e.g. an invalid code: this page then says what to do and offers Home.
+// A student with a name and nothing else yet sees it as step 1 of 3.
 export default async function JoinPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params
   const supabase = await createClient()
@@ -30,8 +36,9 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
 
   // class_by_join_code (0012) shows a class and its member count to someone
   // who isn't in it yet; it never returns names.
-  const [{ data: cls }, t] = await Promise.all([
+  const [{ data: cls }, facts, t] = await Promise.all([
     supabase.rpc('class_by_join_code', { code }).maybeSingle<ClassByCode>(),
+    readFirstRunFacts(supabase, user.id),
     getTranslations('join'),
   ])
 
@@ -62,6 +69,11 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
 
   return (
     <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
+      {startsFirstRun(facts) && (
+        <div className="w-full max-w-md">
+          <StepHead step={1} />
+        </div>
+      )}
       <div className="relative mt-12 flex w-full max-w-md flex-col gap-3.5 rounded-[2px] border border-border bg-surface px-[22px] py-7">
         {/* Masking tape, as in the mockup. */}
         <div

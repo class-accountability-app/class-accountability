@@ -1,14 +1,12 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { toErrorKey, type ActionResult } from '@/lib/errors'
+import type { ActionResult } from '@/lib/errors'
+import { joinClassAndGo } from '@/lib/join-class'
 
-// このクラスに参加する on screen 04. join_class_by_code (0013) is the only
-// way into a class: it finds the class by the code and adds the student, so
-// the button can only join the class the link was for. Already a member is a
-// success. On success it goes straight to the class page.
+// このクラスに参加する on screen 04. The button can only join the class the
+// link was for. A student's first class goes on to the pod step; anyone else
+// to the class page (lib/join-class.ts).
 export async function joinClassByCode(
   _prev: ActionResult,
   formData: FormData
@@ -22,16 +20,5 @@ export async function joinClassByCode(
     return { error: 'signedOut' }
   }
 
-  const code = formData.get('code')?.toString() ?? ''
-  const { data: classId, error } = await supabase.rpc('join_class_by_code', { code })
-
-  if (error) {
-    return { error: toErrorKey('joinClassByCode', error) }
-  }
-  if (!classId) {
-    return { error: 'joinCodeInvalid' }
-  }
-
-  revalidatePath('/', 'layout')
-  redirect(`/classes/${classId}`)
+  return joinClassAndGo(supabase, user.id, formData.get('code')?.toString() ?? '')
 }
