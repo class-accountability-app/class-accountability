@@ -155,6 +155,9 @@ export function TargetCard({
   const total = totalFor(targetId)
   const finished = isFinished(target, total)
   const left = daysLeft(target.deadline, now)
+  // The hero comes before any other heading on Home, so it is an h2 (an h3
+  // straight after the page's h1 would skip a level).
+  const Title = hero ? 'h2' : 'h3'
 
   const deadlineParts: { text: string; urgent?: boolean }[] = []
   if (target.deadline === null) {
@@ -187,9 +190,9 @@ export function TargetCard({
       )}
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 flex-col">
-          <h3 className="font-heading text-[17px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">
+          <Title className="font-heading text-[17px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">
             {target.title}
-          </h3>
+          </Title>
           <span className="font-meta text-xs leading-7 text-muted">
             {showClass && target.className && <>{target.className} · </>}
             {deadlineParts.map((part, i) => (
