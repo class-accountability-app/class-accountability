@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
 import { createClient } from '@/lib/supabase/server'
 import { loggedOnTokyoDay, nextStep } from '@/lib/next-step'
+import { homeLayout } from '@/lib/home-layout'
 import { HOME_TARGET_LIMIT, sortHomeTargets } from '@/lib/home-targets'
 import { formatDateWithWeekday, tokyoWeekStart } from '@/lib/date'
 import { weekTotal } from '@/lib/progress-stats'
@@ -11,7 +12,8 @@ import { tidyTotal, type AmountType } from '@/lib/quick-log'
 import { NextStepCard } from '@/components/next-step-card'
 import { secondaryButtonClass } from '@/components/buttons'
 import { QuickLogProvider } from '@/components/quick-log/quick-log-provider'
-import { FinishedTargets, StickyLog, TargetCard } from '@/components/quick-log/target-card'
+import { FinishedTargets, TargetCard } from '@/components/quick-log/target-card'
+import { RecentLogs } from '@/components/quick-log/recent-logs'
 import { WeekSummary } from '@/components/quick-log/week-summary'
 import { loadMyTargets } from '@/components/quick-log/load'
 import { PodGlance, type GlancePod } from '@/components/home/pod-glance'
@@ -68,11 +70,15 @@ type HomeClass = {
 const AMOUNT_TYPES: AmountType[] = ['character_count', 'word_count', 'study_hours']
 const NUDGE_LIMIT = 3 // per sender → recipient in a rolling 24 hours (0011)
 
-// Home (screen 05, redesigned in Prompt 11): greeting with today's date,
-// 次にやること (Prompt 11b, lib/next-step.ts), 今週, my targets (most urgent first, finished
-// ones folded away), ポッドの様子 and my classes. On a phone the first screen
-// shows the greeting, the most urgent target and ＋記録; from 1024px, targets
-// on the left and the pod on the right. Everything sits on the notebook rule
+// Home (screen 05, redesigned in Prompt 11, simplified in Prompt 15 PR 2):
+// greeting with today's date; 次にやること (Prompt 11b, lib/next-step.ts) at
+// the top when it is something to do before logging, or under the hero when
+// it is only a pod prompt (lib/home-layout.ts decides, and keeps Home to at
+// most one filled button); the hero target card (the first open target, with
+// the one big button); 今週; the other targets (finished ones folded away);
+// 最近の記録, collapsed; ポッドの様子 and my classes. There is no sticky ＋記録
+// any more. On a phone the first screen shows the greeting and the hero; from
+// 1024px, targets on the left and the pod on the right. Everything sits on the notebook rule
 // (--rule, 28px): text on the page is in 28px lines just above a ruled line,
 // cards are whole lines tall, and every gap is one line. No email here (it lives only in
 // 設定), and no ログアウト (設定 on phones, the header on desktop).
@@ -193,11 +199,13 @@ export default async function Home({
     })
   )
   const openTargets = sortedTargets.filter((x) => !x.finished)
-  const homeTargets = openTargets.slice(0, HOME_TARGET_LIMIT)
-  const moreTargets = openTargets.length - homeTargets.length
   const finishedTargets = sortedTargets.filter((x) => x.finished)
 
   const invitedTo = new Set((invites ?? []).map((i) => i.class_id))
+  const loggedToday = loggedOnTokyoDay(
+    quick.logs.map((l) => l.loggedAt),
+    now
+  )
   const step = nextStep({
     classes: classes.map((c) => ({ ...c, invited: invitedTo.has(c.id) })),
     targets: sortedTargets.map((x) => ({
@@ -211,12 +219,16 @@ export default async function Home({
       total: tidyTotal(totals.get(x.id) ?? 0),
       inputMode: x.input_mode,
     })),
-    loggedToday: loggedOnTokyoDay(
-      quick.logs.map((l) => l.loggedAt),
-      now
-    ),
+    loggedToday,
     now,
   })
+  const layout = homeLayout(step, openTargets.length > 0, loggedToday)
+  // The hero is the first open target; the other open ones follow as cards
+  // with an outlined button (the hero is one of HOME_TARGET_LIMIT).
+  const heroTarget = layout.hero ? openTargets[0] : null
+  const otherOpen = heroTarget ? openTargets.slice(1) : openTargets
+  const listedTargets = otherOpen.slice(0, heroTarget ? HOME_TARGET_LIMIT - 1 : HOME_TARGET_LIMIT)
+  const hiddenTargets = otherOpen.length - listedTargets.length
   // 新しい目標 goes to a class I study in, preferring one with a pod.
   const newTargetClass =
     classes.find((c) => c.podSize !== null && !c.organizer) ?? classes.find((c) => !c.organizer)
@@ -270,12 +282,26 @@ export default async function Home({
             </time>
           </div>
 
-          <div className="min-w-0 lg:col-span-2">
-            <NextStepCard step={step} />
-          </div>
+          {/* Something to do before logging (join, an invitation, a first
+              target, a next target): the card, on top. */}
+          {layout.stepSlot === 'top' && (
+            <div className="min-w-0 lg:col-span-2">
+              <NextStepCard step={step} />
+            </div>
+          )}
 
           {/* Hidden while empty (no targets yet), so it adds no gap on phones. */}
           <div className="flex min-w-0 flex-col gap-7 empty:hidden">
+            {/* The hero: the first open target and the one big button. */}
+            {layout.hero && heroTarget && (
+              <ul className="flex flex-col gap-7">
+                <TargetCard targetId={heroTarget.id} showClass hero={layout.hero} />
+              </ul>
+            )}
+
+            {/* A pod prompt never takes the hero's place: it sits under it. */}
+            {layout.stepSlot === 'under' && <NextStepCard step={step} podPrimary={layout.stepPrimary} />}
+
             {quick.rows.length > 0 && <WeekSummary />}
 
             {sortedTargets.length > 0 && (
@@ -296,16 +322,16 @@ export default async function Home({
                     </Link>
                   )}
                 </div>
-                {homeTargets.length > 0 && (
+                {listedTargets.length > 0 && (
                   <ul className="flex flex-col gap-7">
-                    {homeTargets.map((target) => (
-                      <TargetCard key={target.id} targetId={target.id} showClass />
+                    {listedTargets.map((target) => (
+                      <TargetCard key={target.id} targetId={target.id} showClass logTone="outline" />
                     ))}
                   </ul>
                 )}
-                {moreTargets > 0 && (
+                {hiddenTargets > 0 && (
                   <p className="flex flex-wrap gap-x-2 px-0.5 text-sm leading-7 text-muted">
-                    <span>{t('moreTargets', { count: moreTargets })}</span>
+                    <span>{t('moreTargets', { count: hiddenTargets })}</span>
                     <Link href="/classes" className="font-semibold text-accent-text underline underline-offset-4">
                       {t('moreTargetsLink')}
                     </Link>
@@ -313,6 +339,32 @@ export default async function Home({
                 )}
                 <FinishedTargets targetIds={finishedTargets.map((x) => x.id)} showClass />
               </section>
+            )}
+
+            {/* My own logs, to edit or delete: closed until asked for. */}
+            {quick.rows.length > 0 && (
+              <details className="rule-card group px-3.5">
+                <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-accent-text [&::-webkit-details-marker]:hidden">
+                  {t('recentLogs')}
+                  <svg
+                    aria-hidden
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="shrink-0 group-open:rotate-180"
+                  >
+                    <path d="M4 6l4 4 4-4" />
+                  </svg>
+                </summary>
+                <div className="pb-7">
+                  <RecentLogs />
+                </div>
+              </details>
             )}
           </div>
 
@@ -354,7 +406,6 @@ export default async function Home({
             )}
           </div>
         </div>
-        <StickyLog targetId={openTargets[0]?.id ?? null} />
       </div>
     </QuickLogProvider>
   )

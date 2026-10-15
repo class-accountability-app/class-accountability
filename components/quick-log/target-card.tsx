@@ -57,20 +57,37 @@ export function writePath(target: QuickTarget) {
 // starts the accessible name; the target's title follows for screen readers.
 // A 「Study Pods で書く」 target gets 書く instead, a link to its editor
 // (Prompt 12), in the same place and look: it is that card's one action.
-export function LogButton({ targetId }: { targetId: string }) {
+// `tone` says whether it is the filled button or an outlined one (Home keeps
+// exactly one filled button, Prompt 15); without it a task is outlined and the
+// rest are filled, as before. `big` is the full-width hero button, 2 lines tall.
+const outlineLook = 'border border-[#b9a57c] bg-[#fffdf7] text-ink shadow-none'
+
+export function LogButton({
+  targetId,
+  tone,
+  big = false,
+  label,
+}: {
+  targetId: string
+  tone?: 'filled' | 'outline'
+  big?: boolean
+  label?: string
+}) {
   const { targets, totalFor, openCreate } = useQuickLog()
   const t = useTranslations('quickLog')
   const target = targets.get(targetId)
   if (!target || isTaskDone(target, totalFor(targetId))) return null
   const isTask = target.type === 'task'
+  const filled = (tone ?? (isTask ? 'outline' : 'filled')) === 'filled'
+  const size = big ? 'h-14 w-full text-base' : 'h-11 px-3.5 text-[15px]'
+  const look = `btn inline-flex ${size} shrink-0 items-center justify-center rounded-[2px] font-semibold ${
+    filled ? 'bg-accent text-white' : outlineLook
+  }`
 
   if (target.inputMode === 'document') {
     return (
-      <Link
-        href={writePath(target)}
-        className="btn inline-flex h-11 shrink-0 items-center justify-center rounded-[2px] bg-accent px-3.5 text-[15px] font-semibold text-white"
-      >
-        {t('write')}
+      <Link href={writePath(target)} className={look}>
+        {label ?? t('write')}
         <span className="sr-only">：{target.title}</span>
       </Link>
     )
@@ -81,11 +98,9 @@ export function LogButton({ targetId }: { targetId: string }) {
       type="button"
       data-quick-log-opener
       onClick={(e) => openCreate(targetId, e.currentTarget)}
-      className={`btn inline-flex h-11 shrink-0 items-center justify-center rounded-[2px] px-3.5 text-[15px] font-semibold ${
-        isTask ? 'border border-[#b9a57c] bg-[#fffdf7] text-ink shadow-none' : 'bg-accent text-white'
-      }`}
+      className={look}
     >
-      {isTask ? t('complete') : t('open')}
+      {label ?? (isTask ? t('complete') : t('open'))}
       <span className="sr-only">：{target.title}</span>
     </button>
   )
@@ -109,9 +124,29 @@ const URGENT_DAYS = 3
 // The toast for a log made here renders right after the button in the tab
 // order. On the ruled page (globals.css): every line inside is 28px and the
 // padding 14 + 14, so the card is always a whole number of lines tall.
-export function TargetCard({ targetId, showClass = false }: { targetId: string; showClass?: boolean }) {
+//
+// Home (Prompt 15, PR 2): `hero` makes it the big card for the first open
+// target: a 今日の目標 label, and the button as a full-width row at the bottom
+// (56px: two lines). It is the filled button when `hero.primary`, else
+// outlined; once today is logged (`state: 'done'`) it says so and offers
+// もう一度記録. `logTone` sets the tone of the small button on the other cards.
+export type HeroProps = { state: 'log' | 'done'; primary: boolean }
+
+export function TargetCard({
+  targetId,
+  showClass = false,
+  hero,
+  logTone,
+}: {
+  targetId: string
+  showClass?: boolean
+  hero?: HeroProps
+  logTone?: 'filled' | 'outline'
+}) {
   const { targets, totalFor, now } = useQuickLog()
   const t = useTranslations('targetCard')
+  const tHome = useTranslations('home')
+  const tNext = useTranslations('nextStep')
   const tProgress = useTranslations('progress')
   const locale = useLocale() as Locale
   const target = targets.get(targetId)
@@ -120,6 +155,9 @@ export function TargetCard({ targetId, showClass = false }: { targetId: string; 
   const total = totalFor(targetId)
   const finished = isFinished(target, total)
   const left = daysLeft(target.deadline, now)
+  // The hero comes before any other heading on Home, so it is an h2 (an h3
+  // straight after the page's h1 would skip a level).
+  const Title = hero ? 'h2' : 'h3'
 
   const deadlineParts: { text: string; urgent?: boolean }[] = []
   if (target.deadline === null) {
@@ -139,11 +177,22 @@ export function TargetCard({ targetId, showClass = false }: { targetId: string; 
       data-anchor={targetAnchor(targetId)}
       className="rule-card flex flex-col px-3.5 py-3.5 lg:px-[18px]"
     >
+      {hero && (
+        <p className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">{tHome('heroLabel')}</p>
+      )}
+      {hero?.state === 'done' && (
+        <p className="flex items-center gap-2 font-heading text-[17px] leading-7 font-bold text-[#556b40]">
+          <svg aria-hidden width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 10.5l4 4 8-9" />
+          </svg>
+          {tNext('seePod.title')}
+        </p>
+      )}
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 flex-col">
-          <h3 className="font-heading text-[17px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">
+          <Title className="font-heading text-[17px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">
             {target.title}
-          </h3>
+          </Title>
           <span className="font-meta text-xs leading-7 text-muted">
             {showClass && target.className && <>{target.className} · </>}
             {deadlineParts.map((part, i) => (
@@ -174,13 +223,29 @@ export function TargetCard({ targetId, showClass = false }: { targetId: string; 
             ))}
           </span>
         </div>
-        <LogButton targetId={targetId} />
+        {!hero && <LogButton targetId={targetId} tone={logTone} />}
         <ToastSlot anchor={targetAnchor(targetId)} />
       </div>
       {target.type === 'task' ? (
         <span className="text-sm leading-7 text-muted">{finished ? tProgress('done') : tProgress('notDone')}</span>
       ) : (
         <NumericProgress target={target} total={total} finished={finished} />
+      )}
+      {hero && (
+        <div className="flex py-3.5">
+          <LogButton
+            targetId={targetId}
+            big
+            tone={hero.primary ? 'filled' : 'outline'}
+            label={
+              target.inputMode === 'document'
+                ? tNext('logToday.writeAction')
+                : hero.state === 'done'
+                  ? tHome('logAgain')
+                  : undefined
+            }
+          />
+        </div>
       )}
     </li>
   )

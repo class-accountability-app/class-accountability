@@ -47,7 +47,10 @@
     "classMetaOrganizer": "{term} · Organizer",
     "newTarget": "New target",
     "organizerMark": "Organizer",
-    "targetsWhy": "Log each day with + Log."
+    "targetsWhy": "Log each day with + Log.",
+    "heroLabel": "Today’s target",
+    "logAgain": "Log again",
+    "recentLogs": "Recent logs (edit, delete)"
   },
   "login": {
     "eyebrow": "Log in",
