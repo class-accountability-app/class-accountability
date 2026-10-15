@@ -49,3 +49,10 @@ has to carry these anchors (or open the matching section), and an organizer keep
 
 To be filled in during the PR 1 logged-in checks: `/nudges` loads; `/classes/{id}#invite`
 and `#invitations` scroll to the sections above.
+
+## Known polish, separate branch
+
+Not part of PR 1 and not fixed here (no code change):
+
+- **Step 1 of the first-run flow (`/welcome`, class invitation): a notebook line runs through the hint line** 「ニックネームでも大丈夫です。あとから「設定」で変えられます。」 ("A nickname is fine…"), seen at 390px in the live walkthrough. The hint is 13px text without `leading-7`, so it isn't on the 28px rule; the same applies to other pages that haven't been reworked onto the rule (CLAUDE.md: "other pages get the same lines but their spacing hasn't been reworked yet").
+- Investigation and three options (ruled lines fixed, dot grid, plain paper with a margin line) are on the local branch `fix/notebook-background` (`docs/mockups/notebook-background.html`), waiting for a pick. Nothing there touches PR 1.
