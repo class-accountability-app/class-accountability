@@ -79,16 +79,19 @@ body {
   padding-right: env(safe-area-inset-right);
 }
 
-/* The ruled page: the content area of every page (app/layout.tsx). */
+/* The ruled page: the content area of every page (app/layout.tsx). A dot grid,
+   one dot per 28px (--rule) in each direction, so the lines of text still sit on
+   the grid but a line that drifts no longer cuts through a word. Dots stay in
+   --rule-color: muted text over it is 4.71:1 (over --border it would be 4.15:1,
+   below AA). The page wrapper grows with its content, so the default (scroll)
+   attachment is right. Opaque cards (.rule-card) cover it, as before. */
 .ruled {
-  background-image: repeating-linear-gradient(
-    transparent 0,
-    transparent var(--rule-line),
-    var(--rule-color) var(--rule-line),
-    var(--rule-color) calc(var(--rule-line) + 1px),
-    transparent calc(var(--rule-line) + 1px),
-    transparent var(--rule)
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    var(--rule-color) 1.2px,
+    transparent 1.6px
   );
+  background-size: var(--rule) var(--rule);
 }
 
 /* A card on the ruled page: plain inside, its edge drawn with an inset
