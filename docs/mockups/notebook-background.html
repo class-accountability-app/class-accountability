@@ -122,12 +122,11 @@ body.single .frame{box-shadow:none;width:100%!important}
 }
 /* Lines inside the writing area start at its CONTENT box, so padding can't push them off the text. */
 .va .editor{
-  background-color:var(--surface);
-  background-image:linear-gradient(to bottom,transparent var(--rule-line),var(--rule-color) var(--rule-line),var(--rule-color) calc(var(--rule-line) + 1px),transparent calc(var(--rule-line) + 1px));
-  background-size:100% var(--rule);
-  background-origin:content-box;
-  background-clip:content-box;
-  background-attachment:local;
+  /* Two layers: the lines (origin AND clip = content box, scrolling with the text), then the
+     paper under the whole card, padding included. */
+  background:
+    linear-gradient(to bottom,transparent var(--rule-line),var(--rule-color) var(--rule-line),var(--rule-color) calc(var(--rule-line) + 1px),transparent calc(var(--rule-line) + 1px)) 0 0 / 100% var(--rule) repeat-y local content-box content-box,
+    var(--surface);
 }
 .va .editor{box-shadow:inset 0 0 0 1px var(--border)}
 
@@ -139,12 +138,9 @@ body.single .frame{box-shadow:none;width:100%!important}
   background-position:0 0;
 }
 .vb .editor{
-  background-color:var(--surface);
-  background-image:radial-gradient(circle at 1px 1px,var(--rule-color) 1.2px,transparent 1.6px);
-  background-size:var(--rule) var(--rule);
-  background-origin:content-box;
-  background-clip:content-box;
-  background-attachment:local;
+  background:
+    radial-gradient(circle at 1px 1px,var(--rule-color) 1.2px,transparent 1.6px) 0 0 / var(--rule) var(--rule) repeat local content-box content-box,
+    var(--surface);
 }
 
 /* ============ C: plain paper, faint margin line ============ */
