@@ -2,7 +2,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { toErrorKey, type ActionResult } from '@/lib/errors'
-import { afterJoinHref } from '@/lib/first-run'
+import { afterJoinHref, type MemberRole } from '@/lib/first-run'
 import { readFirstRunFacts } from '@/lib/first-run-facts'
 
 // Join the class a code belongs to, then go on: to the pod step if this is the
@@ -25,6 +25,14 @@ export async function joinClassAndGo(
     return { error: 'joinCodeInvalid' }
   }
 
+  // My role in the class decides it: an organizer never enters the flow.
+  const { data: membership } = await supabase
+    .from('class_memberships')
+    .select('role')
+    .eq('class_id', classId as string)
+    .eq('user_id', userId)
+    .maybeSingle()
+
   revalidatePath('/', 'layout')
-  redirect(afterJoinHref(facts, classId as string))
+  redirect(afterJoinHref(facts, classId as string, (membership?.role as MemberRole | undefined) ?? null))
 }

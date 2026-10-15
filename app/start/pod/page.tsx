@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
-import { isClassId, targetStepHref } from '@/lib/first-run'
+import { isClassId, startStepRedirect, targetStepHref } from '@/lib/first-run'
 import { StepHead } from '@/components/first-run/step-head'
 import { primaryButtonClass } from '@/components/buttons'
 import { CreatePodButton } from '@/app/classes/[classId]/create-pod-button'
@@ -49,8 +49,12 @@ export default async function StartPodPage({
     getTranslations('firstRun'),
   ])
 
-  if (membership?.role !== 'student' || (targetCount ?? 0) > 0) redirect('/')
-  if ((inPod ?? []).length > 0) redirect(targetStepHref(classId))
+  const away = startStepRedirect(
+    'pod',
+    { role: membership?.role ?? null, targetsInClass: targetCount ?? 0, inPod: (inPod ?? []).length > 0 },
+    classId
+  )
+  if (away) redirect(away)
 
   const toTarget = targetStepHref(classId)
   return (

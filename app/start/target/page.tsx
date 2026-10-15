@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
-import { isClassId, podStepHref } from '@/lib/first-run'
+import { isClassId, podStepHref, startStepRedirect } from '@/lib/first-run'
 import { StepHead } from '@/components/first-run/step-head'
 import { SimpleTargetForm } from '@/components/target-form/simple-target-form'
 
@@ -46,7 +46,12 @@ export default async function StartTargetPage({
     getTranslations('firstRun'),
   ])
 
-  if (membership?.role !== 'student' || (targetCount ?? 0) > 0) redirect('/')
+  const away = startStepRedirect(
+    'target',
+    { role: membership?.role ?? null, targetsInClass: targetCount ?? 0, inPod: (inPod ?? []).length > 0 },
+    classId
+  )
+  if (away) redirect(away)
 
   return (
     <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">

@@ -32,10 +32,29 @@ export function targetStepHref(classId: string): string {
   return `/start/target?class=${classId}`
 }
 
+export type MemberRole = 'student' | 'organizer'
+
 // Where the student goes right after joining a class: the pod step for a
-// first class, the class page (as before) for anyone else.
-export function afterJoinHref(facts: FirstRunFacts, classId: string): string {
-  return startsFirstRun(facts) ? podStepHref(classId) : `/classes/${classId}`
+// student's very first class, the class page (as before) for anyone else. An
+// organizer opening their own class's link is "already a member" with the
+// organizer role: never the flow, always their class page. An unknown role
+// (a failed read) also means the class page.
+export function afterJoinHref(facts: FirstRunFacts, classId: string, role: MemberRole | null): string {
+  return role === 'student' && startsFirstRun(facts) ? podStepHref(classId) : `/classes/${classId}`
+}
+
+// What a /start/{step} page shows for this student in this class, as a
+// redirect target, or null to render the step. Anyone who isn't a student of
+// the class (a stranger, an organizer) or who already has a target here goes
+// to Home; the pod step is skipped for someone who already has a pod.
+export function startStepRedirect(
+  step: 'pod' | 'target',
+  state: { role: MemberRole | null; targetsInClass: number; inPod: boolean },
+  classId: string
+): string | null {
+  if (state.role !== 'student' || state.targetsInClass > 0) return '/'
+  if (step === 'pod' && state.inPod) return targetStepHref(classId)
+  return null
 }
 
 // /welcome?next=/join/K7M3Q9TX → the code in `next`, or null. Only the shape is
