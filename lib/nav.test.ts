@@ -58,11 +58,11 @@ describe('isOutsideApp', () => {
 })
 
 describe('hidesTabBar', () => {
-  it.each(['/login', '/auth/confirm', '/welcome', '/join/K7M3Q9TX', '/join'])('%s has no tab bar', (p) => {
+  it.each(['/login', '/auth/confirm', '/welcome', '/join/K7M3Q9TX', '/join', '/start/pod', '/start/target'])('%s has no tab bar', (p) => {
     expect(hidesTabBar(p)).toBe(true)
   })
 
-  it.each(['/', '/classes/c1', '/joinus', '/settings'])('%s has the tab bar', (p) => {
+  it.each(['/', '/classes/c1', '/joinus', '/settings', '/starter'])('%s has the tab bar', (p) => {
     expect(hidesTabBar(p)).toBe(false)
   })
 })
@@ -71,6 +71,7 @@ describe('showsHeaderSignOutOnPhones', () => {
   it('only where there is no tab bar to reach 設定 from', () => {
     expect(showsHeaderSignOutOnPhones('/welcome')).toBe(true)
     expect(showsHeaderSignOutOnPhones('/join/K7M3Q9TX')).toBe(true)
+    expect(showsHeaderSignOutOnPhones('/start/pod')).toBe(true)
     expect(showsHeaderSignOutOnPhones('/')).toBe(false)
     expect(showsHeaderSignOutOnPhones('/settings')).toBe(false)
   })

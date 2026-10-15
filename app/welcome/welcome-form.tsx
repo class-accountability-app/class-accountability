@@ -5,10 +5,18 @@ import { useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
 import { normalizeDisplayName } from '@/lib/display-name'
 import { FieldError, describedField, useFocusFirstInvalid } from '@/components/form-errors'
-import { StatusStamp } from '@/components/status-stamp'
-import { chooseDisplayName } from '../settings/actions'
+import { chooseNameAndJoin } from './actions'
 
-export function WelcomeForm({ currentName, next }: { currentName: string; next: string }) {
+// `joining`: the page is a class invitation, so the button also joins.
+export function WelcomeForm({
+  currentName,
+  next,
+  joining,
+}: {
+  currentName: string
+  next: string
+  joining: boolean
+}) {
   const t = useTranslations('welcome')
   const id = useId()
   const formRef = useRef<HTMLFormElement>(null)
@@ -20,7 +28,6 @@ export function WelcomeForm({ currentName, next }: { currentName: string; next: 
   const fieldId = `${id}-name`
   const hintId = `${fieldId}-hint`
   const errorId = `${fieldId}-error`
-  const preview = name.trim() || currentName
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -33,16 +40,17 @@ export function WelcomeForm({ currentName, next }: { currentName: string; next: 
     }
 
     startTransition(async () => {
-      // On success the action redirects to `next`, so only errors come back.
-      const result = await chooseDisplayName(formData)
+      // On success the action redirects (to the pod step, or to `next`), so
+      // only errors come back.
+      const result = await chooseNameAndJoin(formData)
       if (result?.error) setError(result.error)
     })
   }
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+    <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex flex-col gap-7">
       <input type="hidden" name="next" value={next} />
-      <div className="mt-2 flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         <label htmlFor={fieldId} className="text-sm font-semibold text-ink">
           {t('label')}
         </label>
@@ -62,25 +70,16 @@ export function WelcomeForm({ currentName, next }: { currentName: string; next: 
         </p>
       </div>
 
-      {/* Live preview: the same stamp and name style as a pod card. */}
-      <div className="rounded-[2px] border border-border bg-surface p-4">
-        <p className="mb-2.5 font-meta text-xs text-muted">{t('previewHeading')}</p>
-        <div className="flex items-center gap-2.5">
-          <StatusStamp status="active" />
-          <span className="min-w-0 font-heading text-[17px] font-bold text-ink [overflow-wrap:anywhere]">
-            {preview}
-          </span>
-          <span className="ml-auto shrink-0 font-meta text-xs text-muted">{t('previewStatus')}</span>
-        </div>
+      <div className="flex flex-col gap-3.5">
+        {joining && <p className="text-[13px] leading-7 text-muted">{t('note')}</p>}
+        <button
+          type="submit"
+          disabled={isPending}
+          className="btn flex h-[52px] w-full items-center justify-center rounded-[2px] bg-accent text-base font-semibold text-white disabled:opacity-50"
+        >
+          {isPending ? (joining ? t('joining') : t('saving')) : joining ? t('join') : t('submit')}
+        </button>
       </div>
-
-      <button
-        type="submit"
-        disabled={isPending}
-        className="btn mt-3 flex h-[52px] w-full items-center justify-center rounded-[2px] bg-accent text-base font-semibold text-white disabled:opacity-50"
-      >
-        {isPending ? t('saving') : t('submit')}
-      </button>
     </form>
   )
 }

@@ -10,14 +10,15 @@ import type { TargetType } from './targets'
 // In order, the first that applies:
 //   no class as a student   → join (or share the link, for an organizer)
 //   invited to a pod        → see the invitation
-//   a class without a pod   → start (or ask to join) a pod
-//   a pod without a target  → set a first target in that class
+//   a class without a target → set a first target in that class (before a pod:
+//                             the first-run flow lets a student skip the pod)
+//   every target finished   → start a pod if there is none, else set the next target
 //   nothing logged today    → log today (the card points at ＋記録; no button),
 //                             or, for a 「Study Pods で書く」 target, keep
 //                             writing (an outlined 続きを書く button)
+//   logged today, no pod    → start (or ask to join) a pod
 //   logged today, alone     → invite classmates
 //   logged today            → see the pod's progress
-//   every target finished   → set the next target
 
 export type NextStepClass = {
   id: string
@@ -87,11 +88,12 @@ export function nextStep({
   const invited = studying.find((c) => c.podSize === null && c.invited)
   if (invited) return { kind: 'invitation', classId: invited.id, className: invited.name }
 
-  const noPod = studying.find((c) => c.podSize === null)
-  if (noPod) return { kind: 'pod', classId: noPod.id, className: noPod.name }
-
+  // A target comes before a pod (Prompt 15): the first-run flow lets a student
+  // skip the pod, and one who leaves right after joining lands here.
   const noTarget = studying.find((c) => !targets.some((t) => t.classId === c.id))
   if (noTarget) return { kind: 'firstTarget', classId: noTarget.id, className: noTarget.name }
+
+  const noPod = studying.find((c) => c.podSize === null)
 
   const classOf = (id: string) => studying.find((c) => c.id === id)
   const open = sortHomeTargets(
@@ -101,7 +103,9 @@ export function nextStep({
   ).filter((t) => !t.finished)
 
   if (open.length === 0) {
-    // Everything reached: the next target goes in the most recent class.
+    // Everything reached: a pod if there still isn't one, else the next
+    // target in the most recent class.
+    if (noPod) return { kind: 'pod', classId: noPod.id, className: noPod.name }
     const last = studying[studying.length - 1]
     return { kind: 'nextTarget', classId: last.id, className: last.name }
   }
@@ -120,6 +124,9 @@ export function nextStep({
       write: urgent.inputMode === 'document',
     }
   }
+
+  // Logging comes first; once it's done for today, a missing pod is next.
+  if (noPod) return { kind: 'pod', classId: noPod.id, className: noPod.name }
 
   const alone = studying.find((c) => c.podSize === 1)
   if (alone) return { kind: 'invite', classId: alone.id, className: alone.name }

@@ -31,8 +31,10 @@ describe('nextStep: the seven states', () => {
     expect(nextStep({ classes: [], targets: [], loggedToday: false, now })).toEqual({ kind: 'join' })
   })
 
-  it('2: in a class with no pod → start a pod there', () => {
-    expect(nextStep({ classes: [cls('A', { podSize: null })], targets: [], loggedToday: false, now })).toEqual({
+  it('2: in a class with a target but no pod, logged today → start a pod there', () => {
+    expect(
+      nextStep({ classes: [cls('A', { podSize: null })], targets: [target('x', 'A')], loggedToday: true, now })
+    ).toEqual({
       kind: 'pod',
       classId: 'A',
       className: 'Class A',
@@ -45,7 +47,7 @@ describe('nextStep: the seven states', () => {
     ).toMatchObject({ kind: 'invitation', classId: 'A' })
   })
 
-  it('3: in a pod, no target → first target in that class', () => {
+  it('3: in a class with no target → first target in that class, pod or not', () => {
     expect(nextStep({ classes: [cls('A')], targets: [], loggedToday: false, now })).toMatchObject({
       kind: 'firstTarget',
       classId: 'A',
@@ -147,14 +149,14 @@ describe('nextStep: edge cases', () => {
     ).toMatchObject({ kind: 'logToday' })
   })
 
-  it('several classes: the one furthest behind wins (no pod beats no target)', () => {
+  it('several classes: the first class without a target wins (a target comes before a pod)', () => {
     const step = nextStep({
       classes: [cls('A'), cls('B', { podSize: null }), cls('C')],
       targets: [target('x', 'A')],
       loggedToday: false,
       now,
     })
-    expect(step).toMatchObject({ kind: 'pod', classId: 'B' })
+    expect(step).toMatchObject({ kind: 'firstTarget', classId: 'B' })
   })
 
   it('several classes: a class with a pod but no target, before logging elsewhere', () => {
@@ -181,7 +183,7 @@ describe('nextStep: edge cases', () => {
         loggedToday: false,
         now,
       })
-    ).toMatchObject({ kind: 'pod', classId: 'A' })
+    ).toMatchObject({ kind: 'firstTarget', classId: 'A' })
   })
 
   it('finished targets don\'t count as open; the open one is logged', () => {
@@ -199,6 +201,52 @@ describe('nextStep: edge cases', () => {
     expect(
       nextStep({ classes: [cls('A')], targets: [target('x', 'A', { deadline: '2026-09-30' })], loggedToday: false, now })
     ).toMatchObject({ kind: 'logToday', daysLeft: -2 })
+  })
+})
+
+describe('nextStep: the first-run flow (Prompt 15)', () => {
+  it('a new student who leaves after joining, before the pod step → Home asks for the first target', () => {
+    // Joined, no pod, no target: exactly where someone who closes the app on
+    // /start/pod ends up. The target comes first, so the card is not 「ポッドを作る」.
+    expect(
+      nextStep({ classes: [cls('A', { podSize: null })], targets: [], loggedToday: false, now })
+    ).toEqual({ kind: 'firstTarget', classId: 'A', className: 'Class A' })
+  })
+
+  it('...and the same if they also left after a pod, before the target', () => {
+    expect(nextStep({ classes: [cls('A', { podSize: 1 })], targets: [], loggedToday: false, now })).toMatchObject({
+      kind: 'firstTarget',
+      classId: 'A',
+    })
+  })
+
+  it('skipped the pod, target set, nothing logged → log today (the pod does not nag first)', () => {
+    expect(
+      nextStep({ classes: [cls('A', { podSize: null })], targets: [target('x', 'A')], loggedToday: false, now })
+    ).toMatchObject({ kind: 'logToday', classId: 'A' })
+  })
+
+  it('skipped the pod, logged today → start a pod', () => {
+    expect(
+      nextStep({ classes: [cls('A', { podSize: null })], targets: [target('x', 'A')], loggedToday: true, now })
+    ).toEqual({ kind: 'pod', classId: 'A', className: 'Class A' })
+  })
+
+  it('skipped the pod, every target finished → start a pod, not a next target', () => {
+    expect(
+      nextStep({
+        classes: [cls('A', { podSize: null })],
+        targets: [target('x', 'A', { total: 1000 })],
+        loggedToday: false,
+        now,
+      })
+    ).toMatchObject({ kind: 'pod', classId: 'A' })
+  })
+
+  it('an invitation still comes first, even before the first target', () => {
+    expect(
+      nextStep({ classes: [cls('A', { podSize: null, invited: true })], targets: [], loggedToday: false, now })
+    ).toMatchObject({ kind: 'invitation', classId: 'A' })
   })
 })
 

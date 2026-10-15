@@ -224,7 +224,20 @@
     "inputModeHint": {
       "manual": "You enter the characters you wrote with + Log.",
       "document": "Write on this target’s page and the character count is logged automatically. Only you can read the text; your podmates see only the count."
-    }
+    },
+    "presetsLegend": "How to start",
+    "presets": {
+      "report": "Report length",
+      "write": "Write the report here",
+      "study": "Study hours",
+      "submit": "Just hand it in"
+    },
+    "amountLabel": {
+      "character_count": "Target characters",
+      "word_count": "Target words",
+      "study_hours": "Target hours"
+    },
+    "moreOptions": "More options"
   },
   "comments": {
     "label": "Comment",
@@ -299,14 +312,16 @@
   },
   "welcome": {
     "eyebrow": "Welcome",
-    "title": "Choose the name your pod will see",
-    "body": "Classmates in your classes and pods will see this name. Right now they see part of your email address: “{current}”.",
+    "title": "Choose your name",
+    "body": "Your classmates will see this name. “{current}” is part of your email address.",
     "label": "Display name",
     "hint": "A nickname is fine. You can change it later in Settings.",
-    "previewHeading": "How your pod will see you",
-    "previewStatus": "Logged today",
     "submit": "Continue",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "note": "Only people in your pod can see your progress.",
+    "classLine": "{className} · {term}",
+    "join": "Join with this name",
+    "joining": "Joining…"
   },
   "settings": {
     "title": "Settings",
@@ -382,9 +397,9 @@
     "body": "If you join, people in this class will see your display name. Only your podmates can see your progress.",
     "submit": "Join this class",
     "joining": "Joining…",
-    "cancel": "Cancel",
+    "cancel": "Don’t join",
     "invalidTitle": "This link doesn't work",
-    "invalidBody": "The link may be old, or the code may be wrong. Please check the link with your teacher or a classmate.",
+    "invalidBody": "The link may be old, or the code may be wrong. Ask your teacher to send you a new link.",
     "home": "Back to Home"
   },
   "invite": {
@@ -885,6 +900,21 @@
       "print": "Print / Save as PDF",
       "hint": "In the print dialog, choose “Save as PDF” as the destination to get a PDF.",
       "back": "Back to the document"
+    }
+  },
+  "firstRun": {
+    "step": "{n} of 3",
+    "stepLabel": "Step {n} of 3",
+    "back": "Back",
+    "pod": {
+      "title": "Start a pod",
+      "lead": "A pod is a group of up to 6 classmates who see each other’s progress.",
+      "other": "Ask to join another pod",
+      "later": "Decide later"
+    },
+    "target": {
+      "title": "Set your first target",
+      "lead": "Say what you’ll do and how much, and every log becomes progress."
     }
   }
 }
