@@ -12,13 +12,13 @@ import type { TargetType } from './targets'
 //   invited to a pod        → see the invitation
 //   a class without a target → set a first target in that class (before a pod:
 //                             the first-run flow lets a student skip the pod)
+//   every target finished   → start a pod if there is none, else set the next target
 //   nothing logged today    → log today (the card points at ＋記録; no button),
 //                             or, for a 「Study Pods で書く」 target, keep
 //                             writing (an outlined 続きを書く button)
 //   logged today, no pod    → start (or ask to join) a pod
 //   logged today, alone     → invite classmates
 //   logged today            → see the pod's progress
-//   every target finished   → start a pod if there is none, else set the next target
 
 export type NextStepClass = {
   id: string
