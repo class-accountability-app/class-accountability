@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { formatClock, formatDate, formatDateTime, formatDayAgo, formatTimeAgo, tokyoDaysAgo } from './date'
+import {
+  addDaysYmd,
+  daysBetweenYmd,
+  formatClock,
+  formatDate,
+  formatDateTime,
+  formatDayAgo,
+  formatTimeAgo,
+  tokyoDaysAgo,
+  tokyoToday,
+} from './date'
 
 // Instants are written in UTC; comments give the Tokyo (UTC+9) wall time.
 const at = (iso: string) => new Date(iso)
@@ -97,5 +107,30 @@ describe('formatClock', () => {
     // 05:05 UTC is 14:05 in Tokyo (the tests run in Los Angeles time).
     expect(formatClock('2026-10-02T05:05:00Z', 'ja')).toBe('14:05')
     expect(formatClock('2026-10-02T05:05:00Z', 'en')).toBe('2:05 PM')
+  })
+})
+
+describe('tokyoToday', () => {
+  it('is the Tokyo calendar day, not the UTC one', () => {
+    expect(tokyoToday(at('2026-01-20T15:30:00Z'))).toBe('2026-01-21') // 1/21 00:30 JST
+    expect(tokyoToday(at('2026-01-20T14:59:00Z'))).toBe('2026-01-20') // 1/20 23:59 JST
+  })
+})
+
+describe('addDaysYmd', () => {
+  it('adds and subtracts whole days across month and year ends', () => {
+    expect(addDaysYmd('2026-10-28', 4)).toBe('2026-11-01')
+    expect(addDaysYmd('2026-01-02', -3)).toBe('2025-12-30')
+    expect(addDaysYmd('2028-02-28', 1)).toBe('2028-02-29')
+    expect(addDaysYmd('2026-10-01', 0)).toBe('2026-10-01')
+  })
+})
+
+describe('daysBetweenYmd', () => {
+  it('counts calendar days, negative when going back', () => {
+    expect(daysBetweenYmd('2026-10-01', '2026-10-05')).toBe(4)
+    expect(daysBetweenYmd('2026-10-05', '2026-10-01')).toBe(-4)
+    expect(daysBetweenYmd('2026-12-31', '2027-01-01')).toBe(1)
+    expect(daysBetweenYmd('2026-10-01', '2026-10-01')).toBe(0)
   })
 })

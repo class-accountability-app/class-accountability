@@ -32,6 +32,32 @@ function tokyoDayNumber(date: Date): number {
   return Date.UTC(get('year'), get('month') - 1, get('day')) / DAY_MS
 }
 
+// Calendar dates as 'YYYY-MM-DD' strings, for date columns (a project's start
+// date, a check-in round). Plain day arithmetic, no time of day.
+function ymdToDayNumber(ymd: string): number {
+  const [y, m, d] = ymd.split('-').map(Number)
+  return Date.UTC(y, m - 1, d) / DAY_MS
+}
+
+function dayNumberToYmd(day: number): string {
+  return new Date(day * DAY_MS).toISOString().slice(0, 10)
+}
+
+// The Tokyo calendar day containing `now`, as 'YYYY-MM-DD'.
+export function tokyoToday(now: Date = new Date()): string {
+  return dayNumberToYmd(tokyoDayNumber(now))
+}
+
+// 'YYYY-MM-DD' plus a whole number of days (negative goes back).
+export function addDaysYmd(ymd: string, days: number): string {
+  return dayNumberToYmd(ymdToDayNumber(ymd) + days)
+}
+
+// Whole days from `from` to `to` (positive when `to` is later).
+export function daysBetweenYmd(from: string, to: string): number {
+  return ymdToDayNumber(to) - ymdToDayNumber(from)
+}
+
 // Whole Tokyo calendar days between `value` and `now` (0 = same day).
 export function tokyoDaysAgo(value: DateInput, now: Date = new Date()): number {
   return tokyoDayNumber(now) - tokyoDayNumber(toDate(value))
