@@ -10,13 +10,13 @@ Decisions made with the author:
 - **Document text stays owner-only** (0019 rule kept). Teammates see counts and check-in snapshots, never text.
 - **Existing pilot data is deleted** (targets, logs, comments, documents). Author confirmed. Run only after one more explicit go-ahead at execution time; counts only, never read real students' content (see memory: real-accounts-off-limits).
 
-## Data model (new migration `0022_group_projects.sql`, then `0023` for the teardown)
+## Data model (migration `0022_group_projects.sql`; `0023` re-keys documents to tasks; `0024` is the teardown)
 Pod = `pairings` (reuse; cap 6 and the pod-formation flow are unchanged).
 
 - `projects`: `id`, `pairing_id` (FK pairings, cascade), `class_id`, `title` (1-120), `deadline date`, `checkin_every_days int` (default 4, check 1-14), `created_by`, `created_at`. One active project per pod to start (unique on `pairing_id`).
 - `project_tasks`: `id`, `project_id` (cascade), `title`, `owner_id` (FK profiles, `on delete set null`), `metric` in (`status`, `count`, `characters`) plus `unit` text (e.g. "slides"), `target_amount numeric` (null or > 0), `status` in (`todo`,`doing`,`done`), `input_mode` (`manual`,`document`), `source` in (`manual`,`document`,`google_docs`) (future-ready), `due date`, `position`, `created_at`.
 - `task_progress` (replaces `progress_logs` for tasks): `id`, `task_id`, `user_id`, `progress_value`, `note` (<=280), `source`, `client_id` (unique per user for idempotency), `logged_at` server-set. Totals always summed on read (as 0014).
-- `task_documents` / `task_document_versions`: the 0019 tables re-keyed on `task_id`, same owner-only RLS, `save_document` / `keep_document_version` reworked to take a task id. Sessions still log the character difference into `task_progress`.
+- `task_documents` / `task_document_versions` (migration 0023, with the editor PR): the 0019 tables re-keyed on `task_id`, same owner-only RLS, `save_document` / `keep_document_version` reworked to take a task id. Sessions still log the character difference into `task_progress`.
 - `project_checkins`: one row per member per check-in round: `id`, `project_id`, `user_id`, `round_start date` (derived from deadline/start and `checkin_every_days`, Tokyo days), `summary text` (<=280), `snapshot jsonb` (server-built from that member's tasks: title, metric, current, target, status; counts only). Unique `(project_id, user_id, round_start)`. Written only through RPC `submit_checkin(project, note)` so the snapshot is computed in the DB, never trusted from the client.
 - Comments: `task_comments` (or re-point `progress_comments` at check-ins); decide at implementation, default to comments on check-ins only.
 
@@ -30,7 +30,7 @@ Pod = `pairings` (reuse; cap 6 and the pod-formation flow are unchanged).
 - `leave_pod`: tasks owned by the leaver become unassigned (`set null`); the project goes when the pod empties (cascade). `delete_my_account` needs no change beyond cascades, but its RLS test must be extended.
 - Update `0020/0021` research functions (they reference `targets`/`progress_logs`) to the new tables, counts only, same suppression rules; extend `rls_research_metrics.sql`.
 
-### Teardown migration `0023_drop_individual_targets.sql` (destructive, last)
+### Teardown migration `0024_drop_individual_targets.sql` (destructive, last)
 Drop `targets`, `progress_logs`, `progress_comments`, `documents`, `document_versions` and their triggers/functions (`save_document` old signature, SP006/SP007 triggers, `can_see_target`, `can_see_progress_log`). Only after the new UI ships and the author gives the go-ahead. Before and after: `select count(*)` on `auth.users`, `profiles`, `nudges` must match (CLAUDE.md RLS test routine).
 
 ## App changes
@@ -55,7 +55,7 @@ New / rewritten:
 4. Project board, tasks, logging UI + messages (ja/en).
 5. Editor re-keyed to tasks.
 6. Check-in submit + push reminder.
-7. Research metrics update, then `0023` teardown after explicit go-ahead.
+7. Research metrics update, then `0024` teardown after explicit go-ahead.
 
 ## Verification
 - Local: `npm run lint`, `npx tsc --noEmit`, `npm test`, `npm run build` before every push (CI runs all four).
