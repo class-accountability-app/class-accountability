@@ -10,6 +10,8 @@ Pods are formed by the students themselves, not auto-paired: anyone in a class c
 
 The core loop: sign up → join a class → start or join a pod → set a target → log progress → see podmates' progress → optional nudge.
 
+**Direction change (decided 2026-10-22, plan of record `docs/plans/group-projects-plan.md`):** the app is becoming a tool for **group projects**. A pod gets one shared project split into tasks with owners; each task is measured its own way (status, a count such as slides, or characters from the writing editor); every few days (default 4) each member shares a check-in snapshot with the pod. Individual targets and logs are replaced, and their data is deleted by the last migration (0023, only after the author's go-ahead). Until the PRs in that plan merge, the rest of this file describes what is in `main`; each PR updates the sections it changes. Teammates still never see a document's text (0019 stays). Google Docs and other integrations stay phase 3, and the task model carries a `source` field so they plug in later.
+
 Students log in with a 6-digit code or a button sent to their university email (andrew.ac.jp), often on a phone. That address works in both Gmail (Google Workspace) and Outlook, so never assume one mail app: the code screen links to both.
 
 ## Stack
