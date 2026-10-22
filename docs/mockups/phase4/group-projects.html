@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study Pods · Group projects (phase 4 mockup)</title>
+<!--
+  Group projects: a pod shares one project split into tasks. Plan: docs/plans/group-projects-plan.md
+    group-projects.html                                  the whole set (ja + en, 390px)
+    group-projects.html?view=board&lang=ja               one screen
+  views: board  log  checkin  feed  newtask
+  Rules shown here (decided, see the plan):
+    - Everyone in the pod sees each task's title, owner, status and target.
+    - A teammate's numbers appear only in their check-in (every 4 days by default), never live.
+    - The writer sees their own numbers live. Nobody but the owner ever sees document text.
+  Colours, fonts, the 28px notebook rule and .card are the app's own. Example data only.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Schibsted+Grotesk:wght@400;500;600&family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{
+  --page-bg:#f6ecd6;--surface:#fbf6e8;--border:#d9c69a;--rule:#e3d3ac;--dash:#e3d4b0;
+  --ink:#3a2f22;--muted:#6b5636;--accent:#b5583f;--accent-text:#9c4830;
+  --active:#6f8556;--active-text:#556b40;--stale:#948e78;--field:#fffdf7;
+  --heading:'Fraunces','Shippori Mincho',serif;
+  --body:'Schibsted Grotesk','Zen Kaku Gothic New',sans-serif;
+  --meta:'Courier Prime','Zen Kaku Gothic New',monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#8f8a80;font-family:var(--body);color:var(--ink);padding:24px;display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+body.single{padding:0;background:var(--page-bg);display:block}
+.label{font:600 14px/1.4 var(--body);color:#fff;margin:0 0 8px}
+body.single .label{display:none}
+:lang(ja){word-break:auto-phrase}
+h1,h2,h3{text-wrap:balance}
+.frame{position:relative;width:390px;min-height:820px;background-color:var(--page-bg);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+body.single .frame{box-shadow:none;width:100%}
+.ruled{background-image:repeating-linear-gradient(transparent 0,transparent 22px,var(--rule) 22px,var(--rule) 23px,transparent 23px,transparent 28px)}
+.hdr{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--surface);border-bottom:1px solid var(--border)}
+.brand{font:600 20px var(--heading)}
+.lang{font:13px var(--meta);color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.tabs{position:absolute;left:0;right:0;bottom:0;height:68px;display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface);border-top:1px solid var(--border)}
+.tabs span{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:var(--muted)}
+.tabs span.on{color:var(--accent-text);font-weight:700;box-shadow:inset 0 3px 0 var(--accent-text)}
+.page{padding:28px 16px 100px}
+.col{display:flex;flex-direction:column;gap:28px;max-width:448px}
+p{margin:0}ul{list-style:none;margin:0;padding:0}
+h1{margin:0;font:700 24px/28px var(--heading)}
+h2{margin:0;font:700 17px/28px var(--heading)}
+.term,.meta{font:12px/28px var(--meta);color:var(--muted)}
+.l{line-height:28px}
+.hint{font-size:13px;line-height:28px;color:var(--muted)}
+.card{border-radius:2px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:14px}
+.hero{padding:14px 14px 14px 18px;box-shadow:inset 0 0 0 1px var(--border),inset 4px 0 0 var(--accent)}
+.k{font:700 12px/28px var(--meta);color:var(--accent-text);letter-spacing:.04em}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 16px;border-radius:2px;font:600 15px var(--body);white-space:nowrap}
+.btn.primary{background:var(--accent);color:#fff;box-shadow:0 2px 0 rgba(58,47,34,.35)}
+.btn.secondary{background:var(--field);color:var(--ink);box-shadow:inset 0 0 0 1px #b9a57c}
+.btn.block{width:100%}
+.link{display:inline-flex;align-items:center;min-height:44px;font:600 14px var(--body);color:var(--accent-text);text-decoration:underline;text-underline-offset:4px}
+.barrow{height:28px;display:flex;align-items:center}
+.bar{position:relative;width:100%;height:8px;background:#d9c69a;border-radius:2px;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--ink)}
+.bar.stale i{background:var(--stale)}
+/* Member group on the board. */
+.mhead{display:flex;align-items:center;gap:10px;min-height:44px}
+.stamp{width:26px;height:26px;flex:none;border-radius:50%;border:1.5px solid var(--active);display:flex;align-items:center;justify-content:center;transform:rotate(-7deg)}
+.stamp::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--active)}
+.stamp.stale{border-color:var(--stale)}.stamp.stale::after{background:var(--stale)}
+.mhead b{flex:1;font-size:15px;line-height:28px}
+.task{padding:0 0 0 36px;background:repeating-linear-gradient(90deg,var(--dash) 0 4px,transparent 4px 8px) bottom/100% 1px no-repeat}
+.task:last-child{background:none}
+.task .t{display:flex;justify-content:space-between;gap:10px;font-size:15px;line-height:28px}
+.task .t b{font-weight:600}
+.pill{font:700 12px/20px var(--meta);padding:0 8px;border-radius:2px;box-shadow:inset 0 0 0 1px var(--border);color:var(--muted);white-space:nowrap;align-self:center}
+.pill.doing{color:var(--active-text);box-shadow:inset 0 0 0 1px var(--active)}
+.pill.done{background:var(--active);color:#fff;box-shadow:none}
+.pill.todo{color:var(--stale)}
+.asof{font:12px/28px var(--meta);color:var(--muted)}
+.mine{box-shadow:inset 0 0 0 1px var(--border),inset 4px 0 0 var(--active)}
+.live{color:var(--active-text);font-weight:700}
+/* Forms: 16px fields with visible labels (rule 10). */
+.field{display:flex;flex-direction:column}
+.field label{font:600 14px/28px var(--body)}
+.input{height:44px;padding:0 12px;border-radius:2px;background:var(--field);box-shadow:inset 0 0 0 1px #b9a57c;font:16px/44px var(--body);color:var(--ink)}
+.input.area{height:112px;line-height:28px;padding-top:8px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{height:44px;min-width:56px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;border-radius:2px;background:var(--field);box-shadow:inset 0 0 0 1px #b9a57c;font:600 15px var(--body)}
+.chip.on{background:var(--ink);color:#fff;box-shadow:none}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--border);padding:20px 16px 28px;box-shadow:0 -10px 30px rgba(0,0,0,.18)}
+.scrim{position:absolute;inset:0;background:rgba(58,47,34,.45)}
+.back{display:inline-flex;align-items:center;min-height:44px;font:600 14px var(--body);color:var(--accent-text)}
+.quote{font-size:15px;line-height:28px}
+</style>
+</head>
+<body>
+<script>
+const T = {
+  ja: {
+    other:'EN', plusLog:'＋記録', home:'ホーム', proj:'プロジェクト', settings:'設定', back:'← 戻る',
+    term:'統計学 201 · 2026年 秋学期', pTitle:'グループ発表：統計学のケーススタディ', due:'10月16日まで', left:'残り14日', overall:'全体の進み具合 52%',
+    ciK:'次のチェックイン', ciH:'10月6日（火）', ciP:'あと2日です。それまでに、自分の進み具合を共有しましょう。', ciB:'チェックインする',
+    members:'メンバー', me:'あき（あなた）', m2:'佐藤さん', m3:'田中さん', none:'担当が決まっていません',
+    tScript:'台本', tSlides:'スライド', tData:'データ集め', tRehearse:'リハーサル',
+    scriptV:'1,600 / 2,400字', slidesV:'6 / 10枚', slidesV2:'4 / 10枚', dataV:'進行中', rehV:'未着手', doneW:'完了',
+    asof:'10月2日のチェックイン時点', noCI:'まだチェックインがありません', claim:'担当する', addTask:'タスクを追加',
+    stDoing:'進行中', stTodo:'未着手', stDone:'完了',
+    logH:'スライドを記録', logTask:'スライド（10枚中6枚）', logAmt:'今日つくった枚数', logMemo:'メモ（任意）', logMemoV:'データ分析の部分が終わった', logB:'記録する', logFine:'あなたの記録はあなたにだけ見えます。仲間に見えるのはチェックインの内容です。',
+    write:'Study Pods で台本を書く', writeNote:'文字数は自動で記録されます。本文を見られるのはあなただけです。',
+    ciTitle:'チェックイン', ciSub:'10月6日の分', ciList:'今の進み具合（自動でまとめられます）', ciNote:'ひと言（任意）', ciNoteV:'スライドは今週中に10枚そろえます。データ待ちです。', ciSend:'仲間に共有する', ciFine:'共有されるのは、タスクの数字・状態とこのひと言だけです。台本の本文は共有されません。',
+    feedTitle:'10月2日のチェックイン', feedSub:'3人中2人が共有済み', f2:'佐藤さん', f2n:'データは集まりました。分析に入ります。', f2t:['データ集め　完了','リハーサル　未着手'], f3:'田中さん', f3n:'来週は試験でペースが落ちそうです。', f3t:['スライド　4 / 10枚'], f1:'あき（あなた）', f1n:'台本はあと800字です。', f1t:['台本　1,600 / 2,400字'], wait:'まだ共有していません：', nudge:'声かけ',
+    ntTitle:'新しいタスク', ntName:'タスク名', ntNameV:'スライド', ntOwner:'担当', ntOwnerV:'田中さん', ntHow:'進み具合のはかり方', ntHows:['状態のみ','数える','文字数'], ntUnit:'単位', ntUnitV:'枚', ntAmt:'目標', ntAmtV:'10', ntDue:'期限（任意）', ntDueV:'2026-10-14', ntB:'タスクを追加', ntHowHint:'「文字数」は、Study Pods で書くと自動で記録されます。'
+  },
+  en: {
+    other:'日本語', plusLog:'+ Log', home:'Home', proj:'Project', settings:'Settings', back:'← Back',
+    term:'Statistics 201 · Fall 2026', pTitle:'Group talk: statistics case study', due:'Due Oct 16', left:'14 days left', overall:'Overall progress 52%',
+    ciK:'NEXT CHECK-IN', ciH:'Tue, Oct 6', ciP:'2 days to go. Share your progress with the group before then.', ciB:'Check in',
+    members:'Members', me:'Aki (you)', m2:'Sato', m3:'Tanaka', none:'No one has taken this yet',
+    tScript:'Script', tSlides:'Slides', tData:'Collect data', tRehearse:'Rehearsal',
+    scriptV:'1,600 / 2,400 characters', slidesV:'6 / 10 slides', slidesV2:'4 / 10 slides', dataV:'In progress', rehV:'Not started', doneW:'Done',
+    asof:'As of the Oct 2 check-in', noCI:'No check-in yet', claim:'Take it', addTask:'Add a task',
+    stDoing:'Doing', stTodo:'To do', stDone:'Done',
+    logH:'Log slides', logTask:'Slides (6 of 10 done)', logAmt:'Slides finished today', logMemo:'Note (optional)', logMemoV:'Finished the data analysis part', logB:'Save', logFine:'Only you see your own logs. Your group sees what you share in a check-in.',
+    write:'Write the script in Study Pods', writeNote:'Your character count is logged automatically. Only you can read the text.',
+    ciTitle:'Check-in', ciSub:'For Oct 6', ciList:'Where you are now (summed up for you)', ciNote:'A line for the group (optional)', ciNoteV:'I’ll have all 10 slides by the end of the week. Waiting on data.', ciSend:'Share with the group', ciFine:'Only your task numbers, statuses and this note are shared. The text of your script is never shared.',
+    feedTitle:'Check-in, Oct 2', feedSub:'2 of 3 have shared', f2:'Sato', f2n:'Data is in. Starting the analysis.', f2t:['Collect data  Done','Rehearsal  Not started'], f3:'Tanaka', f3n:'Exams next week, so I may slow down.', f3t:['Slides  4 / 10'], f1:'Aki (you)', f1n:'800 characters of the script to go.', f1t:['Script  1,600 / 2,400 characters'], wait:'Not shared yet: ', nudge:'Nudge',
+    ntTitle:'New task', ntName:'Task name', ntNameV:'Slides', ntOwner:'Owner', ntOwnerV:'Tanaka', ntHow:'How progress is measured', ntHows:['Status only','Count','Characters'], ntUnit:'Unit', ntUnitV:'slides', ntAmt:'Goal', ntAmtV:'10', ntDue:'Due date (optional)', ntDueV:'2026-10-14', ntB:'Add task', ntHowHint:'“Characters” is logged automatically when you write in Study Pods.'
+  }
+};
+const q = new URLSearchParams(location.search);
+const VIEWS = ['board','log','checkin','feed','newtask'], LANGS = ['ja','en'];
+const only = VIEWS.find(v => v === q.get('view')) || null;
+const onlyLang = LANGS.find(l => l === q.get('lang')) || null;
+if (only) document.body.classList.add('single');
+const bar = (p, stale) => `<div class="barrow"><div class="bar${stale?' stale':''}"><i style="width:${p}%"></i></div></div>`;
+const shell = (t, lang, tab, body, extra='') => `
+  <div class="hdr"><span class="brand">Study Pods</span><span class="lang">${t.other}</span></div>
+  <div class="page ruled"><div class="col">${body}</div></div>${extra}
+  <div class="tabs">${['home','proj','settings'].map(k=>`<span class="${k===tab?'on':''}">${t[k]}</span>`).join('')}</div>`;
+
+const views = {
+  board: (t) => shell(t, 0, 'proj', `
+    <div><div class="term">${t.term}</div><h1>${t.pTitle}</h1>
+      <div class="meta">${t.due} · ${t.left}</div>${bar(52)}<div class="hint">${t.overall}</div></div>
+    <div class="card hero"><div class="k">${t.ciK}</div><h2>${t.ciH}</h2><p class="hint">${t.ciP}</p>
+      <div style="padding-top:14px"><span class="btn primary block">${t.ciB}</span></div></div>
+    <div><h2>${t.members}</h2>
+      <div class="card mine" style="margin-top:14px">
+        <div class="mhead"><span class="stamp"></span><b>${t.me}</b><span class="meta live">LIVE</span></div>
+        <div class="task"><div class="t"><b>${t.tScript}</b><span class="pill doing">${t.stDoing}</span></div><div class="hint">${t.scriptV}</div>${bar(67)}</div>
+        <div class="task"><div class="t"><b>${t.tSlides}</b><span class="pill doing">${t.stDoing}</span></div><div class="hint">${t.slidesV}</div>${bar(60)}
+          <div style="padding:6px 0 14px"><span class="btn secondary">${t.plusLog}</span></div></div>
+      </div>
+      <div class="card" style="margin-top:28px">
+        <div class="mhead"><span class="stamp"></span><b>${t.m2}</b></div>
+        <div class="task"><div class="t"><b>${t.tData}</b><span class="pill done">${t.stDone}</span></div></div>
+        <div class="task"><div class="t"><b>${t.tRehearse}</b><span class="pill todo">${t.stTodo}</span></div></div>
+        <div class="asof">${t.asof}</div>
+      </div>
+      <div class="card" style="margin-top:28px">
+        <div class="mhead"><span class="stamp stale"></span><b>${t.m3}</b></div>
+        <div class="task"><div class="t"><b>${t.tSlides}</b><span class="pill doing">${t.stDoing}</span></div><div class="hint">${t.slidesV2}</div>${bar(40,1)}</div>
+        <div class="asof">${t.asof}</div>
+      </div>
+      <div style="padding-top:14px"><span class="link">＋ ${t.addTask}</span></div>
+    </div>`),
+
+  log: (t) => shell(t, 0, 'proj', `
+    <div><div class="term">${t.pTitle}</div><h1>${t.tSlides}</h1></div>
+    <div class="card"><p class="l">${t.slidesV}</p>${bar(60)}</div>`,
+    `<div class="scrim"></div><div class="sheet"><div class="stack" style="display:flex;flex-direction:column;gap:14px">
+      <h2>${t.logH}</h2>
+      <div class="field"><label>${t.logAmt}</label><div class="chips"><span class="chip">+1</span><span class="chip on">+2</span><span class="chip">+5</span><span class="chip">1</span></div></div>
+      <div class="field"><label>${t.logMemo}</label><div class="input">${t.logMemoV}</div></div>
+      <span class="btn primary block">${t.logB}</span>
+      <p class="hint">${t.logFine}</p>
+      <p class="hint"><span class="link">${t.write}</span><br>${t.writeNote}</p></div></div>`),
+
+  checkin: (t) => shell(t, 0, 'proj', `
+    <div><span class="back">${t.back}</span><h1>${t.ciTitle}</h1><div class="meta">${t.ciSub}</div></div>
+    <div class="card"><div class="k">${t.ciList}</div>
+      <div class="task" style="padding-left:0"><div class="t"><b>${t.tScript}</b><span class="pill doing">${t.stDoing}</span></div><div class="hint">${t.scriptV}</div>${bar(67)}</div>
+      <div class="task" style="padding-left:0"><div class="t"><b>${t.tSlides}</b><span class="pill doing">${t.stDoing}</span></div><div class="hint">${t.slidesV}</div>${bar(60)}</div></div>
+    <div class="field"><label>${t.ciNote}</label><div class="input area">${t.ciNoteV}</div></div>
+    <div><span class="btn primary block">${t.ciSend}</span><p class="hint">${t.ciFine}</p></div>`),
+
+  feed: (t) => shell(t, 0, 'proj', `
+    <div><span class="back">${t.back}</span><h1>${t.feedTitle}</h1><div class="meta">${t.feedSub}</div></div>
+    ${[[t.f1,t.f1n,t.f1t,0],[t.f2,t.f2n,t.f2t,0],[t.f3,t.f3n,t.f3t,0]].map(([n,note,items])=>`
+      <div class="card"><div class="mhead"><span class="stamp"></span><b>${n}</b></div>
+        <p class="quote">“${note}”</p>${items.map(i=>`<div class="hint">• ${i}</div>`).join('')}</div>`).join('')}
+    <div class="card"><p class="hint">${t.wait}${t.m3}</p><span class="link">${t.nudge}</span></div>`),
+
+  newtask: (t) => shell(t, 0, 'proj', `
+    <div><span class="back">${t.back}</span><h1>${t.ntTitle}</h1></div>
+    <div class="field"><label>${t.ntName}</label><div class="input">${t.ntNameV}</div></div>
+    <div class="field"><label>${t.ntOwner}</label><div class="input">${t.ntOwnerV}</div></div>
+    <div class="field"><label>${t.ntHow}</label><div class="chips">${t.ntHows.map((h,i)=>`<span class="chip${i===1?' on':''}">${h}</span>`).join('')}</div><p class="hint">${t.ntHowHint}</p></div>
+    <div class="field"><label>${t.ntUnit}</label><div class="input">${t.ntUnitV}</div></div>
+    <div class="field"><label>${t.ntAmt}</label><div class="input">${t.ntAmtV}</div></div>
+    <div class="field"><label>${t.ntDue}</label><div class="input">${t.ntDueV}</div></div>
+    <span class="btn primary block">${t.ntB}</span>`)
+};
+const names = {board:'Team board', log:'Log sheet', checkin:'Check-in', feed:'Check-in feed', newtask:'New task'};
+for (const lang of (onlyLang ? [onlyLang] : LANGS)) {
+  for (const v of (only ? [only] : VIEWS)) {
+    const w = document.createElement('div');
+    w.innerHTML = `<p class="label">${names[v]} · ${lang}</p><div class="frame" lang="${lang}">${views[v](T[lang])}</div>`;
+    document.body.appendChild(w);
+  }
+}
+</script>
+</body>
+</html>
