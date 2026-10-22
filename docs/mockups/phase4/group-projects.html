@@ -128,7 +128,9 @@ const T = {
   }
 };
 const q = new URLSearchParams(location.search);
-const only = q.get('view'), onlyLang = q.get('lang');
+const VIEWS = ['board','log','checkin','feed','newtask'], LANGS = ['ja','en'];
+const only = VIEWS.find(v => v === q.get('view')) || null;
+const onlyLang = LANGS.find(l => l === q.get('lang')) || null;
 if (only) document.body.classList.add('single');
 const bar = (p, stale) => `<div class="barrow"><div class="bar${stale?' stale':''}"><i style="width:${p}%"></i></div></div>`;
 const shell = (t, lang, tab, body, extra='') => `
@@ -200,8 +202,8 @@ const views = {
     <span class="btn primary block">${t.ntB}</span>`)
 };
 const names = {board:'Team board', log:'Log sheet', checkin:'Check-in', feed:'Check-in feed', newtask:'New task'};
-for (const lang of (onlyLang ? [onlyLang] : ['ja','en'])) {
-  for (const v of (only ? [only] : Object.keys(views))) {
+for (const lang of (onlyLang ? [onlyLang] : LANGS)) {
+  for (const v of (only ? [only] : VIEWS)) {
     const w = document.createElement('div');
     w.innerHTML = `<p class="label">${names[v]} · ${lang}</p><div class="frame" lang="${lang}">${views[v](T[lang])}</div>`;
     document.body.appendChild(w);
