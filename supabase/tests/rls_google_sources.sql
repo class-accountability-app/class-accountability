@@ -316,8 +316,12 @@ begin
   if (select state from public.task_sources where task_id = t2) <> 'lost_access' then
     raise exception 'FAIL: mark_task_source_lost did not mark the source';
   end if;
-  if public.record_synced_count(t2, 5) <> 0
-     or (select state from public.task_sources where task_id = t2) <> 'ok' then
+  -- Two statements: a subquery in the same statement as the call would read
+  -- the snapshot taken before the function ran.
+  if public.record_synced_count(t2, 5) <> 0 then
+    raise exception 'FAIL: an unchanged count logged a difference';
+  end if;
+  if (select state from public.task_sources where task_id = t2) <> 'ok' then
     raise exception 'FAIL: a successful sync did not clear lost_access';
   end if;
 
