@@ -1,5 +1,7 @@
 # Plan: pivot Study Pods from individual targets to group projects
 
+> **Updated 2026-10-24:** automation comes first. `docs/plans/automation-plan.md` extends this plan and wins where they differ. It covers Google Docs/Slides auto-logging (moved up from phase 3), meeting polls and stalled-task nudges, and changes the PR order. Migration numbering shifts: `0023` is Google sources, the documents re-key becomes `0024` and the teardown `0025` (or the next free numbers when they land).
+
 ## Context
 The app today gives each student their own targets and progress logs; podmates passively see them. The author wants it to be a **group-project tool**: a pod works on one shared project (e.g. a presentation), split into tasks with owners, and everyone can see where each member is. Different tasks are measured differently (script = character/word count, slides = number done, others = status). Teammates do **not** see everything: instead the group has a **timed check-in** (e.g. every 4 days) where each member shares a progress snapshot. Google Docs and other integrations come later, but the model must be ready for them.
 
