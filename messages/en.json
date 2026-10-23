@@ -400,7 +400,10 @@
     "title": "Study Pods",
     "one": "{name} sent you a nudge",
     "oneUnknown": "A podmate sent you a nudge",
-    "many": "{count} nudges arrived overnight"
+    "many": "{count} nudges arrived overnight",
+    "meeting": "Your meeting starts {when}",
+    "meetingCheckin": "Your meeting starts {when}. Check in before then",
+    "stalled": "“{task}” hasn’t moved for {days} days. Even a little progress helps"
   },
   "empty": {
     "findPod": "Find a pod",
