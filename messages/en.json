@@ -146,7 +146,9 @@
     "inviteHeading": "Invite classmates",
     "inviteWhy": "Send classmates the link or the QR code.",
     "showLinkQr": "Show link and QR",
-    "yourTargets": "Your targets"
+    "yourTargets": "Your targets",
+    "projectLink": "Project",
+    "projectLinkSub": "See tasks and progress"
   },
   "units": {
     "word_count": "{count, plural, one {# word} other {# words}}",
@@ -311,7 +313,18 @@
     "documentModeLocked": "A target that already has logs can’t switch to Write in Study Pods.",
     "documentTargetNoLog": "This target is logged automatically from what you write.",
     "documentNotFound": "This document wasn’t found.",
-    "versionNotFound": "This version wasn’t found. Please open History again."
+    "versionNotFound": "This version wasn’t found. Please open History again.",
+    "titleTooLong": "Please keep the title to 120 characters or fewer.",
+    "unitRequired": "Please enter a unit (for example, slides).",
+    "unitTooLong": "Please keep the unit to 20 characters or fewer.",
+    "deadlineInPast": "Please choose a deadline of today or later.",
+    "checkinEveryInvalid": "Please enter a check-in interval from 1 to 14 days.",
+    "projectNeedsPod": "Join a pod first to start a project.",
+    "projectExists": "Your pod’s project has already been started. Please reload the page.",
+    "taskOwnerNotInPod": "Only members of this pod can own a task.",
+    "taskTaken": "Another member has already taken this task.",
+    "taskNotFound": "This task couldn’t be found. It may have been deleted.",
+    "notOwnTask": "You can only log progress on tasks you own."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -918,6 +931,83 @@
     "target": {
       "title": "Set your first target",
       "lead": "Say what you’ll do and how much, and every log becomes progress."
+    }
+  },
+  "project": {
+    "noPodTitle": "You’re not in a pod yet",
+    "noPodBody": "Each pod has one project. Start or join a pod on the class page.",
+    "backToClass": "Go to the class page",
+    "back": "← Back",
+    "startTitle": "Start your project",
+    "startWhy": "Your pod works on one project together. Whoever starts it, every member can edit it.",
+    "titleLabel": "Project name",
+    "titlePlaceholder": "e.g. Group talk: statistics case study",
+    "deadlineLabel": "Deadline (optional)",
+    "checkinLabel": "Check in every",
+    "checkinSuffix": "days",
+    "checkinHint": "At this interval, everyone shares where they are with the group. Usually every 4 days.",
+    "startSubmit": "Start the project",
+    "due": "Due {date}",
+    "daysLeft": "{count, plural, one {# day left} other {# days left}}",
+    "dueToday": "Due today",
+    "overdue": "Past the deadline",
+    "noDeadline": "No deadline yet",
+    "overall": "Overall progress {percent}%",
+    "members": "Members",
+    "membersWhy": "Who is doing what. You see a teammate’s numbers only as they shared them in a check-in.",
+    "you": "{name} (you)",
+    "live": "LIVE",
+    "noTasksYet": "No tasks yet",
+    "unassigned": "No one has taken these yet",
+    "claim": "Take it",
+    "addTask": "Add a task",
+    "statusLabel": "Status",
+    "status": {
+      "todo": "To do",
+      "doing": "Doing",
+      "done": "Done"
+    },
+    "valueCount": "{total} / {target} {unit}",
+    "valueCountNoGoal": "{total} {unit}",
+    "valueChars": "{total} / {target} characters",
+    "valueCharsNoGoal": "{total} characters",
+    "asOf": "As of the {date} check-in",
+    "noCheckin": "No check-in yet",
+    "dueTask": "Due {date}",
+    "overdueTask": "Past its due date",
+    "log": {
+      "open": "+ Log",
+      "heading": "Log “{title}”",
+      "amountCount": "How many more ({unit})",
+      "amountCharacters": "Characters written",
+      "noteLabel": "Note (optional)",
+      "notePlaceholder": "e.g. Finished the data analysis part",
+      "submit": "Save",
+      "saved": "Saved",
+      "fine": "Only you see your own logs. Your group sees what you share in a check-in."
+    },
+    "newTask": {
+      "pageTitle": "New task",
+      "name": "Task name",
+      "namePlaceholder": "e.g. Slides",
+      "owner": "Owner",
+      "ownerNone": "Decide later",
+      "how": "How progress is measured",
+      "hows": {
+        "status": "Status only",
+        "count": "Count",
+        "characters": "Characters"
+      },
+      "howHint": {
+        "status": "Progress is just to do, doing or done.",
+        "count": "Log a number, such as slides finished.",
+        "characters": "Log characters written. Connecting Google Docs will make this automatic (coming soon)."
+      },
+      "unit": "Unit",
+      "unitPlaceholder": "e.g. slides",
+      "goal": "Goal (optional)",
+      "due": "Due date (optional)",
+      "submit": "Add task"
     }
   }
 }

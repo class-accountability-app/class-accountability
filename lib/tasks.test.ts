@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { checkTask, isTaskMetric, isTaskStatus, TITLE_MAX, UNIT_MAX, type TaskInput } from './tasks'
+import { checkTask, isTaskMetric, isTaskStatus, TITLE_MAX, UNIT_MAX, type TaskInput, parseWholeAmount } from './tasks'
 
 const base: TaskInput = { title: 'Slides', metric: 'count', unit: 'slides', targetAmount: 12, inputMode: 'manual' }
 
@@ -62,5 +62,19 @@ describe('type guards', () => {
     expect(isTaskMetric(undefined)).toBe(false)
     expect(isTaskStatus('doing')).toBe(true)
     expect(isTaskStatus('Done')).toBe(false)
+  })
+})
+
+describe('parseWholeAmount', () => {
+  it('reads plain, full-width and comma-separated whole numbers', () => {
+    expect(parseWholeAmount('6')).toBe(6)
+    expect(parseWholeAmount('２４００')).toBe(2400)
+    expect(parseWholeAmount(' 2,400 ')).toBe(2400)
+  })
+
+  it('refuses zero, negatives, decimals and anything else', () => {
+    for (const raw of ['', '0', '-3', '1.5', '1e3', 'abc', '99999999999999999999']) {
+      expect(parseWholeAmount(raw)).toBeNull()
+    }
   })
 })

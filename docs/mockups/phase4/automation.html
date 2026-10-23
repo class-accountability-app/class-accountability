@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study Pods · Automation, meetings, stalled tasks (phase 4 mockup)</title>
+<!--
+  Automation first: progress logs itself from Google Docs and Slides. Plan: docs/plans/group-projects-plan.md
+    automation.html                                  the whole set (ja + en, 390px)
+    automation.html?view=board&lang=ja               one screen
+  views: connect  groupdoc  link  board  poll  vote  meeting  stalled
+  Rules shown here (decided, see the plan):
+    - A student connects Google once. Counts update every 5 minutes and whenever the app opens.
+    - Only counts leave Google. Nobody, not even the app, keeps the text.
+    - Teammates still see a member's numbers only in their check-in, never live (0022 rule).
+    - A stalled task is told to its owner only.
+  Colours, fonts, the 28px notebook rule and .card are the app's own (styles copied from group-projects.html). Example data only.
+-->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Schibsted+Grotesk:wght@400;500;600&family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{
+  --page-bg:#f6ecd6;--surface:#fbf6e8;--border:#d9c69a;--rule:#e3d3ac;--dash:#e3d4b0;
+  --ink:#3a2f22;--muted:#6b5636;--accent:#b5583f;--accent-text:#9c4830;
+  --active:#6f8556;--active-text:#556b40;--stale:#948e78;--field:#fffdf7;
+  --heading:'Fraunces','Shippori Mincho',serif;
+  --body:'Schibsted Grotesk','Zen Kaku Gothic New',sans-serif;
+  --meta:'Courier Prime','Zen Kaku Gothic New',monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#8f8a80;font-family:var(--body);color:var(--ink);padding:24px;display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+body.single{padding:0;background:var(--page-bg);display:block}
+.label{font:600 14px/1.4 var(--body);color:#fff;margin:0 0 8px}
+body.single .label{display:none}
+:lang(ja){word-break:auto-phrase}
+h1,h2,h3{text-wrap:balance}
+.frame{position:relative;width:390px;min-height:820px;background-color:var(--page-bg);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+body.single .frame{box-shadow:none;width:100%}
+.ruled{background-image:repeating-linear-gradient(transparent 0,transparent 22px,var(--rule) 22px,var(--rule) 23px,transparent 23px,transparent 28px)}
+.hdr{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:var(--surface);border-bottom:1px solid var(--border)}
+.brand{font:600 20px var(--heading)}
+.lang{font:13px var(--meta);color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.tabs{position:absolute;left:0;right:0;bottom:0;height:68px;display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface);border-top:1px solid var(--border)}
+.tabs span{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;color:var(--muted)}
+.tabs span.on{color:var(--accent-text);font-weight:700;box-shadow:inset 0 3px 0 var(--accent-text)}
+.page{padding:28px 16px 100px}
+.col{display:flex;flex-direction:column;gap:28px;max-width:448px}
+p{margin:0}ul{list-style:none;margin:0;padding:0}
+h1{margin:0;font:700 24px/28px var(--heading)}
+h2{margin:0;font:700 17px/28px var(--heading)}
+.term,.meta{font:12px/28px var(--meta);color:var(--muted)}
+.l{line-height:28px}
+.hint{font-size:13px;line-height:28px;color:var(--muted)}
+.card{border-radius:2px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:14px}
+.hero{padding:14px 14px 14px 18px;box-shadow:inset 0 0 0 1px var(--border),inset 4px 0 0 var(--accent)}
+.k{font:700 12px/28px var(--meta);color:var(--accent-text);letter-spacing:.04em}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 16px;border-radius:2px;font:600 15px var(--body);white-space:nowrap}
+.btn.primary{background:var(--accent);color:#fff;box-shadow:0 2px 0 rgba(58,47,34,.35)}
+.btn.secondary{background:var(--field);color:var(--ink);box-shadow:inset 0 0 0 1px #b9a57c}
+.btn.block{width:100%}
+.link{display:inline-flex;align-items:center;min-height:44px;font:600 14px var(--body);color:var(--accent-text);text-decoration:underline;text-underline-offset:4px}
+.barrow{height:28px;display:flex;align-items:center}
+.bar{position:relative;width:100%;height:8px;background:#d9c69a;border-radius:2px;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--ink)}
+.bar.stale i{background:var(--stale)}
+/* Member group on the board. */
+.mhead{display:flex;align-items:center;gap:10px;min-height:44px}
+.stamp{width:26px;height:26px;flex:none;border-radius:50%;border:1.5px solid var(--active);display:flex;align-items:center;justify-content:center;transform:rotate(-7deg)}
+.stamp::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--active)}
+.stamp.stale{border-color:var(--stale)}.stamp.stale::after{background:var(--stale)}
+.mhead b{flex:1;font-size:15px;line-height:28px}
+.task{padding:0 0 0 36px;background:repeating-linear-gradient(90deg,var(--dash) 0 4px,transparent 4px 8px) bottom/100% 1px no-repeat}
+.task:last-child{background:none}
+.task .t{display:flex;justify-content:space-between;gap:10px;font-size:15px;line-height:28px}
+.task .t b{font-weight:600}
+.pill{font:700 12px/20px var(--meta);padding:0 8px;border-radius:2px;box-shadow:inset 0 0 0 1px var(--border);color:var(--muted);white-space:nowrap;align-self:center}
+.pill.doing{color:var(--active-text);box-shadow:inset 0 0 0 1px var(--active)}
+.pill.done{background:var(--active);color:#fff;box-shadow:none}
+.pill.todo{color:var(--stale)}
+.asof{font:12px/28px var(--meta);color:var(--muted)}
+.mine{box-shadow:inset 0 0 0 1px var(--border),inset 4px 0 0 var(--active)}
+.live{color:var(--active-text);font-weight:700}
+/* Forms: 16px fields with visible labels (rule 10). */
+.field{display:flex;flex-direction:column}
+.field label{font:600 14px/28px var(--body)}
+.input{height:44px;padding:0 12px;border-radius:2px;background:var(--field);box-shadow:inset 0 0 0 1px #b9a57c;font:16px/44px var(--body);color:var(--ink)}
+.input.area{height:112px;line-height:28px;padding-top:8px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{height:44px;min-width:56px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;border-radius:2px;background:var(--field);box-shadow:inset 0 0 0 1px #b9a57c;font:600 15px var(--body)}
+.chip.on{background:var(--ink);color:#fff;box-shadow:none}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--border);padding:20px 16px 28px;box-shadow:0 -10px 30px rgba(0,0,0,.18)}
+.scrim{position:absolute;inset:0;background:rgba(58,47,34,.45)}
+.back{display:inline-flex;align-items:center;min-height:44px;font:600 14px var(--body);color:var(--accent-text)}
+.quote{font-size:15px;line-height:28px}
+/* Automation, poll and push additions. */
+.src{display:flex;align-items:center;gap:8px;font:12px/28px var(--meta);color:var(--active-text)}
+.src::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--active)}
+.src.lost{color:var(--accent-text)}.src.lost::before{background:var(--accent)}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:2px;background:var(--field);box-shadow:inset 0 0 0 1px #b9a57c}
+.opt.on{box-shadow:inset 0 0 0 2px var(--ink)}
+.opt .dot{width:20px;height:20px;flex:none;margin-top:4px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--ink)}
+.opt.on .dot{box-shadow:inset 0 0 0 6px var(--ink)}
+.opt b{display:block;font-size:15px;line-height:28px}
+.vrow{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:56px;background:repeating-linear-gradient(90deg,var(--dash) 0 4px,transparent 4px 8px) bottom/100% 1px no-repeat}
+.vrow:last-child{background:none}
+.vrow .when{font-size:15px;line-height:28px}
+.vrow .tally{font:12px/20px var(--meta);color:var(--muted)}
+.vote{display:flex;gap:6px}
+.vote span{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:2px;background:var(--field);box-shadow:inset 0 0 0 1px #b9a57c;font:700 17px var(--body)}
+.vote span.on{background:var(--ink);color:#fff;box-shadow:none}
+.frame.phone{background:#2a2622}
+.notif{margin:120px 12px 0;border-radius:14px;background:rgba(251,246,232,.96);padding:12px 14px;display:flex;gap:12px}
+.notif .ic{width:38px;height:38px;flex:none;border-radius:9px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font:600 20px var(--heading)}
+.notif b{display:block;font-size:14px;line-height:20px}
+.notif p{font-size:14px;line-height:20px}
+.notif .meta{line-height:20px}
+</style>
+</head>
+<body>
+<script>
+const T = {
+  ja: {
+    other:'EN', home:'ホーム', proj:'プロジェクト', settings:'設定', back:'← 戻る',
+    pTitle:'グループ発表：統計学のケーススタディ',
+    cK:'自動で記録', cH:'Google とつなぐと、記録は自動になります', cP:'Google ドキュメントの文字数とスライドの枚数を5分ごとに数えて、記録します。本文は保存されず、仲間にも見えません。', cB:'Google とつなぐ', cFine:'つなぐのは1回だけです。大学のアカウントでつなげないときは、ふだんの Google アカウントでもつなげます。', cLater:'あとで（手で記録する）',
+    gH:'グループのドキュメントをつくる', gP:'タスクごとに見出しをつけたドキュメントを1つつくり、メンバー3人と共有します。それぞれのタスクは、自分の見出しの下の文字数で記録されます。', gOutline:'つくられるドキュメント', gHeads:['はじめに — あき','データと分析 — 佐藤さん','まとめ — 田中さん'], gB:'つくって共有する', gFine:'ドキュメントはあなたの Google ドライブにつくられます。Study Pods が読めるのは、このドキュメントとあなたが選んだファイルだけです。',
+    lH:'「台本」のはかり方', lOpts:[['グループのドキュメントの見出し','「はじめに — あき」の下の文字数'],['自分のドキュメント','ファイル全体の文字数'],['Google スライド','スライドの枚数'],['手で記録する','＋記録で数を入れます']], lB:'これでつなぐ', lFine:'見出しの名前を変えても、つながりは切れません。',
+    members:'メンバー', me:'あき（あなた）', m2:'佐藤さん', live:'LIVE',
+    tScript:'台本', tSlides:'スライド', tData:'データ集め', scriptV:'1,640 / 2,400字', slidesV:'7 / 10枚',
+    srcDoc:'Google ドキュメント · 3分前に更新', lost:'ファイルが読めなくなりました', relink:'つなぎ直す',
+    stDoing:'進行中', stDone:'完了', asof:'10月2日のチェックイン時点',
+    mK:'次の打ち合わせ', mNone:'まだ決まっていません', mB:'日程をきめる',
+    pH:'打ち合わせの日程', pName:'タイトル', pNameV:'中間チェック', pLen:'長さ', pLens:['30分','45分','60分'], pSlots:'候補の日時（2〜8こ）', pSlotV:['10月7日（水）12:30','10月7日（水）18:00','10月8日（木）16:30'], pAdd:'＋ 候補を追加', pBy:'回答のしめきり', pByV:'10月6日（火）21:00', pB:'メンバーにきく',
+    vH:'中間チェック', vSub:'30分 · 3人中2人が回答', vHint:'○ 行ける　△ なんとか　✕ 行けない', vTally:['○2 △1','○1 ✕1','○3'], vBest:'いちばん集まれそう', vB:'10月8日（木）16:30 にきめる',
+    meH:'中間チェック', meWhen:'10月8日（木）16:30–17:00', meAgenda:'話すこと（チェックインから）', meWait:'まだチェックインしていません：田中さん', meRem:'前の日に、チェックインがまだの人へお知らせが届きます。',
+    nApp:'Study Pods', nNow:'いま', nH:'「スライド」が3日止まっています', nP:'少しだけでも進めてみませんか。このお知らせはあなたにだけ届いています。'
+  },
+  en: {
+    other:'日本語', home:'Home', proj:'Project', settings:'Settings', back:'← Back',
+    pTitle:'Group talk: statistics case study',
+    cK:'AUTOMATIC LOGGING', cH:'Connect Google and your progress logs itself', cP:'Every 5 minutes we count the characters in your Google Docs and the slides in your Slides, and log the change. The text is never saved, and your group never sees it.', cB:'Connect Google', cFine:'You only connect once. If your university account won’t connect, your personal Google account works too.', cLater:'Later (log by hand)',
+    gH:'Create the group Doc', gP:'We make one Doc with a heading for each task and share it with your 3 members. Each task is counted from the text under its own heading.', gOutline:'The Doc we’ll create', gHeads:['Introduction — Aki','Data and analysis — Sato','Conclusion — Tanaka'], gB:'Create and share', gFine:'The Doc is created in your Google Drive. Study Pods can read only this Doc and files you pick.',
+    lH:'How “Script” is measured', lOpts:[['A heading in the group Doc','Characters under “Introduction — Aki”'],['My own Doc','Characters in the whole file'],['Google Slides','Number of slides'],['Log by hand','Enter numbers with + Log']], lB:'Link it', lFine:'Renaming the heading won’t break the link.',
+    members:'Members', me:'Aki (you)', m2:'Sato', live:'LIVE',
+    tScript:'Script', tSlides:'Slides', tData:'Collect data', scriptV:'1,640 / 2,400 characters', slidesV:'7 / 10 slides',
+    srcDoc:'Google Docs · updated 3 min ago', lost:'Can’t read this file anymore', relink:'Relink',
+    stDoing:'Doing', stDone:'Done', asof:'As of the Oct 2 check-in',
+    mK:'NEXT MEETING', mNone:'Not set yet', mB:'Pick a time',
+    pH:'Meeting time', pName:'Title', pNameV:'Midway check', pLen:'Length', pLens:['30 min','45 min','60 min'], pSlots:'Time options (2–8)', pSlotV:['Wed, Oct 7 12:30','Wed, Oct 7 18:00','Thu, Oct 8 16:30'], pAdd:'+ Add an option', pBy:'Answer by', pByV:'Tue, Oct 6 21:00', pB:'Ask the group',
+    vH:'Midway check', vSub:'30 min · 2 of 3 have answered', vHint:'○ Yes  △ If needed  ✕ No', vTally:['○2 △1','○1 ✕1','○3'], vBest:'Most people can come', vB:'Pick Thu, Oct 8 16:30',
+    meH:'Midway check', meWhen:'Thu, Oct 8, 16:30–17:00', meAgenda:'To talk about (from check-ins)', meWait:'Hasn’t checked in yet: Tanaka', meRem:'The day before, anyone who hasn’t checked in gets a reminder.',
+    nApp:'Study Pods', nNow:'now', nH:'“Slides” hasn’t moved for 3 days', nP:'Even a little progress helps. Only you received this.'
+  }
+};
+const q = new URLSearchParams(location.search);
+const VIEWS = ['connect','groupdoc','link','board','poll','vote','meeting','stalled'], LANGS = ['ja','en'];
+const only = VIEWS.find(v => v === q.get('view')) || null;
+const onlyLang = LANGS.find(l => l === q.get('lang')) || null;
+if (only) document.body.classList.add('single');
+const bar = (p) => `<div class="barrow"><div class="bar"><i style="width:${p}%"></i></div></div>`;
+const shell = (t, body) => `
+  <div class="hdr"><span class="brand">Study Pods</span><span class="lang">${t.other}</span></div>
+  <div class="page ruled"><div class="col">${body}</div></div>
+  <div class="tabs">${['home','proj','settings'].map(k=>`<span class="${k==='proj'?'on':''}">${t[k]}</span>`).join('')}</div>`;
+
+const views = {
+  connect: (t) => shell(t, `
+    <div><div class="term">${t.pTitle}</div></div>
+    <div class="card hero"><div class="k">${t.cK}</div><h2>${t.cH}</h2><p class="hint">${t.cP}</p>
+      <div style="padding-top:14px"><span class="btn primary block">${t.cB}</span></div>
+      <p class="hint">${t.cFine}</p><span class="link">${t.cLater}</span></div>`),
+
+  groupdoc: (t) => shell(t, `
+    <div><span class="back">${t.back}</span><h1>${t.gH}</h1></div>
+    <p class="l">${t.gP}</p>
+    <div class="card"><div class="k">${t.gOutline}</div>${t.gHeads.map(h=>`<div class="task" style="padding-left:0"><div class="t"><b>${h}</b></div></div>`).join('')}</div>
+    <div><span class="btn primary block">${t.gB}</span><p class="hint">${t.gFine}</p></div>`),
+
+  link: (t) => shell(t, `
+    <div><span class="back">${t.back}</span><h1>${t.lH}</h1></div>
+    <div style="display:flex;flex-direction:column;gap:14px">${t.lOpts.map(([a,b],i)=>`<div class="opt${i===0?' on':''}"><span class="dot"></span><div><b>${a}</b><span class="hint">${b}</span></div></div>`).join('')}</div>
+    <div><span class="btn primary block">${t.lB}</span><p class="hint">${t.lFine}</p></div>`),
+
+  board: (t) => shell(t, `
+    <div><h1>${t.pTitle}</h1></div>
+    <div class="card hero"><div class="k">${t.mK}</div><h2>${t.mNone}</h2>
+      <div style="padding-top:14px"><span class="btn secondary block">${t.mB}</span></div></div>
+    <div><h2>${t.members}</h2>
+      <div class="card mine" style="margin-top:14px">
+        <div class="mhead"><span class="stamp"></span><b>${t.me}</b><span class="meta live">${t.live}</span></div>
+        <div class="task"><div class="t"><b>${t.tScript}</b><span class="pill doing">${t.stDoing}</span></div><div class="hint">${t.scriptV}</div>${bar(68)}<div class="src">${t.srcDoc}</div></div>
+        <div class="task"><div class="t"><b>${t.tSlides}</b><span class="pill doing">${t.stDoing}</span></div><div class="hint">${t.slidesV}</div>${bar(70)}<div class="src lost">${t.lost}</div>
+          <div style="padding:0 0 14px"><span class="link">${t.relink}</span></div></div>
+      </div>
+      <div class="card" style="margin-top:28px">
+        <div class="mhead"><span class="stamp"></span><b>${t.m2}</b></div>
+        <div class="task"><div class="t"><b>${t.tData}</b><span class="pill done">${t.stDone}</span></div></div>
+        <div class="asof">${t.asof}</div>
+      </div></div>`),
+
+  poll: (t) => shell(t, `
+    <div><span class="back">${t.back}</span><h1>${t.pH}</h1></div>
+    <div class="field"><label>${t.pName}</label><div class="input">${t.pNameV}</div></div>
+    <div class="field"><label>${t.pLen}</label><div class="chips">${t.pLens.map((h,i)=>`<span class="chip${i===0?' on':''}">${h}</span>`).join('')}</div></div>
+    <div class="field"><label>${t.pSlots}</label><div style="display:flex;flex-direction:column;gap:8px">${t.pSlotV.map(s=>`<div class="input">${s}</div>`).join('')}</div><span class="link">${t.pAdd}</span></div>
+    <div class="field"><label>${t.pBy}</label><div class="input">${t.pByV}</div></div>
+    <span class="btn primary block">${t.pB}</span>`),
+
+  vote: (t) => shell(t, `
+    <div><span class="back">${t.back}</span><h1>${t.vH}</h1><div class="meta">${t.vSub}</div></div>
+    <p class="hint">${t.vHint}</p>
+    <div class="card">${t.pSlotV.map((s,i)=>`<div class="vrow"><div><div class="when">${s}</div><div class="tally">${t.vTally[i]}${i===2?' · '+t.vBest:''}</div></div>
+      <div class="vote">${['○','△','✕'].map((m,j)=>`<span class="${[0,2,0][i]===j?'on':''}">${m}</span>`).join('')}</div></div>`).join('')}</div>
+    <span class="btn primary block">${t.vB}</span>`),
+
+  meeting: (t) => shell(t, `
+    <div><span class="back">${t.back}</span><h1>${t.meH}</h1><div class="meta">${t.meWhen}</div></div>
+    <div class="card"><div class="k">${t.meAgenda}</div>
+      <div class="task" style="padding-left:0"><div class="t"><b>${t.me}</b></div><div class="hint">${t.tScript} ${t.scriptV}</div></div>
+      <div class="task" style="padding-left:0"><div class="t"><b>${t.m2}</b></div><div class="hint">${t.tData} · ${t.stDone}</div></div>
+      <p class="hint">${t.meWait}</p></div>
+    <p class="hint">${t.meRem}</p>`),
+
+  stalled: (t) => `<div class="notif"><span class="ic">S</span><div><div class="meta">${t.nApp} · ${t.nNow}</div><b>${t.nH}</b><p>${t.nP}</p></div></div>`
+};
+const names = {connect:'Connect Google', groupdoc:'Create group Doc', link:'Link a task', board:'Board with live sources', poll:'New meeting poll', vote:'Vote', meeting:'Confirmed meeting', stalled:'Stalled-task push (owner only)'};
+for (const lang of (onlyLang ? [onlyLang] : LANGS)) {
+  for (const v of (only ? [only] : VIEWS)) {
+    const w = document.createElement('div');
+    w.innerHTML = `<p class="label">${names[v]} · ${lang}</p><div class="frame${v==='stalled'?' phone':''}" lang="${lang}">${views[v](T[lang])}</div>`;
+    document.body.appendChild(w);
+  }
+}
+</script>
+</body>
+</html>

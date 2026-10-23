@@ -29,6 +29,10 @@ const DOCUMENT_TOO_LONG = 'SP005'
 const DOCUMENT_MODE_LOCKED = 'SP006'
 // Raised by guard_document_progress (0019): ＋記録 on a document target.
 const DOCUMENT_TARGET_NO_LOG = 'SP007'
+// Raised by submit_checkin (0022_group_projects.sql): already checked in this round.
+const CHECKIN_ALREADY = 'SP008'
+// Raised by check_task_owner (0022): a task's owner must be in the project's pod.
+const TASK_OWNER_NOT_IN_POD = 'SP009'
 // Raised by link_task_source (0023_google_sources.sql): Google isn't connected.
 const GOOGLE_NOT_CONNECTED = 'SP010'
 // Raised by link_task_source and keep_task_source (0023): the file doesn't fit
@@ -47,6 +51,8 @@ export const DB_CODES = {
   documentTooLong: DOCUMENT_TOO_LONG,
   documentModeLocked: DOCUMENT_MODE_LOCKED,
   documentTargetNoLog: DOCUMENT_TARGET_NO_LOG,
+  checkinAlready: CHECKIN_ALREADY,
+  taskOwnerNotInPod: TASK_OWNER_NOT_IN_POD,
   googleNotConnected: GOOGLE_NOT_CONNECTED,
   taskSourceMismatch: TASK_SOURCE_MISMATCH,
 } as const
