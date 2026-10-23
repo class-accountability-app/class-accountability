@@ -325,7 +325,15 @@
     "taskTaken": "このタスクは、ほかのメンバーがすでに担当しています。",
     "taskNotFound": "このタスクは見つかりませんでした。すでに削除されている可能性があります。",
     "notOwnTask": "記録できるのは、自分が担当しているタスクだけです。",
-    "checkinAlready": "このチェックインは、すでに共有しています。次のチェックインを待ちましょう。"
+    "checkinAlready": "このチェックインは、すでに共有しています。次のチェックインを待ちましょう。",
+    "pollTitleTooLong": "タイトルは60文字以内で入力してください。",
+    "pollTimesTooFew": "候補の日時を2つ以上入力してください。",
+    "pollTimesTooMany": "候補の日時は8つまでです。",
+    "pollTimeInvalid": "日付と時刻の両方を入力してください。",
+    "pollTimePast": "候補には、これから先の日時を選んでください。",
+    "pollTimeDuplicate": "同じ日時が2回入っています。",
+    "voteByPast": "回答のしめきりには、これから先の日時を選んでください。",
+    "pollClosed": "この日程調整は、もう締め切られています。ページを読み込み直してください。"
   },
   "welcome": {
     "eyebrow": "ようこそ",
@@ -1035,6 +1043,61 @@
       "nudge": "声かけする",
       "previous": "前回のチェックインを見る",
       "current": "今回のチェックインにもどる"
+    },
+    "meetings": {
+      "title": "打ち合わせ",
+      "why": "候補の日時をいくつか出して、みんなの都合が合う時間を決めます。",
+      "new": "日程をきめる",
+      "upcoming": "これからの打ち合わせ",
+      "noUpcoming": "まだ決まった打ち合わせはありません。",
+      "open": "回答を集めている日程",
+      "noOpen": "いま回答を集めている日程はありません。",
+      "answered": "{total}人中{answered}人が回答"
+    },
+    "poll": {
+      "pageTitle": "打ち合わせの日程",
+      "titleLabel": "タイトル",
+      "titlePlaceholder": "例：中間チェック",
+      "lengthLabel": "長さ",
+      "minutes": "{count}分",
+      "slotsLabel": "候補の日時（2〜8こ）",
+      "slotsHint": "みんなが答えやすいように、3つくらい出すのがおすすめです。",
+      "slotDate": "候補{n}の日付",
+      "slotTime": "候補{n}の時刻",
+      "removeSlot": "候補{n}を消す",
+      "addSlot": "候補を追加",
+      "voteByLabel": "回答のしめきり（任意）",
+      "submit": "メンバーにきく"
+    },
+    "vote": {
+      "legend": "○ 行ける　△ なんとか　✕ 行けない",
+      "answers": {
+        "yes": "行ける",
+        "maybe": "なんとか行ける",
+        "no": "行けない"
+      },
+      "tally": "○{yes} △{maybe} ✕{no}",
+      "best": "いちばん集まれそう",
+      "by": "しめきり {when}",
+      "notYet": "まだ回答していません：{names}",
+      "chooseLabel": "打ち合わせの日時",
+      "confirm": "この日時にきめる",
+      "cancel": "この日程調整をやめる",
+      "cancelled": "この日程調整はとりやめになりました。"
+    },
+    "meeting": {
+      "agenda": "話すこと（チェックインから）",
+      "waiting": "まだチェックインしていません：{names}",
+      "checkinFirst": "打ち合わせの前にチェックインする",
+      "cancel": "この打ち合わせをとりやめる"
+    },
+    "meetingCard": {
+      "kicker": "次の打ち合わせ",
+      "none": "まだ決まっていません",
+      "voting": "日程を決めています：{title}",
+      "pick": "日程をきめる",
+      "vote": "都合を答える",
+      "open": "打ち合わせを見る"
     }
   }
 }
