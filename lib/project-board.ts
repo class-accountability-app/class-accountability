@@ -7,7 +7,10 @@ import type { TaskMetric, TaskStatus } from '@/lib/tasks'
 
 export type SnapshotItem = {
   taskId: string
+  title: string
   metric: TaskMetric
+  unit: string | null
+  targetAmount: number | null
   total: number | null
   status: TaskStatus
 }
@@ -21,17 +24,30 @@ export type CheckinRow = {
 
 export type LatestCheckin = { roundStart: string; items: Map<string, SnapshotItem> }
 
+const toNumber = (raw: unknown): number | null => {
+  if (raw === null || raw === undefined) return null
+  const n = Number(raw)
+  return Number.isFinite(n) ? n : null
+}
+
 function readItem(raw: unknown): SnapshotItem | null {
   if (typeof raw !== 'object' || raw === null) return null
   const r = raw as Record<string, unknown>
   if (typeof r.task_id !== 'string') return null
-  const total = r.total === null || r.total === undefined ? null : Number(r.total)
   return {
     taskId: r.task_id,
+    title: typeof r.title === 'string' ? r.title : '',
     metric: r.metric as TaskMetric,
-    total: total === null || Number.isFinite(total) ? total : null,
+    unit: typeof r.unit === 'string' ? r.unit : null,
+    targetAmount: toNumber(r.target_amount),
+    total: toNumber(r.total),
     status: r.status as TaskStatus,
   }
+}
+
+// One check-in's items in the order they were shared (the feed's bullets).
+export function snapshotItems(snapshot: unknown): SnapshotItem[] {
+  return (Array.isArray(snapshot) ? snapshot : []).map(readItem).filter((x): x is SnapshotItem => x !== null)
 }
 
 // Each member's most recent check-in (latest round, then latest written).
@@ -49,11 +65,7 @@ export function latestCheckins(rows: readonly CheckinRow[]): Map<string, LatestC
   }
   const result = new Map<string, LatestCheckin>()
   for (const [userId, row] of best) {
-    const items = new Map<string, SnapshotItem>()
-    for (const raw of Array.isArray(row.snapshot) ? row.snapshot : []) {
-      const item = readItem(raw)
-      if (item) items.set(item.taskId, item)
-    }
+    const items = new Map(snapshotItems(row.snapshot).map((item) => [item.taskId, item]))
     result.set(userId, { roundStart: row.roundStart, items })
   }
   return result

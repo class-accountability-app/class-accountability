@@ -202,3 +202,30 @@ export async function logTaskProgress(
   refresh(classId)
   return { error: null }
 }
+
+// チェックインする: submit_checkin (0022) builds my snapshot in the database
+// from my tasks, so the numbers can't be forged here; only the note is mine.
+export async function submitCheckin(classId: string, projectId: string, note: string): Promise<ActionResult> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'signedOut' }
+
+  const clean = note.trim()
+  if ([...clean].length > NOTE_MAX) return { error: 'tooLong' }
+
+  const { error } = await supabase.rpc('submit_checkin', { p_project: projectId, p_note: clean || null })
+  if (error) {
+    return {
+      error: toErrorKey('submitCheckin', error, {
+        [DB_CODES.checkinAlready]: 'checkinAlready',
+        [DB_CODES.insufficientPrivilege]: 'notAllowed',
+      }),
+    }
+  }
+
+  refresh(classId)
+  revalidatePath(`/classes/${classId}/project/checkins`)
+  return { error: null }
+}

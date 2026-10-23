@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { latestCheckins, visibleTotal, type CheckinRow } from './project-board'
+import { latestCheckins, snapshotItems, visibleTotal, type CheckinRow } from './project-board'
 
 const row = (userId: string, roundStart: string, createdAt: string, snapshot: unknown): CheckinRow => ({
   userId,
@@ -28,6 +28,22 @@ describe('latestCheckins', () => {
     expect(latest.get('sato')?.items.get('t1')?.total).toBe(4)
     expect(latest.get('sato')?.items.size).toBe(1)
     expect(latest.get('aki')?.items.size).toBe(0)
+  })
+})
+
+describe('snapshotItems', () => {
+  it('reads what submit_checkin stores, in order', () => {
+    expect(
+      snapshotItems([
+        { task_id: 't1', title: 'Script', metric: 'characters', unit: null, target_amount: 2400, total: 1600, status: 'doing' },
+        { task_id: 't2', title: 'Data', metric: 'status', unit: null, target_amount: null, total: null, status: 'done' },
+        'junk',
+      ])
+    ).toEqual([
+      { taskId: 't1', title: 'Script', metric: 'characters', unit: null, targetAmount: 2400, total: 1600, status: 'doing' },
+      { taskId: 't2', title: 'Data', metric: 'status', unit: null, targetAmount: null, total: null, status: 'done' },
+    ])
+    expect(snapshotItems(null)).toEqual([])
   })
 })
 
