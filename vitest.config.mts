@@ -8,7 +8,8 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['**/*.test.ts'],
-    exclude: ['node_modules/**', '.next/**'],
+    // .claude/ holds agent worktrees, whole copies of the repo.
+    exclude: ['node_modules/**', '.next/**', '.claude/**'],
     // Deliberately not Tokyo or UTC: date helpers must not depend on the
     // machine's time zone.
     env: { TZ: 'America/Los_Angeles' },
