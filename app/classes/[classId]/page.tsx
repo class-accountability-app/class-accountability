@@ -380,6 +380,11 @@ export default async function ClassPodsPage({
                         </RuleSnap>
                       </div>
                       <PodProgressLink
+                        href={`/classes/${classId}/project`}
+                        title={t('projectLink')}
+                        sub={t('projectLinkSub')}
+                      />
+                      <PodProgressLink
                         href={`/classes/${classId}/progress`}
                         title={t('podProgressLink')}
                         sub={t('podProgressSub')}
