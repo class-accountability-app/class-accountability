@@ -29,6 +29,12 @@ const DOCUMENT_TOO_LONG = 'SP005'
 const DOCUMENT_MODE_LOCKED = 'SP006'
 // Raised by guard_document_progress (0019): ＋記録 on a document target.
 const DOCUMENT_TARGET_NO_LOG = 'SP007'
+// Raised by link_task_source (0023_google_sources.sql): Google isn't connected.
+const GOOGLE_NOT_CONNECTED = 'SP010'
+// Raised by link_task_source and keep_task_source (0023): the file doesn't fit
+// the task (Doc needs characters, Slides a count), or a linked task's measure
+// was changed.
+const TASK_SOURCE_MISMATCH = 'SP011'
 
 export const DB_CODES = {
   uniqueViolation: PG_UNIQUE_VIOLATION,
@@ -41,6 +47,8 @@ export const DB_CODES = {
   documentTooLong: DOCUMENT_TOO_LONG,
   documentModeLocked: DOCUMENT_MODE_LOCKED,
   documentTargetNoLog: DOCUMENT_TARGET_NO_LOG,
+  googleNotConnected: GOOGLE_NOT_CONNECTED,
+  taskSourceMismatch: TASK_SOURCE_MISMATCH,
 } as const
 
 const EMAIL_PATTERN = /[^\s"'<>(),;:]+@[^\s"'<>(),;:]+/g
