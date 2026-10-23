@@ -2,8 +2,9 @@
 // database queues in push_events (0025: meeting reminders, stalled tasks).
 //
 // Called only by our database (0018: the nudges trigger and pg_cron at
-// 07:00 JST; 0025: pg_cron with {"events": true}), never by a browser. Deployed with verify_jwt = false: the only
-// JWT the database could send is the public anon key, which proves nothing.
+// 07:00 JST; 0025: pg_cron with {"events": true}), never by a browser.
+// Deployed with verify_jwt = false: the only JWT the database could send is
+// the public anon key, which proves nothing.
 // Instead every call must be signed with the shared secret (Vault
 // push_webhook_secret = Edge Function secret PUSH_WEBHOOK_SECRET); anything
 // else gets a 401. See _shared/signature.ts.
