@@ -1,6 +1,7 @@
 -- =============================================================================
 -- rls_google_sources.sql — RLS tests for 0023 (Google credentials, task sources,
--- synced counts)
+-- sync state, synced counts). Teammates never see a member's live count or
+-- sync times: only the task's owner, through my_task_sync_status().
 -- =============================================================================
 -- ONE transaction that ends in ROLLBACK: it creates throwaway users, a class and
 -- pods, impersonates each user the way PostgREST does (role + JWT claims), and
@@ -250,15 +251,18 @@ begin
   exception when sqlstate 'SP011' then null;
   end;
 
-  -- Members read the links, but not the running count.
+  -- Members read the links; the sync's numbers are out of reach.
   if (select count(*) from public.task_sources) <> 3 then
     raise exception 'FAIL: A should see 3 task sources';
   end if;
   begin
-    perform last_count from public.task_sources;
-    raise exception 'FAIL: A read last_count';
+    perform 1 from private.task_source_sync;
+    raise exception 'FAIL: A read private.task_source_sync';
   exception when insufficient_privilege then null;
   end;
+  if not public.has_google_connection() then
+    raise exception 'FAIL: has_google_connection is false for A';
+  end if;
 end $$;
 
 reset role;
@@ -319,8 +323,13 @@ begin
 
   -- The Edge Function reads sources, but writes them only through the functions.
   begin
-    update public.task_sources set last_count = 0 where task_id = t1;
+    update public.task_sources set state = 'ok' where task_id = t1;
     raise exception 'FAIL: service_role updated task_sources directly';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    perform 1 from private.task_source_sync;
+    raise exception 'FAIL: service_role read private.task_source_sync directly';
   exception when insufficient_privilege then null;
   end;
 end $$;
@@ -336,7 +345,7 @@ declare
 begin
   -- The task's total is the file's live count.
   if (select sum(progress_value) from public.task_progress where task_id = t1) <> 380
-     or (select last_count from public.task_sources where task_id = t1) <> 380 then
+     or (select last_count from private.task_source_sync where task_id = t1) <> 380 then
     raise exception 'FAIL: t1''s total is not the live count of 380';
   end if;
   if (select count(*) from public.task_progress where task_id = t1 and source = 'google_docs'
@@ -349,11 +358,11 @@ begin
     raise exception 'FAIL: t2''s total is not the live count of 5 slides in B''s name';
   end if;
   if exists (select 1 from public.task_progress where task_id = t3)
-     or (select last_count from public.task_sources where task_id = t3) <> 100 then
+     or (select last_count from private.task_source_sync where task_id = t3) <> 100 then
     raise exception 'FAIL: an unowned task got rows, or its count did not move';
   end if;
-  if (select last_changed_at from public.task_sources where task_id = t1) is null
-     or (select last_checked_at from public.task_sources where task_id = t1) is null then
+  if (select last_changed_at from private.task_source_sync where task_id = t1) is null
+     or (select last_checked_at from private.task_source_sync where task_id = t1) is null then
     raise exception 'FAIL: last_checked_at / last_changed_at were not set';
   end if;
 end $$;
@@ -379,6 +388,15 @@ begin
   end if;
   if (select count(*) from public.task_progress where task_id = t2) <> 0 then
     raise exception 'FAIL: A can read B''s synced progress (A only linked it)';
+  end if;
+
+  -- The owner sees their own sync status; not a teammate's, even one they linked.
+  if (select last_count from public.my_task_sync_status(t1)) is distinct from 380
+     or (select last_checked_at from public.my_task_sync_status(t1)) is null then
+    raise exception 'FAIL: A does not see the sync status of their own task';
+  end if;
+  if exists (select 1 from public.my_task_sync_status(t2)) then
+    raise exception 'FAIL: A got the sync status of B''s task';
   end if;
   begin
     delete from public.task_progress where task_id = t1 and source = 'google_docs';
@@ -418,11 +436,21 @@ begin
   if (select state from public.task_sources where task_id = t1) <> 'ok' then
     raise exception 'FAIL: B cannot read a source''s state';
   end if;
+  -- No numbers or times of A's task: not through the function, not directly.
+  if exists (select 1 from public.my_task_sync_status(t1)) then
+    raise exception 'FAIL: B got the sync status of A''s task';
+  end if;
   begin
-    perform last_count from public.task_sources where task_id = t1;
-    raise exception 'FAIL: B read A''s running count through last_count';
+    perform 1 from private.task_source_sync where task_id = t1;
+    raise exception 'FAIL: B read private.task_source_sync';
   exception when insufficient_privilege then null;
   end;
+  if (select last_count from public.my_task_sync_status(t2)) is distinct from 5 then
+    raise exception 'FAIL: B does not see the sync status of B''s own task';
+  end if;
+  if public.has_google_connection() then
+    raise exception 'FAIL: has_google_connection is true for B';
+  end if;
 
   -- 0022's rule: B sees the progress on B's own task, none of A's.
   if (select sum(progress_value) from public.task_progress where task_id = t2) <> 5 then
@@ -523,6 +551,14 @@ begin
      or (select count(*) from public.task_progress) <> 0 then
     raise exception 'FAIL: a student in another pod can read P''s sources or progress';
   end if;
+  if exists (select 1 from public.my_task_sync_status(t1)) then
+    raise exception 'FAIL: a student in another pod got a sync status';
+  end if;
+  begin
+    perform 1 from private.task_source_sync;
+    raise exception 'FAIL: C read private.task_source_sync';
+  exception when insufficient_privilege then null;
+  end;
   begin
     perform public.link_task_source(t4, 'doc', '1DocFileAbCdEfGhIjKlMnOpQrStUvWx', 'Mine now');
     raise exception 'FAIL: a student in another pod linked P''s task';
@@ -560,6 +596,14 @@ begin
      or (select count(*) from public.task_progress) <> 0 then
     raise exception 'FAIL: an organizer can read sources or progress';
   end if;
+  if exists (select 1 from public.my_task_sync_status(t1)) then
+    raise exception 'FAIL: an organizer got a sync status';
+  end if;
+  begin
+    perform 1 from private.task_source_sync;
+    raise exception 'FAIL: an organizer read private.task_source_sync';
+  exception when insufficient_privilege then null;
+  end;
   begin
     perform public.link_task_source(t4, 'doc', '1DocFileAbCdEfGhIjKlMnOpQrStUvWx', 'Org');
     raise exception 'FAIL: an organizer linked a task';
@@ -593,6 +637,12 @@ begin
   begin perform 1 from public.task_sources; raise exception 'FAIL: anon read task_sources';
   exception when insufficient_privilege then null; end;
   begin perform 1 from private.google_credentials; raise exception 'FAIL: anon read google_credentials';
+  exception when insufficient_privilege then null; end;
+  begin perform 1 from private.task_source_sync; raise exception 'FAIL: anon read task_source_sync';
+  exception when insufficient_privilege then null; end;
+  begin perform public.my_task_sync_status(t1); raise exception 'FAIL: anon called my_task_sync_status';
+  exception when insufficient_privilege then null; end;
+  begin perform public.has_google_connection(); raise exception 'FAIL: anon called has_google_connection';
   exception when insufficient_privilege then null; end;
   begin perform public.get_google_credentials('00000000-0000-4000-8000-0000000023a1');
     raise exception 'FAIL: anon called get_google_credentials';
@@ -662,8 +712,9 @@ begin
 
   -- Deleting a task removes its link.
   delete from public.project_tasks where id = '00000000-0000-4000-8000-000000230102';
-  if exists (select 1 from public.task_sources where task_id = '00000000-0000-4000-8000-000000230102') then
-    raise exception 'FAIL: deleting a task left its link behind';
+  if exists (select 1 from public.task_sources where task_id = '00000000-0000-4000-8000-000000230102')
+     or exists (select 1 from private.task_source_sync where task_id = '00000000-0000-4000-8000-000000230102') then
+    raise exception 'FAIL: deleting a task left its link or sync state behind';
   end if;
 end $$;
 

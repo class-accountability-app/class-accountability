@@ -18,29 +18,35 @@
 --    written and read only by save_google_credentials() and
 --    get_google_credentials() (service_role only), and deleted by
 --    delete_my_google_credentials() (the student, own row) or with the account
---    (on delete cascade from profiles).
+--    (on delete cascade from profiles). has_google_connection() tells a
+--    student whether they are connected, nothing more.
 --
--- 2. public.task_sources: at most one link per task. Any pod member reads it
---    (as they read the task), except last_count: 0022 keeps a task's running
---    number between check-ins to its owner (plan: "teammates see the running
---    total only at check-in"), so last_count isn't granted to authenticated and
---    the owner reads the total from task_progress like any other. No client
---    writes: link_task_source() / unlink_task_source() for any pod member (as
---    "any member edits tasks"; organizers are never members), and
---    record_synced_count() / mark_task_source_lost() for the Edge Function.
+-- 2. public.task_sources: at most one link per task, with NO numbers and NO
+--    activity times (0022: a teammate sees another member's numbers only
+--    through check-ins). Any pod member reads it. No client writes:
+--    link_task_source() / unlink_task_source() for any pod member (as "any
+--    member edits tasks"; organizers are never members), and
+--    mark_task_source_lost() for the Edge Function.
 --
--- 3. Counting. A link sets last_count to the task's current total, so the first
+-- 3. private.task_source_sync: the sync's own state per linked task
+--    (last_count, last_checked_at, last_changed_at). No client privilege; the
+--    task's current owner reads theirs through my_task_sync_status(), which
+--    returns nothing to anyone else. Written by link_task_source() and
+--    record_synced_count().
+--
+-- 4. Counting. A link sets last_count to the task's current total, so the first
 --    sync logs (file count − total) and from then on the task's total IS the
 --    file's count: no double counting after unlink + relink, a switch to
 --    another file, or manual entries made before linking. While a task is
 --    linked its owner can't ＋記録 on it (can_log_task, redefined below), and its
 --    metric, input mode and source stay as they are. Synced rows are logged in
 --    the current owner's name with source google_docs / google_slides and may
---    be negative (text or slides deleted), like the editor's 'document' rows.
+--    be negative (text or slides deleted), like the editor's 'document' rows;
+--    0022's task_progress policy shows them to that owner only.
 --    With no owner the row is skipped but last_* still move (the brief's rule):
 --    changes made while a task has no owner aren't counted until it is relinked.
 --
--- 4. Whose token is used: linked_by's. Linking needs a connected Google account
+-- 5. Whose token is used: linked_by's. Linking needs a connected Google account
 --    (SP010). Disconnecting Google marks the student's links lost_access (they
 --    come back by themselves if the student reconnects). Leaving the pod (or
 --    deleting the account) clears linked_by on that pod's links and marks them
@@ -72,16 +78,14 @@ create table private.google_credentials (
 alter table private.google_credentials enable row level security;
 
 create table public.task_sources (
-  task_id          uuid primary key references public.project_tasks(id) on delete cascade,
-  kind             text not null,
-  file_id          text not null,
-  heading_id       text,
-  label            text not null,
-  linked_by        uuid references public.profiles(id) on delete set null,
-  last_count       integer not null default 0,
-  last_checked_at  timestamptz,
-  last_changed_at  timestamptz,
-  state            text not null default 'ok',
+  task_id     uuid primary key references public.project_tasks(id) on delete cascade,
+  kind        text not null,
+  file_id     text not null,
+  heading_id  text,
+  label       text not null,
+  linked_by   uuid references public.profiles(id) on delete set null,
+  linked_at   timestamptz not null default now(),
+  state       text not null default 'ok',
   constraint task_sources_kind_check check (kind in ('doc', 'doc_section', 'slides')),
   -- Google's ids are URL-safe; checking the shape keeps anything else out.
   constraint task_sources_file_id_shape check (file_id ~ '^[A-Za-z0-9_-]{10,200}$'),
@@ -90,11 +94,19 @@ create table public.task_sources (
   constraint task_sources_label_length check (
     char_length(btrim(label)) between 1 and 60 and label !~ '[[:cntrl:]]'
   ),
-  constraint task_sources_count_not_negative check (last_count >= 0),
   constraint task_sources_state_check check (state in ('ok', 'lost_access'))
 );
 alter table public.task_sources enable row level security;
 create index task_sources_linked_by_idx on public.task_sources (linked_by);
+
+create table private.task_source_sync (
+  task_id          uuid primary key references public.project_tasks(id) on delete cascade,
+  last_count       integer not null default 0,
+  last_checked_at  timestamptz,
+  last_changed_at  timestamptz,
+  constraint task_source_sync_count_not_negative check (last_count >= 0)
+);
+alter table private.task_source_sync enable row level security;
 
 
 -- =============================================================================
@@ -119,8 +131,7 @@ alter table public.task_progress add constraint task_progress_value_positive
 -- 3. POLICY and the ＋記録 rule
 -- =============================================================================
 
--- Any member of the task's pod reads the link (last_count is withheld by the
--- column grant in section 7).
+-- Any member of the task's pod reads the link (no numbers in it).
 create policy "read my pod's task sources"
   on public.task_sources for select to authenticated
   using (
@@ -218,7 +229,7 @@ create trigger pairing_members_release_sources
 
 -- Link (or relink) a task to a Google file. Any member of the task's pod, with
 -- Google connected. Sets the task's source and starts last_count at the
--- task's current total (see the header, point 3).
+-- task's current total (see the header, point 4).
 create or replace function public.link_task_source(
   p_task       uuid,
   p_kind       text,
@@ -257,23 +268,28 @@ begin
   end if;
 
   -- Waits for a sync of this task that is running now.
-  perform 1 from task_sources where task_id = p_task for update;
+  perform 1 from private.task_source_sync where task_id = p_task for update;
 
   select coalesce(sum(tp.progress_value), 0) into total
     from task_progress tp where tp.task_id = p_task;
 
-  insert into task_sources (task_id, kind, file_id, heading_id, label, linked_by, last_count)
-  values (p_task, p_kind, p_file_id, p_heading_id, btrim(p_label), me, greatest(round(total), 0)::integer)
+  insert into task_sources (task_id, kind, file_id, heading_id, label, linked_by)
+  values (p_task, p_kind, p_file_id, p_heading_id, btrim(p_label), me)
   on conflict (task_id) do update
-     set kind            = excluded.kind,
-         file_id         = excluded.file_id,
-         heading_id      = excluded.heading_id,
-         label           = excluded.label,
-         linked_by       = excluded.linked_by,
-         last_count      = excluded.last_count,
+     set kind       = excluded.kind,
+         file_id    = excluded.file_id,
+         heading_id = excluded.heading_id,
+         label      = excluded.label,
+         linked_by  = excluded.linked_by,
+         linked_at  = now(),
+         state      = 'ok';
+
+  insert into private.task_source_sync (task_id, last_count)
+  values (p_task, greatest(round(total), 0)::integer)
+  on conflict (task_id) do update
+     set last_count      = excluded.last_count,
          last_checked_at = null,
-         last_changed_at = null,
-         state           = 'ok';
+         last_changed_at = null;
 
   update project_tasks
      set source = case when p_kind = 'slides' then 'google_slides' else 'google_docs' end
@@ -301,10 +317,41 @@ begin
     raise exception 'not a member of this project' using errcode = '42501';
   end if;
 
+  delete from private.task_source_sync where task_id = p_task;
   delete from task_sources where task_id = p_task;
   update project_tasks set source = 'manual'
    where id = p_task and source in ('google_docs', 'google_slides');
 end;
+$$;
+
+-- The sync state of MY task: only its current owner gets a row (a teammate
+-- sees numbers only through check-ins), and only while it is linked.
+create or replace function public.my_task_sync_status(p_task uuid)
+returns table (last_checked_at timestamptz, last_count integer)
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select s.last_checked_at, s.last_count
+  from private.task_source_sync s
+  join project_tasks t on t.id = s.task_id
+  where s.task_id = p_task
+    and t.owner_id = auth.uid()
+    and exists (select 1 from task_sources ts where ts.task_id = s.task_id);
+$$;
+
+-- Am I connected to Google? (Never the token.)
+create or replace function public.has_google_connection()
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from private.google_credentials c where c.user_id = auth.uid()
+  );
 $$;
 
 -- Disconnect Google: my token is gone and the links I made can't be read.
@@ -379,6 +426,7 @@ set search_path = public
 as $$
 declare
   src   public.task_sources;
+  sync  private.task_source_sync;
   owner uuid;
   delta integer;
 begin
@@ -391,7 +439,11 @@ begin
     return null;
   end if;
 
-  delta := p_count - src.last_count;
+  -- link_task_source always writes this row; recreate it if it is missing.
+  insert into private.task_source_sync (task_id) values (p_task) on conflict (task_id) do nothing;
+  select * into sync from private.task_source_sync where task_id = p_task for update;
+
+  delta := p_count - sync.last_count;
   select t.owner_id into owner from project_tasks t where t.id = p_task;
 
   if delta <> 0 and owner is not null then
@@ -400,12 +452,15 @@ begin
             case when src.kind = 'slides' then 'google_slides' else 'google_docs' end);
   end if;
 
-  update task_sources
+  update private.task_source_sync
      set last_count      = p_count,
          last_checked_at = now(),
-         last_changed_at = case when delta <> 0 then now() else last_changed_at end,
-         state           = 'ok'
+         last_changed_at = case when delta <> 0 then now() else last_changed_at end
    where task_id = p_task;
+
+  if src.state <> 'ok' then
+    update task_sources set state = 'ok' where task_id = p_task;
+  end if;
 
   return case when owner is null then 0 else delta end;
 end;
@@ -418,10 +473,8 @@ language sql
 security definer
 set search_path = public
 as $$
-  update task_sources
-     set state = 'lost_access',
-         last_checked_at = now()
-   where task_id = p_task;
+  update task_sources set state = 'lost_access' where task_id = p_task;
+  update private.task_source_sync set last_checked_at = now() where task_id = p_task;
 $$;
 
 
@@ -429,24 +482,27 @@ $$;
 -- 7. GRANTS
 -- =============================================================================
 
--- Credentials: no privilege for anyone but the owner (postgres); service_role
--- too goes through the functions above.
+-- Private tables: no privilege for anyone but the owner (postgres);
+-- service_role too goes through the functions above.
 revoke all on private.google_credentials from public, anon, authenticated, service_role;
+revoke all on private.task_source_sync from public, anon, authenticated, service_role;
 
--- task_sources: logged-out requests get nothing; signed-in users read every
--- column but last_count; nobody writes except through the functions.
+-- task_sources: logged-out requests get nothing; signed-in users read (RLS
+-- decides which rows); nobody writes except through the functions.
 revoke all on public.task_sources from public, anon, authenticated;
-grant select (task_id, kind, file_id, heading_id, label, linked_by,
-              last_checked_at, last_changed_at, state)
-  on public.task_sources to authenticated;
+grant select on public.task_sources to authenticated;
 revoke insert, update, delete, truncate, references, trigger
   on public.task_sources from service_role;
 
 revoke execute on function public.link_task_source(uuid, text, text, text, text) from public, anon;
 revoke execute on function public.unlink_task_source(uuid) from public, anon;
+revoke execute on function public.my_task_sync_status(uuid) from public, anon;
+revoke execute on function public.has_google_connection() from public, anon;
 revoke execute on function public.delete_my_google_credentials() from public, anon;
 grant execute on function public.link_task_source(uuid, text, text, text, text) to authenticated;
 grant execute on function public.unlink_task_source(uuid) to authenticated;
+grant execute on function public.my_task_sync_status(uuid) to authenticated;
+grant execute on function public.has_google_connection() to authenticated;
 grant execute on function public.delete_my_google_credentials() to authenticated;
 
 revoke execute on function public.save_google_credentials(uuid, text, text) from public, anon, authenticated;
