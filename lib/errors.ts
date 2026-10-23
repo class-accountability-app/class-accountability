@@ -39,6 +39,11 @@ const GOOGLE_NOT_CONNECTED = 'SP010'
 // the task (Doc needs characters, Slides a count), or a linked task's measure
 // was changed.
 const TASK_SOURCE_MISMATCH = 'SP011'
+// Raised by confirm_meeting_poll / cancel_meeting_poll (0024_meeting_polls.sql):
+// the poll is no longer open.
+const POLL_CLOSED = 'SP012'
+// Raised by create_meeting_poll (0024): times must be 2–8, distinct, in the future.
+const POLL_TIMES_INVALID = 'SP013'
 
 export const DB_CODES = {
   uniqueViolation: PG_UNIQUE_VIOLATION,
@@ -55,6 +60,8 @@ export const DB_CODES = {
   taskOwnerNotInPod: TASK_OWNER_NOT_IN_POD,
   googleNotConnected: GOOGLE_NOT_CONNECTED,
   taskSourceMismatch: TASK_SOURCE_MISMATCH,
+  pollClosed: POLL_CLOSED,
+  pollTimesInvalid: POLL_TIMES_INVALID,
 } as const
 
 const EMAIL_PATTERN = /[^\s"'<>(),;:]+@[^\s"'<>(),;:]+/g

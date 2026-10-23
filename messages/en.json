@@ -325,7 +325,15 @@
     "taskTaken": "Another member has already taken this task.",
     "taskNotFound": "This task couldn’t be found. It may have been deleted.",
     "notOwnTask": "You can only log progress on tasks you own.",
-    "checkinAlready": "You’ve already shared for this check-in. The next one opens soon."
+    "checkinAlready": "You’ve already shared for this check-in. The next one opens soon.",
+    "pollTitleTooLong": "Please keep the title to 60 characters or fewer.",
+    "pollTimesTooFew": "Please suggest at least 2 times.",
+    "pollTimesTooMany": "You can suggest up to 8 times.",
+    "pollTimeInvalid": "Please enter both a date and a time.",
+    "pollTimePast": "Please suggest times in the future.",
+    "pollTimeDuplicate": "The same time is in the list twice.",
+    "voteByPast": "Please choose an answer-by time in the future.",
+    "pollClosed": "This poll has already closed. Please reload the page."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -1035,6 +1043,61 @@
       "nudge": "Send a nudge",
       "previous": "See the previous check-in",
       "current": "Back to this check-in"
+    },
+    "meetings": {
+      "title": "Meetings",
+      "why": "Suggest a few times and find the one that works for everyone.",
+      "new": "Pick a time",
+      "upcoming": "Coming up",
+      "noUpcoming": "No meeting has been set yet.",
+      "open": "Collecting answers",
+      "noOpen": "No poll is collecting answers right now.",
+      "answered": "{answered} of {total} have answered"
+    },
+    "poll": {
+      "pageTitle": "Meeting time",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. Midway check",
+      "lengthLabel": "Length",
+      "minutes": "{count} min",
+      "slotsLabel": "Time options (2–8)",
+      "slotsHint": "About three options make it easy for everyone to answer.",
+      "slotDate": "Option {n} date",
+      "slotTime": "Option {n} time",
+      "removeSlot": "Remove option {n}",
+      "addSlot": "Add an option",
+      "voteByLabel": "Answer by (optional)",
+      "submit": "Ask the group"
+    },
+    "vote": {
+      "legend": "○ Yes  △ If needed  ✕ No",
+      "answers": {
+        "yes": "Yes",
+        "maybe": "If needed",
+        "no": "No"
+      },
+      "tally": "○{yes} △{maybe} ✕{no}",
+      "best": "Most people can come",
+      "by": "Answer by {when}",
+      "notYet": "Not answered yet: {names}",
+      "chooseLabel": "Meeting time",
+      "confirm": "Pick this time",
+      "cancel": "Call off this poll",
+      "cancelled": "This poll was called off."
+    },
+    "meeting": {
+      "agenda": "To talk about (from check-ins)",
+      "waiting": "Hasn’t checked in yet: {names}",
+      "checkinFirst": "Check in before the meeting",
+      "cancel": "Call off this meeting"
+    },
+    "meetingCard": {
+      "kicker": "NEXT MEETING",
+      "none": "Not set yet",
+      "voting": "Picking a time: {title}",
+      "pick": "Pick a time",
+      "vote": "Give your times",
+      "open": "See the meeting"
     }
   }
 }

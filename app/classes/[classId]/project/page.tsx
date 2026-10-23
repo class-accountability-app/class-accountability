@@ -13,6 +13,7 @@ import { StatusStamp } from '@/components/status-stamp'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { CreateProjectForm } from './create-project-form'
 import { STATUS_PILL_CLASS, loadMyLiveTotals, loadMyPodProject, taskValueText, type TaskRow } from './load'
+import { chosenStart, formatMeeting, isUpcoming, loadPolls } from './meetings/load'
 import { ClaimButton, TaskStatusControl } from './task-controls'
 import { TaskLog } from './task-log'
 
@@ -105,7 +106,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ classI
   ])
   const tasks = (taskRows as TaskRow[] | null) ?? []
 
-  const liveTotals = await loadMyLiveTotals(supabase, tasks, user.id)
+  const [liveTotals, polls] = await Promise.all([
+    loadMyLiveTotals(supabase, tasks, user.id),
+    loadPolls(supabase, project.id),
+  ])
 
   const latest = latestCheckins(
     (checkinRows ?? []).map(
@@ -148,6 +152,14 @@ export default async function ProjectPage({ params }: { params: Promise<{ classI
   const myRounds = (checkinRows ?? []).filter((r) => r.user_id === user.id).map((r) => r.round_start)
   const round = checkinStatus(project.start_date, project.checkin_every_days, myRounds, now)
 
+  // 次の打ち合わせ (automation mockup, board): the nearest confirmed meeting,
+  // else a poll still being answered.
+  const nextMeeting = polls
+    .filter((p) => isUpcoming(p, now))
+    .sort((a, b) => (chosenStart(a) ?? '').localeCompare(chosenStart(b) ?? ''))[0]
+  const openPoll = polls.find((p) => p.status === 'open')
+  const meetingsHref = `/classes/${classId}/project/meetings`
+
   return wrap(
     <>
       <div className="px-0.5">
@@ -181,6 +193,30 @@ export default async function ProjectPage({ params }: { params: Promise<{ classI
           )}
           <Link href={`/classes/${classId}/project/checkins`} className={`${secondaryButtonClass} flex-1`}>
             {t('checkin.feed')}
+          </Link>
+        </div>
+      </section>
+
+      <section aria-labelledby="meeting-heading" className="rule-card flex flex-col px-3.5 py-3.5">
+        <p className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">{t('meetingCard.kicker')}</p>
+        <h2 id="meeting-heading" className="font-heading text-[17px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">
+          {nextMeeting
+            ? nextMeeting.title
+            : openPoll
+              ? t('meetingCard.voting', { title: openPoll.title })
+              : t('meetingCard.none')}
+        </h2>
+        {nextMeeting && (
+          <p className="text-[13px] leading-7 text-muted">
+            {formatMeeting(chosenStart(nextMeeting)!, nextMeeting.durationMinutes, locale)}
+          </p>
+        )}
+        <div className="pt-3.5">
+          <Link
+            href={nextMeeting ? `${meetingsHref}/${nextMeeting.id}` : openPoll ? `${meetingsHref}/${openPoll.id}` : `${meetingsHref}/new`}
+            className={`${secondaryButtonClass} w-full`}
+          >
+            {nextMeeting ? t('meetingCard.open') : openPoll ? t('meetingCard.vote') : t('meetingCard.pick')}
           </Link>
         </div>
       </section>
