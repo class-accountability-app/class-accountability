@@ -146,7 +146,9 @@
     "inviteHeading": "仲間を招待する",
     "inviteWhy": "同じ授業の人に、リンクかQRコードを送ります。",
     "showLinkQr": "リンクとQRを表示",
-    "yourTargets": "あなたの目標"
+    "yourTargets": "あなたの目標",
+    "projectLink": "プロジェクト",
+    "projectLinkSub": "タスクと進み具合を見る"
   },
   "units": {
     "word_count": "{count, number}語",
@@ -311,7 +313,18 @@
     "documentModeLocked": "記録がある目標は、あとから「Study Pods で書く」に変えられません。",
     "documentTargetNoLog": "この目標は、書いた文章から自動で記録されます。",
     "documentNotFound": "この文章は見つかりませんでした。",
-    "versionNotFound": "この版は見つかりませんでした。履歴を開き直してください。"
+    "versionNotFound": "この版は見つかりませんでした。履歴を開き直してください。",
+    "titleTooLong": "タイトルは120文字以内で入力してください。",
+    "unitRequired": "単位を入力してください（例：枚）。",
+    "unitTooLong": "単位は20文字以内で入力してください。",
+    "deadlineInPast": "締め切りには、今日以降の日付を選んでください。",
+    "checkinEveryInvalid": "チェックインの間隔は、1〜14日で入力してください。",
+    "projectNeedsPod": "プロジェクトを始めるには、先にポッドに入ってください。",
+    "projectExists": "このポッドのプロジェクトは、すでに始まっています。ページを読み込み直してください。",
+    "taskOwnerNotInPod": "担当にできるのは、このポッドのメンバーだけです。",
+    "taskTaken": "このタスクは、ほかのメンバーがすでに担当しています。",
+    "taskNotFound": "このタスクは見つかりませんでした。すでに削除されている可能性があります。",
+    "notOwnTask": "記録できるのは、自分が担当しているタスクだけです。"
   },
   "welcome": {
     "eyebrow": "ようこそ",
@@ -918,6 +931,83 @@
     "target": {
       "title": "最初の目標を決めましょう",
       "lead": "何をどれだけやるかを決めると、毎日の記録が進み具合になります。"
+    }
+  },
+  "project": {
+    "noPodTitle": "まだポッドに入っていません",
+    "noPodBody": "プロジェクトはポッドごとに1つです。クラスのページでポッドを作るか、ポッドに参加してください。",
+    "backToClass": "クラスのページへ",
+    "back": "← 戻る",
+    "startTitle": "プロジェクトを始める",
+    "startWhy": "ポッドのみんなで1つのプロジェクトに取り組みます。だれが始めても、メンバー全員で編集できます。",
+    "titleLabel": "プロジェクト名",
+    "titlePlaceholder": "例：グループ発表：統計学のケーススタディ",
+    "deadlineLabel": "締め切り（任意）",
+    "checkinLabel": "チェックインの間隔",
+    "checkinSuffix": "日ごと",
+    "checkinHint": "この間隔で、それぞれが自分の進み具合を仲間に共有します。ふつうは4日ごとです。",
+    "startSubmit": "プロジェクトを始める",
+    "due": "{date}まで",
+    "daysLeft": "残り{count}日",
+    "dueToday": "今日が締め切りです",
+    "overdue": "締め切りを過ぎました",
+    "noDeadline": "締め切りはまだ決まっていません",
+    "overall": "全体の進み具合 {percent}%",
+    "members": "メンバー",
+    "membersWhy": "それぞれの担当です。仲間の数字は、チェックインで共有された分だけ見えます。",
+    "you": "{name}（あなた）",
+    "live": "LIVE",
+    "noTasksYet": "まだ担当しているタスクはありません",
+    "unassigned": "担当が決まっていません",
+    "claim": "担当する",
+    "addTask": "タスクを追加",
+    "statusLabel": "状態",
+    "status": {
+      "todo": "未着手",
+      "doing": "進行中",
+      "done": "完了"
+    },
+    "valueCount": "{total} / {target}{unit}",
+    "valueCountNoGoal": "{total}{unit}",
+    "valueChars": "{total} / {target}字",
+    "valueCharsNoGoal": "{total}字",
+    "asOf": "{date}のチェックイン時点",
+    "noCheckin": "まだチェックインがありません",
+    "dueTask": "期限 {date}",
+    "overdueTask": "期限を過ぎています",
+    "log": {
+      "open": "＋記録",
+      "heading": "「{title}」を記録",
+      "amountCount": "増えた数（{unit}）",
+      "amountCharacters": "書いた文字数",
+      "noteLabel": "メモ（任意）",
+      "notePlaceholder": "例：データ分析の部分が終わった",
+      "submit": "記録する",
+      "saved": "記録しました",
+      "fine": "あなたの記録はあなたにだけ見えます。仲間に見えるのはチェックインの内容です。"
+    },
+    "newTask": {
+      "pageTitle": "新しいタスク",
+      "name": "タスク名",
+      "namePlaceholder": "例：スライド",
+      "owner": "担当",
+      "ownerNone": "まだ決めない",
+      "how": "進み具合のはかり方",
+      "hows": {
+        "status": "状態のみ",
+        "count": "数える",
+        "characters": "文字数"
+      },
+      "howHint": {
+        "status": "未着手・進行中・完了だけで進み具合を示します。",
+        "count": "スライドの枚数など、数で記録します。",
+        "characters": "書いた文字数で記録します。Google ドキュメントとつなぐと自動になります（準備中）。"
+      },
+      "unit": "単位",
+      "unitPlaceholder": "例：枚",
+      "goal": "目標（任意）",
+      "due": "期限（任意）",
+      "submit": "タスクを追加"
     }
   }
 }

@@ -78,3 +78,20 @@ export function checkTask(input: TaskInput): TaskCheck {
 
   return { ok: true, value: { title, metric: input.metric, unit, targetAmount, inputMode: input.inputMode } }
 }
+
+// Logging by hand: the chips that add to the amount field. A count goes up a
+// few at a time (slides, interviews), characters by hundreds.
+export const TASK_CHIPS: Record<Exclude<TaskMetric, 'status'>, readonly number[]> = {
+  count: [1, 2, 5],
+  characters: [100, 300, 500],
+}
+
+// What a student typed as a goal or a logged amount: a positive whole number,
+// or null. NFKC turns full-width digits into plain ones and "2,400" is fine,
+// the same rules as the ＋記録 sheet (lib/quick-log.ts).
+export function parseWholeAmount(raw: string): number | null {
+  const text = raw.normalize('NFKC').trim().replace(/[,\s]/g, '')
+  if (!/^\d+$/.test(text)) return null
+  const value = Number(text)
+  return Number.isSafeInteger(value) && value > 0 ? value : null
+}
