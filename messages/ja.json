@@ -400,7 +400,10 @@
     "title": "Study Pods",
     "one": "{name}さんから声かけが届きました",
     "oneUnknown": "仲間から声かけが届きました",
-    "many": "夜のあいだに声かけが{count}件届きました"
+    "many": "夜のあいだに声かけが{count}件届きました",
+    "meeting": "打ち合わせは{when}からです",
+    "meetingCheckin": "打ち合わせは{when}からです。その前にチェックインしましょう",
+    "stalled": "「{task}」が{days}日止まっています。少しだけでも進めてみませんか"
   },
   "empty": {
     "findPod": "ポッドを探す",
