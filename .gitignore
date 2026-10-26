@@ -36,3 +36,6 @@ coverage/
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude Code session handoff notes (context-handoff plugin)
+.handoff/
