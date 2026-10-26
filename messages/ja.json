@@ -1175,6 +1175,10 @@
     "settingsNotConnected": "Google とつながっていません",
     "settingsConnectedHint": "解除すると、保存している連携用のトークンを削除します。あなたがつないだファイルは、だれかがつなぎ直すまで数えられなくなります。",
     "settingsNotConnectedHint": "プロジェクトのページから、Google ドキュメントやスライドとつなげます。",
-    "disconnect": "Google との連携を解除する"
+    "disconnect": "Google との連携を解除する",
+    "connectedTitle": "Google とつながっています",
+    "noCountedTask": "進み具合を「数える」か「文字数」ではかるタスクを追加すると、Google のファイルで自動で記録できます。",
+    "noCharactersTask": "グループのドキュメントは「文字数」のタスクのためのものです。「数える」のタスクは、それぞれのタスクから Google スライドとつなげます。",
+    "addCountedTask": "タスクを追加"
   }
 }

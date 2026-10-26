@@ -1175,6 +1175,10 @@
     "settingsNotConnected": "Google isn’t connected",
     "settingsConnectedHint": "Disconnecting deletes the stored connection token. Files you linked won’t be counted until someone links them again.",
     "settingsNotConnectedHint": "You can link Google Docs and Slides from a project’s page.",
-    "disconnect": "Disconnect Google"
+    "disconnect": "Disconnect Google",
+    "connectedTitle": "Google is connected",
+    "noCountedTask": "Add a task measured by count or characters, and it can be logged automatically from a Google file.",
+    "noCharactersTask": "The group Doc is for tasks counted in characters. A count task can be linked to Google Slides from the task itself.",
+    "addCountedTask": "Add a task"
   }
 }
