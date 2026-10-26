@@ -333,7 +333,15 @@
     "pollTimePast": "Please suggest times in the future.",
     "pollTimeDuplicate": "The same time is in the list twice.",
     "voteByPast": "Please choose an answer-by time in the future.",
-    "pollClosed": "This poll has already closed. Please reload the page."
+    "pollClosed": "This poll has already closed. Please reload the page.",
+    "googleUnavailable": "Google can’t be connected right now. Please try again later.",
+    "googleNotConnected": "Please connect Google first.",
+    "googleReconnect": "Your Google connection has expired. Please connect again.",
+    "googleFailed": "Something went wrong talking to Google. Please try again.",
+    "googleFileLost": "This file couldn’t be opened. Please check how it is shared.",
+    "googleFileMismatch": "This file doesn’t fit how the task is measured (characters need a Doc, a count needs Slides).",
+    "groupDocNoTasks": "There are no tasks counted in characters yet. Please add one first.",
+    "googleHeadingRequired": "Please choose a heading."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -674,7 +682,7 @@
   },
   "privacy": {
     "effective": "Effective 9 October 2026",
-    "updated": "Last updated 9 October 2026",
+    "updated": "Last updated 26 October 2026",
     "title": "Privacy policy",
     "intro": "Study Pods (“the service”) is a study app built and run by a student. This page explains what the service collects, how it’s used, and who can see it.",
     "collectHeading": "1. What we collect",
@@ -684,8 +692,8 @@
     "membershipText": "the classes and pods you join",
     "contentLabel": "What you enter:",
     "contentText": "targets, progress logs, comments, nudges, and text you write with Write in Study Pods, with its history",
-    "googleLabel": "If you connect Google Docs (a planned feature):",
-    "googleText": "the character count and last-modified time of the documents you choose, and the Google access token needed to keep the connection working",
+    "googleLabel": "If you connect Google:",
+    "googleText": "the character count or number of slides of the files you choose (or of the Doc created for your group), when it was checked, and an encrypted connection token",
     "notifyLabel": "If you turn on notifications:",
     "notifyText": "your device’s push address (an address and encryption keys issued by your browser), your display language and the kind of device (e.g. Safari on iPhone), so we can deliver them. Notifications are off until you turn them on, and you can turn them off in 設定 at any time. Turning them off or logging out deletes that device’s address.",
     "cookieLabel": "Cookies:",
@@ -694,11 +702,11 @@
     "useHeading": "2. How we use it",
     "useText": "Only to run the service (sharing progress with your pod, nudges and similar features) and for the research use in section 6. We don’t use your data for advertising, and we don’t sell it.",
     "googleHeading": "3. Google user data",
-    "googleIntro": "Connecting Google Docs isn’t available yet. Once it is, Google user data will be handled as follows.",
-    "google1": "Connecting Google Docs is optional. If you do, the service can open only the documents you select in Google’s file picker (the drive.file permission). It cannot read the rest of your Google Drive.",
-    "google2": "A document’s text is read only to count its characters, and is never stored, logged or shared. Only the count and last-modified time are saved.",
-    "google3": "Access tokens are handled on our server only and are never shown to other users.",
-    "google4": "You can disconnect Google at any time. We then delete the stored token.",
+    "googleIntro": "Google Docs and Google Slides data is handled as follows.",
+    "google1": "Connecting Google is optional. If you do, the service can open only the files you select in Google’s file picker and the Doc it creates for your group (the drive.file permission). It cannot read the rest of your Google Drive.",
+    "google2": "A file’s text is read only to count its characters or slides, and is never stored, logged or shared. Only the count and when it was checked are saved. Podmates see only the numbers shared in a check-in.",
+    "google3": "Connection tokens are stored encrypted and used on our server only. A group Doc created by the service is set to “anyone with the link can edit”, and that link is shown only to your pod’s members.",
+    "google4": "You can disconnect Google at any time in Settings. We then revoke the permission at Google and delete the stored token.",
     "limitedUse": "Study Pods’ use and transfer of information received from Google APIs to any other app will adhere to the <link>Google API Services User Data Policy</link>, including the Limited Use requirements.",
     "whoHeading": "4. Who can see what",
     "podLabel": "Members of your pod:",
@@ -711,7 +719,7 @@
     "serviceSupabase": "Supabase: database, login and sending notifications (database in the Tokyo region)",
     "serviceVercel": "Vercel: hosting the website (Tokyo region)",
     "serviceResend": "Resend: sending login emails",
-    "serviceGoogle": "Google: only if you connect Google Docs",
+    "serviceGoogle": "Google: only if you connect Google",
     "servicePush": "Push services (Apple, Google, Mozilla, Microsoft): only if you turn on notifications. Notifications are delivered through your browser’s push service. They’re encrypted, so the service sees only that a message was sent to your device, and when.",
     "servicesNote": "Supabase, Vercel and Resend are US companies. The database is stored in their Tokyo region.",
     "researchHeading": "6. Research use",
@@ -1013,7 +1021,7 @@
       "howHint": {
         "status": "Progress is just to do, doing or done.",
         "count": "Log a number, such as slides finished.",
-        "characters": "Log characters written. Connecting Google Docs will make this automatic (coming soon)."
+        "characters": "Log characters written. Link a Google Doc and it is logged automatically."
       },
       "unit": "Unit",
       "unitPlaceholder": "e.g. slides",
@@ -1102,5 +1110,71 @@
       "vote": "Give your times",
       "open": "See the meeting"
     }
+  },
+  "google": {
+    "kicker": "AUTOMATIC LOGGING",
+    "connectTitle": "Connect Google and your progress logs itself",
+    "connectWhy": "Every 5 minutes we count the characters in your Google Docs and the slides in your Slides, and log the change. The text is never saved, and your group never sees it.",
+    "connect": "Connect Google",
+    "connectFine": "You only connect once. If your university account won’t connect, your personal Google account works too.",
+    "groupDocTitle": "Group Doc",
+    "groupDocWhy": "Write under your own heading and your characters are logged automatically. Anyone with the link can edit, so don’t share it outside your pod.",
+    "groupDocOpen": "Open in Google Docs",
+    "groupDocCreateTitle": "Create the group Doc",
+    "groupDocCreateWhy": "We make one Doc with a heading for each task counted in characters, and link each task to its heading. The link is shown only to this pod’s members.",
+    "groupDocCreate": "Create and link",
+    "creating": "Creating…",
+    "result": {
+      "connected": "Google is connected.",
+      "denied": "Connecting Google was cancelled.",
+      "failed": "Google couldn’t be connected. Please try again.",
+      "unavailable": "Google can’t be connected right now. Please try again later."
+    },
+    "kind": {
+      "doc": "Google Docs",
+      "doc_section": "Group Doc",
+      "slides": "Google Slides"
+    },
+    "updated": "checked {when}",
+    "notYet": "counting soon",
+    "lost": "Can’t read this file anymore",
+    "change": "Change how it’s counted",
+    "relink": "Relink",
+    "teammateLinked": "Counted from the group Doc",
+    "linkTask": "Link a Google file",
+    "back": "← Back",
+    "linkTitle": "How “{title}” is measured",
+    "linkNotCountable": "This task is measured by status only, so it can’t be linked to a file.",
+    "lostExplain": "The current file can’t be read anymore. Whoever linked it may have disconnected Google, or the file was deleted. Please link it again.",
+    "linkLegend": "How it’s measured",
+    "options": {
+      "section": {
+        "title": "A heading in the group Doc",
+        "hint": "Characters under the heading you choose"
+      },
+      "doc": {
+        "title": "My own Doc",
+        "hint": "Characters in the whole Doc you choose in Google’s file picker"
+      },
+      "slides": {
+        "title": "Google Slides",
+        "hint": "Number of slides in the file you choose"
+      },
+      "manual": {
+        "title": "Log by hand",
+        "hint": "Enter numbers with + Log"
+      }
+    },
+    "headingLabel": "Heading",
+    "headingHint": "Renaming the heading won’t break the link.",
+    "pickAndLink": "Choose a file and link it",
+    "save": "Link it",
+    "relinkNote": "Relinking never counts the same work twice.",
+    "settingsHeading": "Google",
+    "settingsConnected": "Google is connected",
+    "settingsNotConnected": "Google isn’t connected",
+    "settingsConnectedHint": "Disconnecting deletes the stored connection token. Files you linked won’t be counted until someone links them again.",
+    "settingsNotConnectedHint": "You can link Google Docs and Slides from a project’s page.",
+    "disconnect": "Disconnect Google"
   }
 }

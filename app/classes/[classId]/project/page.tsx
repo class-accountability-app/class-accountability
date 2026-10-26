@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
 import { createClient } from '@/lib/supabase/server'
-import { formatDate, formatDateWithWeekday, tokyoDaysUntil } from '@/lib/date'
+import { formatDate, formatDateWithWeekday, formatTimeAgo, tokyoDaysUntil } from '@/lib/date'
+import { docUrl } from '@/lib/google-links'
 import { groupTasksByOwner, isOverdue, projectPercent, type TaskLike } from '@/lib/project-stats'
 import { latestCheckins, visibleTotal, type CheckinRow } from '@/lib/project-board'
 import { checkinStatus } from '@/lib/checkin'
@@ -15,17 +16,27 @@ import { CreateProjectForm } from './create-project-form'
 import { STATUS_PILL_CLASS, loadMyLiveTotals, loadMyPodProject, taskValueText, type TaskRow } from './load'
 import { chosenStart, formatMeeting, isUpcoming, loadPolls } from './meetings/load'
 import { ClaimButton, TaskStatusControl } from './task-controls'
+import { CreateGroupDocButton, GoogleSyncOnOpen } from './google-controls'
 import { TaskLog } from './task-log'
 
 type BoardTask = TaskLike & { title: string; unit: string | null; shown: ReturnType<typeof visibleTotal> }
+type SourceRow = { task_id: string; kind: 'doc' | 'doc_section' | 'slides'; file_id: string; state: 'ok' | 'lost_access' }
+const GOOGLE_RESULTS = ['connected', 'denied', 'failed', 'unavailable'] as const
 
 // The team board (docs/mockups/phase4/group-projects.html, view "board"): the
 // pod's one project, its tasks grouped by member. My own numbers are live;
 // a teammate's numbers appear only as they shared them in their latest
 // check-in (0022 RLS returns nothing else). With no project yet, any pod
 // member starts it here.
-export default async function ProjectPage({ params }: { params: Promise<{ classId: string }> }) {
-  const { classId } = await params
+export default async function ProjectPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ classId: string }>
+  searchParams: Promise<{ google?: string }>
+}) {
+  const [{ classId }, { google: googleParam }] = await Promise.all([params, searchParams])
+  const googleResult = GOOGLE_RESULTS.find((r) => r === googleParam) ?? null
   const supabase = await createClient()
   const {
     data: { user },
@@ -39,6 +50,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ classI
     getTranslations('common'),
     getLocale() as Promise<Locale>,
   ])
+  const tGoogle = await getTranslations('google')
   if (!cls) redirect('/classes')
   // Organizers (0015) are never in pods, so there is no project for them.
   if (membership?.role !== 'student') redirect(`/classes/${classId}`)
@@ -106,10 +118,27 @@ export default async function ProjectPage({ params }: { params: Promise<{ classI
   ])
   const tasks = (taskRows as TaskRow[] | null) ?? []
 
-  const [liveTotals, polls] = await Promise.all([
+  const [liveTotals, polls, { data: sourceRows }, { data: hasGoogle }] = await Promise.all([
     loadMyLiveTotals(supabase, tasks, user.id),
     loadPolls(supabase, project.id),
+    tasks.length > 0
+      ? supabase.from('task_sources').select('task_id, kind, file_id, state').in('task_id', tasks.map((x) => x.id))
+      : Promise.resolve({ data: [] as SourceRow[] }),
+    supabase.rpc('has_google_connection'),
   ])
+  // Google links (0023): what each task is counted from. A teammate's link
+  // carries no numbers; my own linked tasks get their last read time.
+  const sources = new Map(((sourceRows as SourceRow[] | null) ?? []).map((r) => [r.task_id, r]))
+  const groupDocId = [...sources.values()].find((r) => r.kind === 'doc_section')?.file_id ?? null
+  const myLinked = tasks.filter((x) => x.owner_id === user.id && sources.has(x.id))
+  const lastChecked = new Map<string, string | null>()
+  await Promise.all(
+    myLinked.map(async (x) => {
+      const { data } = await supabase.rpc('my_task_sync_status', { p_task: x.id }).maybeSingle<{ last_checked_at: string | null }>()
+      lastChecked.set(x.id, data?.last_checked_at ?? null)
+    })
+  )
+  const wantsGoogle = sources.size > 0 || tasks.some((x) => x.metric !== 'status')
 
   const latest = latestCheckins(
     (checkinRows ?? []).map(
@@ -159,6 +188,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ classI
     .sort((a, b) => (chosenStart(a) ?? '').localeCompare(chosenStart(b) ?? ''))[0]
   const openPoll = polls.find((p) => p.status === 'open')
   const meetingsHref = `/classes/${classId}/project/meetings`
+  const boardPath = `/classes/${classId}/project`
+  const linkHref = (taskId: string) => `${boardPath}/tasks/${taskId}/link`
 
   return wrap(
     <>
@@ -220,6 +251,48 @@ export default async function ProjectPage({ params }: { params: Promise<{ classI
           </Link>
         </div>
       </section>
+
+      {sources.size > 0 && <GoogleSyncOnOpen />}
+      {googleResult && (
+        <p role="status" className={`px-0.5 text-sm leading-7 ${googleResult === 'connected' ? 'text-status-active' : 'text-accent-text'}`}>
+          {tGoogle(`result.${googleResult}`)}
+        </p>
+      )}
+      {wantsGoogle && (
+        <section aria-labelledby="google-heading" className="rule-card flex flex-col px-3.5 py-3.5">
+          <p className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">{tGoogle('kicker')}</p>
+          {groupDocId ? (
+            <>
+              <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('groupDocTitle')}</h2>
+              <p className="text-[13px] leading-7 text-muted">{tGoogle('groupDocWhy')}</p>
+              <div className="pt-3.5">
+                <a href={docUrl(groupDocId)} target="_blank" rel="noopener noreferrer" className={`${secondaryButtonClass} w-full`}>
+                  {tGoogle('groupDocOpen')}
+                </a>
+              </div>
+            </>
+          ) : hasGoogle ? (
+            <>
+              <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('groupDocCreateTitle')}</h2>
+              <p className="text-[13px] leading-7 text-muted">{tGoogle('groupDocCreateWhy')}</p>
+              <div className="pt-3.5">
+                <CreateGroupDocButton classId={classId} projectId={project.id} />
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('connectTitle')}</h2>
+              <p className="text-[13px] leading-7 text-muted">{tGoogle('connectWhy')}</p>
+              <div className="pt-3.5">
+                <a href={`/api/google/connect?return=${encodeURIComponent(boardPath)}`} className={`${secondaryButtonClass} w-full`}>
+                  {tGoogle('connect')}
+                </a>
+              </div>
+              <p className="text-[13px] leading-7 text-muted">{tGoogle('connectFine')}</p>
+            </>
+          )}
+        </section>
+      )}
 
       <section aria-labelledby="members-heading" className="flex flex-col gap-7">
         <div className="-mb-7 flex items-start justify-between gap-3 px-0.5">
@@ -283,8 +356,32 @@ export default async function ProjectPage({ params }: { params: Promise<{ classI
                             {overdue ? t('overdueTask') : t('dueTask', { date: formatDate(task.due, locale) })}
                           </p>
                         )}
-                        {mine && task.metric !== 'status' && task.status !== 'done' && (
-                          <TaskLog classId={classId} taskId={task.id} title={task.title} metric={task.metric} unit={task.unit} />
+                        {mine && sources.has(task.id) && (
+                          <div className="flex flex-wrap items-center gap-x-3">
+                            <p className={`font-meta text-xs leading-7 ${sources.get(task.id)!.state === 'ok' ? 'text-status-active' : 'text-accent-text'}`}>
+                              {sources.get(task.id)!.state === 'ok'
+                                ? `${tGoogle(`kind.${sources.get(task.id)!.kind}`)} · ${
+                                    lastChecked.get(task.id)
+                                      ? tGoogle('updated', { when: formatTimeAgo(lastChecked.get(task.id)!, locale, now) })
+                                      : tGoogle('notYet')
+                                  }`
+                                : tGoogle('lost')}
+                            </p>
+                            <Link href={linkHref(task.id)} className="inline-flex min-h-11 items-center text-[13px] font-semibold text-accent-text underline underline-offset-4">
+                              {sources.get(task.id)!.state === 'ok' ? tGoogle('change') : tGoogle('relink')}
+                            </Link>
+                          </div>
+                        )}
+                        {!mine && sources.get(task.id)?.kind === 'doc_section' && (
+                          <p className="font-meta text-xs leading-7 text-muted">{tGoogle('teammateLinked')}</p>
+                        )}
+                        {mine && !sources.has(task.id) && task.metric !== 'status' && task.status !== 'done' && (
+                          <>
+                            <TaskLog classId={classId} taskId={task.id} title={task.title} metric={task.metric} unit={task.unit} />
+                            <Link href={linkHref(task.id)} className="-mt-2 inline-flex min-h-11 items-center self-start pb-1 text-[13px] font-semibold text-accent-text underline underline-offset-4">
+                              {tGoogle('linkTask')}
+                            </Link>
+                          </>
                         )}
                         {group.ownerId === null && (
                           <div className="pb-3.5">
