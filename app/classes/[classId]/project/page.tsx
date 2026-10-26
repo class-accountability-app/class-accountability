@@ -138,7 +138,10 @@ export default async function ProjectPage({
       lastChecked.set(x.id, data?.last_checked_at ?? null)
     })
   )
-  const wantsGoogle = sources.size > 0 || tasks.some((x) => x.metric !== 'status')
+  // The 自動で記録 card shows on every started project; with nothing to count
+  // yet it says so and points to adding a counted task.
+  const hasCountedTask = tasks.some((x) => x.metric !== 'status')
+  const hasCharactersTask = tasks.some((x) => x.metric === 'characters')
 
   const latest = latestCheckins(
     (checkinRows ?? []).map(
@@ -258,7 +261,7 @@ export default async function ProjectPage({
           {tGoogle(`result.${googleResult}`)}
         </p>
       )}
-      {wantsGoogle && (
+      {(
         <section aria-labelledby="google-heading" className="rule-card flex flex-col px-3.5 py-3.5">
           <p className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">{tGoogle('kicker')}</p>
           {groupDocId ? (
@@ -271,13 +274,21 @@ export default async function ProjectPage({
                 </a>
               </div>
             </>
-          ) : hasGoogle ? (
+          ) : hasGoogle && hasCharactersTask ? (
             <>
               <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('groupDocCreateTitle')}</h2>
               <p className="text-[13px] leading-7 text-muted">{tGoogle('groupDocCreateWhy')}</p>
               <div className="pt-3.5">
                 <CreateGroupDocButton classId={classId} projectId={project.id} />
               </div>
+            </>
+          ) : hasGoogle ? (
+            <>
+              <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('connectedTitle')}</h2>
+              <p className="text-[13px] leading-7 text-muted">{hasCountedTask ? tGoogle('noCharactersTask') : tGoogle('noCountedTask')}</p>
+              <Link href={`${boardPath}/tasks/new`} className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-accent-text underline underline-offset-4">
+                ＋ {tGoogle('addCountedTask')}
+              </Link>
             </>
           ) : (
             <>
@@ -289,6 +300,14 @@ export default async function ProjectPage({
                 </a>
               </div>
               <p className="text-[13px] leading-7 text-muted">{tGoogle('connectFine')}</p>
+              {!hasCountedTask && (
+                <>
+                  <p className="text-[13px] leading-7 text-muted">{tGoogle('noCountedTask')}</p>
+                  <Link href={`${boardPath}/tasks/new`} className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-accent-text underline underline-offset-4">
+                    ＋ {tGoogle('addCountedTask')}
+                  </Link>
+                </>
+              )}
             </>
           )}
         </section>
