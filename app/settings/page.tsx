@@ -8,6 +8,7 @@ import { DELETE_ACCOUNT_PATH, PRIVACY_POLICY_PATH } from '@/lib/contact'
 import { DisplayNameForm } from './display-name-form'
 import { InstallRow } from './install-row'
 import { PushRow } from './push-row'
+import { GoogleRow } from './google-row'
 import { SignOutForm } from '@/components/sign-out-form'
 
 const LANGUAGE_NAMES = { ja: '日本語', en: 'English' } as const
@@ -45,10 +46,12 @@ export default async function SettingsPage() {
     redirect('/login')
   }
 
-  const [{ data: profile }, t, locale] = await Promise.all([
+  const [{ data: profile }, t, tGoogle, locale, { data: hasGoogle }] = await Promise.all([
     supabase.from('profiles').select('display_name').eq('id', user.id).single(),
     getTranslations('settings'),
+    getTranslations('google'),
     getLocale(),
+    supabase.rpc('has_google_connection'),
   ])
 
   const emailNoteId = 'settings-email-note'
@@ -78,6 +81,13 @@ export default async function SettingsPage() {
             {t('notificationsHeading')}
           </h2>
           <PushRow />
+        </section>
+
+        <section aria-labelledby="settings-google" className={`${sectionClass} gap-2.5 p-[18px]`}>
+          <h2 id="settings-google" className="font-heading text-xl font-bold text-ink">
+            {tGoogle('settingsHeading')}
+          </h2>
+          <GoogleRow connected={hasGoogle === true} />
         </section>
 
         <section aria-labelledby="settings-language"className={`${sectionClass} gap-2.5 p-[18px]`}>
