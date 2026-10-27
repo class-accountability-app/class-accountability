@@ -3,7 +3,15 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { DB_CODES, logServerError, toErrorKey, type ActionResult, type ErrorKey } from '@/lib/errors'
-import { groupDocOutline, groupDocRequests, isFileId, isHeadingId, sourceLabel } from '@/lib/google-links'
+import {
+  googleErrorReason,
+  groupDocOutline,
+  groupDocPermission,
+  groupDocRequests,
+  isFileId,
+  isHeadingId,
+  sourceLabel,
+} from '@/lib/google-links'
 import { myAccessToken, type MyToken } from '@/lib/google-server'
 import { fetchDoc, revokeToken } from '@/supabase/functions/_shared/google-api'
 import { docHeadings } from '@/supabase/functions/_shared/google-count'
@@ -93,10 +101,45 @@ export async function unlinkTaskSource(classId: string, taskId: string): Promise
   return { error: null }
 }
 
+type GoogleAuth = { Authorization: string; 'Content-Type': string }
+
+// A refused Google call as "400:invalidSharingRequest" (or just the status),
+// for logServerError.
+async function googleFailure(res: Response): Promise<string> {
+  const reason = googleErrorReason(await res.json().catch(() => null))
+  return reason ? `${res.status}:${reason}` : String(res.status)
+}
+
+// "Anyone with the link can edit" (the author's choice of 2026-10-26), or,
+// when the student's Google account refuses that, anyone at the university
+// with the link (2026-10-27). False when neither is allowed.
+async function shareGroupDoc(auth: GoogleAuth, fileId: string): Promise<boolean> {
+  for (const audience of ['anyone', 'university'] as const) {
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions`, {
+      method: 'POST',
+      headers: auth,
+      body: JSON.stringify(groupDocPermission(audience)),
+    })
+    if (res.ok) return true
+    logServerError(`createGroupDoc.share.${audience}`, { code: await googleFailure(res) })
+  }
+  return false
+}
+
+// Best effort; drive.file lets the app trash only files it created.
+async function trashFile(auth: GoogleAuth, fileId: string): Promise<void> {
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, {
+    method: 'PATCH',
+    headers: auth,
+    body: JSON.stringify({ trashed: true }),
+  }).catch(() => null)
+  if (!res?.ok) logServerError('createGroupDoc.trash', { code: res ? await googleFailure(res) : 'network' })
+}
+
 // グループのドキュメントをつくる: a Google Doc in this student's Drive with the
-// project title and one heading per characters task, link sharing ("anyone
-// with the link can edit"; the link is shown only on the pod's board, the
-// author's choice of 2026-10-26), and every such task linked to its heading.
+// project title and one heading per characters task, link sharing (see
+// shareGroupDoc; the link is shown only on the pod's board), and every such
+// task linked to its heading.
 export async function createGroupDoc(classId: string, projectId: string): Promise<ActionResult> {
   const me = await signedIn()
   if (!me) return { error: 'signedOut' }
@@ -122,18 +165,25 @@ export async function createGroupDoc(classId: string, projectId: string): Promis
   }))
   if (writable.length === 0) return { error: 'groupDocNoTasks' }
 
-  const auth = { Authorization: `Bearer ${token.accessToken}`, 'Content-Type': 'application/json' }
+  const auth: GoogleAuth = { Authorization: `Bearer ${token.accessToken}`, 'Content-Type': 'application/json' }
   const created = await fetch('https://docs.googleapis.com/v1/documents', {
     method: 'POST',
     headers: auth,
     body: JSON.stringify({ title: project.title }),
   })
   if (!created.ok) {
-    logServerError('createGroupDoc.create', { code: String(created.status) })
+    logServerError('createGroupDoc.create', { code: await googleFailure(created) })
     return { error: 'googleFailed' }
   }
   const { documentId } = (await created.json()) as { documentId?: string }
   if (!documentId || !isFileId(documentId)) return { error: 'googleFailed' }
+
+  // Until the first task is linked, a failure trashes the half-made Doc so it
+  // doesn't pile up in the student's Drive.
+  const fail = async (error: ErrorKey): Promise<ActionResult> => {
+    await trashFile(auth, documentId)
+    return { error }
+  }
 
   const lines = groupDocOutline(project.title, writable)
   const [written, shared] = await Promise.all([
@@ -142,22 +192,19 @@ export async function createGroupDoc(classId: string, projectId: string): Promis
       headers: auth,
       body: JSON.stringify({ requests: groupDocRequests(lines) }),
     }),
-    fetch(`https://www.googleapis.com/drive/v3/files/${documentId}/permissions`, {
-      method: 'POST',
-      headers: auth,
-      body: JSON.stringify({ type: 'anyone', role: 'writer', allowFileDiscovery: false }),
-    }),
+    shareGroupDoc(auth, documentId),
   ])
-  if (!written.ok || !shared.ok) {
-    logServerError('createGroupDoc.setup', { code: `${written.status}/${shared.status}` })
-    return { error: 'googleFailed' }
+  if (!written.ok) {
+    logServerError('createGroupDoc.write', { code: await googleFailure(written) })
+    return fail('googleFailed')
   }
+  if (!shared) return fail('groupDocShareBlocked')
 
   // The headings now have ids, in the same order as the tasks.
   const doc = await fetchDoc(token.accessToken, documentId)
-  if (!doc.ok) return { error: 'googleFailed' }
+  if (!doc.ok) return fail('googleFailed')
   const headings = docHeadings(doc.value)
-  if (headings.length !== writable.length) return { error: 'googleFailed' }
+  if (headings.length !== writable.length) return fail('googleFailed')
 
   for (let i = 0; i < writable.length; i++) {
     const { error } = await me.supabase.rpc('link_task_source', {
