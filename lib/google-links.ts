@@ -1,6 +1,8 @@
 // Google auto-logging, the app side: pure helpers for the connect flow, the
 // link page and the group Doc (docs/plans/automation-plan.md, section 1).
 
+import { UNIVERSITY_EMAIL_DOMAIN } from './errors'
+
 // The cookie that ties Google's answer to the browser that asked (connect →
 // callback, 10 minutes, httpOnly, path /api/google).
 export const OAUTH_COOKIE = 'google_oauth'
@@ -75,4 +77,22 @@ export function groupDocRequests(lines: ReturnType<typeof groupDocOutline>): unk
     index = end
   }
   return requests
+}
+
+// Who the group Doc is shared with (a Drive API permission): "anyone with the
+// link can edit" first; when the student's Google account doesn't allow that
+// (a university Workspace often doesn't), anyone at the university with the
+// link. Every podmate signs in with a university address.
+export function groupDocPermission(audience: 'anyone' | 'university') {
+  return audience === 'anyone'
+    ? { type: 'anyone', role: 'writer', allowFileDiscovery: false }
+    : { type: 'domain', domain: UNIVERSITY_EMAIL_DOMAIN, role: 'writer', allowFileDiscovery: false }
+}
+
+// Google's short reason for a refused call ("invalidSharingRequest"), for the
+// server log. Only a plain word: Google's messages can name people's addresses.
+export function googleErrorReason(body: unknown): string | null {
+  const error = (body as { error?: { errors?: { reason?: unknown }[]; status?: unknown } } | null)?.error
+  const reason = error?.errors?.[0]?.reason ?? error?.status
+  return typeof reason === 'string' && /^[A-Za-z_]{1,64}$/.test(reason) ? reason : null
 }

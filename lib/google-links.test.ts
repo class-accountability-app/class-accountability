@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { groupDocOutline, groupDocRequests, isFileId, isHeadingId, safeReturnPath, sourceLabel } from './google-links'
+import {
+  googleErrorReason,
+  groupDocOutline,
+  groupDocPermission,
+  groupDocRequests,
+  isFileId,
+  isHeadingId,
+  safeReturnPath,
+  sourceLabel,
+} from './google-links'
 
 type StyleRequest = {
   updateParagraphStyle: { range: { startIndex: number; endIndex: number }; paragraphStyle: { namedStyleType: string } }
@@ -69,5 +78,29 @@ describe('group Doc', () => {
   it('counts an emoji as two index units, as Google does', () => {
     const requests = groupDocRequests(groupDocOutline('😀', [])) as [unknown, StyleRequest]
     expect(requests[1].updateParagraphStyle.range).toEqual({ startIndex: 1, endIndex: 4 })
+  })
+
+  it('shares with anyone with the link, or else the university, always as unlisted editors', () => {
+    expect(groupDocPermission('anyone')).toEqual({ type: 'anyone', role: 'writer', allowFileDiscovery: false })
+    expect(groupDocPermission('university')).toEqual({
+      type: 'domain',
+      domain: 'andrew.ac.jp',
+      role: 'writer',
+      allowFileDiscovery: false,
+    })
+  })
+})
+
+describe('googleErrorReason', () => {
+  it("reads Google's reason, or its status when there is none", () => {
+    const body = { error: { code: 400, message: 'Bad Request', errors: [{ reason: 'invalidSharingRequest' }], status: 'INVALID_ARGUMENT' } }
+    expect(googleErrorReason(body)).toBe('invalidSharingRequest')
+    expect(googleErrorReason({ error: { code: 403, status: 'PERMISSION_DENIED' } })).toBe('PERMISSION_DENIED')
+  })
+
+  it('logs nothing that is not a plain word', () => {
+    for (const body of [null, 'oops', {}, { error: {} }, { error: { errors: [{ reason: 'x@andrew.ac.jp' }] } }, { error: { status: 'a b' } }, { error: { status: 'a'.repeat(65) } }]) {
+      expect(googleErrorReason(body)).toBeNull()
+    }
   })
 })
