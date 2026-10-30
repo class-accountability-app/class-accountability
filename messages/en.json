@@ -344,7 +344,9 @@
     "groupDocNoTasks": "There are no tasks counted in characters yet. Please add one first.",
     "googleHeadingRequired": "Please choose a heading.",
     "teamCodeInvalid": "This team code doesn’t work. Ask your team to show you their current code again.",
-    "teamCodeFormat": "A team code is 8 letters and numbers (e.g. K7M3 Q9TX)."
+    "teamCodeFormat": "A team code is 8 letters and numbers (e.g. K7M3 Q9TX).",
+    "classProjectTooManyTasks": "A class project can have up to 30 tasks.",
+    "classProjectDaysInvalid": "For “days before the deadline”, enter a whole number from 0 to 365."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -1246,5 +1248,38 @@
     "placeholder": "e.g. K7M3 Q9TX",
     "submit": "Open",
     "hint": "The 8-character code your team showed you. You can also scan their QR code."
+  },
+  "classProject": {
+    "title": "Class project",
+    "why": "Every new team in this class starts with this project and its tasks.",
+    "nameLabel": "Project name",
+    "namePlaceholder": "e.g. Final presentation",
+    "deadlineLabel": "Deadline",
+    "everyLabel": "Check-in interval",
+    "everySuffix": "days",
+    "tasksLabel": "Tasks",
+    "preset": {
+      "presentation": "Presentation template",
+      "report": "Report template"
+    },
+    "noTasks": "No tasks yet. Pick a template or add a task.",
+    "taskTitleLabel": "Task {n}",
+    "metricLabel": "How progress is measured",
+    "metric": {
+      "status": "Done or not",
+      "count": "A count (e.g. slides)",
+      "characters": "Characters"
+    },
+    "unitLabel": "Unit",
+    "unitPlaceholder": "e.g. slides",
+    "targetLabel": "Goal",
+    "daysLabel": "Days before the deadline",
+    "removeTask": "Remove this task",
+    "addTask": "Add a task",
+    "appliesToNew": "Changes apply to teams started from now on. Existing teams keep their project.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved.",
+    "taskProblemAt": "Check task {n}."
   }
 }

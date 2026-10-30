@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { TeamSummary } from '@/components/teacher/team-summary'
+import { ClassProjectForm } from '@/components/teacher/class-project-form'
+import { rowsFromTasks } from '@/lib/class-project'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
@@ -99,9 +101,14 @@ export default async function ClassPodsPage({
   // The organizer (0015) shares the link and QR and sees how many students
   // have joined; never pods, progress or names (RLS hides them anyway).
   if (membership.role === 'organizer') {
-    const { data: byCode } = await supabase
-      .rpc('class_by_join_code', { code: cls.join_code })
-      .maybeSingle<{ member_count: number }>()
+    const [{ data: byCode }, { data: classProject }] = await Promise.all([
+      supabase.rpc('class_by_join_code', { code: cls.join_code }).maybeSingle<{ member_count: number }>(),
+      supabase
+        .from('class_projects')
+        .select('title, deadline, checkin_every_days, tasks')
+        .eq('class_id', classId)
+        .maybeSingle<{ title: string; deadline: string | null; checkin_every_days: number; tasks: unknown }>(),
+    ])
     return (
       <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12 sm:items-start sm:pl-16">
         <div className="flex w-full max-w-md flex-col gap-2">
@@ -113,6 +120,19 @@ export default async function ClassPodsPage({
           <p className="text-sm leading-[1.8] text-muted">{t('organizerNote')}</p>
         </div>
         <TeamSummary classId={classId} />
+        <ClassProjectForm
+          classId={classId}
+          initial={
+            classProject
+              ? {
+                  title: classProject.title,
+                  deadline: classProject.deadline ?? '',
+                  every: String(classProject.checkin_every_days),
+                  tasks: rowsFromTasks(classProject.tasks),
+                }
+              : null
+          }
+        />
         <div id="invite" className="w-full max-w-md scroll-mt-4">
           {inviteCard}
         </div>
