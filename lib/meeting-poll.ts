@@ -6,8 +6,10 @@ export type PollAnswer = (typeof POLL_ANSWERS)[number]
 
 export const POLL_DURATIONS = [30, 45, 60] as const
 export const POLL_MIN_OPTIONS = 2
-export const POLL_MAX_OPTIONS = 8
+export const POLL_MAX_OPTIONS = 20
 export const POLL_TITLE_MAX = 60
+// 回答のしめきり shortcuts, in days from now (the form also takes any time).
+export const VOTE_BY_DAYS = [1, 3, 7] as const
 
 export function isPollAnswer(value: unknown): value is PollAnswer {
   return typeof value === 'string' && (POLL_ANSWERS as readonly string[]).includes(value)

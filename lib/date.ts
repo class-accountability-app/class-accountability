@@ -99,6 +99,15 @@ export function formatDateWithWeekday(value: DateInput, locale: Locale): string 
   }).format(date)
 }
 
+// A week grid's column head: 火 / Tue and the day of the month, Tokyo time.
+export function formatDayColumn(value: DateInput, locale: Locale): { weekday: string; day: string } {
+  const date = toDate(value)
+  return {
+    weekday: new Intl.DateTimeFormat(locale, { timeZone: APP_TIME_ZONE, weekday: 'short' }).format(date),
+    day: new Intl.DateTimeFormat('en', { timeZone: APP_TIME_ZONE, day: 'numeric' }).format(date),
+  }
+}
+
 // ICU puts a space in Japanese relative times ("8 日前"); Japanese text sets
 // the number flush against the unit ("8日前").
 function tidy(text: string, locale: Locale): string {
