@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Project-first prototype (phase 4). Plan: docs/plans/project-first-plan.md. Clickable; #board, #teacher etc. open one screen. Example data only. -->
+<title>Study Pods Project Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Schibsted+Grotesk:wght@400;500;600;700&family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: a phone you can click through on the left, presenter notes and a screen list on the right.
+   Single theme on purpose: the app itself has no dark mode, so every colour is set explicitly. */
+:root{
+  color-scheme:light;
+  --page-bg:#f6ecd6;--surface:#fbf6e8;--border:#d9c69a;--rule:#e3d3ac;--dash:#e3d4b0;
+  --ink:#3a2f22;--muted:#6b5636;--accent:#b5583f;--accent-text:#9c4830;
+  --active:#6f8556;--active-text:#556b40;--stale:#948e78;--field:#fffdf7;--warn:#b07a1e;
+  --stage:#ece3cf;--stage-ink:#3a2f22;
+  --heading:'Fraunces','Shippori Mincho',serif;
+  --body:'Schibsted Grotesk','Zen Kaku Gothic New',system-ui,sans-serif;
+  --meta:'Courier Prime','Zen Kaku Gothic New',ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--stage);color:var(--stage-ink);font-family:var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
+:lang(ja){word-break:auto-phrase}
+h1,h2,h3{text-wrap:balance}
+p{margin:0}ul{list-style:none;margin:0;padding:0}
+button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.stage{display:flex;gap:32px;align-items:flex-start;justify-content:center;flex-wrap:wrap;max-width:1100px;margin:0 auto}
+
+/* ---------- phone ---------- */
+.phone{position:relative;width:390px;max-width:100%;height:min(844px,calc(100vh - 48px));min-height:640px;background:var(--page-bg);
+  border-radius:28px;overflow:hidden;box-shadow:0 0 0 10px #2b251e,0 20px 50px rgba(43,37,30,.35);display:flex;flex-direction:column;flex:none}
+.hdr{height:56px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:var(--surface);border-bottom:1px solid var(--border)}
+.brand{font:600 20px var(--heading)}
+.hdr .who{font:12px var(--meta);color:var(--muted)}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;
+  background-image:repeating-linear-gradient(transparent 0,transparent 27px,var(--rule) 27px,var(--rule) 28px)}
+.page{padding:28px 16px 40px;display:flex;flex-direction:column;gap:28px}
+.tabs{flex:none;height:64px;display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:1px solid var(--border)}
+.tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:var(--muted)}
+.tabs button.on{color:var(--accent-text);font-weight:700;box-shadow:inset 0 3px 0 var(--accent-text)}
+.tabs svg{width:20px;height:20px}
+
+h1{margin:0;font:700 24px/28px var(--heading)}
+h2{margin:0;font:700 17px/28px var(--heading)}
+.l{font-size:15px;line-height:28px}
+.hint{font-size:13px;line-height:28px;color:var(--muted)}
+.meta{font:12px/28px var(--meta);color:var(--muted)}
+.k{font:700 12px/28px var(--meta);color:var(--accent-text);letter-spacing:.06em}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:10px;align-items:center}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.card{background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);border-radius:2px;padding:14px}
+.hero{padding-left:18px;box-shadow:inset 0 0 0 1px var(--border),inset 4px 0 0 var(--accent)}
+.mine{box-shadow:inset 0 0 0 1px var(--border),inset 4px 0 0 var(--active)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:2px;font:600 15px var(--body);white-space:nowrap}
+.btn.primary{background:var(--accent);color:#fff;box-shadow:0 2px 0 rgba(58,47,34,.35)}
+.btn.secondary{background:var(--field);color:var(--ink);box-shadow:inset 0 0 0 1px #b9a57c}
+.btn.small{min-height:36px;padding:0 12px;font-size:14px}
+.btn.block{width:100%}
+.link{display:inline-flex;align-items:center;min-height:44px;font:600 14px var(--body);color:var(--accent-text);text-decoration:underline;text-underline-offset:4px}
+.field{display:flex;flex-direction:column}
+.field label{font:600 14px/28px var(--body)}
+.input{width:100%;min-height:44px;padding:0 12px;border:0;border-radius:2px;background:var(--field);box-shadow:inset 0 0 0 1px #b9a57c;font:16px var(--body);color:var(--ink)}
+textarea.input{min-height:84px;padding:8px 12px;line-height:28px;resize:vertical}
+.code{display:flex;gap:8px}
+.code span{width:44px;height:52px;display:flex;align-items:center;justify-content:center;background:var(--field);box-shadow:inset 0 0 0 1px #b9a57c;border-radius:2px;font:700 22px var(--meta)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{min-height:44px;min-width:56px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;border-radius:2px;background:var(--field);box-shadow:inset 0 0 0 1px #b9a57c;font:600 15px var(--body)}
+.chip.on{background:var(--ink);color:#fff;box-shadow:none}
+.barrow{height:28px;display:flex;align-items:center}
+.bar{position:relative;width:100%;height:8px;background:#e2d2a8;border-radius:2px}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--ink);border-radius:2px;transition:width .5s ease}
+.bar.ok i{background:var(--active)}
+.bar.warn i{background:var(--warn)}
+.bar b{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--accent)}
+.pill{font:700 12px/22px var(--meta);padding:0 8px;border-radius:2px;box-shadow:inset 0 0 0 1px var(--border);color:var(--muted);white-space:nowrap}
+.pill.doing{color:var(--active-text);box-shadow:inset 0 0 0 1px var(--active)}
+.pill.done,.pill.ok{background:var(--active);color:#fff;box-shadow:none}
+.pill.warn{background:var(--warn);color:#fff;box-shadow:none}
+.pill.todo{color:var(--stale)}
+.src{display:flex;align-items:center;gap:6px;font:12px/24px var(--meta);color:var(--active-text)}
+.src::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--active)}
+.src.manual{color:var(--muted)}.src.manual::before{background:var(--stale)}
+.fresh{animation:flash 1.2s ease}
+@keyframes flash{0%{background:#f1dca0}100%{background:transparent}}
+.mhead{display:flex;align-items:center;gap:10px;min-height:40px}
+.av{width:28px;height:28px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 13px var(--body);color:#fff;background:var(--muted)}
+.mhead b{flex:1;font-size:15px}
+.task{padding:6px 0 6px 38px;background:repeating-linear-gradient(90deg,var(--dash) 0 4px,transparent 4px 8px) bottom/100% 1px no-repeat}
+.task:last-child{background:none}
+.task .t{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:15px;line-height:28px}
+.task .t b{font-weight:600}
+.num{font:700 14px var(--meta);white-space:nowrap}
+.note{font-size:13px;line-height:24px;color:var(--muted);padding:10px 12px;background:var(--field);box-shadow:inset 0 0 0 1px var(--dash);border-radius:2px}
+.vrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;background:repeating-linear-gradient(90deg,var(--dash) 0 4px,transparent 4px 8px) bottom/100% 1px no-repeat}
+.vrow:last-child{background:none}
+.vrow.best .when::after{content:" ★";color:var(--accent-text)}
+.vote{display:flex;gap:6px}
+.vote button{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;border-radius:2px;background:var(--field);box-shadow:inset 0 0 0 1px #b9a57c;font:700 16px var(--body)}
+.vote button.on{background:var(--ink);color:#fff;box-shadow:none}
+.tally{font:12px/20px var(--meta);color:var(--muted)}
+.qr{width:168px;height:168px;padding:10px;background:#fff;box-shadow:inset 0 0 0 1px var(--border);border-radius:2px;align-self:center}
+.team{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 0;background:repeating-linear-gradient(90deg,var(--dash) 0 4px,transparent 4px 8px) bottom/100% 1px no-repeat}
+.team:last-child{background:none}
+.team .name{font:600 15px/28px var(--body)}
+.team .facts{grid-column:1/-1;font:12px/22px var(--meta);color:var(--muted)}
+.check{display:flex;gap:10px;align-items:center;min-height:44px;font-size:15px}
+.check i{width:22px;height:22px;flex:none;border-radius:2px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:14px}
+.scrim{position:absolute;inset:0;background:rgba(58,47,34,.45);z-index:5}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--border);padding:20px 16px 28px;display:flex;flex-direction:column;gap:14px;border-radius:14px 14px 0 0}
+.toast{position:absolute;left:16px;right:16px;bottom:80px;z-index:7;background:var(--ink);color:#fff;padding:12px 14px;border-radius:4px;font-size:14px;line-height:22px;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+.back{display:inline-flex;align-items:center;min-height:44px;font:600 14px var(--body);color:var(--accent-text);align-self:flex-start}
+
+/* ---------- presenter panel ---------- */
+.guide{flex:1;min-width:0;max-width:440px;display:flex;flex-direction:column;gap:20px}
+.guide h1{font:700 28px/34px var(--heading)}
+.guide .lede{font-size:15px;line-height:24px;color:var(--muted)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.seg{display:inline-flex;border-radius:4px;box-shadow:inset 0 0 0 1px #b9a57c;overflow:hidden}
+.seg button{min-height:36px;padding:0 12px;font:600 13px var(--body)}
+.seg button.on{background:var(--ink);color:#fff}
+.steps{display:flex;flex-direction:column;gap:2px}
+.steps .grp{font:700 12px/28px var(--meta);color:var(--accent-text);letter-spacing:.06em;margin-top:8px}
+.steps button{display:flex;gap:12px;align-items:baseline;text-align:left;padding:8px 10px;border-radius:4px;font-size:14px;line-height:20px}
+.steps button span{font:12px var(--meta);color:var(--muted);min-width:20px}
+.steps button.on{background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);font-weight:600}
+.explain{background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);border-radius:4px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.explain h2{font:700 17px/24px var(--heading)}
+.explain p,.explain li{font-size:14px;line-height:22px}
+.explain ul{list-style:disc;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.explain .tag{font:700 11px var(--meta);letter-spacing:.06em;color:var(--active-text)}
+
+@media (max-width:860px){
+  body{padding-block:16px}
+  .stage{flex-direction:column;align-items:stretch;gap:20px}
+  .guide{max-width:none;order:-1}
+  .steps{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:4px}
+  .steps .grp{display:none}
+  .steps button{flex:none;white-space:nowrap}
+  .phone{width:100%;height:760px;border-radius:18px;box-shadow:0 0 0 6px #2b251e}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="phone" id="phone" aria-live="polite"></div>
+  <aside class="guide" id="guide"></aside>
+</div>
+
+<script>
+// ---------- example data (made up) ----------
+const ME = 'me'
+const people = {
+  me:{ja:'ゆい',en:'Yui',color:'#6f8556'},
+  kenta:{ja:'けんた',en:'Kenta',color:'#b5583f'},
+  sakura:{ja:'さくら',en:'Sakura',color:'#7a6a9a'},
+  haruto:{ja:'はると',en:'Haruto',color:'#4f7891'},
+}
+const TODAY = new Date('2026-10-30T10:00:00+09:00')
+const START = new Date('2026-10-23T00:00:00+09:00')
+
+function freshState(){
+  return {
+    lang:'ja', screen:'login', sheet:null, toast:'', flash:null,
+    projectTitle:{ja:'地域観光の課題と提案',en:'Local tourism: problems and proposals'},
+    template:'presentation', every:4, deadline:'2026-11-20', groupDoc:true,
+    tasks:[
+      {id:'research',title:{ja:'調査メモ',en:'Research notes'},owner:'kenta',metric:'characters',target:2000,current:1640,status:'doing',source:'gdoc',updated:3},
+      {id:'script',title:{ja:'発表原稿',en:'Talk script'},owner:ME,metric:'characters',target:3000,current:1280,status:'doing',source:'gdoc',updated:12},
+      {id:'slides',title:{ja:'スライド',en:'Slides'},owner:'sakura',metric:'count',unit:{ja:'枚',en:'slides'},target:12,current:7,status:'doing',source:'gslides',updated:25},
+      {id:'figures',title:{ja:'図表づくり',en:'Charts and figures'},owner:ME,metric:'count',unit:{ja:'枚',en:'figures'},target:6,current:2,status:'doing',source:'manual',updated:60*26},
+      {id:'refs',title:{ja:'参考文献リスト',en:'Reference list'},owner:'haruto',metric:'status',status:'done',source:'manual',updated:60*30},
+      {id:'rehearsal',title:{ja:'リハーサル',en:'Rehearsal'},owner:null,metric:'status',status:'todo',source:'manual'},
+      {id:'handout',title:{ja:'配布資料',en:'Handout'},owner:null,metric:'status',status:'todo',source:'manual'},
+    ],
+    checkins:[
+      {who:'kenta',did:{ja:'統計データを3つ集めました',en:'Collected three data sets'},next:{ja:'観光客アンケートの要約',en:'Summarise the visitor survey'},stuck:null},
+      {who:'sakura',did:{ja:'構成案と表紙ができました',en:'Outline and title slide done'},next:{ja:'5〜9枚目',en:'Slides 5 to 9'},stuck:{ja:'図表のデータ待ちです',en:'Waiting for chart data'}},
+    ],
+    myCheckin:null,
+    poll:{title:{ja:'中間発表の練習',en:'Midterm rehearsal'},minutes:60,status:'open',chosen:null,
+      options:[
+        {when:{ja:'11/4（水）18:00',en:'Wed 4 Nov, 18:00'},votes:{kenta:'yes',sakura:'maybe',haruto:'yes'}},
+        {when:{ja:'11/5（木）12:20',en:'Thu 5 Nov, 12:20'},votes:{kenta:'yes',sakura:'yes',haruto:'yes'}},
+        {when:{ja:'11/6（金）16:30',en:'Fri 6 Nov, 16:30'},votes:{kenta:'no',sakura:'yes',haruto:'maybe'}},
+      ]},
+    finished:false,
+  }
+}
+let S = freshState()
+const t = (ja,en) => S.lang==='ja' ? ja : en
+const L = o => o ? (S.lang==='ja' ? o.ja : o.en) : ''
+const nm = id => L(people[id])
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))
+const fmt = n => n.toLocaleString('en-US')
+
+// ---------- pure helpers (what lib/project-stats.ts would compute) ----------
+function fraction(task){
+  if(task.metric==='status') return task.status==='done'?1:task.status==='doing'?.3:0
+  return Math.min(1, task.current/task.target)
+}
+function projectPct(){ const ts=S.tasks; return Math.round(100*ts.reduce((a,x)=>a+fraction(x),0)/ts.length) }
+function daysLeft(){ return Math.round((new Date(S.deadline+'T00:00:00+09:00')-TODAY)/864e5) }
+function expectedPct(){
+  const total=(new Date(S.deadline+'T00:00:00+09:00')-START)/864e5
+  return Math.max(0,Math.min(100,Math.round(100*((TODAY-START)/864e5)/total)))
+}
+function onTrack(){ return projectPct() >= expectedPct()-10 }
+function ago(min){
+  if(min==null) return ''
+  if(min<1) return t('たった今','just now')
+  if(min<60) return t(`${min}分前`,`${min} min ago`)
+  const h=Math.round(min/60); if(h<24) return t(`${h}時間前`,`${h} h ago`)
+  const d=Math.round(h/24); return t(`${d}日前`,`${d} days ago`)
+}
+function amount(task){
+  if(task.metric==='status') return ''
+  if(task.metric==='characters') return `${fmt(task.current)} / ${fmt(task.target)} ${t('字','chars')}`
+  return `${task.current} / ${task.target} ${L(task.unit)}`
+}
+function statusLabel(s){ return {todo:t('未着手','To do'),doing:t('作業中','Doing'),done:t('完了','Done')}[s] }
+function srcLabel(task){
+  if(task.source==='gdoc') return t('Google ドキュメント','Google Doc')+' · '+ago(task.updated)
+  if(task.source==='gslides') return t('Google スライド','Google Slides')+' · '+ago(task.updated)
+  return t('手で記録','Logged by hand')+(task.updated!=null?' · '+ago(task.updated):'')
+}
+function tally(opt){
+  const v=Object.values(opt.votes); return {yes:v.filter(x=>x==='yes').length,maybe:v.filter(x=>x==='maybe').length,no:v.filter(x=>x==='no').length}
+}
+function bestOption(){
+  // Most yes, then most maybe, then earliest (lib/meeting-poll.ts).
+  let best=0
+  S.poll.options.forEach((o,i)=>{const a=tally(o),b=tally(S.poll.options[best]); if(a.yes>b.yes||(a.yes===b.yes&&a.maybe>b.maybe)) best=i})
+  return best
+}
+// The one next step on the board (the new nextStep()).
+function nextStep(){
+  if(S.finished) return {kind:'done'}
+  if(S.tasks.some(x=>!x.owner)) return {kind:'claim'}
+  if(!S.myCheckin) return {kind:'checkin'}
+  if(S.poll.status==='open' && !S.poll.options.every(o=>o.votes[ME])) return {kind:'vote'}
+  return {kind:'log'}
+}
+
+// ---------- screens ----------
+const SCREENS = [
+  {id:'login',grp:'s',ja:'ログイン',en:'Log in'},
+  {id:'welcome',grp:'s',ja:'名前',en:'Your name'},
+  {id:'join',grp:'s',ja:'クラスに参加',en:'Join the class'},
+  {id:'team',grp:'s',ja:'チームを組む',en:'Form a team'},
+  {id:'invite',grp:'s',ja:'チームに招待',en:'Invite the team'},
+  {id:'newproject',grp:'s',ja:'プロジェクトを作る',en:'Create the project'},
+  {id:'board',grp:'s',ja:'ホーム＝プロジェクト',en:'Home = the project'},
+  {id:'checkin',grp:'s',ja:'チェックイン',en:'Check-in'},
+  {id:'poll',grp:'s',ja:'打ち合わせの日程',en:'Meeting poll'},
+  {id:'finish',grp:'s',ja:'完了して次へ',en:'Finish, start next'},
+  {id:'teacher',grp:'t',ja:'先生のまとめ',en:'Teacher summary'},
+]
+const NOTES = {
+  login:{tag:{ja:'変わらないこと',en:'UNCHANGED'},h:{ja:'大学のメールでログイン',en:'Log in with the university email'},
+    p:{ja:'6桁のコードかボタンでログインします。andrew.ac.jp のアドレスだけが使えます（データベースで確認）。',en:'A 6-digit code or a button, sent to the andrew.ac.jp address. Only university addresses get in, checked in the database.'}},
+  welcome:{tag:{ja:'変わらないこと',en:'UNCHANGED'},h:{ja:'チームに見える名前',en:'The name your team sees'},
+    p:{ja:'最初に一度だけ。ここから先は全部プロジェクトに向かいます。',en:'Asked once. From here on, every step leads to the project.'}},
+  join:{tag:{ja:'新しい流れ',en:'NEW FLOW'},h:{ja:'クラスに参加したら、すぐチームへ',en:'Join the class, then straight to a team'},
+    p:{ja:'以前は「自分の目標を決める」画面がありました。個人の目標はなくなり、次の一歩はチームづくりです。',en:'This used to ask for a personal target. Personal targets are gone; the next step is a team.'}},
+  team:{tag:{ja:'新しい流れ',en:'NEW FLOW'},h:{ja:'チームをはじめる・参加する',en:'Start or join a team'},
+    li:[{ja:'チームは授業の中で顔を合わせて決まることが多いので、コードや QR で参加できます。',en:'Teams usually form face to face in class, so you can join with a code or QR.'},
+        {ja:'届いた招待はここに出ます。参加するとそのままプロジェクトへ。',en:'An invitation shows up here. Accepting goes straight to the project.'},
+        {ja:'1チーム最大6人のまま。',en:'Still up to 6 per team.'}]},
+  invite:{tag:{ja:'新機能',en:'NEW'},h:{ja:'QR とリンクで招待',en:'Invite by QR or link'},
+    p:{ja:'教室で画面を見せて読み取ってもらうだけ。クラスの参加リンクと同じしくみです。',en:'Show the screen in class and teammates scan it. Same idea as the class join link.'}},
+  newproject:{tag:{ja:'新機能',en:'NEW'},h:{ja:'テンプレートでタスクが一度にそろう',en:'A template sets up every task at once'},
+    li:[{ja:'発表・レポート・ポスターから選ぶと、締切から逆算した期日つきのタスクができます。',en:'Pick talk, report or poster: the tasks come with due dates counted back from the deadline.'},
+        {ja:'グループの Google ドキュメントも同時に作れます。見出しごとにタスクとつながります。',en:'It can also create the group Google Doc, one heading per writing task.'},
+        {ja:'チームに進行中のプロジェクトは1つだけ。',en:'One active project per team.'}]},
+  board:{tag:{ja:'中心の画面',en:'THE CORE SCREEN'},h:{ja:'ログイン後はこの画面から',en:'After login, this is home'},
+    li:[{ja:'チームの数字はリアルタイム。Google ドキュメントとスライドは5分ごとに自動で数えます。',en:'Team numbers are live. Google Docs and Slides are counted automatically every 5 minutes.'},
+        {ja:'共有されるのは合計の数字だけ。文章そのものと、記録に書いた個人のメモは見えません。',en:'Only totals are shared. Nobody sees the text, or the personal memo on a log.'},
+        {ja:'上のカードはいつも「次にやること」1つ。担当者のいないタスク → チェックイン → 投票 → 記録、の順。',en:'The top card is always one next step: unowned tasks, then check-in, then voting, then logging.'},
+        {ja:'「＋記録」を押して数字が変わるのを見せてください。',en:'Try ＋記録 (log) and watch the number change.'}]},
+  checkin:{tag:{ja:'役割が変わる',en:'NEW ROLE'},h:{ja:'チェックインは「打ち合わせ前のひとこと」',en:'Check-in becomes the note before a meeting'},
+    p:{ja:'数字はもういつでも見えるので、チェックインは「できたこと・次にやること・困っていること」を共有する場になります。数字のスナップショットも履歴として残ります。',en:'Numbers are always visible now, so a check-in is for what I did, what is next and where I am stuck. A snapshot of the numbers is kept as history.'}},
+  poll:{tag:{ja:'実装済み',en:'ALREADY BUILT'},h:{ja:'○△✕ で日程を決める',en:'Pick a time with ○ △ ✕'},
+    p:{ja:'候補は2〜8つ。いちばん○が多い時間に★。確定すると、打ち合わせのページにみんなのチェックインが議題として並びます。',en:'2 to 8 times. The time with the most ○ gets a ★. Once confirmed, the meeting page lists everyone\'s check-in as the agenda.'}},
+  finish:{tag:{ja:'新機能',en:'NEW'},h:{ja:'完了したら、次のプロジェクトへ',en:'Finish, then start the next one'},
+    p:{ja:'完了したプロジェクトは読むだけの記録として残ります。同じチームで次の課題をはじめられます。',en:'A finished project stays as a read-only record. The same team can start the next assignment.'}},
+  teacher:{tag:{ja:'新機能・プライバシー',en:'NEW · PRIVACY'},h:{ja:'先生にはチームごとのまとめだけ',en:'Teachers see one line per team'},
+    li:[{ja:'進み具合・順調か・最後の動き・チェックインの数。',en:'Progress, on track or not, last activity, check-ins shared.'},
+        {ja:'学生の名前、一人ひとりの数字、文章は出ません。',en:'No student names, no per-person numbers, no text.'},
+        {ja:'学生のボードにも「先生にはチーム全体の進み具合だけが見えます」と表示します。',en:'Students\' boards say the teacher sees only the team as a whole.'}]},
+}
+
+const ICON = {
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11l8-6 8 6v8a1 1 0 01-1 1h-4v-6H9v6H5a1 1 0 01-1-1z"/></svg>',
+  cls:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
+  nudge:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"/><path d="M10 20a2 2 0 004 0"/></svg>',
+  set:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>',
+}
+
+function header(){
+  const who = S.screen==='teacher' ? t('先生','Teacher') : (['login'].includes(S.screen)?'':nm(ME))
+  return `<div class="hdr"><span class="brand">Study Pods</span><span class="who">${esc(who)}</span></div>`
+}
+function tabs(active){
+  const b=(id,ic,ja,en)=>`<button data-act="tab" data-arg="${id}" class="${active===id?'on':''}">${ICON[ic]}${t(ja,en)}</button>`
+  return `<nav class="tabs">${b('home','home','ホーム','Home')}${b('classes','cls','クラス','Classes')}${b('nudges','nudge','声かけ','Nudges')}${b('settings','set','設定','Settings')}</nav>`
+}
+function bar(pct,cls='',marker=null){
+  return `<div class="barrow"><div class="bar ${cls}"><i style="width:${pct}%"></i>${marker!=null?`<b style="left:${marker}%"></b>`:''}</div></div>`
+}
+function av(id){ return `<span class="av" style="background:${people[id].color}">${esc(nm(id).slice(0,1))}</span>` }
+
+const view = {
+  login(){
+    return `<div class="page">
+      <div><h1>${t('Study Pods にログイン','Log in to Study Pods')}</h1>
+      <p class="hint">${t('大学のメールアドレスに6桁のコードを送ります。','We send a 6-digit code to your university email.')}</p></div>
+      <div class="field"><label for="em">${t('大学のメールアドレス','University email')}</label>
+        <input id="em" class="input" type="email" autocomplete="email" value="s2412345@andrew.ac.jp"></div>
+      <div class="stack"><p class="l">${t('届いたコード','Code from the email')}</p>
+        <div class="code">${'482913'.split('').map(d=>`<span>${d}</span>`).join('')}</div>
+        <p class="hint">${t('Gmail でも Outlook でも届きます。','Check Gmail or Outlook.')}</p></div>
+      <button class="btn primary block" data-go="welcome">${t('ログイン','Log in')}</button>
+    </div>`
+  },
+  welcome(){
+    return `<div class="page">
+      <div><h1>${t('ようこそ','Welcome')}</h1><p class="hint">${t('チームのメンバーに見える名前です。','This is the name your teammates see.')}</p></div>
+      <div class="field"><label for="nm">${t('表示名','Display name')}</label><input id="nm" class="input" value="${esc(nm(ME))}"></div>
+      <button class="btn primary block" data-go="join">${t('続ける','Continue')}</button>
+    </div>`
+  },
+  join(){
+    return `<div class="page">
+      <div><p class="k">${t('クラスへの招待','CLASS INVITATION')}</p><h1>${t('観光学演習 II','Tourism Seminar II')}</h1>
+      <p class="hint">${t('18人が参加しています · 先生：森 先生','18 students · Teacher: Prof. Mori')}</p></div>
+      <div class="card"><p class="l">${t('この授業ではグループ発表があります。参加したら、チームを組んでプロジェクトをはじめましょう。','This class has a group presentation. After joining, form a team and start your project.')}</p></div>
+      <button class="btn primary block" data-go="team">${t('参加する','Join')}</button>
+    </div>`
+  },
+  team(){
+    return `<div class="page">
+      <div><p class="k">${t('観光学演習 II','TOURISM SEMINAR II')}</p><h1>${t('チームを組みましょう','Form your team')}</h1>
+      <p class="hint">${t('1チーム6人まで。チームで1つのプロジェクトに取り組みます。','Up to 6 per team. Each team works on one project.')}</p></div>
+      <div class="card hero stack">
+        <div class="row">${av('kenta')}<p class="l"><b>${t(`${nm('kenta')}さんから招待が届いています`,`${nm('kenta')} invited you to a team`)}</b></p></div>
+        <p class="hint">${t('メンバー：けんた・さくら・はると（3人）','Members: Kenta, Sakura, Haruto (3)')}</p>
+        <div class="row"><button class="btn primary" data-act="acceptInvite">${t('参加する','Join')}</button><button class="btn secondary" data-act="toast" data-arg="decline">${t('断る','Decline')}</button></div>
+      </div>
+      <div class="stack"><h2>${t('自分でチームをはじめる','Start your own team')}</h2>
+        <button class="btn secondary block" data-go="invite">${t('チームをはじめる','Start a team')}</button></div>
+      <div class="stack"><h2>${t('チームコードで参加','Join with a team code')}</h2>
+        <div class="field"><label for="tc">${t('チームコード','Team code')}</label><input id="tc" class="input" inputmode="text" placeholder="K7Q-2PX"></div>
+        <button class="btn secondary block" data-act="acceptInvite">${t('参加する','Join')}</button></div>
+    </div>`
+  },
+  invite(){
+    return `<div class="page">
+      <button class="back" data-go="team">← ${t('戻る','Back')}</button>
+      <div><p class="k">${t('チームができました','YOUR TEAM IS READY')}</p><h1>${t('メンバーを招待しましょう','Invite your teammates')}</h1>
+      <p class="hint">${t('教室でこの画面を見せて、読み取ってもらいます。','Show this screen in class and let them scan it.')}</p></div>
+      ${qr()}
+      <div class="spread card"><span class="num">K7Q-2PX</span><button class="btn small secondary" data-act="toast" data-arg="copied">${t('リンクをコピー','Copy link')}</button></div>
+      <div class="stack"><p class="meta">${t('メンバー 4/6','MEMBERS 4/6')}</p>
+        ${['me','kenta','sakura','haruto'].map(id=>`<div class="row">${av(id)}<span class="l">${esc(nm(id))}${id===ME?t('（あなた）',' (you)'):''}</span></div>`).join('')}</div>
+      <button class="btn primary block" data-go="newproject">${t('次へ：プロジェクトを作る','Next: create the project')}</button>
+    </div>`
+  },
+  newproject(){
+    const tpl={
+      presentation:[{ja:'調査メモ',en:'Research notes',d:-18},{ja:'発表原稿',en:'Talk script',d:-10},{ja:'スライド',en:'Slides',d:-5},{ja:'図表づくり',en:'Charts and figures',d:-7},{ja:'参考文献リスト',en:'Reference list',d:-5},{ja:'リハーサル',en:'Rehearsal',d:-2},{ja:'配布資料',en:'Handout',d:-1}],
+      report:[{ja:'調査',en:'Research',d:-20},{ja:'構成',en:'Outline',d:-15},{ja:'本文',en:'Body text',d:-6},{ja:'推敲',en:'Revise',d:-2}],
+      poster:[{ja:'調査',en:'Research',d:-14},{ja:'文章',en:'Text',d:-7},{ja:'デザイン',en:'Design',d:-4},{ja:'印刷',en:'Print',d:-1}],
+      blank:[],
+    }[S.template]
+    const dl=new Date(S.deadline+'T00:00:00+09:00')
+    const due=d=>{const x=new Date(dl.getTime()+d*864e5);return `${x.getMonth()+1}/${x.getDate()}`}
+    const chip=(v,ja,en)=>`<button class="chip ${S.template===v?'on':''}" data-act="tpl" data-arg="${v}">${t(ja,en)}</button>`
+    const ev=n=>`<button class="chip ${S.every===n?'on':''}" data-act="every" data-arg="${n}">${t(n+'日',n+' days')}</button>`
+    return `<div class="page">
+      <div><p class="k">${t('観光学演習 II · チーム','TOURISM SEMINAR II · TEAM')}</p><h1>${t('プロジェクトを作る','Create the project')}</h1></div>
+      <div class="field"><label for="pt">${t('プロジェクト名','Project name')}</label><input id="pt" class="input" value="${esc(L(S.projectTitle))}"></div>
+      <div class="field"><label for="dl">${t('締切','Deadline')}</label><input id="dl" class="input" type="date" value="${S.deadline}" data-act="deadline"></div>
+      <div class="stack"><p class="l"><b>${t('テンプレート','Template')}</b></p>
+        <div class="chips">${chip('presentation','発表','Talk')}${chip('report','レポート','Report')}${chip('poster','ポスター','Poster')}${chip('blank','白紙','Blank')}</div>
+        ${tpl.length?`<div class="card"><p class="meta">${t('できるタスク（期日は締切から逆算）','TASKS IT CREATES (DUE DATES COUNTED BACK)')}</p>
+          ${tpl.map(x=>`<div class="spread"><span class="l">${esc(t(x.ja,x.en))}</span><span class="meta">${due(x.d)}</span></div>`).join('')}</div>`
+          :`<p class="hint">${t('タスクはあとで追加します。','You add tasks later.')}</p>`}
+      </div>
+      <div class="stack"><p class="l"><b>${t('チェックインの間隔','Check in every')}</b></p><div class="chips">${ev(3)}${ev(4)}${ev(7)}</div></div>
+      <button class="check" data-act="groupDoc"><i>${S.groupDoc?'✓':''}</i><span>${t('グループの Google ドキュメントも作る','Also create the group Google Doc')}</span></button>
+      <button class="btn primary block" data-act="createProject">${t('プロジェクトをはじめる','Start the project')}</button>
+    </div>`
+  },
+  board(){
+    if(S.finished) return view.finished()
+    const pct=projectPct(), exp=expectedPct(), ok=onTrack(), dl=daysLeft()
+    const mine=S.tasks.filter(x=>x.owner===ME), open=S.tasks.filter(x=>!x.owner)
+    const others=['kenta','sakura','haruto']
+    const ns=nextStep()
+    const stepCard={
+      claim:`<p class="k">${t('次にやること','NEXT STEP')}</p><p class="l"><b>${t(`担当者のいないタスクが${open.length}つあります`,`${open.length} tasks have no owner`)}</b></p><p class="hint">${t('引き受けられるものを選びましょう。','Pick one you can take on.')}</p><a class="link" href="#open">${t('タスクを見る','See the tasks')}</a>`,
+      checkin:`<p class="k">${t('次にやること','NEXT STEP')}</p><p class="l"><b>${t('チェックインを共有しましょう','Share your check-in')}</b></p><p class="hint">${t('11/2 まで · 2/4人が共有済み','Due 2 Nov · 2 of 4 shared')}</p><button class="btn primary" data-go="checkin">${t('チェックインする','Check in')}</button>`,
+      vote:`<p class="k">${t('次にやること','NEXT STEP')}</p><p class="l"><b>${t('打ち合わせの日程に答えましょう','Answer the meeting poll')}</b></p><p class="hint">${esc(L(S.poll.title))} · ${t('3/4人が回答','3 of 4 answered')}</p><button class="btn primary" data-go="poll">${t('答える','Answer')}</button>`,
+      log:`<p class="k">${t('次にやること','NEXT STEP')}</p><p class="l"><b>${t('図表づくりを進めましょう','Keep going on the figures')}</b></p><p class="hint">${t('記録するとチームにすぐ反映されます。','Logging updates the team right away.')}</p>`,
+    }[ns.kind]
+    const poll = S.poll.status==='confirmed'
+      ? `<p class="k">${t('次の打ち合わせ','NEXT MEETING')}</p><p class="l"><b>${esc(L(S.poll.options[S.poll.chosen].when))}</b> · ${S.poll.minutes}${t('分','min')}</p><p class="hint">${t('議題：みんなのチェックイン','Agenda: everyone\'s check-ins')}</p>`
+      : `<p class="k">${t('次の打ち合わせ','NEXT MEETING')}</p><p class="l"><b>${esc(L(S.poll.title))}</b></p><p class="hint">${t('日程を調整中','Picking a time')}</p><button class="link" data-go="poll">${t('日程を見る','See the times')}</button>`
+    return `<div class="page">
+      <div class="stack" style="gap:0">
+        <p class="k">${t('観光学演習 II · チーム','TOURISM SEMINAR II · TEAM')}</p>
+        <h1>${esc(L(S.projectTitle))}</h1>
+        <div class="spread"><span class="meta">${t(`締切 11/20 · あと${dl}日`,`Due 20 Nov · ${dl} days left`)}</span><span class="pill ${ok?'ok':'warn'}">${ok?t('順調','On track'):t('遅れ気味','Behind')}</span></div>
+        ${bar(pct,ok?'ok':'warn',exp)}
+        <p class="meta">${t(`チーム全体 ${pct}% · 今日の目安 ${exp}%`,`Team ${pct}% · expected today ${exp}%`)}</p>
+      </div>
+      <div class="card hero stack" style="gap:0">${stepCard}</div>
+      <div class="stack"><h2>${t('わたしのタスク','My tasks')}</h2>
+        ${mine.map(x=>myTask(x)).join('')}</div>
+      <div class="stack"><h2>${t('チーム','Team')}</h2>
+        <div class="card">${others.map(id=>`<div class="mhead">${av(id)}<b>${esc(nm(id))}</b></div>
+          ${S.tasks.filter(x=>x.owner===id).map(x=>teamTask(x)).join('')||`<p class="hint" style="padding-left:38px">${t('担当なし','No tasks')}</p>`}`).join('')}</div>
+        <p class="hint">${t('数字はリアルタイムで見えます。文章そのものと個人のメモは誰にも見えません。','Numbers are live. Nobody sees the text itself or personal memos.')}</p>
+      </div>
+      ${open.length?`<div class="stack" id="open"><h2>${t('担当者のいないタスク','Tasks without an owner')}</h2>
+        <div class="card">${open.map(x=>`<div class="vrow"><span class="l">${esc(L(x.title))}</span><button class="btn small primary" data-act="claim" data-arg="${x.id}">${t('担当する','Take it')}</button></div>`).join('')}</div></div>`:''}
+      <div class="stack"><h2>${t('予定','Schedule')}</h2>
+        <div class="card stack" style="gap:0"><p class="k">${t('次のチェックイン','NEXT CHECK-IN')}</p>
+          <p class="l"><b>${t(`11/2（月） · ${S.every}日ごと`,`Mon 2 Nov · every ${S.every} days`)}</b></p>
+          <p class="hint">${S.myCheckin?t('共有しました · 3/4人','Shared · 3 of 4'):t('2/4人が共有済み','2 of 4 shared')}</p>
+          <button class="link" data-go="checkin">${S.myCheckin?t('みんなのチェックインを見る','See everyone\'s check-ins'):t('チェックインする','Check in')}</button></div>
+        <div class="card stack" style="gap:0">${poll}</div>
+        <div class="card stack" style="gap:0"><p class="k">${t('リンク','LINKS')}</p>
+          <p class="l">${t('グループのドキュメント','Group Doc')} · ${t('スライド','Slides')}</p><p class="hint">${t('Google と連携済み · 5分ごとに自動で数えます','Connected to Google · counted every 5 minutes')}</p></div>
+      </div>
+      <p class="note">${t('先生には、チーム全体の進み具合だけが見えます。名前や一人ひとりの数字は見えません。','Your teacher sees only how the team as a whole is doing. No names, no individual numbers.')}</p>
+      <button class="link" data-go="finish">${t('プロジェクトを完了する','Finish the project')}</button>
+    </div>`
+  },
+  checkin(){
+    const mine=S.tasks.filter(x=>x.owner===ME)
+    const card=c=>`<div class="card stack" style="gap:0"><div class="mhead">${av(c.who)}<b>${esc(nm(c.who))}</b></div>
+      <p class="l"><b>${t('できたこと','Did')}</b>　${esc(L(c.did))}</p><p class="l"><b>${t('次にやること','Next')}</b>　${esc(L(c.next))}</p>
+      ${c.stuck?`<p class="l"><b>${t('困っていること','Stuck on')}</b>　${esc(L(c.stuck))}</p>`:''}</div>`
+    const all=[...S.checkins, ...(S.myCheckin?[S.myCheckin]:[])]
+    return `<div class="page">
+      <button class="back" data-go="board">← ${t('プロジェクト','Project')}</button>
+      <div><p class="k">${t('チェックイン · 10/29〜11/2','CHECK-IN · 29 OCT – 2 NOV')}</p><h1>${S.myCheckin?t('今回のチェックイン','This round\'s check-ins'):t('打ち合わせの前に、ひとこと','A quick note before the meeting')}</h1></div>
+      ${S.myCheckin?'':`
+      <div class="card"><p class="meta">${t('いまの数字（一緒に記録されます）','YOUR NUMBERS NOW (SAVED WITH IT)')}</p>
+        ${mine.map(x=>`<div class="spread"><span class="l">${esc(L(x.title))}</span><span class="num">${x.metric==='status'?statusLabel(x.status):amount(x)}</span></div>`).join('')}</div>
+      <div class="field"><label for="ci1">${t('できたこと','What I did')}</label><textarea id="ci1" class="input">${t('原稿の前半（導入と現状）を書きました','Wrote the first half of the script (intro and current state)')}</textarea></div>
+      <div class="field"><label for="ci2">${t('次にやること','What\'s next')}</label><textarea id="ci2" class="input">${t('提案パートと、図表3つ','The proposal part and three figures')}</textarea></div>
+      <div class="field"><label for="ci3">${t('困っていること（なくてもOK）','Stuck on (optional)')}</label><textarea id="ci3" class="input" placeholder="${t('例：データの出典が見つからない','e.g. can\'t find the data source')}"></textarea></div>
+      <button class="btn primary block" data-act="submitCheckin">${t('チームに共有する','Share with the team')}</button>`}
+      <div class="stack"><h2>${t(`共有済み ${all.length}/4人`,`Shared: ${all.length} of 4`)}</h2>${all.map(card).join('')}
+        <p class="hint">${t('まだ：はると','Not yet: Haruto')}${S.myCheckin?'':t('、あなた',', you')}</p></div>
+    </div>`
+  },
+  poll(){
+    const best=bestOption(), p=S.poll
+    if(p.status==='confirmed'){
+      const all=[...S.checkins,...(S.myCheckin?[S.myCheckin]:[])]
+      return `<div class="page">
+        <button class="back" data-go="board">← ${t('プロジェクト','Project')}</button>
+        <div><p class="k">${t('打ち合わせ · 確定','MEETING · CONFIRMED')}</p><h1>${esc(L(p.title))}</h1>
+        <p class="l"><b>${esc(L(p.options[p.chosen].when))}</b> · ${p.minutes}${t('分','min')}</p>
+        <p class="hint">${t('前日にリマインドが届きます。','A reminder arrives the day before.')}</p></div>
+        <div class="stack"><h2>${t('議題：みんなのチェックイン','Agenda: everyone\'s check-ins')}</h2>
+          ${all.map(c=>`<div class="card"><div class="mhead">${av(c.who)}<b>${esc(nm(c.who))}</b></div><p class="l">${esc(L(c.next))}</p>${c.stuck?`<p class="hint">${t('困っている：','Stuck: ')}${esc(L(c.stuck))}</p>`:''}</div>`).join('')}
+          ${S.myCheckin?'':`<button class="btn secondary block" data-go="checkin">${t('自分のチェックインを共有する','Share your check-in')}</button>`}
+        </div></div>`
+    }
+    const v=(i,a,sym,lab)=>`<button aria-label="${lab}" class="${p.options[i].votes[ME]===a?'on':''}" data-act="vote" data-arg="${i}:${a}">${sym}</button>`
+    return `<div class="page">
+      <button class="back" data-go="board">← ${t('プロジェクト','Project')}</button>
+      <div><p class="k">${t('打ち合わせの日程','MEETING POLL')}</p><h1>${esc(L(p.title))}</h1><p class="hint">${p.minutes}${t('分 · 11/3 までに答えてください','min · please answer by 3 Nov')}</p></div>
+      <div class="card">${p.options.map((o,i)=>{const c=tally(o);return `<div class="vrow ${i===best?'best':''}"><div><p class="l when">${esc(L(o.when))}</p><p class="tally">○${c.yes} △${c.maybe} ✕${c.no}</p></div>
+        <div class="vote">${v(i,'yes','○',t('参加できる','Yes'))}${v(i,'maybe','△',t('たぶん','Maybe'))}${v(i,'no','✕',t('参加できない','No'))}</div></div>`}).join('')}</div>
+      <p class="hint">${t('★ がいま一番よい時間です。','★ marks the best time so far.')}</p>
+      <button class="btn primary block" data-act="confirmPoll">${t(`${L(p.options[best].when)} に決める`,`Confirm ${L(p.options[best].when)}`)}</button>
+    </div>`
+  },
+  finish(){
+    return `<div class="page">
+      <button class="back" data-go="board">← ${t('プロジェクト','Project')}</button>
+      <div><h1>${t('プロジェクトを完了しますか','Finish this project?')}</h1><p class="hint">${t('完了すると読むだけの記録になります。チームで次のプロジェクトをはじめられます。','It becomes a read-only record. Your team can then start the next project.')}</p></div>
+      <div class="card">${S.tasks.map(x=>`<div class="spread"><span class="l">${esc(L(x.title))}</span><span class="pill ${x.status}">${statusLabel(x.status)}</span></div>`).join('')}</div>
+      <button class="btn primary block" data-act="finish">${t('完了する','Finish')}</button>
+      <button class="btn secondary block" data-go="board">${t('まだ続ける','Not yet')}</button>
+    </div>`
+  },
+  finished(){
+    return `<div class="page">
+      <div class="card hero stack" style="gap:0"><p class="k">${t('完了しました','FINISHED')}</p><h1>${t('おつかれさまでした','Well done, team')}</h1>
+        <p class="l">${esc(L(S.projectTitle))}</p><p class="hint">${t('記録は「クラス」からいつでも見られます。','The record stays under Classes.')}</p></div>
+      <div class="card"><p class="meta">${t('チームの合計','TEAM TOTALS')}</p>
+        <div class="spread"><span class="l">${t('書いた文字数','Characters written')}</span><span class="num">${fmt(S.tasks.filter(x=>x.metric==='characters').reduce((a,x)=>a+x.current,0))}</span></div>
+        <div class="spread"><span class="l">${t('スライド','Slides')}</span><span class="num">${S.tasks.find(x=>x.id==='slides').current}</span></div>
+        <div class="spread"><span class="l">${t('チェックイン','Check-ins')}</span><span class="num">${3+(S.myCheckin?1:0)}</span></div></div>
+      <button class="btn primary block" data-act="nextProject">${t('次のプロジェクトをはじめる','Start the next project')}</button>
+    </div>`
+  },
+  teacher(){
+    const teams=[
+      {n:1,m:4,pct:projectPct(),ok:onTrack(),last:t('今日','today'),ci:`${3+(S.myCheckin?1:0)}/4`,started:true},
+      {n:2,m:5,pct:28,ok:false,last:t('3日前','3 days ago'),ci:'2/5',started:true},
+      {n:3,m:5,pct:41,ok:true,last:t('昨日','yesterday'),ci:'5/5',started:true},
+      {n:4,m:3,pct:0,ok:null,last:'—',ci:'—',started:false},
+    ]
+    return `<div class="page">
+      <div><p class="k">${t('先生 · 観光学演習 II','TEACHER · TOURISM SEMINAR II')}</p><h1>${t('チームの進み具合','How the teams are doing')}</h1>
+      <p class="hint">${t('学生18人 · 4チーム · 1人がまだチームなし','18 students · 4 teams · 1 not in a team yet')}</p></div>
+      <div class="spread card"><span class="l">${t('締切 11/20','Due 20 Nov')}</span><span class="meta">${t(`今日の目安 ${expectedPct()}%`,`Expected today ${expectedPct()}%`)}</span></div>
+      <div class="card">${teams.map(x=>`<div class="team"><span class="name">${t('チーム','Team ')}${x.n}<span class="meta"> · ${x.m}${t('人',' people')}</span></span>
+        <span class="pill ${x.started?(x.ok?'ok':'warn'):'todo'}">${x.started?(x.ok?t('順調','On track'):t('遅れ気味','Behind')):t('未開始','Not started')}</span>
+        <div style="grid-column:1/-1">${bar(x.pct,x.started?(x.ok?'ok':'warn'):'',expectedPct())}</div>
+        <span class="facts">${x.started?t(`${x.pct}% · 最後の動き：${x.last} · チェックイン ${x.ci}`,`${x.pct}% · last activity ${x.last} · check-ins ${x.ci}`):t('プロジェクトがまだありません','No project yet')}</span></div>`).join('')}</div>
+      <p class="note">${t('学生の名前、一人ひとりの数字、文章は表示されません。チームごとのまとめだけです。','No student names, no individual numbers and no text. One summary line per team.')}</p>
+      <button class="btn secondary block" data-act="toast" data-arg="share">${t('クラスの招待リンクを表示','Show the class join link')}</button>
+    </div>`
+  },
+}
+
+function myTask(x){
+  const f = S.flash===x.id ? ' fresh' : ''
+  let right
+  if(x.metric==='status') right=`<div class="chips">${['todo','doing','done'].map(s=>`<button class="chip ${x.status===s?'on':''}" data-act="status" data-arg="${x.id}:${s}">${statusLabel(s)}</button>`).join('')}</div>`
+  else if(x.source==='manual') right=`<button class="btn small primary" data-act="openLog" data-arg="${x.id}">＋${t('記録','Log')}</button>`
+  else right=`<span class="pill doing">${t('自動','Auto')}</span>`
+  return `<div class="card mine${f}">
+    <div class="spread"><span class="l"><b>${esc(L(x.title))}</b></span>${x.metric!=='status'?right:''}</div>
+    ${x.metric!=='status'?`${bar(Math.round(100*fraction(x)),'ok')}<div class="spread"><span class="num">${amount(x)}</span><span class="src ${x.source==='manual'?'manual':''}">${srcLabel(x)}</span></div>`:right}
+  </div>`
+}
+function teamTask(x){
+  const f = S.flash===x.id ? ' fresh' : ''
+  return `<div class="task${f}"><div class="t"><b>${esc(L(x.title))}</b>${x.metric==='status'?`<span class="pill ${x.status}">${statusLabel(x.status)}</span>`:`<span class="num">${amount(x)}</span>`}</div>
+    ${x.metric!=='status'?bar(Math.round(100*fraction(x)),'ok'):''}
+    ${x.metric!=='status'?`<span class="src ${x.source==='manual'?'manual':''}">${srcLabel(x)}</span>`:''}</div>`
+}
+function qr(){
+  // A decorative QR-like pattern (not a real code).
+  const n=25, cells=[]
+  let seed=7; const rnd=()=>(seed=(seed*9301+49297)%233280)/233280
+  const finder=(x,y)=>{for(const [fx,fy] of [[0,0],[n-7,0],[0,n-7]]){if(x>=fx&&x<fx+7&&y>=fy&&y<fy+7){const dx=x-fx,dy=y-fy;return (dx===0||dx===6||dy===0||dy===6)||(dx>=2&&dx<=4&&dy>=2&&dy<=4)}}return null}
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++){const f=finder(x,y);if(f===true||(f===null&&rnd()>.52))cells.push(`<rect x="${x}" y="${y}" width="1" height="1"/>`)}
+  return `<svg class="qr" viewBox="0 0 ${n} ${n}" role="img" aria-label="${t('チームの QR コード（見本）','Team QR code (sample)')}"><g fill="#3a2f22">${cells.join('')}</g></svg>`
+}
+function logSheet(){
+  const x=S.tasks.find(y=>y.id===S.sheet)
+  return `<div class="scrim" data-act="closeSheet"></div><div class="sheet" role="dialog" aria-label="${esc(L(x.title))}">
+    <div class="spread"><h2>${esc(L(x.title))}</h2><span class="num">${amount(x)}</span></div>
+    <p class="l">${t('いくつ進みましたか','How many did you finish?')}</p>
+    <div class="chips">${[1,2,3].map(n=>`<button class="chip" data-act="log" data-arg="${n}">＋${n}</button>`).join('')}</div>
+    <div class="field"><label for="memo">${t('メモ（自分だけに見えます）','Memo (only you see it)')}</label><input id="memo" class="input" placeholder="${t('例：人口の推移グラフ','e.g. population chart')}"></div>
+    <button class="btn secondary block" data-act="closeSheet">${t('やめる','Cancel')}</button>
+  </div>`
+}
+
+// ---------- render ----------
+function render(){
+  const ph=document.getElementById('phone')
+  const inApp=['board','checkin','poll','finish'].includes(S.screen)
+  const tab = S.screen==='teacher' ? 'classes' : 'home'
+  ph.innerHTML = header() + `<div class="scroll" id="scroll"><div>${view[S.screen]()}</div></div>`
+    + ((inApp||S.screen==='teacher')?tabs(tab):'')
+    + (S.sheet?logSheet():'')
+    + `<div class="toast ${S.toast?'show':''}" role="status">${esc(S.toast)}</div>`
+  renderGuide()
+}
+function renderGuide(){
+  const g=document.getElementById('guide'), n=NOTES[S.screen]
+  let i=0
+  g.innerHTML = `
+    <div><h1>${t('グループプロジェクト中心の Study Pods','Study Pods, built around the group project')}</h1>
+    <p class="lede">${t('クリックできる試作です。ログインするとまずプロジェクトへ向かいます。数字はすべて見本です。','A clickable prototype. After login, everything leads to the project. All data is made up.')}</p></div>
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="Language"><button class="${S.lang==='ja'?'on':''}" data-act="lang" data-arg="ja">日本語</button><button class="${S.lang==='en'?'on':''}" data-act="lang" data-arg="en">English</button></div>
+      <button class="btn small secondary" data-act="reset">${t('最初から','Start over')}</button>
+    </div>
+    <div class="steps">
+      <p class="grp">${t('学生','STUDENT')}</p>
+      ${SCREENS.map(s=>{i++;return (s.id==='teacher'?`<p class="grp">${t('先生','TEACHER')}</p>`:'')+`<button class="${S.screen===s.id?'on':''}" data-go="${s.id}"><span>${i}</span>${esc(t(s.ja,s.en))}</button>`}).join('')}
+    </div>
+    <div class="explain"><span class="tag">${esc(L(n.tag))}</span><h2>${esc(L(n.h))}</h2>
+      ${n.p?`<p>${esc(L(n.p))}</p>`:''}${n.li?`<ul>${n.li.map(x=>`<li>${esc(L(x))}</li>`).join('')}</ul>`:''}</div>`
+}
+let toastTimer
+function toast(msg){ S.toast=msg; render(); clearTimeout(toastTimer); toastTimer=setTimeout(()=>{S.toast='';const el=document.querySelector('.toast');el&&el.classList.remove('show')},2200) }
+function go(id){ S.screen=id; S.sheet=null; S.flash=null; try{ if(location.hash!=='#'+id) history.replaceState(null,'','#'+id) }catch(e){} render(); const sc=document.getElementById('scroll'); if(sc) sc.scrollTop=0 }
+
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-go],[data-act]'); if(!el) return
+  if(el.dataset.go){ e.preventDefault(); return go(el.dataset.go) }
+  const a=el.dataset.act, arg=el.dataset.arg
+  if(a==='deadline') return
+  e.preventDefault()
+  const keep=document.getElementById('scroll')?.scrollTop||0
+  const after=()=>{ render(); const sc=document.getElementById('scroll'); if(sc) sc.scrollTop=keep }
+  switch(a){
+    case 'lang': S.lang=arg; return after()
+    case 'reset': { const l=S.lang; S=freshState(); S.lang=l; return go('login') }
+    case 'tab': if(arg==='home') return go(S.screen==='teacher'?'board':'board'); if(arg==='classes'&&S.screen==='teacher') return; return toast(t('この試作ではホームだけ動きます','Only Home works in this prototype'))
+    case 'toast': return toast({decline:t('招待を断りました','Invitation declined'),copied:t('リンクをコピーしました','Link copied'),share:t('招待リンクと QR はクラスのページにあります','The join link and QR are on the class page')}[arg])
+    case 'acceptInvite': S.screen='board'; go('board'); return toast(t('チームに参加しました。プロジェクトはもう始まっています','You joined the team. The project has already started'))
+    case 'tpl': S.template=arg; return after()
+    case 'every': S.every=Number(arg); return after()
+    case 'groupDoc': S.groupDoc=!S.groupDoc; return after()
+    case 'createProject': { const v=document.getElementById('pt')?.value?.trim(); if(v) S.projectTitle={ja:v,en:v}; const d=document.getElementById('dl')?.value; if(d) S.deadline=d; go('board'); return toast(S.groupDoc?t('プロジェクトとグループのドキュメントを作りました','Project and group Doc created'):t('プロジェクトを作りました','Project created')) }
+    case 'claim': { S.tasks.find(x=>x.id===arg).owner=ME; S.flash=arg; after(); return toast(t('担当になりました','It\'s yours now')) }
+    case 'status': { const [id,s]=arg.split(':'); const x=S.tasks.find(y=>y.id===id); x.status=s; x.updated=0; S.flash=id; return after() }
+    case 'openLog': S.sheet=arg; return after()
+    case 'closeSheet': S.sheet=null; return after()
+    case 'log': { const x=S.tasks.find(y=>y.id===S.sheet); x.current=Math.min(x.target*2,x.current+Number(arg)); x.updated=0; S.flash=x.id; S.sheet=null; after(); return toast(t('記録しました。チームにすぐ反映されます','Logged. Your team sees it right away')) }
+    case 'submitCheckin': { const g=id=>document.getElementById(id)?.value?.trim(); S.myCheckin={who:ME,did:{ja:g('ci1'),en:g('ci1')},next:{ja:g('ci2'),en:g('ci2')},stuck:g('ci3')?{ja:g('ci3'),en:g('ci3')}:null}; after(); return toast(t('チームに共有しました','Shared with your team')) }
+    case 'vote': { const [i,ans]=arg.split(':'); S.poll.options[Number(i)].votes[ME]=ans; return after() }
+    case 'confirmPoll': S.poll.status='confirmed'; S.poll.chosen=bestOption(); after(); return toast(t('日程が決まりました。チームに通知します','Time confirmed. Your team is notified'))
+    case 'finish': S.finished=true; return go('board')
+    case 'nextProject': { S.finished=false; S.projectTitle={ja:'期末レポート',en:'Final report'}; S.template='report'; S.deadline='2026-12-18'; return go('newproject') }
+  }
+})
+window.addEventListener('hashchange',()=>{ const h=location.hash.slice(1); if(view[h]&&h!==S.screen&&h!=='finished') go(h) })
+const h0=location.hash.slice(1); if(view[h0]&&h0!=='finished') S.screen=h0
+render()
+</script>
+</body>
+</html>

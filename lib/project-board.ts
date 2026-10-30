@@ -1,9 +1,9 @@
 import type { TaskMetric, TaskStatus } from '@/lib/tasks'
 
-// What the team board shows for a teammate's task. Teammates never see each
-// other's running numbers (0022): only the task row (title, owner, status,
-// goal) and, from each member's latest check-in, the numbers they shared.
-// Pure functions over rows already allowed by RLS.
+// What the team board shows for a teammate's task. Since project first
+// (0027) teammates see each other's live totals; before that, or if the
+// database doesn't have project_task_totals() yet, only the numbers shared in
+// each member's latest check-in. Pure functions over rows allowed by RLS.
 
 export type SnapshotItem = {
   taskId: string
@@ -71,17 +71,20 @@ export function latestCheckins(rows: readonly CheckinRow[]): Map<string, LatestC
   return result
 }
 
-// The total a viewer may see for a task: live for their own task, the shared
-// number from the owner's latest check-in for a teammate's, otherwise none.
+// The total a viewer may see for a task: live for their own task, and live for
+// any owned task when the pod's totals are live (teamLive); otherwise the
+// shared number from the owner's latest check-in, or none.
 export function visibleTotal(
   task: { id: string; ownerId: string | null; metric: TaskMetric },
   viewerId: string,
   liveTotals: ReadonlyMap<string, number>,
   latest: ReadonlyMap<string, LatestCheckin>,
+  teamLive = false,
 ): { total: number | null; asOf: string | null; live: boolean } {
   if (task.metric === 'status') return { total: null, asOf: null, live: false }
   if (task.ownerId === viewerId) return { total: liveTotals.get(task.id) ?? 0, asOf: null, live: true }
   if (task.ownerId === null) return { total: null, asOf: null, live: false }
+  if (teamLive) return { total: liveTotals.get(task.id) ?? 0, asOf: null, live: true }
   const checkin = latest.get(task.ownerId)
   const item = checkin?.items.get(task.id)
   if (!checkin || !item || item.total === null) return { total: null, asOf: null, live: false }

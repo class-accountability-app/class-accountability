@@ -1,4 +1,6 @@
 // The first-run flow (Prompt 15): name + join → pod → first target → Home.
+// Since project first (2026-10-30) the pod step leads to the team's project
+// instead of a personal target.
 //
 // It is started by an action the student takes (saving a name for a class they
 // were invited to, or pressing "join"), never by looking at the state of a
@@ -28,6 +30,10 @@ export function podStepHref(classId: string): string {
   return `/start/pod?class=${classId}`
 }
 
+export function projectStepHref(classId: string): string {
+  return `/classes/${classId}/project`
+}
+
 export function targetStepHref(classId: string): string {
   return `/start/target?class=${classId}`
 }
@@ -46,14 +52,15 @@ export function afterJoinHref(facts: FirstRunFacts, classId: string, role: Membe
 // What a /start/{step} page shows for this student in this class, as a
 // redirect target, or null to render the step. Anyone who isn't a student of
 // the class (a stranger, an organizer) or who already has a target here goes
-// to Home; the pod step is skipped for someone who already has a pod.
+// to Home; the pod step is skipped for someone who already has a pod, straight
+// to the project.
 export function startStepRedirect(
   step: 'pod' | 'target',
   state: { role: MemberRole | null; targetsInClass: number; inPod: boolean },
   classId: string
 ): string | null {
   if (state.role !== 'student' || state.targetsInClass > 0) return '/'
-  if (step === 'pod' && state.inPod) return targetStepHref(classId)
+  if (step === 'pod' && state.inPod) return projectStepHref(classId)
   return null
 }
 

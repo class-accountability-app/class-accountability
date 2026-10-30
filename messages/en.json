@@ -130,7 +130,7 @@
     "inviting": "Inviting…",
     "noOneToInvite": "No classmates left to invite.",
     "notInPodTitle": "You're not in a pod yet",
-    "organizerNote": "You organize this class. Students’ progress and targets aren’t shown to you.",
+    "organizerNote": "You organize this class. You see one summary per team, never an individual student’s progress or name.",
     "studentCount": "{count, plural, one {# student has joined} other {# students have joined}}",
     "leavePod": "Leave pod",
     "leaveConfirm": "If you leave, your podmates can no longer see your progress. Your targets and logs stay.",
@@ -850,6 +850,16 @@
       "title": "All targets reached",
       "why": "Well done. When the next assignment comes, set a target for it.",
       "action": "Set your next target"
+    },
+    "startProject": {
+      "title": "Start your project",
+      "why": "Your team in {className} works on one project. Split it into tasks and pick who does what.",
+      "action": "Create the project"
+    },
+    "openProject": {
+      "title": "Keep the project moving",
+      "why": "Log your tasks on your team’s board in {className}.",
+      "action": "Open the board"
     }
   },
   "signOut": {
@@ -1110,7 +1120,9 @@
       "pick": "Pick a time",
       "vote": "Give your times",
       "open": "See the meeting"
-    }
+    },
+    "membersWhyLive": "Who is doing what. Teammates’ numbers are live. The text itself and the memos on your logs stay yours.",
+    "teacherSees": "Your teacher sees only how the team as a whole is doing: no names, no individual numbers."
   },
   "google": {
     "kicker": "AUTOMATIC LOGGING",
@@ -1181,5 +1193,24 @@
     "noCountedTask": "Add a task measured by count or characters, and it can be logged automatically from a Google file.",
     "noCharactersTask": "The group Doc is for tasks counted in characters. A count task can be linked to Google Slides from the task itself.",
     "addCountedTask": "Add a task"
+  },
+  "teacher": {
+    "title": "How the teams are doing",
+    "why": "One summary line per team.",
+    "noTeams": "No teams yet.",
+    "team": "Team {number}",
+    "members": "{count, plural, one {# person} other {# people}}",
+    "progress": "{percent}%",
+    "expected": "expected today {percent}%",
+    "lastActivity": "last activity {when}",
+    "noActivity": "nothing logged yet",
+    "checkins": "check-ins {count}/{members}",
+    "noProject": "No project yet",
+    "privacy": "No student names, individual numbers or text are shown.",
+    "pace": {
+      "onTrack": "On track",
+      "behind": "Behind",
+      "notStarted": "Not started"
+    }
   }
 }

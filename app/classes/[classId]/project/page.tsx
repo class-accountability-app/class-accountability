@@ -13,7 +13,7 @@ import { ProgressBar } from '@/components/progress-bar'
 import { StatusStamp } from '@/components/status-stamp'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { CreateProjectForm } from './create-project-form'
-import { STATUS_PILL_CLASS, loadMyLiveTotals, loadMyPodProject, taskValueText, type TaskRow } from './load'
+import { STATUS_PILL_CLASS, loadLiveTotals, loadMyPodProject, taskValueText, type TaskRow } from './load'
 import { chosenStart, formatMeeting, isUpcoming, loadPolls } from './meetings/load'
 import { ClaimButton, TaskStatusControl } from './task-controls'
 import { CreateGroupDocButton, GoogleSyncOnOpen } from './google-controls'
@@ -118,8 +118,8 @@ export default async function ProjectPage({
   ])
   const tasks = (taskRows as TaskRow[] | null) ?? []
 
-  const [liveTotals, polls, { data: sourceRows }, { data: hasGoogle }] = await Promise.all([
-    loadMyLiveTotals(supabase, tasks, user.id),
+  const [{ totals: liveTotals, teamLive }, polls, { data: sourceRows }, { data: hasGoogle }] = await Promise.all([
+    loadLiveTotals(supabase, project.id, tasks, user.id),
     loadPolls(supabase, project.id),
     tasks.length > 0
       ? supabase.from('task_sources').select('task_id, kind, file_id, state').in('task_id', tasks.map((x) => x.id))
@@ -150,7 +150,7 @@ export default async function ProjectPage({
   )
 
   const boardTasks: BoardTask[] = tasks.map((x) => {
-    const shown = visibleTotal({ id: x.id, ownerId: x.owner_id, metric: x.metric }, user.id, liveTotals, latest)
+    const shown = visibleTotal({ id: x.id, ownerId: x.owner_id, metric: x.metric }, user.id, liveTotals, latest, teamLive)
     return {
       id: x.id,
       ownerId: x.owner_id,
@@ -319,7 +319,7 @@ export default async function ProjectPage({
             <h2 id="members-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
               {t('members')}
             </h2>
-            <p className="text-[13px] leading-7 text-muted">{t('membersWhy')}</p>
+            <p className="text-[13px] leading-7 text-muted">{t(teamLive ? 'membersWhyLive' : 'membersWhy')}</p>
           </div>
         </div>
 
@@ -342,7 +342,9 @@ export default async function ProjectPage({
               <div className="flex min-h-7 items-center gap-2.5">
                 {group.ownerId !== null && <StatusStamp status={group.tasks.length > 0 ? 'active' : 'stale'} />}
                 <h3 className="flex-1 text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{name}</h3>
-                {mine && <span className="font-meta text-xs leading-7 font-bold text-status-active">{t('live')}</span>}
+                {(mine || (teamLive && group.ownerId !== null)) && (
+                  <span className="font-meta text-xs leading-7 font-bold text-status-active">{t('live')}</span>
+                )}
               </div>
 
               {group.tasks.length === 0 ? (
@@ -413,7 +415,7 @@ export default async function ProjectPage({
                 </ul>
               )}
 
-              {group.ownerId !== null && !mine && (
+              {group.ownerId !== null && !mine && !teamLive && (
                 <p className="font-meta text-xs leading-7 text-muted">
                   {checkin ? t('asOf', { date: formatDate(checkin.roundStart, locale) }) : t('noCheckin')}
                 </p>
@@ -431,6 +433,7 @@ export default async function ProjectPage({
             ＋ {t('addTask')}
           </Link>
         </div>
+        <p className="px-0.5 text-[13px] leading-7 text-muted">{t('teacherSees')}</p>
       </section>
     </>
   )

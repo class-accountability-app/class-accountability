@@ -258,3 +258,31 @@ describe('loggedOnTokyoDay', () => {
     expect(loggedOnTokyoDay([], justAfterMidnight)).toBe(false)
   })
 })
+
+describe('nextStep: project first (a class says whether its team has a project)', () => {
+  const run = (classes: NextStepClass[]) => nextStep({ classes, targets: [], loggedToday: false, now })
+
+  it('a team without a project → start it, even with no target', () => {
+    expect(run([cls('A', { project: 'none' })])).toEqual({ kind: 'startProject', classId: 'A', className: 'Class A' })
+  })
+
+  it('no team → start or join one (before any target step)', () => {
+    expect(run([cls('A', { podSize: null, project: 'none' })])).toMatchObject({ kind: 'pod', classId: 'A' })
+  })
+
+  it('a started project → open its board', () => {
+    expect(run([cls('A', { project: 'started' })])).toEqual({ kind: 'openProject', classId: 'A', className: 'Class A' })
+  })
+
+  it('an invitation still comes first; a project to start comes before another class without a team', () => {
+    expect(run([cls('A', { podSize: null, invited: true, project: 'none' })])).toMatchObject({ kind: 'invitation' })
+    expect(run([cls('A', { podSize: null, project: 'none' }), cls('B', { project: 'none' })])).toMatchObject({
+      kind: 'startProject',
+      classId: 'B',
+    })
+  })
+
+  it('an organizer-only account still shares the link', () => {
+    expect(run([cls('O', { organizer: true, project: 'none' })])).toMatchObject({ kind: 'share' })
+  })
+})

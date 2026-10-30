@@ -152,6 +152,26 @@ export async function NextStepCard({ step, podPrimary = true }: { step: NextStep
         </Link>
       )
       break
+    case 'startProject':
+      title = t('startProject.title')
+      why = t('startProject.why', { className: step.className })
+      actions = (
+        <Link href={`/classes/${step.classId}/project`} className={primaryButtonClass}>
+          {t('startProject.action')}
+          <Chevron />
+        </Link>
+      )
+      break
+    case 'openProject':
+      title = t('openProject.title')
+      why = t('openProject.why', { className: step.className })
+      actions = (
+        <Link href={`/classes/${step.classId}/project`} className={primaryButtonClass}>
+          {t('openProject.action')}
+          <Chevron />
+        </Link>
+      )
+      break
     case 'nextTarget':
       title = t('nextTarget.title')
       why = t('nextTarget.why')

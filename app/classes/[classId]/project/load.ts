@@ -58,6 +58,23 @@ export async function loadMyPodProject(supabase: Supabase, classId: string, user
   return { podId: myPod.pairing_id, project: (project as ProjectRow | null) ?? null, members }
 }
 
+// Live totals for the whole pod (0027, project first): project_task_totals()
+// returns each task's sum to any pod member, never the entries or their
+// notes. If that function isn't there (an older database), fall back to my
+// own tasks only and say so, so teammates' numbers come from check-ins.
+export async function loadLiveTotals(
+  supabase: Supabase,
+  projectId: string,
+  tasks: readonly TaskRow[],
+  userId: string,
+): Promise<{ totals: Map<string, number>; teamLive: boolean }> {
+  const { data, error } = await supabase.rpc('project_task_totals', { p_project: projectId })
+  if (error) return { totals: await loadMyLiveTotals(supabase, tasks, userId), teamLive: false }
+  const totals = new Map<string, number>()
+  for (const r of (data ?? []) as { task_id: string; total: number | string }[]) totals.set(r.task_id, tidyTotal(Number(r.total)))
+  return { totals, teamLive: true }
+}
+
 // Live totals for my own counted tasks. RLS returns only entries I logged or
 // on tasks I own, so nothing here can be a teammate's running number.
 export async function loadMyLiveTotals(supabase: Supabase, tasks: readonly TaskRow[], userId: string) {

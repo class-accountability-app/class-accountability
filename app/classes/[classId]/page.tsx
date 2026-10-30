@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { TeamSummary } from '@/components/teacher/team-summary'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
@@ -111,6 +112,7 @@ export default async function ClassPodsPage({
           </p>
           <p className="text-sm leading-[1.8] text-muted">{t('organizerNote')}</p>
         </div>
+        <TeamSummary classId={classId} />
         <div id="invite" className="w-full max-w-md scroll-mt-4">
           {inviteCard}
         </div>
@@ -217,6 +219,10 @@ export default async function ClassPodsPage({
   const finishedTargets = myTargets.filter((x) => x.finished)
 
   const myPodId = myPods[0] ?? null
+  // Project first: whether my team here has started its project.
+  const { data: myProject } = myPodId
+    ? await supabase.from('projects').select('id').eq('pairing_id', myPodId).maybeSingle()
+    : { data: null }
   const step = nextStep({
     classes: [
       {
@@ -225,6 +231,7 @@ export default async function ClassPodsPage({
         organizer: false,
         podSize: myPodId ? (membersByPod.get(myPodId) ?? []).length : null,
         invited: invitesToMe.length > 0,
+        project: myProject ? 'started' : 'none',
       },
     ],
     targets: myTargets.map((x) => ({
