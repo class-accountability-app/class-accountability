@@ -1272,13 +1272,21 @@
   },
   "teamInvite": {
     "heading": "Invite to your team",
-    "body": "Show this screen in class and let classmates scan the QR code. They can also type the code.",
+    "body": "Send the link on LINE or another app, or show this screen in class so classmates can scan the QR code. They can also type the code.",
     "codeLabel": "Team code",
     "copy": "Copy link",
     "copied": "Link copied.",
     "copyFailed": "Couldn’t copy. Link: {url}",
     "qrLabel": "QR code to join the team ({url})",
-    "renew": "Make a new code (the current code and QR stop working)"
+    "renew": "Make a new code (the current code and QR stop working)",
+    "message": "Join my team for {className}! Use this link: {url}",
+    "messageProject": "Join my team for “{project}” in {className}! Use this link: {url}",
+    "share": "Share",
+    "shareLine": "Send on LINE",
+    "copyMessage": "Copy message",
+    "messageCopied": "Invite message copied.",
+    "messageLabel": "Invite message",
+    "smallTeam": "Your team is still small. Invite classmates to join."
   },
   "teamCodeForm": {
     "label": "Join with a team code",
