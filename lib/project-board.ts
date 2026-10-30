@@ -90,3 +90,8 @@ export function visibleTotal(
   if (!checkin || !item || item.total === null) return { total: null, asOf: null, live: false }
   return { total: item.total, asOf: checkin.roundStart, live: false }
 }
+
+// Rounds away floating-point noise when totals are summed (0.1 + 0.2).
+export function tidyTotal(value: number): number {
+  return Math.round(value * 100) / 100
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { latestCheckins, snapshotItems, visibleTotal, type CheckinRow } from './project-board'
+import { latestCheckins, snapshotItems, tidyTotal, visibleTotal, type CheckinRow } from './project-board'
 
 const row = (userId: string, roundStart: string, createdAt: string, snapshot: unknown): CheckinRow => ({
   userId,
@@ -88,5 +88,12 @@ describe('visibleTotal', () => {
     expect(visibleTotal({ id: 'x', ownerId: 'tanaka', metric: 'count' }, 'aki', live, latest)).toEqual(none)
     expect(visibleTotal({ id: 'mine', ownerId: 'aki', metric: 'status' }, 'aki', live, latest)).toEqual(none)
     expect(visibleTotal({ id: 'y', ownerId: null, metric: 'count' }, 'aki', live, latest)).toEqual(none)
+  })
+})
+
+describe('tidyTotal', () => {
+  it('tidies summed decimals', () => {
+    expect(tidyTotal(0.1 + 0.2)).toBe(0.3)
+    expect(tidyTotal(1600)).toBe(1600)
   })
 })

@@ -1,6 +1,5 @@
-// The first-run flow (Prompt 15): name + join → pod → first target → Home.
-// Since project first (2026-10-30) the pod step leads to the team's project
-// instead of a personal target.
+// The first-run flow (Prompt 15, project first since 2026-10-30): name + join
+// → team → the team's project.
 //
 // It is started by an action the student takes (saving a name for a class they
 // were invited to, or pressing "join"), never by looking at the state of a
@@ -11,13 +10,12 @@
 export type FirstRunFacts = {
   // Classes they study in (role 'student'); an organizer membership doesn't count.
   studentMemberships: number
-  targets: number
   pods: number
 }
 
-// A student's very first class: nothing joined, nothing set, no pod.
+// A student's very first class: nothing joined, no team.
 export function startsFirstRun(facts: FirstRunFacts): boolean {
-  return facts.studentMemberships === 0 && facts.targets === 0 && facts.pods === 0
+  return facts.studentMemberships === 0 && facts.pods === 0
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -34,10 +32,6 @@ export function projectStepHref(classId: string): string {
   return `/classes/${classId}/project`
 }
 
-export function targetStepHref(classId: string): string {
-  return `/start/target?class=${classId}`
-}
-
 export type MemberRole = 'student' | 'organizer'
 
 // Where the student goes right after joining a class: the pod step for a
@@ -49,18 +43,13 @@ export function afterJoinHref(facts: FirstRunFacts, classId: string, role: Membe
   return role === 'student' && startsFirstRun(facts) ? podStepHref(classId) : `/classes/${classId}`
 }
 
-// What a /start/{step} page shows for this student in this class, as a
-// redirect target, or null to render the step. Anyone who isn't a student of
-// the class (a stranger, an organizer) or who already has a target here goes
-// to Home; the pod step is skipped for someone who already has a pod, straight
-// to the project.
-export function startStepRedirect(
-  step: 'pod' | 'target',
-  state: { role: MemberRole | null; targetsInClass: number; inPod: boolean },
-  classId: string
-): string | null {
-  if (state.role !== 'student' || state.targetsInClass > 0) return '/'
-  if (step === 'pod' && state.inPod) return projectStepHref(classId)
+// What /start/pod shows for this student in this class, as a redirect target,
+// or null to render the step. Anyone who isn't a student of the class (a
+// stranger, an organizer) goes to Home; someone already in a team, straight to
+// the project.
+export function startStepRedirect(state: { role: MemberRole | null; inPod: boolean }, classId: string): string | null {
+  if (state.role !== 'student') return '/'
+  if (state.inPod) return projectStepHref(classId)
   return null
 }
 

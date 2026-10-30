@@ -7,11 +7,10 @@ import {
   podStepHref,
   startStepRedirect,
   startsFirstRun,
-  targetStepHref,
 } from './first-run'
 
 const CLASS = '3f1c2b4a-0d5e-4c6f-8a7b-9c0d1e2f3a4b'
-const none = { studentMemberships: 0, targets: 0, pods: 0 }
+const none = { studentMemberships: 0, pods: 0 }
 
 describe('startsFirstRun: only a student with nothing yet', () => {
   it('a brand-new student → yes', () => {
@@ -20,9 +19,8 @@ describe('startsFirstRun: only a student with nothing yet', () => {
 
   it.each([
     ['already in a class (e.g. 23l1204, who joined earlier)', { ...none, studentMemberships: 1 }],
-    ['has a target somewhere', { ...none, targets: 1 }],
     ['is in a pod somewhere', { ...none, pods: 1 }],
-    ['has all three (a regular student)', { studentMemberships: 2, targets: 3, pods: 1 }],
+    ['has both (a regular student)', { studentMemberships: 2, pods: 1 }],
   ])('%s → no', (_label, facts) => {
     expect(startsFirstRun(facts)).toBe(false)
   })
@@ -34,12 +32,12 @@ describe('afterJoinHref', () => {
   })
 
   it('anyone else joining another class → the class page, as before', () => {
-    expect(afterJoinHref({ studentMemberships: 1, targets: 1, pods: 1 }, CLASS, 'student')).toBe(`/classes/${CLASS}`)
-    expect(afterJoinHref({ studentMemberships: 1, targets: 0, pods: 0 }, CLASS, 'student')).toBe(`/classes/${CLASS}`)
+    expect(afterJoinHref({ studentMemberships: 1, pods: 1 }, CLASS, 'student')).toBe(`/classes/${CLASS}`)
+    expect(afterJoinHref({ studentMemberships: 1, pods: 0 }, CLASS, 'student')).toBe(`/classes/${CLASS}`)
   })
 
   it('an organizer opening their own class’s link never enters the flow', () => {
-    // They have no student membership, no target and no pod, so by the counts
+    // They have no student membership and no team, so by the counts
     // alone they look brand new; the role is what keeps them out.
     expect(startsFirstRun(none)).toBe(true)
     expect(afterJoinHref(none, CLASS, 'organizer')).toBe(`/classes/${CLASS}`)
@@ -50,40 +48,27 @@ describe('afterJoinHref', () => {
   })
 })
 
-describe('startStepRedirect: what /start/pod and /start/target do when opened directly', () => {
-  const student = { role: 'student' as const, targetsInClass: 0, inPod: false }
+describe('startStepRedirect: what /start/pod does when opened directly', () => {
+  const student = { role: 'student' as const, inPod: false }
 
   it('a new student sees the step', () => {
-    expect(startStepRedirect('pod', student, CLASS)).toBeNull()
-    expect(startStepRedirect('target', student, CLASS)).toBeNull()
+    expect(startStepRedirect(student, CLASS)).toBeNull()
   })
 
-  it('an organizer of the class, visiting either step → Home', () => {
-    expect(startStepRedirect('pod', { ...student, role: 'organizer' }, CLASS)).toBe('/')
-    expect(startStepRedirect('target', { ...student, role: 'organizer' }, CLASS)).toBe('/')
+  it('an organizer of the class, or someone not in it → Home', () => {
+    expect(startStepRedirect({ ...student, role: 'organizer' }, CLASS)).toBe('/')
+    expect(startStepRedirect({ ...student, role: null }, CLASS)).toBe('/')
   })
 
-  it('someone who isn’t in the class → Home', () => {
-    expect(startStepRedirect('pod', { ...student, role: null }, CLASS)).toBe('/')
-    expect(startStepRedirect('target', { ...student, role: null }, CLASS)).toBe('/')
-  })
-
-  it('a student who already has a target here (e.g. testb) → Home from either step', () => {
-    expect(startStepRedirect('pod', { ...student, targetsInClass: 1, inPod: true }, CLASS)).toBe('/')
-    expect(startStepRedirect('target', { ...student, targetsInClass: 2 }, CLASS)).toBe('/')
-  })
-
-  it('already in a pod: the pod step moves on to the project (project first); the target step shows', () => {
-    expect(startStepRedirect('pod', { ...student, inPod: true }, CLASS)).toBe(projectStepHref(CLASS))
+  it('already in a team → the project', () => {
+    expect(startStepRedirect({ ...student, inPod: true }, CLASS)).toBe(projectStepHref(CLASS))
     expect(projectStepHref(CLASS)).toBe(`/classes/${CLASS}/project`)
-    expect(startStepRedirect('target', { ...student, inPod: true }, CLASS)).toBeNull()
   })
 })
 
 describe('step links', () => {
-  it('point at /start/pod and /start/target with the class', () => {
+  it('point at /start/pod with the class', () => {
     expect(podStepHref(CLASS)).toBe(`/start/pod?class=${CLASS}`)
-    expect(targetStepHref(CLASS)).toBe(`/start/target?class=${CLASS}`)
   })
 })
 

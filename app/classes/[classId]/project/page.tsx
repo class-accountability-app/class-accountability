@@ -21,6 +21,8 @@ import { TaskLog } from './task-log'
 import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
 import { TeamCodeForm } from '@/components/team/team-code-form'
+import { NudgeForm } from '@/components/nudges/nudge-form'
+import { NudgeList, NudgeListProvider, type NudgeItem } from '@/components/nudges/nudge-list'
 
 type BoardTask = TaskLike & {
   title: string
@@ -219,8 +221,20 @@ export default async function ProjectPage({
   const boardPath = `/classes/${classId}/project`
   const linkHref = (taskId: string) => `${boardPath}/tasks/${taskId}/link`
 
+  // 声かけ in this team that I sent or received (RLS shows nothing else).
+  const [{ data: nudgeRows }, tNudges] = await Promise.all([
+    supabase
+      .from('nudges')
+      .select('id, from_user_id, to_user_id, content, created_at')
+      .eq('pairing_id', pod.podId)
+      .or(`from_user_id.eq.${user.id},to_user_id.eq.${user.id}`)
+      .order('created_at', { ascending: false })
+      .limit(20),
+    getTranslations('nudges'),
+  ])
+
   return wrap(
-    <>
+    <NudgeListProvider nudges={(nudgeRows as NudgeItem[] | null) ?? []}>
       <div className="px-0.5">
         <p className="font-meta text-[13px] leading-7 text-muted">{cls.name}</p>
         <h1 className="font-heading text-[26px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">{project.title}</h1>
@@ -371,6 +385,9 @@ export default async function ProjectPage({
                   <span className="font-meta text-xs leading-7 font-bold text-status-active">{t('live')}</span>
                 )}
               </div>
+              {group.ownerId !== null && !mine && (
+                <NudgeForm podId={pod.podId} fromUserId={user.id} toUserId={group.ownerId} />
+              )}
 
               {group.tasks.length === 0 ? (
                 <p className="text-[13px] leading-7 text-muted">{t('noTasksYet')}</p>
@@ -473,6 +490,13 @@ export default async function ProjectPage({
         {inviteCard}
         <p className="px-0.5 text-[13px] leading-7 text-muted">{t('teacherSees')}</p>
       </section>
-    </>
+
+      <section aria-labelledby="nudges-heading" className="flex flex-col gap-3.5">
+        <h2 id="nudges-heading" className="px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
+          {tNudges('heading')}
+        </h2>
+        <NudgeList names={Object.fromEntries(nameOf)} unknownName={tCommon('unknownPerson')} />
+      </section>
+    </NudgeListProvider>
   )
 }

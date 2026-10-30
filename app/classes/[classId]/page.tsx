@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { TeamSummary } from '@/components/teacher/team-summary'
 import { ClassProjectForm } from '@/components/teacher/class-project-form'
 import { rowsFromTasks } from '@/lib/class-project'
@@ -14,16 +13,10 @@ import { InviteCard } from './invite-card'
 import { appOrigin } from '@/lib/app-origin'
 import { groupedCode, joinUrl, shortJoinUrl } from '@/lib/join-link'
 import { qrSvg } from '@/lib/qr'
-import { sortHomeTargets } from '@/lib/home-targets'
-import { tidyTotal } from '@/lib/quick-log'
-import { loggedOnTokyoDay, nextStep } from '@/lib/next-step'
-import { loadMyTargets } from '@/components/quick-log/load'
-import { QuickLogProvider } from '@/components/quick-log/quick-log-provider'
-import { FinishedTargets, StickyLog, TargetCard } from '@/components/quick-log/target-card'
+import { nextStep } from '@/lib/next-step'
 import { NextStepCard } from '@/components/next-step-card'
 import { PodProgressLink } from '@/components/pod-progress-link'
 import { RuleSnap } from '@/components/rule-snap'
-import { secondaryButtonClass } from '@/components/buttons'
 import { InviteDisclosure } from './invite-disclosure'
 
 const POD_SOFT_CAP = 6
@@ -149,7 +142,7 @@ export default async function ClassPodsPage({
 
   const podIds = pods?.map((p) => p.id) ?? []
 
-  const [{ data: members }, { data: classmates }, { data: invitations }, quick] = await Promise.all([
+  const [{ data: members }, { data: classmates }, { data: invitations }] = await Promise.all([
     podIds.length > 0
       ? supabase
           .from('pairing_members')
@@ -167,8 +160,6 @@ export default async function ClassPodsPage({
       .select('id, pod_id, inviter_id, invitee_id, kind')
       .eq('class_id', classId)
       .eq('status', 'pending'),
-    // あなたの目標: my targets here and all my logs on them.
-    loadMyTargets(supabase, user.id, { classId }),
   ])
 
   const membersByPod = new Map<string, PodMember[]>()
@@ -222,22 +213,6 @@ export default async function ClassPodsPage({
     return t('memberCount', { count: (membersByPod.get(podId) ?? []).length, max: POD_SOFT_CAP })
   }
 
-  // My targets here: unfinished first, nearest deadline first (as on Home,
-  // so the sticky ＋記録 and 次にやること point at the same one).
-  const now = new Date()
-  const totals = new Map<string, number>()
-  for (const log of quick.logs) totals.set(log.targetId, (totals.get(log.targetId) ?? 0) + log.value)
-  const myTargets = sortHomeTargets(
-    quick.rows.map((r) => {
-      const total = tidyTotal(totals.get(r.id) ?? 0)
-      const finished =
-        r.target_type === 'task' ? total >= 1 : r.target_amount !== null && total >= Number(r.target_amount)
-      return { ...r, total, finished, createdAt: r.created_at }
-    })
-  )
-  const openTargets = myTargets.filter((x) => !x.finished)
-  const finishedTargets = myTargets.filter((x) => x.finished)
-
   const myPodId = myPods[0] ?? null
   // Project first: whether my team here has started its project.
   const { data: myProject } = myPodId
@@ -254,22 +229,6 @@ export default async function ClassPodsPage({
         project: myProject ? 'started' : 'none',
       },
     ],
-    targets: myTargets.map((x) => ({
-      id: x.id,
-      classId: x.class_id,
-      title: x.title,
-      type: x.target_type,
-      targetAmount: x.target_amount === null ? null : Number(x.target_amount),
-      deadline: x.deadline,
-      createdAt: x.created_at,
-      total: x.total,
-      inputMode: x.input_mode,
-    })),
-    loggedToday: loggedOnTokyoDay(
-      quick.logs.map((l) => l.loggedAt),
-      now
-    ),
-    now,
   })
 
   const sectionHead = (id: string, heading: string, why: string, action?: React.ReactNode) => (
@@ -285,7 +244,6 @@ export default async function ClassPodsPage({
   )
 
   return (
-    <QuickLogProvider targets={quick.targets} logs={quick.logs} now={now.toISOString()}>
       <div className="flex flex-1 flex-col px-4 py-7 sm:px-6 sm:pl-16 lg:px-16 lg:pb-14">
         <div className="mx-auto grid w-full max-w-md gap-7 md:max-w-xl lg:max-w-[1120px] lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start lg:gap-x-8">
           <div className="px-0.5 lg:col-span-2">
@@ -323,35 +281,7 @@ export default async function ClassPodsPage({
             </section>
           )}
 
-          <section aria-labelledby="targets-heading" className="flex min-w-0 flex-col gap-7">
-            {sectionHead(
-              'targets-heading',
-              t('yourTargets'),
-              t('targetsWhy'),
-              <Link href={`/classes/${classId}/targets/new`} className={`${secondaryButtonClass} mt-1.5`}>
-                <svg aria-hidden width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                  <path d="M8 3v10M3 8h10" />
-                </svg>
-                {t('newTarget')}
-              </Link>
-            )}
-            {myTargets.length === 0 ? (
-              <p className="px-0.5 text-sm leading-7 text-muted">{t('noTargets')}</p>
-            ) : (
-              <>
-                {openTargets.length > 0 && (
-                  <ul className="flex flex-col gap-7">
-                    {openTargets.map((target) => (
-                      <TargetCard key={target.id} targetId={target.id} />
-                    ))}
-                  </ul>
-                )}
-                <FinishedTargets targetIds={finishedTargets.map((target) => target.id)} />
-              </>
-            )}
-          </section>
-
-          <div className="flex min-w-0 flex-col gap-7">
+          <div className="flex min-w-0 flex-col gap-7 lg:col-span-2">
             <section aria-labelledby="pod-heading" className="flex flex-col gap-7">
               {sectionHead('pod-heading', t('yourPod'), t('yourPodWhy'))}
               {myPods.length === 0 ? (
@@ -411,11 +341,6 @@ export default async function ClassPodsPage({
                         title={t('projectLink')}
                         sub={t('projectLinkSub')}
                       />
-                      <PodProgressLink
-                        href={`/classes/${classId}/progress`}
-                        title={t('podProgressLink')}
-                        sub={t('podProgressSub')}
-                      />
                     </div>
                   )
                 })
@@ -469,8 +394,6 @@ export default async function ClassPodsPage({
             )}
           </div>
         </div>
-        <StickyLog targetId={openTargets[0]?.id ?? null} />
       </div>
-    </QuickLogProvider>
   )
 }

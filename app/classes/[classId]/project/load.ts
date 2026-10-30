@@ -1,6 +1,6 @@
 import type { getTranslations } from 'next-intl/server'
 import type { createClient } from '@/lib/supabase/server'
-import { tidyTotal } from '@/lib/quick-log'
+import { tidyTotal } from '@/lib/project-board'
 import type { TaskMetric, TaskStatus } from '@/lib/tasks'
 
 type Supabase = Awaited<ReturnType<typeof createClient>>
