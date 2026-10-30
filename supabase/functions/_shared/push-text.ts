@@ -2,7 +2,8 @@
 // nudge says only who nudged (or how many nudges came overnight), never the
 // memo, a class or progress numbers. A meeting reminder says when, not what;
 // a stalled-task push names the task (it goes to its owner only) but never a
-// number; the check-in-day push names nothing.
+// number; the check-in-day and poll pushes name nothing (not even the poll's
+// title).
 //
 // The Edge Function can't read messages/*.json once deployed, so these are a
 // copy of their "push" keys; push-text.test.ts fails if the two drift.
@@ -19,6 +20,7 @@ export const PUSH_TEXT = {
     meetingCheckin: '打ち合わせは{when}からです。その前にチェックインしましょう',
     stalled: '「{task}」が{days}日止まっています。少しだけでも進めてみませんか',
     checkinDue: '今日はチェックインの日です。チームに進み具合を共有しましょう',
+    pollVote: '打ち合わせの日程調整が、あなたの回答を待っています',
   },
   en: {
     title: 'Study Pods',
@@ -29,6 +31,7 @@ export const PUSH_TEXT = {
     meetingCheckin: 'Your meeting starts {when}. Check in before then',
     stalled: '“{task}” hasn’t moved for {days} days. Even a little progress helps',
     checkinDue: 'Check-in day: share your progress with your team today',
+    pollVote: 'A meeting poll is waiting for your answer',
   },
 } as const
 
@@ -97,4 +100,9 @@ export function stalledTaskText(locale: string, task: string, days: number): { t
 export function checkinDueText(locale: string): { title: string; body: string } {
   const t = textFor(locale)
   return { title: t.title, body: t.checkinDue }
+}
+
+export function pollVoteText(locale: string): { title: string; body: string } {
+  const t = textFor(locale)
+  return { title: t.title, body: t.pollVote }
 }

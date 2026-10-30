@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { DB_CODES, toErrorKey, type ActionResult, type ErrorKey } from '@/lib/errors'
-import { POLL_TITLE_MAX, checkSlots, isPollAnswer, type SlotProblem } from '@/lib/meeting-poll'
+import { POLL_TITLE_MAX, VOTE_BY_DAYS, checkSlots, isPollAnswer, type SlotProblem } from '@/lib/meeting-poll'
 
 // Meeting polls (0024). Creating, confirming and cancelling go through the
 // database's functions; an answer is my own row, allowed while the poll is open.
@@ -25,7 +25,13 @@ function refresh(classId: string, pollId?: string) {
 export async function createPoll(
   classId: string,
   projectId: string,
-  input: { title: string; duration: number; voteBy: string | null; slots: { date: string; time: string }[] }
+  input: {
+    title: string
+    duration: number
+    voteBy: string | null
+    voteByDays?: number | null
+    slots: { date: string; time: string }[]
+  }
 ): Promise<ActionResult & { id?: string }> {
   const supabase = await createClient()
   const {
@@ -44,7 +50,11 @@ export async function createPoll(
 
   // 回答のしめきり: a Tokyo date and time, typed in a datetime-local field.
   let voteBy: string | null = null
-  if (input.voteBy) {
+  if (input.voteByDays != null) {
+    // 「1日後」「3日後」「1週間後」: counted from now.
+    if (!VOTE_BY_DAYS.includes(input.voteByDays as (typeof VOTE_BY_DAYS)[number])) return { error: 'generic' }
+    voteBy = new Date(now.getTime() + input.voteByDays * 24 * 60 * 60 * 1000).toISOString()
+  } else if (input.voteBy) {
     const at = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(input.voteBy) ? new Date(`${input.voteBy}:00+09:00`) : null
     if (!at || Number.isNaN(at.getTime()) || at <= now) return { error: 'voteByPast' }
     voteBy = at.toISOString()
