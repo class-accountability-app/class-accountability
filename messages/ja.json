@@ -344,7 +344,9 @@
     "groupDocNoTasks": "文字数で記録するタスクがまだありません。先にタスクを追加してください。",
     "googleHeadingRequired": "見出しを選んでください。",
     "teamCodeInvalid": "このチームコードは使えません。チームの人に、いまのコードをもう一度見せてもらってください。",
-    "teamCodeFormat": "チームコードは8文字の英数字です（例：K7M3 Q9TX）。"
+    "teamCodeFormat": "チームコードは8文字の英数字です（例：K7M3 Q9TX）。",
+    "classProjectTooManyTasks": "タスクは30個までです。",
+    "classProjectDaysInvalid": "「締切の何日前」には、0〜365の整数を入力してください。"
   },
   "welcome": {
     "eyebrow": "ようこそ",
@@ -1246,5 +1248,38 @@
     "placeholder": "例：K7M3 Q9TX",
     "submit": "開く",
     "hint": "チームの人に見せてもらった8文字のコードです。QRコードを読み取っても参加できます。"
+  },
+  "classProject": {
+    "title": "クラスのプロジェクト",
+    "why": "このクラスで新しくできるチームは、このプロジェクトとタスクから始まります。",
+    "nameLabel": "プロジェクト名",
+    "namePlaceholder": "例：最終発表",
+    "deadlineLabel": "締切",
+    "everyLabel": "チェックインの間隔",
+    "everySuffix": "日ごと",
+    "tasksLabel": "タスク",
+    "preset": {
+      "presentation": "発表のひな形",
+      "report": "レポートのひな形"
+    },
+    "noTasks": "タスクがまだありません。ひな形を選ぶか、タスクを追加してください。",
+    "taskTitleLabel": "タスク{n}",
+    "metricLabel": "進み具合の測り方",
+    "metric": {
+      "status": "完了したかどうか",
+      "count": "数（スライドの枚数など）",
+      "characters": "文字数"
+    },
+    "unitLabel": "単位",
+    "unitPlaceholder": "例：枚",
+    "targetLabel": "目標",
+    "daysLabel": "締切の何日前",
+    "removeTask": "このタスクを削除",
+    "addTask": "タスクを追加",
+    "appliesToNew": "変更は、これからできるチームに使われます。すでにあるチームのプロジェクトは変わりません。",
+    "save": "保存する",
+    "saving": "保存しています…",
+    "saved": "保存しました。",
+    "taskProblemAt": "タスク{n}を確認してください。"
   }
 }
