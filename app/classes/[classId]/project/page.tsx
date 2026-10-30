@@ -20,6 +20,7 @@ import { CreateGroupDocButton, GoogleSyncOnOpen } from './google-controls'
 import { TaskLog } from './task-log'
 import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
+import { TeamTable, type PresenceRow } from '@/components/team/team-table'
 import { TeamCodeForm } from '@/components/team/team-code-form'
 import { NudgeForm } from '@/components/nudges/nudge-form'
 import { NudgeList, NudgeListProvider, type NudgeItem } from '@/components/nudges/nudge-list'
@@ -249,7 +250,7 @@ export default async function ProjectPage({
   const linkHref = (taskId: string) => `${boardPath}/tasks/${taskId}/link`
 
   // 声かけ in this team that I sent or received (RLS shows nothing else).
-  const [{ data: nudgeRows }, tNudges] = await Promise.all([
+  const [{ data: nudgeRows }, tNudges, { data: presenceRows }] = await Promise.all([
     supabase
       .from('nudges')
       .select('id, from_user_id, to_user_id, content, created_at')
@@ -258,7 +259,13 @@ export default async function ProjectPage({
       .order('created_at', { ascending: false })
       .limit(20),
     getTranslations('nudges'),
+    // チームのようす (0035). Before that migration this errors: no table then.
+    supabase.rpc('team_presence', { p_pod: pod.podId }),
   ])
+  const teamRows = members.map((m) => {
+    const theirs = tasks.filter((x) => x.owner_id === m.id)
+    return { id: m.id, name: m.name, total: theirs.length, done: theirs.filter((x) => x.status === 'done').length }
+  })
 
   return wrap(
     <NudgeListProvider nudges={(nudgeRows as NudgeItem[] | null) ?? []}>
@@ -377,6 +384,10 @@ export default async function ProjectPage({
             </>
           )}
         </section>
+      )}
+
+      {presenceRows && (
+        <TeamTable podId={pod.podId} me={user.id} members={teamRows} initial={presenceRows as PresenceRow[]} />
       )}
 
       <section aria-labelledby="members-heading" className="flex flex-col gap-7">

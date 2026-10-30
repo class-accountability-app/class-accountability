@@ -394,6 +394,11 @@
       "iosStep3": "“Add” in the top right",
       "iosInApp": "LINE’s and Instagram’s own browsers can’t add to the home screen. Choose “Open in Safari” from the menu, then try again.",
       "inApp": "LINE’s and Instagram’s own browsers can’t add to the home screen. Choose “Open in browser” from the menu to open it in Chrome, then try again."
+    },
+    "online": {
+      "label": "Show when I’m online",
+      "hint": "While on, teammates see a green dot when you have the app open. The day you last opened it is shown either way.",
+      "failed": "Couldn’t change this. Please try again."
     }
   },
   "nudgesPage": {
@@ -690,8 +695,8 @@
     "accountDeleted": "Your account has been deleted"
   },
   "privacy": {
-    "effective": "Effective 30 October 2026",
-    "updated": "Last updated 30 October 2026",
+    "effective": "Effective 31 October 2026",
+    "updated": "Last updated 31 October 2026",
     "title": "Privacy policy",
     "intro": "Study Pods (“the service”) is a study app built and run by a student. This page explains what the service collects, how it’s used, and who can see it.",
     "collectHeading": "1. What we collect",
@@ -744,7 +749,9 @@
     "organizerLabel": "Whoever created the class (e.g. a teacher):",
     "organizerText": "the number of members, the join link, the class project they set, and one summary line per team: team size, the whole project’s progress (%), whether it is on track, the day of the last activity, and how many members checked in this round. Never students’ names, or anyone’s own numbers, memos or text.",
     "teamCodeLabel": "Team codes:",
-    "teamCodeText": "a team’s code and QR code are shown only to that team’s members. Anyone who has the code can join that team (and, if they aren’t in the class yet, the class as a student). Any member can make a new code at any time, and the old one stops working."
+    "teamCodeText": "a team’s code and QR code are shown only to that team’s members. Anyone who has the code can join that team (and, if they aren’t in the class yet, the class as a student). Any member can make a new code at any time, and the old one stops working.",
+    "presenceLabel": "When you open the app, and the online dot:",
+    "presenceText": "While the app is open, we record once a minute when you last opened it. Teammates see only the day you last opened it (not the time) and whether you have it open right now (a green dot). You can turn the green dot off in Settings under “Show when I’m online”. Teachers and other classmates can’t see this, and it isn’t used for research."
   },
   "deleteAccount": {
     "title": "Delete account",
@@ -1311,5 +1318,19 @@
     "proposal": "Proposal and pitch",
     "literatureReview": "Literature review",
     "caseStudy": "Case study"
+  },
+  "teamTable": {
+    "heading": "Your team",
+    "onlineNow": "Online now: {count}",
+    "member": "Member",
+    "lastSeen": "Last seen",
+    "tasks": "Tasks done",
+    "you": "{name} (you)",
+    "online": "Online",
+    "offline": "Offline",
+    "never": "Not yet",
+    "taskCount": "{done}/{total}",
+    "note": "“Last seen” is the day someone last opened the app, never the time. You can turn off showing you online in Settings.",
+    "onlineNone": "Nobody is online right now"
   }
 }
