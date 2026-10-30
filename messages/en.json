@@ -342,7 +342,9 @@
     "googleFileMismatch": "This file doesn’t fit how the task is measured (characters need a Doc, a count needs Slides).",
     "groupDocShareBlocked": "Your Google account doesn’t allow sharing this Doc with your pod, so no Doc was created. Try connecting a different Google account, or link your own Doc to each task.",
     "groupDocNoTasks": "There are no tasks counted in characters yet. Please add one first.",
-    "googleHeadingRequired": "Please choose a heading."
+    "googleHeadingRequired": "Please choose a heading.",
+    "teamCodeInvalid": "This team code doesn’t work. Ask your team to show you their current code again.",
+    "teamCodeFormat": "A team code is 8 letters and numbers (e.g. K7M3 Q9TX)."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -1212,5 +1214,35 @@
       "behind": "Behind",
       "notStarted": "Not started"
     }
+  },
+  "teamJoin": {
+    "eyebrow": "Team invitation",
+    "title": "A team in {className}",
+    "meta": "{count, plural, one {# member} other {# members}}",
+    "body": "Joining opens your team’s project board. Team numbers are visible to every member.",
+    "full": "This team already has 6 members, so it’s full.",
+    "alsoJoinsClass": "You’re not in this class yet, so you’ll join it as a student too.",
+    "submit": "Join this team",
+    "joining": "Joining…",
+    "cancel": "Cancel",
+    "invalidTitle": "This code doesn’t work",
+    "invalidBody": "The code may be mistyped, or the team may have made a new one. Ask your team to show you their current QR code or code.",
+    "home": "Go to Home"
+  },
+  "teamInvite": {
+    "heading": "Invite to your team",
+    "body": "Show this screen in class and let classmates scan the QR code. They can also type the code.",
+    "codeLabel": "Team code",
+    "copy": "Copy link",
+    "copied": "Link copied.",
+    "copyFailed": "Couldn’t copy. Link: {url}",
+    "qrLabel": "QR code to join the team ({url})",
+    "renew": "Make a new code (the current code and QR stop working)"
+  },
+  "teamCodeForm": {
+    "label": "Join with a team code",
+    "placeholder": "e.g. K7M3 Q9TX",
+    "submit": "Open",
+    "hint": "The 8-character code your team showed you. You can also scan their QR code."
   }
 }

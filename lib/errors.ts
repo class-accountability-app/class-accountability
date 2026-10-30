@@ -44,6 +44,10 @@ const TASK_SOURCE_MISMATCH = 'SP011'
 const POLL_CLOSED = 'SP012'
 // Raised by create_meeting_poll (0024): times must be 2–8, distinct, in the future.
 const POLL_TIMES_INVALID = 'SP013'
+// Raised by join_pod_by_code (0028_team_join_code.sql): the team has 6 members.
+const TEAM_FULL = 'SP014'
+// Raised by join_pod_by_code (0028): no active team has this code.
+const TEAM_CODE_UNKNOWN = 'SP015'
 
 export const DB_CODES = {
   uniqueViolation: PG_UNIQUE_VIOLATION,
@@ -62,6 +66,8 @@ export const DB_CODES = {
   taskSourceMismatch: TASK_SOURCE_MISMATCH,
   pollClosed: POLL_CLOSED,
   pollTimesInvalid: POLL_TIMES_INVALID,
+  teamFull: TEAM_FULL,
+  teamCodeUnknown: TEAM_CODE_UNKNOWN,
 } as const
 
 const EMAIL_PATTERN = /[^\s"'<>(),;:]+@[^\s"'<>(),;:]+/g

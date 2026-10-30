@@ -18,6 +18,9 @@ import { chosenStart, formatMeeting, isUpcoming, loadPolls } from './meetings/lo
 import { ClaimButton, TaskStatusControl } from './task-controls'
 import { CreateGroupDocButton, GoogleSyncOnOpen } from './google-controls'
 import { TaskLog } from './task-log'
+import { loadTeamInvite } from '@/app/team/load'
+import { TeamInviteCard } from '@/components/team/team-invite-card'
+import { TeamCodeForm } from '@/components/team/team-code-form'
 
 type BoardTask = TaskLike & { title: string; unit: string | null; shown: ReturnType<typeof visibleTotal> }
 type SourceRow = { task_id: string; kind: 'doc' | 'doc_section' | 'slides'; file_id: string; state: 'ok' | 'lost_access' }
@@ -85,11 +88,26 @@ export default async function ProjectPage({
             </Link>
           }
         />
+        <div className="rule-card px-3.5 py-3.5">
+          <TeamCodeForm />
+        </div>
       </>
     )
   }
 
   const { project, members } = pod
+  // チームに招待する (0028): the code and QR while there is room.
+  const invite = members.length < 6 ? await loadTeamInvite(supabase, pod.podId) : null
+  const inviteCard = invite && (
+    <TeamInviteCard
+      podId={pod.podId}
+      classId={classId}
+      url={invite.url}
+      shortUrl={invite.shortUrl}
+      grouped={invite.grouped}
+      qrSvg={invite.svg}
+    />
+  )
 
   if (!project) {
     return wrap(
@@ -100,6 +118,7 @@ export default async function ProjectPage({
           <p className="text-[13px] leading-7 text-muted">{t('startWhy')}</p>
         </div>
         <CreateProjectForm classId={classId} />
+        {inviteCard}
       </>
     )
   }
@@ -433,6 +452,7 @@ export default async function ProjectPage({
             ＋ {t('addTask')}
           </Link>
         </div>
+        {inviteCard}
         <p className="px-0.5 text-[13px] leading-7 text-muted">{t('teacherSees')}</p>
       </section>
     </>
