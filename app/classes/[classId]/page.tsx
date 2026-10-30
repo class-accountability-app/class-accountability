@@ -1,4 +1,8 @@
 import { TeamSummary } from '@/components/teacher/team-summary'
+import { TeamManager } from '@/components/teacher/team-manager'
+import { AnnouncementManager, type Announcement } from '@/components/teacher/announcement-manager'
+import { ClassAnnouncements } from '@/components/class-announcements'
+import type { RosterRow } from '@/lib/organizer'
 import { ClassProjectForm } from '@/components/teacher/class-project-form'
 import { rowsFromTasks } from '@/lib/class-project'
 import { redirect } from 'next/navigation'
@@ -92,15 +96,24 @@ export default async function ClassPodsPage({
   )
 
   // The organizer (0015) shares the link and QR and sees how many students
-  // have joined; never pods, progress or names (RLS hides them anyway).
+  // have joined. Since 0036 they also see students' names and teams and run
+  // the teams (チームの管理, お知らせ); never progress, tasks or text.
   if (membership.role === 'organizer') {
-    const [{ data: byCode }, { data: classProject }] = await Promise.all([
+    const [{ data: byCode }, { data: classProject }, { data: rosterRows, error: rosterError }, { data: announcementRows }] = await Promise.all([
       supabase.rpc('class_by_join_code', { code: cls.join_code }).maybeSingle<{ member_count: number }>(),
       supabase
         .from('class_projects')
         .select('title, deadline, checkin_every_days, tasks')
         .eq('class_id', classId)
         .maybeSingle<{ title: string; deadline: string | null; checkin_every_days: number; tasks: unknown }>(),
+      // 0036: names and teams for the organizer (errors before that migration).
+      supabase.rpc('class_roster', { p_class: classId }),
+      supabase
+        .from('class_announcements')
+        .select('id, body, created_at')
+        .eq('class_id', classId)
+        .order('created_at', { ascending: false })
+        .limit(20),
     ])
     return (
       <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12 sm:items-start sm:pl-16">
@@ -113,6 +126,12 @@ export default async function ClassPodsPage({
           <p className="text-sm leading-[1.8] text-muted">{t('organizerNote')}</p>
         </div>
         <TeamSummary classId={classId} />
+        {!rosterError && rosterRows && (
+          <>
+            <TeamManager classId={classId} roster={rosterRows as RosterRow[]} />
+            <AnnouncementManager classId={classId} announcements={(announcementRows as Announcement[] | null) ?? []} />
+          </>
+        )}
         <ClassProjectForm
           classId={classId}
           initial={
@@ -253,6 +272,10 @@ export default async function ClassPodsPage({
 
           <div className="min-w-0 lg:col-span-2">
             <NextStepCard step={step} />
+          </div>
+
+          <div className="min-w-0 lg:col-span-2 empty:hidden">
+            <ClassAnnouncements classId={classId} />
           </div>
 
           {invitesToMe.length > 0 && (

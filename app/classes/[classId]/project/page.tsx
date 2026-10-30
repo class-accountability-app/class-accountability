@@ -20,6 +20,7 @@ import { CreateGroupDocButton, GoogleSyncOnOpen } from './google-controls'
 import { TaskLog } from './task-log'
 import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
+import { ClassAnnouncements } from '@/components/class-announcements'
 import { inviteFirst } from '@/lib/team-invite'
 import { TeamTable, type PresenceRow } from '@/components/team/team-table'
 import { TeamCodeForm } from '@/components/team/team-code-form'
@@ -286,6 +287,7 @@ export default async function ProjectPage({
         <p className="text-[13px] leading-7 text-muted">{t('overall', { percent })}</p>
       </div>
 
+      <ClassAnnouncements classId={classId} />
       {inviteOnTop && inviteCard}
 
       <section aria-labelledby="checkin-heading" className="rule-card relative flex flex-col px-3.5 py-3.5 pl-[18px]">

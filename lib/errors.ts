@@ -51,6 +51,9 @@ const TEAM_CODE_UNKNOWN = 'SP015'
 // Raised by guard_finished_project (0033_project_lifecycle.sql): the project is
 // finished, so it can't change any more. Means the same everywhere.
 const PROJECT_FINISHED = 'SP016'
+// Raised by organizer_create_team / organizer_auto_split (0036): a team needs
+// at least one student, and auto-split takes a size of 2–6.
+const TEAM_SETUP_INVALID = 'SP017'
 
 export const DB_CODES = {
   uniqueViolation: PG_UNIQUE_VIOLATION,
@@ -72,6 +75,7 @@ export const DB_CODES = {
   teamFull: TEAM_FULL,
   teamCodeUnknown: TEAM_CODE_UNKNOWN,
   projectFinished: PROJECT_FINISHED,
+  teamSetupInvalid: TEAM_SETUP_INVALID,
 } as const
 
 const EMAIL_PATTERN = /[^\s"'<>(),;:]+@[^\s"'<>(),;:]+/g
