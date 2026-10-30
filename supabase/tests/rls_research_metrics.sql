@@ -1,5 +1,5 @@
 -- =============================================================================
--- rls_research_metrics.sql — tests for 0020 and 0021 (research metrics)
+-- rls_research_metrics.sql — tests for 0020, 0021 and 0032 (research metrics)
 -- =============================================================================
 -- ONE transaction that ends in ROLLBACK. Nothing it writes survives, and it
 -- prints nothing about anyone: failures name test-cast numbers only.
@@ -14,14 +14,15 @@
 --            1,1,1,2,2,2,3,3,3,3; A1..A6 write in Study Pods); A1..A5 log in
 --            W1; A1, A2 log in W2. Pods P1 {A1,A2,A3} and P2 {A4,A5} in W0.
 --            A ring of 10 nudges on Monday evening of W0: A1..A5 log within
---            48 h, A6..A10 later. A1 has a push subscription. A1..A6 create
---            document targets in W0.
+--            48 h, A6..A10 later. A1 has a push subscription. A1..A6 start
+--            document tasks in W0 (their first editor entry). Since 0032 all
+--            logs are task progress on P1's project (tasks have no owner).
 --   X_opt    student in K, excluded with reason 'opt_out'
 --   X_test   student in K, excluded with reason 'test'
 --   X_org    student in K and organizer of class K2 (excluded as organizer)
 --   OG       organizer of K
 --   The three X accounts joined a week earlier, log in W0, form pod P3, nudge
---   and are nudged, subscribe or create a document target: if any of them
+--   and are nudged, subscribe or start a document task: if any of them
 --   were counted, the first week, W0's active count, the nudges and the pods
 --   would all change.
 --
@@ -121,21 +122,24 @@ begin
     (p3, pg_temp.rt_uid(12), pg_temp.rt_at('1 day 9 hours')),
     (p3, pg_temp.rt_uid(13), pg_temp.rt_at('1 day 9 hours'));
 
-  -- A manual target each (ids …21nn), and document targets (…22nn) for
-  -- A1..A6 and X_opt, created on Wednesday of W0.
+  -- One project on P1 holds every task (no owners, so no pod check): a
+  -- counted task per person (ids …21nn) and a document task (…22nn) for
+  -- A1..A6 and X_opt.
+  insert into public.projects (id, pairing_id, title)
+  values ('00000000-0000-4000-8000-0000000020e1', p1, 'rt project');
   for i in 1..13 loop
-    insert into public.targets (id, user_id, class_id, title, target_type, created_at)
+    insert into public.project_tasks (id, project_id, title, metric, unit)
     values (('00000000-0000-4000-8000-0000000021' || lpad(i::text, 2, '0'))::uuid,
-            pg_temp.rt_uid(i), k, 'rt', 'study_hours', pg_temp.rt_at('0 hours'));
+            '00000000-0000-4000-8000-0000000020e1', 'rt', 'count', 'rt');
   end loop;
   foreach i in array array[1, 2, 3, 4, 5, 6, 11] loop
-    insert into public.targets (id, user_id, class_id, title, target_type, target_amount, input_mode, created_at)
+    insert into public.project_tasks (id, project_id, title, metric, input_mode)
     values (('00000000-0000-4000-8000-0000000022' || lpad(i::text, 2, '0'))::uuid,
-            pg_temp.rt_uid(i), k, 'rt doc', 'character_count', 1000, 'document', pg_temp.rt_at('2 days'));
+            '00000000-0000-4000-8000-0000000020e1', 'rt doc', 'characters', 'document');
   end loop;
 end $$;
 
--- Logs. m(i) = manual target, d(i) = document target; times are W0 + offset.
+-- Logs. m(i) = counted task, d(i) = document task; times are W0 + offset.
 create temporary table rt_logs (i integer, doc boolean, at_ interval);
 insert into rt_logs values
   -- W0, Tuesday 10:00 (within 48 h of the nudges): A1..A3 write once, A4, A5
@@ -157,7 +161,7 @@ insert into rt_logs values
   (11, true, '1 day 10 hours'), (11, false, '-6 days'), (12, false, '1 day 10 hours'),
   (12, false, '-6 days'), (13, false, '1 day 10 hours'), (13, false, '-6 days');
 
-insert into public.progress_logs (user_id, target_id, source, progress_value, logged_at)
+insert into public.task_progress (user_id, task_id, source, progress_value, logged_at)
 select pg_temp.rt_uid(l.i),
        (case when l.doc then '00000000-0000-4000-8000-0000000022' else '00000000-0000-4000-8000-0000000021' end
          || lpad(l.i::text, 2, '0'))::uuid,
@@ -191,17 +195,19 @@ declare
 begin
   -- W0: 10 active, median 2.0, 5 of 10 in a pod (50%), 2 pods (5 people),
   --     10 nudges, 5 of 10 followed within 48 h by 5 + 5 recipients (50%),
-  --     1 with push (<5), 6 document targets, 6 of 10 writing (rest 4: <5).
+  --     1 with push (<5), 6 document tasks started, 6 of 10 writing (rest 4:
+  --     <5), no check-ins (<5).
   -- W1: 5 active, median 1.0, pod share unchanged, nothing else (<5).
   -- W2: 2 active (<5). W3: the current week, not complete.
   with expected (week_start, week_complete, active_students, logs_per_active_student_median,
                  pct_students_with_pod, pods_formed, nudges_sent, pct_nudges_followed_by_log_48h,
-                 pct_students_push_opt_in, document_targets_created, pct_active_students_writing) as (
+                 pct_students_push_opt_in, document_tasks_started, pct_active_students_writing,
+                 checkins_shared) as (
     values
-      (w0,      true,  '10', '2.0', '50%', '2',  '10', '50%', '<5', '6',  '<5'),
-      (w0 + 7,  true,  '5',  '1.0', '50%', '<5', '<5', '<5',  '<5', '<5', '<5'),
-      (w0 + 14, true,  '<5', '<5',  '50%', '<5', '<5', '<5',  '<5', '<5', '<5'),
-      (w0 + 21, false, '<5', '<5',  '50%', '<5', '<5', '<5',  '<5', '<5', '<5')
+      (w0,      true,  '10', '2.0', '50%', '2',  '10', '50%', '<5', '6',  '<5', '<5'),
+      (w0 + 7,  true,  '5',  '1.0', '50%', '<5', '<5', '<5',  '<5', '<5', '<5', '<5'),
+      (w0 + 14, true,  '<5', '<5',  '50%', '<5', '<5', '<5',  '<5', '<5', '<5', '<5'),
+      (w0 + 21, false, '<5', '<5',  '50%', '<5', '<5', '<5',  '<5', '<5', '<5', '<5')
   ),
   got as (select * from private.research_weekly())
   select string_agg(d::text, ' | ') into diff

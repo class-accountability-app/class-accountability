@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
 import { FieldError, describedField, useFocusFirstInvalid } from '@/components/form-errors'
 import { emptyActionClass } from '@/components/empty-state'
-import { sendNudge } from './actions'
+import { sendNudge } from '@/app/classes/[classId]/project/nudge-actions'
 import { useAddNudge } from './nudge-list'
 
 // `block` shows the closed state as a full-width button (an empty state's action).

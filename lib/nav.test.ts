@@ -58,7 +58,7 @@ describe('isOutsideApp', () => {
 })
 
 describe('hidesTabBar', () => {
-  it.each(['/login', '/auth/confirm', '/welcome', '/join/K7M3Q9TX', '/join', '/team/K7M3Q9TX', '/start/pod', '/start/target'])('%s has no tab bar', (p) => {
+  it.each(['/login', '/auth/confirm', '/welcome', '/join/K7M3Q9TX', '/join', '/team/K7M3Q9TX', '/start/pod'])('%s has no tab bar', (p) => {
     expect(hidesTabBar(p)).toBe(true)
   })
 

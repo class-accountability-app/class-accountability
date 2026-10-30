@@ -14,26 +14,16 @@ function Chevron() {
   )
 }
 
-function Plus() {
-  return (
-    <svg aria-hidden width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-      <path d="M8 3v10M3 8h10" />
-    </svg>
-  )
-}
 
-// 次にやること (Prompt 11b, docs/mockups/phase2/next-step.html): the step
-// lib/next-step.ts picked, one sentence of why, and at most one button.
-// Primary for a step nothing else on the screen offers; secondary once ＋記録
-// is the primary; none at all for "log today", which points at ＋記録 (the
-// sticky one on phones, the card's on wider screens) instead of repeating it.
-// "Keep writing" (a document target) gets a secondary 続きを書く.
+// 次にやること (Prompt 11b, docs/mockups/phase2/next-step.html; project first
+// since 2026-10-30): the step lib/next-step.ts picked, one sentence of why,
+// and at most one button.
 // On the ruled page: 28px lines, 14px padding, the actions row 56px.
 //
 // `podPrimary` (Home, Prompt 15 PR 2): false draws the pod step's button
 // outlined, under a hero target card that owns the filled button.
 export async function NextStepCard({ step, podPrimary = true }: { step: NextStep; podPrimary?: boolean }) {
-  const [t, tUnits] = await Promise.all([getTranslations('nextStep'), getTranslations('units')])
+  const t = await getTranslations('nextStep')
 
   let title: string
   let why: string
@@ -87,67 +77,12 @@ export async function NextStepCard({ step, podPrimary = true }: { step: NextStep
         </>
       )
       break
-    case 'firstTarget':
-      title = t('firstTarget.title')
-      why = t('firstTarget.why', { className: step.className })
-      actions = (
-        <Link href={`/classes/${step.classId}/targets/new`} className={primaryButtonClass}>
-          <Plus />
-          {t('firstTarget.action')}
-        </Link>
-      )
-      break
-    case 'logToday': {
-      title = step.write ? t('logToday.writeTitle') : t('logToday.title')
-      const { target, remaining, daysLeft } = step
-      const amount =
-        remaining !== null && target.type !== 'task' ? tUnits(target.type, { count: remaining }) : null
-      const when =
-        daysLeft === null
-          ? null
-          : daysLeft > 0
-            ? t('logToday.daysLeft', { count: daysLeft })
-            : daysLeft === 0
-              ? t('logToday.dueToday')
-              : t('logToday.overdue')
-      why = amount
-        ? when
-          ? t('logToday.whyAmountWhen', { title: target.title, amount, when })
-          : t('logToday.whyAmount', { title: target.title, amount })
-        : when
-          ? t('logToday.whyWhen', { title: target.title, when })
-          : t('logToday.why', { title: target.title })
-      // A document target (Prompt 12): 続きを書く opens its editor. Outlined,
-      // since the card's 書く and the sticky 続きを書く are the filled ones.
-      actions = step.write ? (
-        <Link href={`/classes/${target.classId}/targets/${target.id}/write`} className={secondaryButtonClass}>
-          {t('logToday.writeAction')}
-          <Chevron />
-        </Link>
-      ) : (
-        <p className="text-[13px] leading-7 text-muted">
-          <span className="md:hidden">{t('logToday.hintPhone')}</span>
-          <span className="hidden md:inline">{t('logToday.hintWide')}</span>
-        </p>
-      )
-      break
-    }
     case 'invite':
       title = t('invite.title')
       why = t('invite.why')
       actions = (
-        <Link href={`/classes/${step.classId}#invite`} className={secondaryButtonClass}>
+        <Link href={`/classes/${step.classId}/project`} className={secondaryButtonClass}>
           {t('invite.action')}
-          <Chevron />
-        </Link>
-      )
-      break
-    case 'seePod':
-      title = t('seePod.title')
-      why = t('seePod.why')
-      actions = (
-        <Link href={`/classes/${step.classId}/progress`} className={secondaryButtonClass}>
-          {t('seePod.action')}
           <Chevron />
         </Link>
       )
@@ -172,16 +107,6 @@ export async function NextStepCard({ step, podPrimary = true }: { step: NextStep
         </Link>
       )
       break
-    case 'nextTarget':
-      title = t('nextTarget.title')
-      why = t('nextTarget.why')
-      actions = (
-        <Link href={`/classes/${step.classId}/targets/new`} className={primaryButtonClass}>
-          <Plus />
-          {t('nextTarget.action')}
-        </Link>
-      )
-      break
   }
 
   return (
@@ -201,7 +126,7 @@ export async function NextStepCard({ step, podPrimary = true }: { step: NextStep
       </div>
       <div
         className={
-          step.kind === 'join' || (step.kind === 'logToday' && !step.write)
+          step.kind === 'join'
             ? 'min-w-0'
             : 'flex flex-wrap items-center gap-x-4 py-1.5 lg:justify-end'
         }

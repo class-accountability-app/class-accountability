@@ -124,7 +124,7 @@ export default async function CheckinFeedPage({
               </Link>
             ) : (
               <Link
-                href={`/classes/${classId}/progress`}
+                href={`/classes/${classId}/project`}
                 className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-accent-text underline underline-offset-4"
               >
                 {t('feed.nudge')}

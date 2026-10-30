@@ -47,7 +47,7 @@ export default async function NudgesPage() {
   const now = new Date()
 
   const classIds = (memberships ?? []).map((m) => m.class_id)
-  const podHref = classIds.length === 1 ? `/classes/${classIds[0]}/progress` : '/classes'
+  const podHref = classIds.length === 1 ? `/classes/${classIds[0]}/project` : '/classes'
 
   // On the notebook rule (Prompt 13a), like Home: text on 28px lines, gaps
   // of one line, and cards (.rule-card, 14px padding) whole lines tall.

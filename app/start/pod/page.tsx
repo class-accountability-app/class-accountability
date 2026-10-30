@@ -11,8 +11,7 @@ import { TeamCodeForm } from '@/components/team/team-code-form'
 // Step 2 of 3 of the first-run flow (Prompt 15): start a pod, ask to join one,
 // or decide later. Starting a pod leads to its project (project first); later
 // goes to the class page. It works when opened directly and shows the right state:
-// not a student of this class, or a target already set → Home; already in a
-// pod → on to the project. There is no way back: the name and the join before
+// not a student of this class → Home; already in a team → on to the project. There is no way back: the name and the join before
 // it can't be undone, so 「あとで決める」 is the way out.
 export default async function StartPodPage({
   searchParams,
@@ -29,18 +28,13 @@ export default async function StartPodPage({
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: membership }, { count: targetCount }, { data: inPod }, t] = await Promise.all([
+  const [{ data: membership }, { data: inPod }, t] = await Promise.all([
     supabase
       .from('class_memberships')
       .select('role')
       .eq('class_id', classId)
       .eq('user_id', user.id)
       .maybeSingle(),
-    supabase
-      .from('targets')
-      .select('id', { count: 'exact', head: true })
-      .eq('class_id', classId)
-      .eq('user_id', user.id),
     supabase
       .from('pairing_members')
       .select('pairing_id, pairings!inner(class_id, status)')
@@ -51,11 +45,7 @@ export default async function StartPodPage({
     getTranslations('firstRun'),
   ])
 
-  const away = startStepRedirect(
-    'pod',
-    { role: membership?.role ?? null, targetsInClass: targetCount ?? 0, inPod: (inPod ?? []).length > 0 },
-    classId
-  )
+  const away = startStepRedirect({ role: membership?.role ?? null, inPod: (inPod ?? []).length > 0 }, classId)
   if (away) redirect(away)
 
   const toProject = projectStepHref(classId)

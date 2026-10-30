@@ -87,7 +87,7 @@ export async function leavePod(classId: string, podId: string): Promise<ActionRe
   }
 
   revalidatePath(`/classes/${classId}`)
-  revalidatePath(`/classes/${classId}/progress`)
+  revalidatePath(`/classes/${classId}/project`)
   revalidatePath('/')
   return { error: null }
 }
