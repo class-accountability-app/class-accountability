@@ -6,6 +6,7 @@ import { isClassId, projectStepHref, startStepRedirect } from '@/lib/first-run'
 import { StepHead } from '@/components/first-run/step-head'
 import { primaryButtonClass } from '@/components/buttons'
 import { CreatePodButton } from '@/app/classes/[classId]/create-pod-button'
+import { TeamCodeForm } from '@/components/team/team-code-form'
 
 // Step 2 of 3 of the first-run flow (Prompt 15): start a pod, ask to join one,
 // or decide later. Starting a pod leads to its project (project first); later
@@ -68,6 +69,7 @@ export default async function StartPodPage({
         </div>
         <div className="flex flex-col gap-3.5">
           <CreatePodButton classId={classId} buttonClassName={`${primaryButtonClass} w-full`} goTo={toProject} />
+          <TeamCodeForm />
           <div className="flex flex-col items-center">
             <Link
               href={`/classes/${classId}#other-pods`}
