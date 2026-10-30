@@ -15,14 +15,19 @@ import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { CreateProjectForm } from './create-project-form'
 import { STATUS_PILL_CLASS, loadLiveTotals, loadMyPodProject, taskValueText, type TaskRow } from './load'
 import { chosenStart, formatMeeting, isUpcoming, loadPolls } from './meetings/load'
-import { ClaimButton, TaskStatusControl } from './task-controls'
+import { ClaimButton, TaskStatusControl, WriteInAppButton } from './task-controls'
 import { CreateGroupDocButton, GoogleSyncOnOpen } from './google-controls'
 import { TaskLog } from './task-log'
 import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
 import { TeamCodeForm } from '@/components/team/team-code-form'
 
-type BoardTask = TaskLike & { title: string; unit: string | null; shown: ReturnType<typeof visibleTotal> }
+type BoardTask = TaskLike & {
+  title: string
+  unit: string | null
+  inputMode: 'manual' | 'document'
+  shown: ReturnType<typeof visibleTotal>
+}
 type SourceRow = { task_id: string; kind: 'doc' | 'doc_section' | 'slides'; file_id: string; state: 'ok' | 'lost_access' }
 const GOOGLE_RESULTS = ['connected', 'denied', 'failed', 'unavailable'] as const
 
@@ -126,7 +131,7 @@ export default async function ProjectPage({
   const [{ data: taskRows }, { data: checkinRows }] = await Promise.all([
     supabase
       .from('project_tasks')
-      .select('id, title, owner_id, metric, unit, target_amount, status, due')
+      .select('id, title, owner_id, metric, unit, target_amount, status, due, input_mode')
       .eq('project_id', project.id)
       .order('position')
       .order('created_at'),
@@ -180,6 +185,7 @@ export default async function ProjectPage({
       due: x.due,
       title: x.title,
       unit: x.unit,
+      inputMode: x.input_mode,
       shown,
     }
   })
@@ -415,12 +421,24 @@ export default async function ProjectPage({
                         {!mine && sources.get(task.id)?.kind === 'doc_section' && (
                           <p className="font-meta text-xs leading-7 text-muted">{tGoogle('teammateLinked')}</p>
                         )}
-                        {mine && !sources.has(task.id) && task.metric !== 'status' && task.status !== 'done' && (
+                        {mine && task.inputMode === 'document' && (
+                          <div className="pb-3.5">
+                            <Link href={`${boardPath}/tasks/${task.id}/write`} className={secondaryButtonClass}>
+                              {t('keepWriting')}
+                            </Link>
+                          </div>
+                        )}
+                        {mine && task.inputMode === 'manual' && !sources.has(task.id) && task.metric !== 'status' && task.status !== 'done' && (
                           <>
                             <TaskLog classId={classId} taskId={task.id} title={task.title} metric={task.metric} unit={task.unit} />
                             <Link href={linkHref(task.id)} className="-mt-2 inline-flex min-h-11 items-center self-start pb-1 text-[13px] font-semibold text-accent-text underline underline-offset-4">
                               {tGoogle('linkTask')}
                             </Link>
+                            {task.metric === 'characters' && (task.shown.total ?? 0) === 0 && (
+                              <div className="-mt-2 pb-1">
+                                <WriteInAppButton classId={classId} taskId={task.id} />
+                              </div>
+                            )}
                           </>
                         )}
                         {group.ownerId === null && (

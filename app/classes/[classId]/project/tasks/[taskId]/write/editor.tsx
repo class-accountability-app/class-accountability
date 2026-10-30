@@ -21,7 +21,7 @@ import { ConflictDialog, DraftDialog } from './conflict-dialog'
 import { HistoryPanel } from './history-panel'
 import { ExportMenu } from './export-menu'
 
-// 「Study Pods で書く」 (Prompt 12): the editor for one document target.
+// 「Study Pods で書く」 (Prompt 12): the editor for one of my document tasks (0030).
 // Tiptap's hook API (useEditor + EditorContent): the editor lives in this
 // one component, so the composable <Tiptap> provider adds nothing.
 //
@@ -37,7 +37,7 @@ export function Editor({
   userId,
   classId,
   className,
-  targetId,
+  taskId,
   title,
   targetAmount,
   initial,
@@ -45,7 +45,7 @@ export function Editor({
   userId: string
   classId: string
   className: string
-  targetId: string
+  taskId: string
   title: string
   targetAmount: number | null
   initial: Initial
@@ -116,7 +116,7 @@ export function Editor({
   const autosave = useAutosave({
     editor,
     userId,
-    targetId,
+    taskId,
     initialVersion: initial.version,
     initialSavedAt: initial.updatedAt,
   })
@@ -134,8 +134,8 @@ export function Editor({
       const now = Date.now()
       await dropStaleDrafts(userId, now)
       const [{ theirs }, draft] = await Promise.all([
-        currentDocument(targetId).catch(() => ({ theirs: null })),
-        readDraft(userId, targetId),
+        currentDocument(taskId).catch(() => ({ theirs: null })),
+        readDraft(userId, taskId),
       ])
       if (cancelled || editor.isDestroyed) return
 
@@ -146,7 +146,7 @@ export function Editor({
       }
       const decision = decideDraft(draft, { userId, ...server }, now)
       if (decision.kind === 'none') {
-        if (decision.discard) void deleteDraft(userId, targetId)
+        if (decision.discard) void deleteDraft(userId, taskId)
       } else if (decision.kind === 'offer') {
         setOffer(decision.draft)
       } else if (theirs) {
@@ -165,9 +165,9 @@ export function Editor({
     if (pdfPending && state.status === 'saved') {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot navigation once saving has finished
       setPdfPending(false)
-      router.push(`/classes/${classId}/targets/${targetId}/write/print`)
+      router.push(`/classes/${classId}/project/tasks/${taskId}/write/print`)
     }
-  }, [pdfPending, state.status, router, classId, targetId])
+  }, [pdfPending, state.status, router, classId, taskId])
 
   const amountText = (n: number) => tUnits('character_count', { count: n })
   const countLine =
@@ -175,7 +175,7 @@ export function Editor({
   const tooLong = count > MAX_DOCUMENT_CHARS
 
   async function onRestore(versionId: string): Promise<{ error: ErrorKey | null }> {
-    const result = await restoreVersion(targetId, state.version, versionId)
+    const result = await restoreVersion(taskId, state.version, versionId)
     if (result.status === 'saved' && result.content) {
       loaded({ content: result.content, version: result.version, updatedAt: result.updatedAt, charCount: 0 })
       setNotice(t('history.restored'))
@@ -183,7 +183,7 @@ export function Editor({
     }
     if (result.status === 'conflict') {
       openConflict(
-        { userId, targetId, content: (editor?.getJSON() as JSONContent | undefined) ?? initial.content, baseVersion: state.version, rev: 0, editedAt: Date.now() },
+        { userId, targetId: taskId, content: (editor?.getJSON() as JSONContent | undefined) ?? initial.content, baseVersion: state.version, rev: 0, editedAt: Date.now() },
         result.theirs
       )
       return { error: null }
@@ -197,7 +197,7 @@ export function Editor({
         <div className="flex flex-wrap items-center justify-between gap-x-4">
           <p className="font-meta text-[13px] leading-7 text-muted">{className}</p>
           <Link
-            href={`/classes/${classId}`}
+            href={`/classes/${classId}/project`}
             className="print-hidden inline-flex min-h-11 items-center text-sm font-semibold text-accent-text underline underline-offset-4"
           >
             {t('back')}
@@ -209,7 +209,7 @@ export function Editor({
           <div className="flex flex-wrap items-baseline justify-between gap-x-4">
             <p className={`font-meta leading-7 ${tooLong ? 'font-bold text-accent-text' : 'text-ink'}`}>{countLine}</p>
             <div className="flex items-center gap-3">
-              <HistoryPanel targetId={targetId} canRestore={state.status === 'saved'} onRestore={onRestore} />
+              <HistoryPanel taskId={taskId} canRestore={state.status === 'saved'} onRestore={onRestore} />
               <ExportMenu
                 title={title}
                 getContent={() => (editor && !editor.isDestroyed ? editor.getJSON() : null)}
@@ -255,7 +255,7 @@ export function Editor({
           setOffer(null)
         }}
         onDiscard={() => {
-          void deleteDraft(userId, targetId)
+          void deleteDraft(userId, taskId)
           setOffer(null)
         }}
       />

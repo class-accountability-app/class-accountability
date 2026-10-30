@@ -23,6 +23,7 @@ export type TaskRow = {
   target_amount: number | string | null
   status: TaskStatus
   due: string | null
+  input_mode: 'manual' | 'document'
 }
 
 // My active pod in this class, its project (if started) and its members, in

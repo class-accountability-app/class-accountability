@@ -148,6 +148,30 @@ export async function claimTask(classId: string, taskId: string): Promise<Action
   return { error: null }
 }
 
+// 「Study Pods で書く」 for one of my characters tasks (0030): the task is
+// then counted from the text written in the app. The database refuses a task
+// that already has progress logged (SP006).
+export async function writeInApp(classId: string, taskId: string): Promise<ActionResult> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'signedOut' }
+
+  const { data, error } = await supabase
+    .from('project_tasks')
+    .update({ input_mode: 'document' })
+    .eq('id', taskId)
+    .eq('owner_id', user.id)
+    .eq('metric', 'characters')
+    .select('id')
+  if (error) return { error: toErrorKey('writeInApp', error, { [DB_CODES.documentModeLocked]: 'taskDocumentLocked' }) }
+  if (!data || data.length === 0) return { error: 'generic' }
+
+  refresh(classId)
+  return { error: null }
+}
+
 export async function setTaskStatus(classId: string, taskId: string, status: string): Promise<ActionResult> {
   const supabase = await createClient()
   const {

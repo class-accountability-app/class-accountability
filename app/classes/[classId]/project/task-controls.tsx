@@ -7,7 +7,7 @@ import type { ErrorKey } from '@/lib/errors'
 import { TASK_STATUSES, type TaskStatus } from '@/lib/tasks'
 import { FormError } from '@/components/form-errors'
 import { secondaryButtonClass } from '@/components/buttons'
-import { claimTask, setTaskStatus } from './actions'
+import { claimTask, setTaskStatus, writeInApp } from './actions'
 
 // The status of one of my tasks: a native select, so it's one tap on a phone
 // and the keyboard works without extra code.
@@ -57,6 +57,40 @@ export function TaskStatusControl({ classId, taskId, status }: { classId: string
 }
 
 // 担当する on a task nobody owns yet.
+// 「Study Pods で書く」: turn one of my characters tasks into a document and
+// open its editor.
+export function WriteInAppButton({ classId, taskId }: { classId: string; taskId: string }) {
+  const t = useTranslations('project')
+  const tCommon = useTranslations('common')
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<ErrorKey | null>(null)
+
+  return (
+    <div className="flex flex-col items-start">
+      <button
+        type="button"
+        disabled={isPending}
+        className="inline-flex min-h-11 items-center text-[13px] font-semibold text-accent-text underline underline-offset-4 disabled:opacity-50"
+        onClick={() =>
+          startTransition(async () => {
+            setError(null)
+            const result = await writeInApp(classId, taskId)
+            if (result.error) {
+              setError(result.error)
+              return
+            }
+            router.push(`/classes/${classId}/project/tasks/${taskId}/write`)
+          })
+        }
+      >
+        {isPending ? tCommon('working') : t('writeInApp')}
+      </button>
+      <FormError error={error} />
+    </div>
+  )
+}
+
 export function ClaimButton({ classId, taskId }: { classId: string; taskId: string }) {
   const t = useTranslations('project')
   const tCommon = useTranslations('common')

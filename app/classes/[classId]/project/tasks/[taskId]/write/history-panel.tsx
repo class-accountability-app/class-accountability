@@ -17,11 +17,11 @@ type Preview = { item: VersionItem; content: JSONContent }
 // newest 50). Pick one to read it; この版に戻す asks first, and only once
 // everything typed is saved (canRestore), so a restore never races autosave.
 export function HistoryPanel({
-  targetId,
+  taskId,
   canRestore,
   onRestore,
 }: {
-  targetId: string
+  taskId: string
   canRestore: boolean
   onRestore: (versionId: string) => Promise<{ error: ErrorKey | null }>
 }) {
@@ -51,7 +51,7 @@ export function HistoryPanel({
     setPreview(null)
     setConfirming(false)
     setError(null)
-    const result = await listVersions(targetId).catch(() => ({ error: 'generic' as const, versions: [] }))
+    const result = await listVersions(taskId).catch(() => ({ error: 'generic' as const, versions: [] }))
     setError(result.error)
     setVersions(result.versions)
   }
@@ -59,7 +59,7 @@ export function HistoryPanel({
   async function view(item: VersionItem) {
     setError(null)
     setConfirming(false)
-    const result = await getVersion(targetId, item.id).catch(() => ({ error: 'generic' as const, content: undefined }))
+    const result = await getVersion(taskId, item.id).catch(() => ({ error: 'generic' as const, content: undefined }))
     if (result.error || !result.content) setError(result.error ?? 'generic')
     else setPreview({ item, content: result.content })
   }
