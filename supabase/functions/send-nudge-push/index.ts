@@ -1,6 +1,6 @@
 // send-nudge-push: sends Web Pushes. A new nudge (0018), and the pushes the
 // database queues in push_events (0025: meeting reminders, stalled tasks;
-// 0033: check-in day).
+// 0033: check-in day; 0034: a meeting poll not yet answered).
 //
 // Called only by our database (0018: the nudges trigger and pg_cron at
 // 07:00 JST; 0025: pg_cron with {"events": true}), never by a browser.
@@ -14,7 +14,7 @@
 import webpush from 'npm:web-push@3.6.7'
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.110.2'
 import { isQuietHours } from '../_shared/quiet-hours.ts'
-import { checkinDueText, meetingReminderText, pushText, stalledTaskText } from '../_shared/push-text.ts'
+import { checkinDueText, meetingReminderText, pollVoteText, pushText, stalledTaskText } from '../_shared/push-text.ts'
 import { meetingPath, projectPath } from '../_shared/push-path.ts'
 import { verifySignature } from '../_shared/signature.ts'
 
@@ -88,7 +88,7 @@ async function notify(db: SupabaseClient, toUserId: string, nudges: Sender[]) {
 type PushEvent = {
   id: string
   user_id: string
-  kind: 'meeting_reminder' | 'task_stalled' | 'checkin_due'
+  kind: 'meeting_reminder' | 'task_stalled' | 'checkin_due' | 'poll_vote_due'
   poll_id: string | null
   task_id: string | null
   project_id: string | null
@@ -157,6 +157,29 @@ async function sendEvents(db: SupabaseClient) {
         ...stalledTaskText(locale, task.title, STALL_DAYS),
         kind: 'task_stalled',
         path: projectPath(classId),
+      }))
+    } else if (event.kind === 'poll_vote_due' && event.poll_id) {
+      // 0034: the poll is still open and they still haven't answered any time.
+      const { data: poll } = await db
+        .from('meeting_polls')
+        .select('id, project_id, status, meeting_poll_options!meeting_poll_options_poll_id_fkey(id)')
+        .eq('id', event.poll_id)
+        .maybeSingle()
+      if (!poll || poll.status !== 'open') continue
+      const optionIds = ((poll.meeting_poll_options ?? []) as unknown as { id: string }[]).map((o) => o.id)
+      if (optionIds.length === 0) continue
+      const { count } = await db
+        .from('meeting_poll_votes')
+        .select('option_id', { count: 'exact', head: true })
+        .eq('user_id', event.user_id)
+        .in('option_id', optionIds)
+      if ((count ?? 0) > 0) continue
+      const classId = await classOfProject(db, poll.project_id)
+      if (!classId) continue
+      await sendToUser(db, event.user_id, 'poll', (locale) => ({
+        ...pollVoteText(locale),
+        kind: 'poll_vote_due',
+        path: meetingPath(classId, poll.id),
       }))
     } else if (event.kind === 'checkin_due' && event.project_id) {
       // 0033: still active, and they still haven't shared this round.

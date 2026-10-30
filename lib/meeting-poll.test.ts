@@ -89,7 +89,8 @@ describe('checkSlots', () => {
   it('reports the first problem', () => {
     const at = (date: string, time = '10:00') => ({ date, time })
     expect(checkSlots([at('2026-10-08')], now)).toEqual({ ok: false, problem: 'tooFew' })
-    expect(checkSlots(Array.from({ length: 9 }, (_, i) => at(`2026-10-1${i}`)), now)).toEqual({ ok: false, problem: 'tooMany' })
+    expect(checkSlots(Array.from({ length: 20 }, (_, i) => at(`2026-10-${10 + i}`)), now).ok).toBe(true)
+    expect(checkSlots(Array.from({ length: 21 }, (_, i) => at(`2026-10-${10 + i}`)), now)).toEqual({ ok: false, problem: 'tooMany' })
     expect(checkSlots([at('2026-10-08'), at('2026-10-09', '')], now)).toEqual({ ok: false, problem: 'invalid' })
     expect(checkSlots([at('2026-10-08'), at('2026-10-01')], now)).toEqual({ ok: false, problem: 'past' })
     expect(checkSlots([at('2026-10-08'), at('2026-10-08')], now)).toEqual({ ok: false, problem: 'duplicate' })

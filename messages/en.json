@@ -328,7 +328,7 @@
     "checkinAlready": "You’ve already shared for this check-in. The next one opens soon.",
     "pollTitleTooLong": "Please keep the title to 60 characters or fewer.",
     "pollTimesTooFew": "Please suggest at least 2 times.",
-    "pollTimesTooMany": "You can suggest up to 8 times.",
+    "pollTimesTooMany": "You can suggest up to 20 times.",
     "pollTimeInvalid": "Please enter both a date and a time.",
     "pollTimePast": "Please suggest times in the future.",
     "pollTimeDuplicate": "The same time is in the list twice.",
@@ -398,6 +398,11 @@
       "iosStep3": "“Add” in the top right",
       "iosInApp": "LINE’s and Instagram’s own browsers can’t add to the home screen. Choose “Open in Safari” from the menu, then try again.",
       "inApp": "LINE’s and Instagram’s own browsers can’t add to the home screen. Choose “Open in browser” from the menu to open it in Chrome, then try again."
+    },
+    "online": {
+      "label": "Show when I’m online",
+      "hint": "While on, teammates see a green dot when you have the app open. The day you last opened it is shown either way.",
+      "failed": "Couldn’t change this. Please try again."
     }
   },
   "nudgesPage": {
@@ -424,7 +429,8 @@
     "meeting": "Your meeting starts {when}",
     "meetingCheckin": "Your meeting starts {when}. Check in before then",
     "stalled": "“{task}” hasn’t moved for {days} days. Even a little progress helps",
-    "checkinDue": "Check-in day: share your progress with your team today"
+    "checkinDue": "Check-in day: share your progress with your team today",
+    "pollVote": "A meeting poll is waiting for your answer"
   },
   "empty": {
     "findPod": "Find a team",
@@ -748,7 +754,9 @@
     "organizerLabel": "Whoever created the class (e.g. a teacher):",
     "organizerText": "How many students have joined and the join link, the class project, a summary for each team (team size, overall project progress in %, whether it is on track, the day of the last activity, and how many checked in this round), and, to organize the teams, students’ display names and which team each is in. The teacher can make and name teams, move a student to another team or out of one, and post announcements to the whole class. They can’t see anyone’s individual numbers, memos, writing or email address.",
     "teamCodeLabel": "Team codes:",
-    "teamCodeText": "a team’s code and QR code are shown only to that team’s members. Anyone who has the code can join that team (and, if they aren’t in the class yet, the class as a student). Any member can make a new code at any time, and the old one stops working."
+    "teamCodeText": "a team’s code and QR code are shown only to that team’s members. Anyone who has the code can join that team (and, if they aren’t in the class yet, the class as a student). Any member can make a new code at any time, and the old one stops working.",
+    "presenceLabel": "When you open the app, and the online dot:",
+    "presenceText": "While the app is open, we record once a minute when you last opened it. Teammates see only the day you last opened it (not the time) and whether you have it open right now (a green dot). You can turn the green dot off in Settings under “Show when I’m online”. Teachers and other classmates can’t see this, and it isn’t used for research."
   },
   "deleteAccount": {
     "title": "Delete account",
@@ -1096,14 +1104,31 @@
       "titlePlaceholder": "e.g. Midway check",
       "lengthLabel": "Length",
       "minutes": "{count} min",
-      "slotsLabel": "Time options (2–8)",
+      "slotsLabel": "Suggested times (2–20)",
+      "voteByLabel": "Answer by (optional)",
+      "submit": "Ask the group",
+      "gridHint": "Tap the times that could work to add them. Tap again to remove one.",
+      "prevWeek": "Previous week",
+      "nextWeek": "Next week",
+      "week": "{from} – {to}",
+      "halfHours": "Show half hours",
+      "gridCaption": "A week of possible times. Tap to choose.",
+      "picked": "{count} of {max} chosen",
+      "removeTime": "Remove {when}",
+      "otherTime": "Add a time not on the grid",
+      "otherDate": "Date",
+      "otherClock": "Time",
+      "otherAdd": "Add",
+      "voteByNone": "None",
+      "voteByDays": "In {count, plural, one {# day} other {# days}}",
+      "voteByCustom": "Pick a time",
+      "voteByAt": "Answer by",
+      "voteByHint": "Teammates who haven’t answered get a notification 12 hours before it closes (or after one day if there’s no deadline).",
       "slotsHint": "About three options make it easy for everyone to answer.",
       "slotDate": "Option {n} date",
       "slotTime": "Option {n} time",
       "removeSlot": "Remove option {n}",
-      "addSlot": "Add an option",
-      "voteByLabel": "Answer by (optional)",
-      "submit": "Ask the group"
+      "addSlot": "Add an option"
     },
     "vote": {
       "legend": "○ Yes  △ If needed  ✕ No",
@@ -1263,13 +1288,21 @@
   },
   "teamInvite": {
     "heading": "Invite to your team",
-    "body": "Show this screen in class and let classmates scan the QR code. They can also type the code.",
+    "body": "Send the link on LINE or another app, or show this screen in class so classmates can scan the QR code. They can also type the code.",
     "codeLabel": "Team code",
     "copy": "Copy link",
     "copied": "Link copied.",
     "copyFailed": "Couldn’t copy. Link: {url}",
     "qrLabel": "QR code to join the team ({url})",
-    "renew": "Make a new code (the current code and QR stop working)"
+    "renew": "Make a new code (the current code and QR stop working)",
+    "message": "Join my team for {className}! Use this link: {url}",
+    "messageProject": "Join my team for “{project}” in {className}! Use this link: {url}",
+    "share": "Share",
+    "shareLine": "Send on LINE",
+    "copyMessage": "Copy message",
+    "messageCopied": "Invite message copied.",
+    "messageLabel": "Invite message",
+    "smallTeam": "Your team is still small. Invite classmates to join."
   },
   "teamCodeForm": {
     "label": "Join with a team code",
@@ -1315,6 +1348,20 @@
     "proposal": "Proposal and pitch",
     "literatureReview": "Literature review",
     "caseStudy": "Case study"
+  },
+  "teamTable": {
+    "heading": "Your team",
+    "onlineNow": "Online now: {count}",
+    "member": "Member",
+    "lastSeen": "Last seen",
+    "tasks": "Tasks done",
+    "you": "{name} (you)",
+    "online": "Online",
+    "offline": "Offline",
+    "never": "Not yet",
+    "taskCount": "{done}/{total}",
+    "note": "“Last seen” is the day someone last opened the app, never the time. You can turn off showing you online in Settings.",
+    "onlineNone": "Nobody is online right now"
   },
   "organizer": {
     "heading": "Manage teams",

@@ -21,6 +21,8 @@ import { TaskLog } from './task-log'
 import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
 import { ClassAnnouncements } from '@/components/class-announcements'
+import { inviteFirst } from '@/lib/team-invite'
+import { TeamTable, type PresenceRow } from '@/components/team/team-table'
 import { TeamCodeForm } from '@/components/team/team-code-form'
 import { NudgeForm } from '@/components/nudges/nudge-form'
 import { NudgeList, NudgeListProvider, type NudgeItem } from '@/components/nudges/nudge-list'
@@ -114,8 +116,13 @@ export default async function ProjectPage({
       shortUrl={invite.shortUrl}
       grouped={invite.grouped}
       qrSvg={invite.svg}
+      className={cls.name}
+      projectTitle={project?.title ?? null}
+      small={inviteFirst(members.length)}
     />
   )
+  // A team of 1 or 2 sees the invite before the tasks (item E).
+  const inviteOnTop = inviteFirst(members.length)
 
   if (!project) {
     // 0033: finished projects stay as history; the team starts the next one.
@@ -135,8 +142,9 @@ export default async function ProjectPage({
           </h1>
           <p className="text-[13px] leading-7 text-muted">{past.length > 0 ? t('nextWhy') : t('startWhy')}</p>
         </div>
+        {inviteOnTop && inviteCard}
         <CreateProjectForm classId={classId} />
-        {inviteCard}
+        {!inviteOnTop && inviteCard}
         {past.length > 0 && (
           <section aria-labelledby="history-heading" className="flex flex-col gap-3.5">
             <h2 id="history-heading" className="px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
@@ -250,7 +258,7 @@ export default async function ProjectPage({
   const linkHref = (taskId: string) => `${boardPath}/tasks/${taskId}/link`
 
   // 声かけ in this team that I sent or received (RLS shows nothing else).
-  const [{ data: nudgeRows }, tNudges] = await Promise.all([
+  const [{ data: nudgeRows }, tNudges, { data: presenceRows }] = await Promise.all([
     supabase
       .from('nudges')
       .select('id, from_user_id, to_user_id, content, created_at')
@@ -259,7 +267,13 @@ export default async function ProjectPage({
       .order('created_at', { ascending: false })
       .limit(20),
     getTranslations('nudges'),
+    // チームのようす (0035). Before that migration this errors: no table then.
+    supabase.rpc('team_presence', { p_pod: pod.podId }),
   ])
+  const teamRows = members.map((m) => {
+    const theirs = tasks.filter((x) => x.owner_id === m.id)
+    return { id: m.id, name: m.name, total: theirs.length, done: theirs.filter((x) => x.status === 'done').length }
+  })
 
   return wrap(
     <NudgeListProvider nudges={(nudgeRows as NudgeItem[] | null) ?? []}>
@@ -274,6 +288,7 @@ export default async function ProjectPage({
       </div>
 
       <ClassAnnouncements classId={classId} />
+      {inviteOnTop && inviteCard}
 
       <section aria-labelledby="checkin-heading" className="rule-card relative flex flex-col px-3.5 py-3.5 pl-[18px]">
         <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-accent" />
@@ -380,6 +395,10 @@ export default async function ProjectPage({
             </>
           )}
         </section>
+      )}
+
+      {presenceRows && (
+        <TeamTable podId={pod.podId} me={user.id} members={teamRows} initial={presenceRows as PresenceRow[]} />
       )}
 
       <section aria-labelledby="members-heading" className="flex flex-col gap-7">
@@ -519,7 +538,7 @@ export default async function ProjectPage({
             ＋ {t('addTask')}
           </Link>
         </div>
-        {inviteCard}
+        {!inviteOnTop && inviteCard}
         <p className="px-0.5 text-[13px] leading-7 text-muted">{t('teacherSees')}</p>
         <div className="px-0.5">
           <FinishProjectButton classId={classId} projectId={project.id} />

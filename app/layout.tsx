@@ -15,6 +15,7 @@ import { TabBar } from '@/components/app-nav'
 import { PublicFooter } from '@/components/public-footer'
 import { PwaSupport } from '@/components/pwa'
 import { PushSync } from '@/components/push'
+import { PresencePing } from '@/components/presence'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -130,6 +131,7 @@ export default async function RootLayout({
           {user && <TabBar classIds={classIds} />}
           <PwaSupport />
           {user && <PushSync />}
+          {user && <PresencePing />}
         </NextIntlClientProvider>
       </body>
     </html>

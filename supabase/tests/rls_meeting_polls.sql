@@ -91,10 +91,13 @@ begin
     raise exception 'FAIL: a poll with a past time was created';
   exception when sqlstate 'SP013' then null;
   end;
+  -- 0034: 20 times are allowed, 21 are not.
+  perform public.create_meeting_poll(p, 'Twenty', 30, null,
+    array(select now() + make_interval(hours => g) from generate_series(1, 20) g));
   begin
-    perform public.create_meeting_poll(p, 'Nine', 30, null,
-      array(select now() + make_interval(days => g) from generate_series(1, 9) g));
-    raise exception 'FAIL: a poll with 9 times was created';
+    perform public.create_meeting_poll(p, 'Too many', 30, null,
+      array(select now() + make_interval(days => g) from generate_series(1, 21) g));
+    raise exception 'FAIL: a poll with 21 times was created (0034: at most 20)';
   exception when sqlstate 'SP013' then null;
   end;
   begin

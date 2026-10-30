@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import ja from '@/messages/ja.json'
 import en from '@/messages/en.json'
-import { PUSH_TEXT, checkinDueText, meetingReminderText, pushText, stalledTaskText } from './push-text'
+import { PUSH_TEXT, checkinDueText, pollVoteText, meetingReminderText, pushText, stalledTaskText } from './push-text'
 
 describe('pushText', () => {
   it('names the sender in Japanese', () => {
@@ -36,6 +36,11 @@ describe('pushText', () => {
   it('reminds on check-in day without naming anything', () => {
     expect(checkinDueText('ja').body).toBe('今日はチェックインの日です。チームに進み具合を共有しましょう')
     expect(checkinDueText('en').body).toBe('Check-in day: share your progress with your team today')
+  })
+
+  it('asks for a poll answer without naming the poll', () => {
+    expect(pollVoteText('ja').body).toBe('打ち合わせの日程調整が、あなたの回答を待っています')
+    expect(pollVoteText('en').body).toBe('A meeting poll is waiting for your answer')
   })
 
   it('says when a meeting starts, in Tokyo time', () => {
