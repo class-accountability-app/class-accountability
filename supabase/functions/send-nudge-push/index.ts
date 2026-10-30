@@ -1,5 +1,6 @@
 // send-nudge-push: sends Web Pushes. A new nudge (0018), and the pushes the
-// database queues in push_events (0025: meeting reminders, stalled tasks).
+// database queues in push_events (0025: meeting reminders, stalled tasks;
+// 0033: check-in day).
 //
 // Called only by our database (0018: the nudges trigger and pg_cron at
 // 07:00 JST; 0025: pg_cron with {"events": true}), never by a browser.
