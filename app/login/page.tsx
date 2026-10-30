@@ -14,7 +14,8 @@ import { CodeStep } from './code-step'
 function LoginFlow() {
   const t = useTranslations('publicFooter')
   const searchParams = useSearchParams()
-  const authFailed = searchParams.get('error') === 'auth_failed'
+  const error = searchParams.get('error')
+  const authFailed = error === 'auth_failed' ? 'authFailed' : error === 'other_browser' ? 'authOtherBrowser' : null
   const next = safeNextPath(searchParams.get('next'))
 
   // Set once the code is sent. Restored from sessionStorage, so a phone

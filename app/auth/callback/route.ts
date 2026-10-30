@@ -18,6 +18,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL(next, request.url))
     }
     logServerError('authCallback', error)
+    // Opened in another browser or app than the one that asked for the email
+    // (the Gmail app's own browser, or a phone after asking on a laptop): say
+    // so, and point at the 6-digit code, which works anywhere.
+    if (error.code === 'pkce_code_verifier_not_found') {
+      return NextResponse.redirect(new URL('/login?error=other_browser', request.url))
+    }
   }
 
   return NextResponse.redirect(new URL('/login?error=auth_failed', request.url))
