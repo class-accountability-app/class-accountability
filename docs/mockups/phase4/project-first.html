@@ -625,7 +625,7 @@ document.addEventListener('click',e=>{
     case 'vote': { const [i,ans]=arg.split(':'); S.poll.options[Number(i)].votes[ME]=ans; return after() }
     case 'confirmPoll': S.poll.status='confirmed'; S.poll.chosen=bestOption(); after(); return toast(t('日程が決まりました。チームに通知します','Time confirmed. Your team is notified'))
     case 'finish': S.finished=true; return go('board')
-    case 'nextProject': { const l=S.lang; S.finished=false; S.projectTitle={ja:'期末レポート',en:'Final report'}; S.template='report'; S.deadline='2026-12-18'; return go('newproject') }
+    case 'nextProject': { S.finished=false; S.projectTitle={ja:'期末レポート',en:'Final report'}; S.template='report'; S.deadline='2026-12-18'; return go('newproject') }
   }
 })
 window.addEventListener('hashchange',()=>{ const h=location.hash.slice(1); if(view[h]&&h!==S.screen&&h!=='finished') go(h) })
