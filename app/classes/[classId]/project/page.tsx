@@ -20,6 +20,7 @@ import { CreateGroupDocButton, GoogleSyncOnOpen } from './google-controls'
 import { TaskLog } from './task-log'
 import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
+import { ClassAnnouncements } from '@/components/class-announcements'
 import { TeamCodeForm } from '@/components/team/team-code-form'
 import { NudgeForm } from '@/components/nudges/nudge-form'
 import { NudgeList, NudgeListProvider, type NudgeItem } from '@/components/nudges/nudge-list'
@@ -271,6 +272,8 @@ export default async function ProjectPage({
         </div>
         <p className="text-[13px] leading-7 text-muted">{t('overall', { percent })}</p>
       </div>
+
+      <ClassAnnouncements classId={classId} />
 
       <section aria-labelledby="checkin-heading" className="rule-card relative flex flex-col px-3.5 py-3.5 pl-[18px]">
         <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-accent" />

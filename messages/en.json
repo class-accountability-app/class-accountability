@@ -349,7 +349,11 @@
     "classProjectDaysInvalid": "For “days before the deadline”, enter a whole number from 0 to 365.",
     "taskDocumentLocked": "A task with progress logged can’t switch to Write in Study Pods.",
     "authOtherBrowser": "The email’s button doesn’t work when it opens in a different browser or app from the one where you typed your email. Send the email again and type the 6-digit code on this screen instead.",
-    "projectFinished": "This project is finished. Please reload the page."
+    "projectFinished": "This project is finished. Please reload the page.",
+    "teamSetupInvalid": "A team needs at least one student. Automatic teams take 2 to 6 people.",
+    "teamNameTooLong": "Team names can be up to 30 characters.",
+    "announcementRequired": "Write the announcement first.",
+    "announcementTooLong": "Announcements can be up to 500 characters."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -690,8 +694,8 @@
     "accountDeleted": "Your account has been deleted"
   },
   "privacy": {
-    "effective": "Effective 30 October 2026",
-    "updated": "Last updated 30 October 2026",
+    "effective": "Effective 31 October 2026",
+    "updated": "Last updated 31 October 2026",
     "title": "Privacy policy",
     "intro": "Study Pods (“the service”) is a study app built and run by a student. This page explains what the service collects, how it’s used, and who can see it.",
     "collectHeading": "1. What we collect",
@@ -742,7 +746,7 @@
     "priceText": "Study Pods is currently free. If paid features are ever introduced, we’ll tell you in advance.",
     "back": "← Back to the home page",
     "organizerLabel": "Whoever created the class (e.g. a teacher):",
-    "organizerText": "the number of members, the join link, the class project they set, and one summary line per team: team size, the whole project’s progress (%), whether it is on track, the day of the last activity, and how many members checked in this round. Never students’ names, or anyone’s own numbers, memos or text.",
+    "organizerText": "How many students have joined and the join link, the class project, a summary for each team (team size, overall project progress in %, whether it is on track, the day of the last activity, and how many checked in this round), and, to organize the teams, students’ display names and which team each is in. The teacher can make and name teams, move a student to another team or out of one, and post announcements to the whole class. They can’t see anyone’s individual numbers, memos, writing or email address.",
     "teamCodeLabel": "Team codes:",
     "teamCodeText": "a team’s code and QR code are shown only to that team’s members. Anyone who has the code can join that team (and, if they aren’t in the class yet, the class as a student). Any member can make a new code at any time, and the old one stops working."
   },
@@ -1311,5 +1315,32 @@
     "proposal": "Proposal and pitch",
     "literatureReview": "Literature review",
     "caseStudy": "Case study"
+  },
+  "organizer": {
+    "heading": "Manage teams",
+    "why": "{students} students, {teams} teams. You see names and teams only, never progress or writing.",
+    "unassignedHeading": "Students without a team ({count})",
+    "unassignedNone": "Everyone is in a team.",
+    "pickLegend": "Choose students for a team",
+    "newTeamName": "Team name (optional)",
+    "makeTeam": "Make a team of {count}",
+    "autoSplitLabel": "Split the rest into teams automatically",
+    "sizeOption": "{count} per team",
+    "autoSplit": "Split",
+    "autoSplitPreview": "That makes {teams} teams ({sizes})",
+    "teamNo": "Team {n}",
+    "memberCount": "{count} members",
+    "teamName": "Team name",
+    "save": "Save",
+    "moveLabel": "Move {name} to",
+    "stayIn": "Stay in {team}",
+    "moveTo": "Move to {team}",
+    "removeFromTeam": "Remove from team",
+    "announceHeading": "Announcements",
+    "announceLabel": "Message",
+    "announceHint": "Shown on every student’s board in this class (up to {max} characters).",
+    "announceSend": "Post",
+    "announceDelete": "Delete this announcement",
+    "fromTeacher": "From your teacher"
   }
 }
