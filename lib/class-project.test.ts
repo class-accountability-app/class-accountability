@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { CLASS_PROJECT_PRESETS, checkClassProject, rowsFromTasks, type ClassProjectTaskRow } from './class-project'
+import { PROJECT_TEMPLATES } from './project-templates'
+import { checkClassProject, rowsFromTasks, type ClassProjectTaskRow } from './class-project'
 
 const now = new Date('2026-10-30T01:00:00Z') // 10:00 JST
 const row = (over: Partial<ClassProjectTaskRow> = {}): ClassProjectTaskRow => ({
@@ -51,8 +52,8 @@ describe('checkClassProject', () => {
     })
   })
 
-  it('accepts every preset as it is', () => {
-    for (const preset of Object.values(CLASS_PROJECT_PRESETS)) {
+  it('accepts every template as it is', () => {
+    for (const preset of Object.values(PROJECT_TEMPLATES)) {
       for (const tasks of Object.values(preset)) expect(checkClassProject({ ...base, tasks }, now).ok).toBe(true)
     }
   })

@@ -7,7 +7,8 @@ import type { ErrorKey } from '@/lib/errors'
 import { TASK_STATUSES, type TaskStatus } from '@/lib/tasks'
 import { FormError } from '@/components/form-errors'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
-import { claimTask, finishProject, setTaskStatus, writeInApp } from './actions'
+import { addTemplateTasks, claimTask, finishProject, setTaskStatus, writeInApp } from './actions'
+import { PROJECT_TEMPLATE_KEYS, type ProjectTemplateKey } from '@/lib/project-templates'
 
 // The status of one of my tasks: a native select, so it's one tap on a phone
 // and the keyboard works without extra code.
@@ -169,6 +170,60 @@ export function FinishProjectButton({ classId, projectId }: { classId: string; p
         </button>
         <button type="button" disabled={isPending} className={secondaryButtonClass} onClick={() => setAsking(false)}>
           {t('cancel')}
+        </button>
+      </div>
+      <FormError error={error} />
+    </div>
+  )
+}
+
+// No tasks yet: pick a template and add its tasks (due dates counted back
+// from the project's deadline).
+export function TemplateTasksForm({ classId, projectId }: { classId: string; projectId: string }) {
+  const t = useTranslations('project')
+  const tTemplates = useTranslations('templates')
+  const tCommon = useTranslations('common')
+  const router = useRouter()
+  const [template, setTemplate] = useState<ProjectTemplateKey>('presentation')
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<ErrorKey | null>(null)
+
+  return (
+    <div className="rule-card flex flex-col px-3.5 py-3.5">
+      <label htmlFor={`template-${projectId}`} className="text-[15px] leading-7 font-semibold text-ink">
+        {t('templateAddLabel')}
+      </label>
+      <p className="text-[13px] leading-7 text-muted">{t('templateHint')}</p>
+      <div className="flex flex-wrap items-center gap-3.5 pt-1.5">
+        <select
+          id={`template-${projectId}`}
+          value={template}
+          onChange={(e) => setTemplate(e.target.value as ProjectTemplateKey)}
+          className="h-11 min-w-0 flex-1 rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-2.5 text-base text-ink"
+        >
+          {PROJECT_TEMPLATE_KEYS.map((key) => (
+            <option key={key} value={key}>
+              {tTemplates(key)}
+            </option>
+          ))}
+        </select>
+        <button
+          type="button"
+          disabled={isPending}
+          className={primaryButtonClass}
+          onClick={() =>
+            startTransition(async () => {
+              setError(null)
+              const result = await addTemplateTasks(classId, projectId, template)
+              if (result.error) {
+                setError(result.error)
+                return
+              }
+              router.refresh()
+            })
+          }
+        >
+          {isPending ? tCommon('working') : t('templateAdd')}
         </button>
       </div>
       <FormError error={error} />
