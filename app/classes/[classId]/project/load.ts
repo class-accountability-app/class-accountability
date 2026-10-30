@@ -44,6 +44,7 @@ export async function loadMyPodProject(supabase: Supabase, classId: string, user
       .from('projects')
       .select('id, title, start_date, deadline, checkin_every_days')
       .eq('pairing_id', myPod.pairing_id)
+      .eq('status', 'active')
       .maybeSingle(),
     supabase
       .from('pairing_members')

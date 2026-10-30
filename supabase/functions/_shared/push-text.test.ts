@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import ja from '@/messages/ja.json'
 import en from '@/messages/en.json'
-import { PUSH_TEXT, meetingReminderText, pushText, stalledTaskText } from './push-text'
+import { PUSH_TEXT, checkinDueText, meetingReminderText, pushText, stalledTaskText } from './push-text'
 
 describe('pushText', () => {
   it('names the sender in Japanese', () => {
@@ -22,7 +22,7 @@ describe('pushText', () => {
 
   it('falls back when the name is missing', () => {
     expect(pushText('ja', 1, null).body).toBe('仲間から声かけが届きました')
-    expect(pushText('en', 1, null).body).toBe('A podmate sent you a nudge')
+    expect(pushText('en', 1, null).body).toBe('A teammate sent you a nudge')
   })
 
   it('treats an unknown locale as Japanese', () => {
@@ -31,6 +31,11 @@ describe('pushText', () => {
 
   it('inserts a name literally, even with $ patterns', () => {
     expect(pushText('en', 1, '$&$1').body).toBe('$&$1 sent you a nudge')
+  })
+
+  it('reminds on check-in day without naming anything', () => {
+    expect(checkinDueText('ja').body).toBe('今日はチェックインの日です。チームに進み具合を共有しましょう')
+    expect(checkinDueText('en').body).toBe('Check-in day: share your progress with your team today')
   })
 
   it('says when a meeting starts, in Tokyo time', () => {

@@ -63,6 +63,7 @@ export default async function Home({
     .from('projects')
     .select('deadline, created_at, pairings!inner(class_id, status)')
     .eq('pairings.status', 'active')
+    .eq('status', 'active')
   const projectHref = homeProjectHref(
     ((projectRows ?? []) as unknown as { deadline: string | null; created_at: string; pairings: { class_id: string } }[]).map(
       (r) => ({ classId: r.pairings.class_id, deadline: r.deadline, createdAt: r.created_at })
