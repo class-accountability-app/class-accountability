@@ -19,6 +19,8 @@ The core loop: sign up → join a class → start or join a pod → set a target
 - Also planned: a Rallly-style poll to schedule live check-up meetings (the check-in is the pre-meeting share), and a push to a task's owner, and only the owner, when it stalls for 3 days.
 - This moves Google Docs out of phase 3 and adds coordination (a poll, still no chat). Mockup: `docs/mockups/phase4/automation.html`.
 
+**Project first (decided 2026-10-30, `docs/plans/project-first-plan.md`, which wins over the two plans above where they differ):** after login everything leads to the team's project, and Home is the project board. Teammates see live task totals (not memos, never text); teachers see a per-team summary with no names or individual numbers; one active project per team, finished projects stay as history. The name stays Study Pods. Clickable mockup: `docs/mockups/phase4/project-first.html`.
+
 Students log in with a 6-digit code or a button sent to their university email (andrew.ac.jp), often on a phone. That address works in both Gmail (Google Workspace) and Outlook, so never assume one mail app: the code screen links to both.
 
 ## Stack
