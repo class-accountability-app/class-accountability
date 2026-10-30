@@ -27,12 +27,12 @@ const DRAFT_THROTTLE_MS = 300
 type Options = {
   editor: Editor | null
   userId: string
-  targetId: string
+  taskId: string
   initialVersion: number
   initialSavedAt: string | null
 }
 
-export function useAutosave({ editor, userId, targetId, initialVersion, initialSavedAt }: Options) {
+export function useAutosave({ editor, userId, taskId, initialVersion, initialSavedAt }: Options) {
   const [state, dispatch] = useReducer(autosave, undefined, () => initialAutosave(initialVersion, initialSavedAt))
 
   // Read by timers and event handlers, which outlive a render.
@@ -59,14 +59,15 @@ export function useAutosave({ editor, userId, targetId, initialVersion, initialS
       if (!ed || ed.isDestroyed || rev.current === 0) return
       void writeDraft({
         userId,
-        targetId,
+        // lib/local-draft keeps one draft per id; a task id here.
+        targetId: taskId,
         content: ed.getJSON(),
         baseVersion,
         rev: rev.current,
         editedAt: Date.now(),
       })
     },
-    [userId, targetId]
+    [userId, taskId]
   )
 
   // Called from the editor's onUpdate (a change made by typing, pasting,
@@ -105,7 +106,7 @@ export function useAutosave({ editor, userId, targetId, initialVersion, initialS
           dispatch({ type: 'SAVE_OK', version: result.version, savedAt: result.updatedAt })
           // The server has this edit: the draft can go, unless newer typing
           // is in it (then it is rewritten on the new version).
-          if (rev.current === sentRev) void deleteDraft(userId, targetId, sentRev)
+          if (rev.current === sentRev) void deleteDraft(userId, taskId, sentRev)
           else saveDraftNow(result.version)
           break
         case 'conflict':
@@ -118,7 +119,7 @@ export function useAutosave({ editor, userId, targetId, initialVersion, initialS
           dispatch({ type: 'SAVE_FAIL' })
       }
     }
-    const promise = saveDocument(targetId, state.version, content, state.keepCurrent).then(apply, () =>
+    const promise = saveDocument(taskId, state.version, content, state.keepCurrent).then(apply, () =>
       // The request never reached the server (offline) or its answer never came.
       apply({ status: 'failed' })
     )
@@ -126,7 +127,7 @@ export function useAutosave({ editor, userId, targetId, initialVersion, initialS
     void promise.finally(() => {
       if (inflight.current === promise) inflight.current = null
     })
-  }, [state.status, state.request, state.version, state.keepCurrent, targetId, userId, saveDraftNow])
+  }, [state.status, state.request, state.version, state.keepCurrent, taskId, userId, saveDraftNow])
 
   // Retry with backoff.
   useEffect(() => {
@@ -199,11 +200,11 @@ export function useAutosave({ editor, userId, targetId, initialVersion, initialS
       const content = JSON.stringify(ed.getJSON())
       const sentRev = rev.current
       void (inflight.current ?? Promise.resolve()).then(async () => {
-        const result = await saveDocument(targetId, stateRef.current.version, content, stateRef.current.keepCurrent)
-        if (result.status === 'saved') await deleteDraft(userId, targetId, sentRev)
+        const result = await saveDocument(taskId, stateRef.current.version, content, stateRef.current.keepCurrent)
+        if (result.status === 'saved') await deleteDraft(userId, taskId, sentRev)
       })
     }
-  }, [saveDraftNow, targetId, userId])
+  }, [saveDraftNow, taskId, userId])
 
   const chooseMine = useCallback(() => dispatch({ type: 'CHOOSE_MINE' }), [])
 
@@ -212,13 +213,13 @@ export function useAutosave({ editor, userId, targetId, initialVersion, initialS
   const chooseTheirs = useCallback(async () => {
     const ed = editorRef.current
     if (!ed) return { error: 'generic' as const }
-    const result = await keepMine(targetId, JSON.stringify(ed.getJSON()))
+    const result = await keepMine(taskId, JSON.stringify(ed.getJSON()))
     if (result.error || !result.theirs) return { error: result.error ?? ('generic' as const) }
     load(result.theirs)
     dispatch({ type: 'THEIRS_LOADED', version: result.theirs.version, savedAt: result.theirs.updatedAt })
     return { error: null }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- load only touches refs
-  }, [targetId])
+  }, [taskId])
 
   // Puts server text into the editor without counting as an edit.
   function load(theirs: Pick<Theirs, 'content'>) {
@@ -228,7 +229,7 @@ export function useAutosave({ editor, userId, targetId, initialVersion, initialS
     rev.current = 0
     if (draftTimer.current) clearTimeout(draftTimer.current)
     draftTimer.current = null
-    void deleteDraft(userId, targetId)
+    void deleteDraft(userId, taskId)
   }
 
   // A newer server version (a restore, or the page was older than the last
@@ -239,7 +240,7 @@ export function useAutosave({ editor, userId, targetId, initialVersion, initialS
       dispatch({ type: 'LOADED', version: theirs.version, savedAt: theirs.updatedAt })
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- load only touches refs
-    [userId, targetId]
+    [userId, taskId]
   )
 
   // A draft found on opening goes into the editor as the text being worked

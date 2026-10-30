@@ -346,7 +346,8 @@
     "teamCodeInvalid": "このチームコードは使えません。チームの人に、いまのコードをもう一度見せてもらってください。",
     "teamCodeFormat": "チームコードは8文字の英数字です（例：K7M3 Q9TX）。",
     "classProjectTooManyTasks": "タスクは30個までです。",
-    "classProjectDaysInvalid": "「締切の何日前」には、0〜365の整数を入力してください。"
+    "classProjectDaysInvalid": "「締切の何日前」には、0〜365の整数を入力してください。",
+    "taskDocumentLocked": "記録があるタスクは、「Study Pods で書く」に変えられません。"
   },
   "welcome": {
     "eyebrow": "ようこそ",
@@ -1128,7 +1129,9 @@
       "open": "打ち合わせを見る"
     },
     "membersWhyLive": "それぞれの担当です。仲間の数字はリアルタイムで見えます。文章そのものと、記録に書いたメモは本人だけのものです。",
-    "teacherSees": "先生には、チーム全体の進み具合だけが見えます。名前や一人ひとりの数字は見えません。"
+    "teacherSees": "先生には、チーム全体の進み具合だけが見えます。名前や一人ひとりの数字は見えません。",
+    "writeInApp": "Study Pods で書く（文字数を自動で記録）",
+    "keepWriting": "書く"
   },
   "google": {
     "kicker": "自動で記録",

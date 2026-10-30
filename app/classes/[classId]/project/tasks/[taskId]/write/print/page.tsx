@@ -9,23 +9,22 @@ import { EMPTY_DOCUMENT } from '@/lib/doc-schema'
 import { DocView } from '@/components/doc-view'
 import { PrintButton } from './print-button'
 
-type Params = Promise<{ classId: string; targetId: string }>
+type Params = Promise<{ classId: string; taskId: string }>
 
-// The page title is the target's title alone: Chrome's "Save as PDF" names
+// The page title is the task's title alone: Chrome's "Save as PDF" names
 // the file after it (期末レポート.pdf).
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const { classId, targetId } = await params
+  const { taskId } = await params
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) return {}
   const { data } = await supabase
-    .from('targets')
+    .from('project_tasks')
     .select('title')
-    .eq('id', targetId)
-    .eq('class_id', classId)
-    .eq('user_id', user.id)
+    .eq('id', taskId)
+    .eq('owner_id', user.id)
     .maybeSingle<{ title: string }>()
   return data ? { title: data.title } : {}
 }
@@ -37,7 +36,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 // never as HTML.
 export default async function PrintPage({ params }: { params: Params }) {
   await connection()
-  const { classId, targetId } = await params
+  const { classId, taskId } = await params
   const supabase = await createClient()
   const {
     data: { user },
@@ -46,21 +45,20 @@ export default async function PrintPage({ params }: { params: Params }) {
 
   const [{ data: target }, { data: doc }, t] = await Promise.all([
     supabase
-      .from('targets')
+      .from('project_tasks')
       .select('title, input_mode')
-      .eq('id', targetId)
-      .eq('class_id', classId)
-      .eq('user_id', user.id)
+      .eq('id', taskId)
+      .eq('owner_id', user.id)
       .maybeSingle<{ title: string; input_mode: string }>(),
     supabase
-      .from('documents')
+      .from('task_documents')
       .select('content')
-      .eq('target_id', targetId)
+      .eq('task_id', taskId)
       .eq('user_id', user.id)
       .maybeSingle<{ content: JSONContent }>(),
     getTranslations('editor.print'),
   ])
-  if (!target || target.input_mode !== 'document') redirect(`/classes/${classId}`)
+  if (!target || target.input_mode !== 'document') redirect(`/classes/${classId}/project`)
 
   const content = doc?.content?.content?.length ? doc.content : EMPTY_DOCUMENT
 
@@ -75,7 +73,7 @@ export default async function PrintPage({ params }: { params: Params }) {
           <div className="flex flex-wrap items-center gap-4">
             <PrintButton label={t('print')} />
             <Link
-              href={`/classes/${classId}/targets/${targetId}/write`}
+              href={`/classes/${classId}/project/tasks/${taskId}/write`}
               className="inline-flex min-h-11 items-center text-sm font-semibold text-accent-text underline underline-offset-4"
             >
               {t('back')}
