@@ -9,6 +9,7 @@ import { DisplayNameForm } from './display-name-form'
 import { InstallRow } from './install-row'
 import { PushRow } from './push-row'
 import { GoogleRow } from './google-row'
+import { OnlineRow } from './online-row'
 import { SignOutForm } from '@/components/sign-out-form'
 
 const LANGUAGE_NAMES = { ja: '日本語', en: 'English' } as const
@@ -46,12 +47,13 @@ export default async function SettingsPage() {
     redirect('/login')
   }
 
-  const [{ data: profile }, t, tGoogle, locale, { data: hasGoogle }] = await Promise.all([
+  const [{ data: profile }, t, tGoogle, locale, { data: hasGoogle }, { data: presence }] = await Promise.all([
     supabase.from('profiles').select('display_name').eq('id', user.id).single(),
     getTranslations('settings'),
     getTranslations('google'),
     getLocale(),
     supabase.rpc('has_google_connection'),
+    supabase.from('member_presence').select('share_online').eq('user_id', user.id).maybeSingle(),
   ])
 
   const emailNoteId = 'settings-email-note'
@@ -81,6 +83,9 @@ export default async function SettingsPage() {
             {t('notificationsHeading')}
           </h2>
           <PushRow />
+          <div className="border-t border-dashed border-[#e3d4b0]">
+            <OnlineRow initialOn={presence?.share_online ?? true} />
+          </div>
         </section>
 
         <section aria-labelledby="settings-google" className={`${sectionClass} gap-2.5 p-[18px]`}>

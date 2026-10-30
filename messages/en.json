@@ -349,7 +349,11 @@
     "classProjectDaysInvalid": "For “days before the deadline”, enter a whole number from 0 to 365.",
     "taskDocumentLocked": "A task with progress logged can’t switch to Write in Study Pods.",
     "authOtherBrowser": "The email’s button doesn’t work when it opens in a different browser or app from the one where you typed your email. Send the email again and type the 6-digit code on this screen instead.",
-    "projectFinished": "This project is finished. Please reload the page."
+    "projectFinished": "This project is finished. Please reload the page.",
+    "teamSetupInvalid": "A team needs at least one student. Automatic teams take 2 to 6 people.",
+    "teamNameTooLong": "Team names can be up to 30 characters.",
+    "announcementRequired": "Write the announcement first.",
+    "announcementTooLong": "Announcements can be up to 500 characters."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -394,6 +398,11 @@
       "iosStep3": "“Add” in the top right",
       "iosInApp": "LINE’s and Instagram’s own browsers can’t add to the home screen. Choose “Open in Safari” from the menu, then try again.",
       "inApp": "LINE’s and Instagram’s own browsers can’t add to the home screen. Choose “Open in browser” from the menu to open it in Chrome, then try again."
+    },
+    "online": {
+      "label": "Show when I’m online",
+      "hint": "While on, teammates see a green dot when you have the app open. The day you last opened it is shown either way.",
+      "failed": "Couldn’t change this. Please try again."
     }
   },
   "nudgesPage": {
@@ -691,8 +700,8 @@
     "accountDeleted": "Your account has been deleted"
   },
   "privacy": {
-    "effective": "Effective 30 October 2026",
-    "updated": "Last updated 30 October 2026",
+    "effective": "Effective 31 October 2026",
+    "updated": "Last updated 31 October 2026",
     "title": "Privacy policy",
     "intro": "Study Pods (“the service”) is a study app built and run by a student. This page explains what the service collects, how it’s used, and who can see it.",
     "collectHeading": "1. What we collect",
@@ -743,9 +752,11 @@
     "priceText": "Study Pods is currently free. If paid features are ever introduced, we’ll tell you in advance.",
     "back": "← Back to the home page",
     "organizerLabel": "Whoever created the class (e.g. a teacher):",
-    "organizerText": "the number of members, the join link, the class project they set, and one summary line per team: team size, the whole project’s progress (%), whether it is on track, the day of the last activity, and how many members checked in this round. Never students’ names, or anyone’s own numbers, memos or text.",
+    "organizerText": "How many students have joined and the join link, the class project, a summary for each team (team size, overall project progress in %, whether it is on track, the day of the last activity, and how many checked in this round), and, to organize the teams, students’ display names and which team each is in. The teacher can make and name teams, move a student to another team or out of one, and post announcements to the whole class. They can’t see anyone’s individual numbers, memos, writing or email address.",
     "teamCodeLabel": "Team codes:",
-    "teamCodeText": "a team’s code and QR code are shown only to that team’s members. Anyone who has the code can join that team (and, if they aren’t in the class yet, the class as a student). Any member can make a new code at any time, and the old one stops working."
+    "teamCodeText": "a team’s code and QR code are shown only to that team’s members. Anyone who has the code can join that team (and, if they aren’t in the class yet, the class as a student). Any member can make a new code at any time, and the old one stops working.",
+    "presenceLabel": "When you open the app, and the online dot:",
+    "presenceText": "While the app is open, we record once a minute when you last opened it. Teammates see only the day you last opened it (not the time) and whether you have it open right now (a green dot). You can turn the green dot off in Settings under “Show when I’m online”. Teachers and other classmates can’t see this, and it isn’t used for research."
   },
   "deleteAccount": {
     "title": "Delete account",
@@ -1112,7 +1123,12 @@
       "voteByDays": "In {count, plural, one {# day} other {# days}}",
       "voteByCustom": "Pick a time",
       "voteByAt": "Answer by",
-      "voteByHint": "Teammates who haven’t answered get a notification 12 hours before it closes (or after one day if there’s no deadline)."
+      "voteByHint": "Teammates who haven’t answered get a notification 12 hours before it closes (or after one day if there’s no deadline).",
+      "slotsHint": "About three options make it easy for everyone to answer.",
+      "slotDate": "Option {n} date",
+      "slotTime": "Option {n} time",
+      "removeSlot": "Remove option {n}",
+      "addSlot": "Add an option"
     },
     "vote": {
       "legend": "○ Yes  △ If needed  ✕ No",
@@ -1272,13 +1288,21 @@
   },
   "teamInvite": {
     "heading": "Invite to your team",
-    "body": "Show this screen in class and let classmates scan the QR code. They can also type the code.",
+    "body": "Send the link on LINE or another app, or show this screen in class so classmates can scan the QR code. They can also type the code.",
     "codeLabel": "Team code",
     "copy": "Copy link",
     "copied": "Link copied.",
     "copyFailed": "Couldn’t copy. Link: {url}",
     "qrLabel": "QR code to join the team ({url})",
-    "renew": "Make a new code (the current code and QR stop working)"
+    "renew": "Make a new code (the current code and QR stop working)",
+    "message": "Join my team for {className}! Use this link: {url}",
+    "messageProject": "Join my team for “{project}” in {className}! Use this link: {url}",
+    "share": "Share",
+    "shareLine": "Send on LINE",
+    "copyMessage": "Copy message",
+    "messageCopied": "Invite message copied.",
+    "messageLabel": "Invite message",
+    "smallTeam": "Your team is still small. Invite classmates to join."
   },
   "teamCodeForm": {
     "label": "Join with a team code",
@@ -1324,5 +1348,46 @@
     "proposal": "Proposal and pitch",
     "literatureReview": "Literature review",
     "caseStudy": "Case study"
+  },
+  "teamTable": {
+    "heading": "Your team",
+    "onlineNow": "Online now: {count}",
+    "member": "Member",
+    "lastSeen": "Last seen",
+    "tasks": "Tasks done",
+    "you": "{name} (you)",
+    "online": "Online",
+    "offline": "Offline",
+    "never": "Not yet",
+    "taskCount": "{done}/{total}",
+    "note": "“Last seen” is the day someone last opened the app, never the time. You can turn off showing you online in Settings.",
+    "onlineNone": "Nobody is online right now"
+  },
+  "organizer": {
+    "heading": "Manage teams",
+    "why": "{students} students, {teams} teams. You see names and teams only, never progress or writing.",
+    "unassignedHeading": "Students without a team ({count})",
+    "unassignedNone": "Everyone is in a team.",
+    "pickLegend": "Choose students for a team",
+    "newTeamName": "Team name (optional)",
+    "makeTeam": "Make a team of {count}",
+    "autoSplitLabel": "Split the rest into teams automatically",
+    "sizeOption": "{count} per team",
+    "autoSplit": "Split",
+    "autoSplitPreview": "That makes {teams} teams ({sizes})",
+    "teamNo": "Team {n}",
+    "memberCount": "{count} members",
+    "teamName": "Team name",
+    "save": "Save",
+    "moveLabel": "Move {name} to",
+    "stayIn": "Stay in {team}",
+    "moveTo": "Move to {team}",
+    "removeFromTeam": "Remove from team",
+    "announceHeading": "Announcements",
+    "announceLabel": "Message",
+    "announceHint": "Shown on every student’s board in this class (up to {max} characters).",
+    "announceSend": "Post",
+    "announceDelete": "Delete this announcement",
+    "fromTeacher": "From your teacher"
   }
 }

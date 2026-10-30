@@ -88,6 +88,7 @@ export default async function PrivacyPage() {
         <Labelled label={t('podLabel')}>{space + t('podText')}</Labelled>
         <Labelled label={t('classLabel')}>{space + t('classText')}</Labelled>
         <Labelled label={t('teamCodeLabel')}>{space + t('teamCodeText')}</Labelled>
+        <Labelled label={t('presenceLabel')}>{space + t('presenceText')}</Labelled>
         <Labelled label={t('organizerLabel')}>{space + t('organizerText')}</Labelled>
         <Labelled label={t('devLabel')}>{space + t('devText')}</Labelled>
       </ul>
