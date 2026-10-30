@@ -60,10 +60,9 @@ begin
   end if;
 end $$;
 
--- Remember F1's code for the impersonated checks (a temp table the test roles may read).
-create temp table f1_code as
-  select code from public.pod_join_codes where pod_id = '00000000-0000-4000-8000-0000000028f1';
-grant select on f1_code to authenticated;
+-- Remember F1's code for the impersonated checks (a transaction-local setting).
+select set_config('rls_test.f1_code',
+  (select code from public.pod_join_codes where pod_id = '00000000-0000-4000-8000-0000000028f1'), true);
 
 -- =============================================================================
 -- As A (member): reads the code; can replace it
@@ -104,17 +103,17 @@ begin
   if exists (select 1 from public.pod_join_codes) then
     raise exception 'FAIL: a classmate outside the pod must not read its code';
   end if;
-  select * into r from public.pod_by_join_code((select lower(code) from f1_code));
+  select * into r from public.pod_by_join_code(lower(current_setting('rls_test.f1_code')));
   if r.pod_id is distinct from '00000000-0000-4000-8000-0000000028f1' or r.member_count <> 1 or r.is_member or not r.in_class then
     raise exception 'FAIL: pod_by_join_code (lower case) gave %', r;
   end if;
   if exists (select 1 from public.pod_by_join_code('ZZZZZZZZ')) then
     raise exception 'FAIL: an unknown code must find nothing';
   end if;
-  pod := public.join_pod_by_code((select code from f1_code));
+  pod := public.join_pod_by_code(current_setting('rls_test.f1_code'));
   if pod is distinct from '00000000-0000-4000-8000-0000000028f1' then raise exception 'FAIL: join_pod_by_code returned %', pod; end if;
   -- Again: already in, no error.
-  perform public.join_pod_by_code((select code from f1_code));
+  perform public.join_pod_by_code(current_setting('rls_test.f1_code'));
   begin
     perform public.join_pod_by_code('ZZZZZZZZ');
     raise exception 'FAIL: an unknown code must be refused';
@@ -133,9 +132,9 @@ do $$
 declare
   r record;
 begin
-  select * into r from public.pod_by_join_code((select code from f1_code));
+  select * into r from public.pod_by_join_code(current_setting('rls_test.f1_code'));
   if r.in_class then raise exception 'FAIL: N is not in the class yet'; end if;
-  perform public.join_pod_by_code((select code from f1_code));
+  perform public.join_pod_by_code(current_setting('rls_test.f1_code'));
 end $$;
 reset role;
 do $$
@@ -155,7 +154,7 @@ select set_config('request.jwt.claims',
 set local role authenticated;
 do $$
 begin
-  perform public.join_pod_by_code((select code from f1_code));
+  perform public.join_pod_by_code(current_setting('rls_test.f1_code'));
   raise exception 'FAIL: a student already in a pod in this class must be refused';
 exception when sqlstate 'SP002' then null;
 end $$;
@@ -169,7 +168,7 @@ begin
   if exists (select 1 from public.pod_join_codes) then
     raise exception 'FAIL: an organizer must not read pod codes';
   end if;
-  perform public.join_pod_by_code((select code from f1_code));
+  perform public.join_pod_by_code(current_setting('rls_test.f1_code'));
   raise exception 'FAIL: an organizer must be refused';
 exception when sqlstate 'SP003' then null;
 end $$;
@@ -187,7 +186,7 @@ select set_config('request.jwt.claims',
 set local role authenticated;
 do $$
 begin
-  perform public.join_pod_by_code((select code from f1_code));
+  perform public.join_pod_by_code(current_setting('rls_test.f1_code'));
   raise exception 'FAIL: a full team (6) must refuse a new member';
 exception when sqlstate 'SP014' then null;
 end $$;
