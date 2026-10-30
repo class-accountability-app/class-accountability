@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
 import { createClient } from '@/lib/supabase/server'
+import { homeProjectHref } from '@/lib/home-project'
 import { loggedOnTokyoDay, nextStep } from '@/lib/next-step'
 import { homeLayout } from '@/lib/home-layout'
 import { HOME_TARGET_LIMIT, sortHomeTargets } from '@/lib/home-targets'
@@ -98,6 +100,19 @@ export default async function Home({
     const { deleted } = await searchParams
     return <Landing accountDeleted={deleted === '1'} />
   }
+
+  // Project first: a student whose team has a project lands on its board.
+  // RLS returns only the projects of pods I am in.
+  const { data: projectRows } = await supabase
+    .from('projects')
+    .select('deadline, created_at, pairings!inner(class_id, status)')
+    .eq('pairings.status', 'active')
+  const projectHref = homeProjectHref(
+    ((projectRows ?? []) as unknown as { deadline: string | null; created_at: string; pairings: { class_id: string } }[]).map(
+      (r) => ({ classId: r.pairings.class_id, deadline: r.deadline, createdAt: r.created_at })
+    )
+  )
+  if (projectHref) redirect(projectHref)
 
   const now = new Date()
   const weekStart = tokyoWeekStart(now).toISOString()
@@ -207,7 +222,8 @@ export default async function Home({
     now
   )
   const step = nextStep({
-    classes: classes.map((c) => ({ ...c, invited: invitedTo.has(c.id) })),
+    // Any project would have sent me to its board above, so none here has one.
+    classes: classes.map((c) => ({ ...c, invited: invitedTo.has(c.id), project: 'none' as const })),
     targets: sortedTargets.map((x) => ({
       id: x.id,
       classId: x.class_id,

@@ -23,7 +23,15 @@ export type HomeLayout = {
   hero: { state: 'log' | 'done'; primary: boolean } | null
 }
 
-const TOP_KINDS: NextStep['kind'][] = ['join', 'share', 'invitation', 'firstTarget', 'nextTarget']
+const TOP_KINDS: NextStep['kind'][] = [
+  'join',
+  'share',
+  'invitation',
+  'firstTarget',
+  'nextTarget',
+  'startProject',
+  'openProject',
+]
 
 export function homeLayout(step: NextStep, hasOpenTarget: boolean, loggedToday: boolean): HomeLayout {
   const heroState = loggedToday ? 'done' : 'log'

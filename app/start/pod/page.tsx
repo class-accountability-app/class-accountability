@@ -2,15 +2,16 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
-import { isClassId, startStepRedirect, targetStepHref } from '@/lib/first-run'
+import { isClassId, projectStepHref, startStepRedirect } from '@/lib/first-run'
 import { StepHead } from '@/components/first-run/step-head'
 import { primaryButtonClass } from '@/components/buttons'
 import { CreatePodButton } from '@/app/classes/[classId]/create-pod-button'
 
 // Step 2 of 3 of the first-run flow (Prompt 15): start a pod, ask to join one,
-// or decide later. It works when opened directly and shows the right state:
+// or decide later. Starting a pod leads to its project (project first); later
+// goes to the class page. It works when opened directly and shows the right state:
 // not a student of this class, or a target already set → Home; already in a
-// pod → on to the target. There is no way back: the name and the join before
+// pod → on to the project. There is no way back: the name and the join before
 // it can't be undone, so 「あとで決める」 is the way out.
 export default async function StartPodPage({
   searchParams,
@@ -56,7 +57,7 @@ export default async function StartPodPage({
   )
   if (away) redirect(away)
 
-  const toTarget = targetStepHref(classId)
+  const toProject = projectStepHref(classId)
   return (
     <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
       <div className="flex w-full max-w-md flex-col gap-7">
@@ -66,7 +67,7 @@ export default async function StartPodPage({
           <p className="text-[15px] leading-7 text-ink/85">{t('pod.lead')}</p>
         </div>
         <div className="flex flex-col gap-3.5">
-          <CreatePodButton classId={classId} buttonClassName={`${primaryButtonClass} w-full`} goTo={toTarget} />
+          <CreatePodButton classId={classId} buttonClassName={`${primaryButtonClass} w-full`} goTo={toProject} />
           <div className="flex flex-col items-center">
             <Link
               href={`/classes/${classId}#other-pods`}
@@ -75,7 +76,7 @@ export default async function StartPodPage({
               {t('pod.other')}
             </Link>
             <Link
-              href={toTarget}
+              href={`/classes/${classId}`}
               className="inline-flex min-h-11 items-center text-sm text-muted underline underline-offset-4"
             >
               {t('pod.later')}

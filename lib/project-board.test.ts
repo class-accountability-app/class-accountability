@@ -61,7 +61,21 @@ describe('visibleTotal', () => {
     })
   })
 
-  it('shows a teammate only what their last check-in shared, never the live number', () => {
+  it('shows a teammate live when the pod’s totals are live (0027)', () => {
+    expect(visibleTotal({ id: 'slides', ownerId: 'sato', metric: 'count' }, 'aki', live, latest, true)).toEqual({
+      total: 9,
+      asOf: null,
+      live: true,
+    })
+    expect(visibleTotal({ id: 'z', ownerId: 'tanaka', metric: 'count' }, 'aki', live, latest, true)).toEqual({
+      total: 0,
+      asOf: null,
+      live: true,
+    })
+    expect(visibleTotal({ id: 'y', ownerId: null, metric: 'count' }, 'aki', live, latest, true).live).toBe(false)
+  })
+
+  it('without live team totals, shows a teammate only what their last check-in shared', () => {
     expect(visibleTotal({ id: 'slides', ownerId: 'sato', metric: 'count' }, 'aki', live, latest)).toEqual({
       total: 4,
       asOf: '2026-10-05',

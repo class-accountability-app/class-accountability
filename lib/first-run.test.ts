@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  projectStepHref,
   afterJoinHref,
   isClassId,
   joinCodeFromNext,
@@ -72,8 +73,9 @@ describe('startStepRedirect: what /start/pod and /start/target do when opened di
     expect(startStepRedirect('target', { ...student, targetsInClass: 2 }, CLASS)).toBe('/')
   })
 
-  it('already in a pod: the pod step moves on to the target step; the target step shows', () => {
-    expect(startStepRedirect('pod', { ...student, inPod: true }, CLASS)).toBe(targetStepHref(CLASS))
+  it('already in a pod: the pod step moves on to the project (project first); the target step shows', () => {
+    expect(startStepRedirect('pod', { ...student, inPod: true }, CLASS)).toBe(projectStepHref(CLASS))
+    expect(projectStepHref(CLASS)).toBe(`/classes/${CLASS}/project`)
     expect(startStepRedirect('target', { ...student, inPod: true }, CLASS)).toBeNull()
   })
 })

@@ -19,6 +19,12 @@ import type { TargetType } from './targets'
 //   logged today, no pod    → start (or ask to join) a pod
 //   logged today, alone     → invite classmates
 //   logged today            → see the pod's progress
+//
+// Project first (2026-10-30): when the caller says which classes have a
+// project (`project` on a class), the target steps are skipped. After an
+// invitation: a team without a project → start it; no team → start or join
+// one; otherwise → open the project. Callers that don't pass `project` keep the
+// target steps until the teardown removes them.
 
 export type NextStepClass = {
   id: string
@@ -28,6 +34,9 @@ export type NextStepClass = {
   podSize: number | null
   // A pending invitation to a pod in this class, addressed to me.
   invited: boolean
+  // My pod's project here (project first): 'none' or 'started'. Leave it out
+  // for the old target steps.
+  project?: 'none' | 'started'
 }
 
 export type NextStepTarget = {
@@ -60,6 +69,8 @@ export type NextStep =
   | { kind: 'invite'; classId: string; className: string }
   | { kind: 'seePod'; classId: string; className: string }
   | { kind: 'nextTarget'; classId: string; className: string }
+  | { kind: 'startProject'; classId: string; className: string }
+  | { kind: 'openProject'; classId: string; className: string }
 
 export function isFinished(t: Pick<NextStepTarget, 'type' | 'targetAmount' | 'total'>): boolean {
   return t.type === 'task' ? t.total >= 1 : t.targetAmount !== null && t.total >= t.targetAmount
@@ -87,6 +98,15 @@ export function nextStep({
 
   const invited = studying.find((c) => c.podSize === null && c.invited)
   if (invited) return { kind: 'invitation', classId: invited.id, className: invited.name }
+
+  if (studying.some((c) => c.project !== undefined)) {
+    const toStart = studying.find((c) => c.podSize !== null && c.project === 'none')
+    if (toStart) return { kind: 'startProject', classId: toStart.id, className: toStart.name }
+    const teamless = studying.find((c) => c.podSize === null)
+    if (teamless) return { kind: 'pod', classId: teamless.id, className: teamless.name }
+    const started = studying.find((c) => c.project === 'started') ?? studying[0]
+    return { kind: 'openProject', classId: started.id, className: started.name }
+  }
 
   // A target comes before a pod (Prompt 15): the first-run flow lets a student
   // skip the pod, and one who leaves right after joining lands here.
