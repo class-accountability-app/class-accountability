@@ -347,7 +347,8 @@
     "teamCodeFormat": "チームコードは8文字の英数字です（例：K7M3 Q9TX）。",
     "classProjectTooManyTasks": "タスクは30個までです。",
     "classProjectDaysInvalid": "「締切の何日前」には、0〜365の整数を入力してください。",
-    "taskDocumentLocked": "記録があるタスクは、「Study Pods で書く」に変えられません。"
+    "taskDocumentLocked": "記録があるタスクは、「Study Pods で書く」に変えられません。",
+    "authOtherBrowser": "メールのボタンは、メールアドレスを入力したのと別のブラウザやアプリで開くと使えません。もう一度メールを送り、届いた6桁のコードをこの画面に入力してください。"
   },
   "welcome": {
     "eyebrow": "ようこそ",

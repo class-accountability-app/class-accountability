@@ -347,7 +347,8 @@
     "teamCodeFormat": "A team code is 8 letters and numbers (e.g. K7M3 Q9TX).",
     "classProjectTooManyTasks": "A class project can have up to 30 tasks.",
     "classProjectDaysInvalid": "For “days before the deadline”, enter a whole number from 0 to 365.",
-    "taskDocumentLocked": "A task with progress logged can’t switch to Write in Study Pods."
+    "taskDocumentLocked": "A task with progress logged can’t switch to Write in Study Pods.",
+    "authOtherBrowser": "The email’s button doesn’t work when it opens in a different browser or app from the one where you typed your email. Send the email again and type the 6-digit code on this screen instead."
   },
   "welcome": {
     "eyebrow": "Welcome",
