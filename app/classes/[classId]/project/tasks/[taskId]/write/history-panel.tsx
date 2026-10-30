@@ -93,7 +93,7 @@ export function HistoryPanel({
           setOpen(false)
           openerRef.current?.focus()
         }}
-        className="m-auto flex max-h-[min(90dvh,760px)] w-[calc(100%-2rem)] max-w-2xl flex-col rounded-[2px] bg-surface p-0 text-ink shadow-[inset_0_0_0_1px_var(--border)] backdrop:bg-ink/40 [&:not([open])]:hidden"
+        className="m-auto flex max-h-[min(90dvh,760px)] w-[calc(100%-2rem)] max-w-2xl flex-col rounded-lg bg-surface p-0 text-ink shadow-[inset_0_0_0_1px_var(--border)] backdrop:bg-ink/40 [&:not([open])]:hidden"
       >
         <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-2">
           <h2 id="history-title" className="font-heading text-lg leading-7 font-bold">

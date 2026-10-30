@@ -18,7 +18,7 @@ const FIELD_FOR_ERROR: Partial<Record<ErrorKey, Field>> = {
 }
 
 export const controlClass =
-  'h-12 w-full rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-3.5 text-base text-ink placeholder:text-muted'
+  'h-12 w-full rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 text-base text-ink placeholder:text-muted'
 
 // Starting the pod's one project: a title, an optional deadline and how often
 // everyone checks in (every 4 days unless changed, 1–14), and optionally a
@@ -57,7 +57,7 @@ export function CreateProjectForm({ classId }: { classId: string }) {
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
-      <div className="flex flex-col gap-4 rounded-[2px] border border-border bg-surface p-5">
+      <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5">
         <div className="flex flex-col gap-1.5">
           <label htmlFor={`${id}-title`} className="text-sm font-semibold text-ink">
             {t('titleLabel')}

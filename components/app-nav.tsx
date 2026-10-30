@@ -70,12 +70,12 @@ export function TabBar({ classIds }: { classIds: string[] }) {
 
   return (
     <>
-      <div aria-hidden className="h-[calc(68px+env(safe-area-inset-bottom))] shrink-0 md:hidden" />
+      <div aria-hidden className="h-[calc(72px+env(safe-area-inset-bottom))] shrink-0 md:hidden" />
       <nav
         aria-label={t('main')}
-        className="tab-bar fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] md:hidden"
+        className="tab-bar fixed inset-x-0 bottom-0 z-20 bg-surface-container pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] md:hidden"
       >
-        <ul className="grid h-[68px] grid-cols-4">
+        <ul className="grid h-[72px] grid-cols-4">
           {TAB_IDS.map((tab) => {
             const isCurrent = tab === current
             return (
@@ -85,13 +85,18 @@ export function TabBar({ classIds }: { classIds: string[] }) {
                   transitionTypes={tabTransitionTypes(current, tab)}
                   aria-current={isCurrent ? 'page' : undefined}
                   className={`relative flex min-h-12 flex-1 flex-col items-center justify-center gap-[3px] text-[11px] ${
-                    isCurrent ? 'font-bold text-accent-text' : 'font-medium text-muted'
+                    isCurrent ? 'font-bold text-ink' : 'font-medium text-muted'
                   }`}
                 >
-                  {isCurrent && (
-                    <span aria-hidden className="absolute -top-px right-[28%] left-[28%] h-[3px] bg-accent-text" />
-                  )}
-                  <TabIcon tab={tab} />
+                  {/* Material 3 navigation bar: a pill behind the active icon. */}
+                  <span
+                    aria-hidden
+                    className={`flex h-8 w-16 items-center justify-center rounded-full transition-colors ${
+                      isCurrent ? 'bg-primary-container text-on-primary-container' : ''
+                    }`}
+                  >
+                    <TabIcon tab={tab} />
+                  </span>
                   {t(`tabs.${tab}`)}
                 </Link>
               </li>
@@ -144,7 +149,7 @@ export function HeaderLogIn() {
   return (
     <Link
       href="/login"
-      className="btn ml-1 inline-flex h-11 items-center rounded-[2px] bg-accent px-4 text-[15px] font-semibold text-white sm:px-[22px]"
+      className="btn ml-1 inline-flex h-11 items-center rounded-full bg-accent px-4 text-[15px] font-semibold text-white sm:px-[22px]"
     >
       {t('logIn')}
     </Link>

@@ -63,7 +63,7 @@ export async function TeamSummary({ classId }: { classId: string }) {
                     {t('team', { number: r.team_no })}
                     <span className="font-meta text-xs font-normal text-muted"> · {t('members', { count: r.members })}</span>
                   </span>
-                  <span className={`shrink-0 rounded-[2px] px-2 font-meta text-xs leading-5 font-bold ${PACE_PILL[pace]}`}>
+                  <span className={`shrink-0 rounded-lg px-2 font-meta text-xs leading-5 font-bold ${PACE_PILL[pace]}`}>
                     {t(`pace.${pace}`)}
                   </span>
                 </div>

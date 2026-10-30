@@ -19,13 +19,13 @@ export function TeamJoinForm({ code }: { code: string }) {
       <button
         type="submit"
         disabled={isPending}
-        className="btn flex h-[52px] w-full items-center justify-center rounded-[2px] bg-accent text-base font-semibold text-white disabled:opacity-50"
+        className="btn flex h-[52px] w-full items-center justify-center rounded-full bg-accent text-base font-semibold text-white disabled:opacity-50"
       >
         {isPending ? t('joining') : t('submit')}
       </button>
       <Link
         href="/"
-        className="flex h-12 w-full items-center justify-center rounded-[2px] border border-border bg-surface text-[15px] font-semibold text-ink"
+        className="flex h-12 w-full items-center justify-center rounded-lg border border-border bg-surface text-[15px] font-semibold text-ink"
       >
         {t('cancel')}
       </Link>

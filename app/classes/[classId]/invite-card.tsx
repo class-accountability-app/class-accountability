@@ -80,12 +80,12 @@ export function InviteCard({
               readOnly
               value={shortUrl}
               onFocus={(e) => e.currentTarget.select()}
-              className="h-11 w-full min-w-0 rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-3.5 font-meta text-ink"
+              className="h-11 w-full min-w-0 rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 font-meta text-ink"
             />
             <button
               type="button"
               onClick={copy}
-              className="btn h-11 shrink-0 rounded-[2px] border border-ink bg-surface px-4 text-sm font-semibold text-ink shadow-[0_2px_0_rgba(58,47,34,0.25)]"
+              className="btn h-11 shrink-0 rounded-full border border-ink bg-surface px-4 text-sm font-semibold text-ink"
             >
               {t('copy')}
             </button>
@@ -98,7 +98,7 @@ export function InviteCard({
             <div
               role="img"
               aria-label={t('qrLabel', { url: shortUrl })}
-              className="w-[134px] shrink-0 rounded-[2px] border border-border bg-[#fffdf7] p-1 [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
+              className="w-[134px] shrink-0 rounded-lg border border-border bg-[#ffffff] p-1 [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
               dangerouslySetInnerHTML={{ __html: qrSvg }}
             />
             <div className="flex flex-col gap-1.5">
@@ -116,7 +116,7 @@ export function InviteCard({
           <button
             type="button"
             onClick={() => setPresenting(true)}
-            className="btn flex h-12 w-full items-center justify-center rounded-[2px] border border-ink bg-surface text-[15px] font-semibold text-ink"
+            className="btn flex h-12 w-full items-center justify-center rounded-full border border-ink bg-surface text-[15px] font-semibold text-ink"
           >
             {t('present')}
           </button>
@@ -183,13 +183,13 @@ function PresentDialog({
       ref={dialogRef}
       aria-labelledby={`${id}-title`}
       onClose={onClose}
-      className="m-0 h-dvh max-h-none w-dvw max-w-none bg-[#fffdf7] p-0 text-ink backdrop:bg-ink/60"
+      className="m-0 h-dvh max-h-none w-dvw max-w-none bg-[#ffffff] p-0 text-ink backdrop:bg-ink/60"
     >
       <div className="flex h-full w-full flex-col items-center justify-center gap-[2.5vh] px-6 py-6">
         <form method="dialog" className="absolute top-4 right-4">
           <button
             type="submit"
-            className="btn min-h-12 rounded-[2px] border border-ink bg-surface px-5 text-base font-semibold text-ink"
+            className="btn min-h-12 rounded-full border border-ink bg-surface px-5 text-base font-semibold text-ink"
           >
             {t('close')}
           </button>

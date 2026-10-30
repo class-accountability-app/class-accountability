@@ -49,7 +49,7 @@ export function TeamInviteCard({
         <div
           role="img"
           aria-label={t('qrLabel', { url: shortUrl })}
-          className="w-[126px] shrink-0 rounded-[2px] border border-border bg-[#fffdf7] p-1 [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
+          className="w-[126px] shrink-0 rounded-lg border border-border bg-[#ffffff] p-1 [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
           dangerouslySetInnerHTML={{ __html: qrSvg }}
         />
         <div className="flex min-w-0 flex-col">

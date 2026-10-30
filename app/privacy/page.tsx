@@ -45,7 +45,7 @@ export default async function PrivacyPage() {
   const space = locale === 'ja' ? '' : ' '
 
   return (
-    <article className={`mx-auto w-full max-w-[760px] px-5 pt-12 pb-16 text-[#4a3d2c] lg:px-0 lg:pt-[88px] lg:pb-28 ${bodyText}`}>
+    <article className={`mx-auto w-full max-w-[760px] px-5 pt-12 pb-16 text-[#1f1f1f] lg:px-0 lg:pt-[88px] lg:pb-28 ${bodyText}`}>
       <p className="font-meta text-sm text-muted">{t('effective')}</p>
       <p className="mb-3 font-meta text-sm text-muted">{t('updated')}</p>
       <h1 className="font-heading text-[34px] leading-[1.35] font-bold text-ink lg:text-[42px]">{t('title')}</h1>
@@ -73,7 +73,7 @@ export default async function PrivacyPage() {
         <li>{t('google3')}</li>
         <li>{t('google4')}</li>
       </ul>
-      <p className="mt-4 rounded-[2px] border border-border bg-surface px-5 py-4">
+      <p className="mt-4 rounded-lg border border-border bg-surface px-5 py-4">
         {t.rich('limitedUse', {
           link: (chunks) => (
             <a href={GOOGLE_USER_DATA_POLICY} className={mail}>

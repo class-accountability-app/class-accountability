@@ -59,7 +59,7 @@ export function NudgeList({ names, unknownName }: { names: Record<string, string
       {nudges.map((n) => (
         <li
           key={n.id}
-          className="flex flex-col gap-1 rounded-[2px] border border-border bg-surface px-4 py-3"
+          className="flex flex-col gap-1 rounded-lg border border-border bg-surface px-4 py-3"
         >
           <span className="text-xs text-ink">
             {t.rich('line', {

@@ -7,26 +7,29 @@
  * PR description for the exact ratios. Single theme, no dark mode.
  */
 :root {
-  --page-bg: #f6ecd6;
-  --surface: #fbf6e8;
-  --border: #d9c69a;
-  --ink: #3a2f22;
-  --muted: #6b5636; /* brief: #8a7248 — darkened, #8a7248 was 3.9:1 on page bg (fails AA) */
-  --accent: #b5583f; /* as a button surface (white text, 14px): 4.74:1 — passes AA, left as-is */
-  --accent-text: #9c4830; /* accent, darkened for use as text — raw accent is 4.39:1 (fails AA) */
-  --status-active: #6f8556;
-  --status-stale: #948e78; /* brief: #b5b09c — darkened, #b5b09c was 2.0:1 (fails even the 3:1 graphics bar) */
+  /* Material 3 (author's choice, 2026-10-30, item H): Google's baseline
+     light scheme with Google blue as primary. Token names are kept from the
+     notebook theme so every utility (bg-surface, text-muted...) follows.
+     All text pairs pass WCAG AA. Single theme, no dark mode. */
+  --page-bg: #f8fafd; /* surface */
+  --surface: #ffffff; /* surface-container-lowest (cards) */
+  --surface-container: #f0f4f9;
+  --primary-container: #d3e3fd;
+  --on-primary-container: #041e49;
+  --border: #c4c7c5; /* outline-variant */
+  --outline: #747775;
+  --ink: #1f1f1f; /* on-surface */
+  --muted: #444746; /* on-surface-variant */
+  --accent: #0b57d0; /* primary; white text on it is 6.3:1 */
+  --accent-text: #0b57d0;
+  --status-active: #146c2e;
+  --status-stale: #747775;
 
-  /* The notebook rule (Prompt 11, item 8). --rule is the layout's rhythm
-     unit: one ruled line every 28px, starting at the top of the page
-     content (.ruled, app/layout.tsx), whatever the header's height.
-     --rule-line is where the 1px line sits in each 28px band, tuned so it
-     falls just under the baseline of text in a 28px line box: text set on
-     the page background with `leading-7` (28px), and margins, gaps and card
-     heights in multiples of 28, sits on the lines like handwriting. */
+  /* Layout rhythm kept from the notebook theme (28px lines); the ruled dots
+     are gone with Material 3. */
   --rule: 28px;
   --rule-line: 22px;
-  --rule-color: #e3d3ac;
+  --rule-color: transparent;
 }
 
 @theme inline {
@@ -39,11 +42,15 @@
   --color-accent-text: var(--accent-text);
   --color-status-active: var(--status-active);
   --color-status-stale: var(--status-stale);
+  --color-outline: var(--outline);
+  --color-surface-container: var(--surface-container);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
 
   /* Latin face first; Japanese characters fall through to the second face. */
-  --font-heading: var(--font-fraunces), var(--font-shippori-mincho), serif;
-  --font-body: var(--font-schibsted-grotesk), var(--font-zen-kaku-gothic-new), sans-serif;
-  --font-meta: var(--font-courier-prime), var(--font-zen-kaku-gothic-new), monospace;
+  --font-heading: var(--font-roboto), var(--font-noto-sans-jp), sans-serif;
+  --font-body: var(--font-roboto), var(--font-noto-sans-jp), sans-serif;
+  --font-meta: var(--font-roboto), var(--font-noto-sans-jp), sans-serif;
 }
 
 /*
@@ -86,12 +93,7 @@ body {
    below AA). The page wrapper grows with its content, so the default (scroll)
    attachment is right. Opaque cards (.rule-card) cover it, as before. */
 .ruled {
-  background-image: radial-gradient(
-    circle at 1px 1px,
-    var(--rule-color) 1.2px,
-    transparent 1.6px
-  );
-  background-size: var(--rule) var(--rule);
+  background-image: none;
 }
 
 /* A card on the ruled page: plain inside, its edge drawn with an inset
@@ -99,7 +101,8 @@ body {
    off the rule). Heights come out as whole lines when the padding is
    14 + 14px and every line inside is 28px. */
 .rule-card {
-  border-radius: 2px;
+  /* Material 3 outlined card. */
+  border-radius: 16px;
   background-color: var(--surface);
   box-shadow: inset 0 0 0 1px var(--border);
 }
@@ -154,10 +157,16 @@ html:lang(ja) body {
 }
 
 .btn {
-  box-shadow: 0 2px 0 0 rgba(58, 47, 34, 0.35);
+  /* Material 3 filled button: no resting shadow, a soft one on hover, and a
+     state layer darkening the fill. */
   transition:
-    transform 0.1s ease,
-    box-shadow 0.1s ease;
+    box-shadow 0.15s ease,
+    filter 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+  filter: brightness(0.94);
 }
 
 /* Scales from the left instead of animating width, so the fill moves
@@ -193,7 +202,7 @@ html:lang(ja) body {
 }
 
 .quick-sheet::backdrop {
-  background-color: rgba(58, 47, 34, 0.45);
+  background-color: rgba(0, 0, 0, 0.32);
   transition:
     opacity 300ms cubic-bezier(0.32, 0.72, 0, 1),
     overlay 300ms allow-discrete,
@@ -374,7 +383,7 @@ html:lang(ja) body {
 
 .btn:active:not(:disabled) {
   transform: translateY(2px);
-  box-shadow: 0 0 0 0 rgba(58, 47, 34, 0.35);
+  box-shadow: none;
 }
 
 /*
@@ -391,14 +400,14 @@ html:lang(ja) body {
 @keyframes lp-box { 0% { opacity: 0; transform: rotate(8deg) scale(2) } 60% { opacity: 1; transform: rotate(8deg) scale(.94) } 100% { opacity: 1; transform: rotate(8deg) scale(1) } }
 @keyframes lp-box-l { 0% { opacity: 0; transform: rotate(-6deg) scale(2) } 60% { opacity: 1; transform: rotate(-6deg) scale(.94) } 100% { opacity: 1; transform: rotate(-6deg) scale(1) } }
 @keyframes lp-scene { 0% { opacity: 0; transform: translateY(8px) } 3% { opacity: 1; transform: translateY(0) } 18% { opacity: 1; transform: translateY(0) } 21% { opacity: 0; transform: translateY(-6px) } 100% { opacity: 0; transform: translateY(-6px) } }
-@keyframes lp-dot { 0%, 19% { background: #3a2f22 } 20%, 100% { background: #d9c69a } }
+@keyframes lp-dot { 0%, 19% { background: #1f1f1f } 20%, 100% { background: #c4c7c5 } }
 @keyframes lp-cursor { 0%, 1% { opacity: 0; transform: translate(70px, 60px) } 4% { opacity: 1; transform: translate(40px, 34px) } 8% { opacity: 1; transform: translate(0, 0) scale(1) } 9% { transform: translate(0, 0) scale(.82) } 10.5% { transform: translate(0, 0) scale(1) } 17% { opacity: 1; transform: translate(0, 0) } 19%, 100% { opacity: 0; transform: translate(0, 0) } }
 @keyframes lp-btn-out { 0%, 9% { opacity: 1 } 11%, 100% { opacity: 0 } }
 @keyframes lp-joined { 0%, 9% { opacity: 0; transform: rotate(-6deg) scale(2) } 12% { opacity: 1; transform: rotate(-6deg) scale(.94) } 14%, 100% { opacity: 1; transform: rotate(-6deg) scale(1) } }
 @keyframes lp-ap1 { 0%, 2% { opacity: 0; transform: translateY(6px) } 5%, 100% { opacity: 1; transform: translateY(0) } }
 @keyframes lp-ap2 { 0%, 5% { opacity: 0; transform: translateY(6px) } 8%, 100% { opacity: 1; transform: translateY(0) } }
 @keyframes lp-ap3 { 0%, 10% { opacity: 0; transform: translateY(6px) } 13%, 100% { opacity: 1; transform: translateY(0) } }
-@keyframes lp-chip { 0%, 8.5% { background: #fbf6ea; color: #3a2f22; border-color: #d9c69a } 10%, 100% { background: #3a2f22; color: #fbf6ea; border-color: #3a2f22 } }
+@keyframes lp-chip { 0%, 8.5% { background: #ffffff; color: #1f1f1f; border-color: #c4c7c5 } 10%, 100% { background: #1f1f1f; color: #ffffff; border-color: #1f1f1f } }
 @keyframes lp-grow { 0%, 5% { transform: scaleX(.565) } 14%, 100% { transform: scaleX(1) } }
 @keyframes lp-out { 0%, 9% { opacity: 1 } 10%, 100% { opacity: 0 } }
 @keyframes lp-in { 0%, 9% { opacity: 0 } 10%, 100% { opacity: 1 } }

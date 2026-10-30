@@ -59,7 +59,7 @@ export default async function LinkTaskPage({ params }: { params: Promise<{ class
         ) : !hasGoogle ? (
           <div className="flex flex-col gap-3">
             <p className="text-sm leading-7 text-muted">{t('connectWhy')}</p>
-            <a href={`/api/google/connect?return=${encodeURIComponent(thisPath)}`} className="btn inline-flex h-[52px] w-full items-center justify-center rounded-[2px] bg-accent text-base font-semibold text-white">
+            <a href={`/api/google/connect?return=${encodeURIComponent(thisPath)}`} className="btn inline-flex h-[52px] w-full items-center justify-center rounded-full bg-accent text-base font-semibold text-white">
               {t('connect')}
             </a>
             <p className="text-[13px] leading-7 text-muted">{t('connectFine')}</p>

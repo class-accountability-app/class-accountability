@@ -108,7 +108,7 @@ export function NudgeForm({
         maxLength={280}
         rows={2}
         placeholder={t('messagePlaceholder')}
-        className="w-full rounded-[2px] border border-border bg-surface px-2 py-1.5 text-ink placeholder:text-muted"
+        className="w-full rounded-lg border border-border bg-surface px-2 py-1.5 text-ink placeholder:text-muted"
         {...describedField(error, errorId)}
       />
       <FieldError id={errorId} error={error} />
@@ -116,7 +116,7 @@ export function NudgeForm({
         <button
           type="submit"
           disabled={isPending}
-          className="btn rounded-[2px] bg-accent px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
+          className="btn rounded-full bg-accent px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
         >
           {isPending ? tCommon('sending') : t('submit')}
         </button>

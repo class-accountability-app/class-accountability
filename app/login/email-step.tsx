@@ -81,7 +81,7 @@ export function EmailStep({
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t('emailPlaceholder')}
             {...describedField(error, 'login-email-error', 'login-email-hint')}
-            className="h-12 w-full rounded-[2px] border border-border bg-surface px-3.5 text-ink placeholder:text-muted"
+            className="h-12 w-full rounded-lg border border-border bg-surface px-3.5 text-ink placeholder:text-muted"
           />
           <FieldError id="login-email-error" error={error} />
           <p id="login-email-hint" className="text-[13px] text-muted">
@@ -91,7 +91,7 @@ export function EmailStep({
         <button
           type="submit"
           aria-busy={isPending || undefined}
-          className="btn mt-2 flex h-13 w-full items-center justify-center rounded-[2px] bg-accent text-base font-semibold text-white"
+          className="btn mt-2 flex h-13 w-full items-center justify-center rounded-full bg-accent text-base font-semibold text-white"
         >
           {isPending ? tCommon('sending') : t('submit')}
         </button>

@@ -50,7 +50,7 @@ export default async function ClassesPage() {
 
         <section
           aria-labelledby="join-by-code"
-          className="flex flex-col gap-3 rounded-[2px] border border-border bg-surface p-5"
+          className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5"
         >
           <h2 id="join-by-code" className="font-heading text-xl font-bold text-ink">
             {t('joinByCodeHeading')}
@@ -70,7 +70,7 @@ export default async function ClassesPage() {
                 <li key={c.id}>
                   <Link
                     href={`/classes/${c.id}`}
-                    className="flex items-center justify-between gap-3 rounded-[2px] border border-border bg-surface px-4 py-3.5"
+                    className="flex items-center justify-between gap-3 rounded-lg border border-border bg-surface px-4 py-3.5"
                   >
                     <span className="flex flex-col gap-0.5">
                       <span className="font-heading text-lg font-bold text-ink">{c.name}</span>

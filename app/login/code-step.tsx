@@ -143,7 +143,7 @@ export function CodeStep({
       {/* The installed app has its own cookies: the email's button logs in
           Safari, not the app. Only the code works here. */}
       {standalone && (
-        <p className="rounded-[2px] border border-accent-text bg-surface px-3.5 py-2.5 text-sm text-ink">
+        <p className="rounded-lg border border-accent-text bg-surface px-3.5 py-2.5 text-sm text-ink">
           {t('appUseCode')}
         </p>
       )}
@@ -172,7 +172,7 @@ export function CodeStep({
             value={code}
             onChange={handleChange}
             {...describedField(error, 'login-code-error')}
-            className="h-15 w-full rounded-[2px] border border-border bg-surface px-3.5 text-center font-meta tracking-[0.5em] text-ink"
+            className="h-15 w-full rounded-lg border border-border bg-surface px-3.5 text-center font-meta tracking-[0.5em] text-ink"
           />
           </div>
           <FieldError id="login-code-error" error={error} />
@@ -180,7 +180,7 @@ export function CodeStep({
         <button
           type="submit"
           aria-busy={verifying || undefined}
-          className="btn flex h-13 w-full items-center justify-center rounded-[2px] bg-accent text-base font-semibold text-white"
+          className="btn flex h-13 w-full items-center justify-center rounded-full bg-accent text-base font-semibold text-white"
         >
           {verifying ? t('verifying') : t('verify')}
         </button>
@@ -197,7 +197,7 @@ export function CodeStep({
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex min-h-12 flex-1 basis-36 items-center justify-center rounded-[2px] border border-border bg-surface px-3 text-center text-[15px] font-semibold text-ink no-underline"
+            className="flex min-h-12 flex-1 basis-36 items-center justify-center rounded-lg border border-border bg-surface px-3 text-center text-[15px] font-semibold text-ink no-underline"
           >
             {label}
             <span className="sr-only">{t('opensInNewTab')}</span>
@@ -207,7 +207,7 @@ export function CodeStep({
 
       <section
         aria-labelledby="login-help-title"
-        className="flex flex-col gap-1.5 rounded-[2px] border border-border bg-surface px-4 py-3.5"
+        className="flex flex-col gap-1.5 rounded-lg border border-border bg-surface px-4 py-3.5"
       >
         <h2 id="login-help-title" className="text-sm font-semibold text-ink">
           {t('helpTitle')}

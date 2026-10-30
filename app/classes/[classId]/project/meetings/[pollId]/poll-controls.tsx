@@ -75,8 +75,8 @@ export function VoteGrid({
                   aria-pressed={answers[row.id] === a}
                   aria-label={t(`vote.answers.${a}`)}
                   onClick={() => choose(row.id, a)}
-                  className={`inline-flex h-11 w-11 items-center justify-center rounded-[2px] text-[17px] font-bold ${
-                    answers[row.id] === a ? 'bg-ink text-white' : 'bg-[#fffdf7] text-ink shadow-[inset_0_0_0_1px_#b9a57c]'
+                  className={`inline-flex h-11 w-11 items-center justify-center rounded-lg text-[17px] font-bold ${
+                    answers[row.id] === a ? 'bg-ink text-white' : 'bg-[#ffffff] text-ink shadow-[inset_0_0_0_1px_#747775]'
                   }`}
                 >
                   {MARK[a]}
@@ -134,7 +134,7 @@ export function ConfirmPoll({
         id={`${id}-choice`}
         value={choice}
         onChange={(e) => setChoice(e.target.value)}
-        className="h-12 w-full rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-3.5 text-base text-ink"
+        className="h-12 w-full rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 text-base text-ink"
       >
         {options.map((o) => (
           <option key={o.id} value={o.id}>

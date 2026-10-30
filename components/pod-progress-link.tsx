@@ -8,7 +8,7 @@ export function PodProgressLink({ href, title, sub }: { href: string; title: str
   return (
     <Link
       href={href}
-      className="rule-card flex min-h-14 items-center justify-between gap-3 px-3.5 text-ink hover:bg-[#fffdf7]"
+      className="rule-card flex min-h-14 items-center justify-between gap-3 px-3.5 text-ink hover:bg-[#ffffff]"
     >
       <span className="flex min-w-0 flex-col">
         <span className="text-[15px] leading-7 font-semibold">{title}</span>

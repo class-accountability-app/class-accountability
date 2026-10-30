@@ -65,7 +65,7 @@ export function TaskForm({
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex w-full flex-col gap-5">
-      <div className="flex flex-col gap-4 rounded-[2px] border border-border bg-surface p-5">
+      <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5">
         <div className="flex flex-col gap-1.5">
           <label htmlFor={`${id}-title`} className="text-sm font-semibold text-ink">
             {t('newTask.name')}
@@ -98,13 +98,13 @@ export function TaskForm({
 
         <fieldset className="flex flex-col gap-1.5" aria-describedby={`${id}-how-hint`}>
           <legend className="mb-1.5 text-sm font-semibold text-ink">{t('newTask.how')}</legend>
-          <div className="flex overflow-hidden rounded-[2px] border border-[#b9a57c]">
+          <div className="flex overflow-hidden rounded-lg border border-[#747775]">
             {TASK_METRICS.map((m, i) => (
               <label
                 key={m}
                 className={`flex min-h-11 flex-1 cursor-pointer items-center justify-center px-1.5 py-1.5 text-center text-sm leading-[1.4] has-[:focus-visible]:outline-2 has-[:focus-visible]:-outline-offset-4 has-[:focus-visible]:outline-accent ${
-                  i > 0 ? 'border-l border-[#b9a57c]' : ''
-                } ${metric === m ? 'bg-ink text-surface' : 'bg-[#fffdf7] text-ink'}`}
+                  i > 0 ? 'border-l border-[#747775]' : ''
+                } ${metric === m ? 'bg-ink text-surface' : 'bg-[#ffffff] text-ink'}`}
               >
                 <input
                   type="radio"

@@ -53,13 +53,13 @@ export function DisplayNameForm({ currentName, emailNoteId }: { currentName: str
           autoComplete="nickname"
           defaultValue={currentName}
           onChange={() => setSaved(false)}
-          className="h-12 min-w-0 flex-1 rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-3.5 text-ink"
+          className="h-12 min-w-0 flex-1 rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 text-ink"
           {...describedField(error, errorId, emailNoteId)}
         />
         <button
           type="submit"
           disabled={isPending}
-          className="btn inline-flex min-h-12 shrink-0 items-center justify-center rounded-[2px] bg-accent px-4 text-sm font-semibold text-white disabled:opacity-50"
+          className="btn inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-accent px-4 text-sm font-semibold text-white disabled:opacity-50"
         >
           {isPending ? t('saving') : t('save')}
         </button>

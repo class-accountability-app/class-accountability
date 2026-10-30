@@ -29,7 +29,7 @@ export async function StepHead({ step, backHref }: { step: 1 | 2 | 3; backHref?:
       </div>
       <div aria-hidden className="grid grid-cols-3 gap-1.5">
         {[1, 2, 3].map((i) => (
-          <i key={i} className={`h-1.5 rounded-[2px] ${i <= step ? 'bg-ink' : 'bg-border'}`} />
+          <i key={i} className={`h-1.5 rounded-lg ${i <= step ? 'bg-ink' : 'bg-border'}`} />
         ))}
       </div>
     </div>

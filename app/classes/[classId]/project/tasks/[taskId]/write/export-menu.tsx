@@ -89,7 +89,7 @@ export function ExportMenu({
       <div
         id={`${id}-menu`}
         hidden={!open}
-        className="absolute right-0 z-20 mt-1 w-64 rounded-[2px] bg-surface py-1 shadow-[inset_0_0_0_1px_var(--border),0_6px_18px_rgba(58,47,34,0.18)]"
+        className="absolute right-0 z-20 mt-1 w-64 rounded-lg bg-surface py-1 shadow-[inset_0_0_0_1px_var(--border),0_6px_18px_rgba(58,47,34,0.18)]"
       >
         <button type="button" disabled={working} onClick={word} className={item}>
           {working ? t('working') : t('word')}

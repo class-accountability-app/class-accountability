@@ -11,7 +11,7 @@ import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { saveClassProject } from '@/app/classes/[classId]/class-project-actions'
 
 const control =
-  'h-12 w-full min-w-0 rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-3.5 text-base text-ink placeholder:text-muted'
+  'h-12 w-full min-w-0 rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 text-base text-ink placeholder:text-muted'
 
 const emptyRow = (): ClassProjectTaskRow => ({ title: '', metric: 'status', unit: '', target: '', daysBefore: '' })
 
@@ -70,7 +70,7 @@ export function ClassProjectForm({
         </h2>
         <p className="text-[13px] leading-7 text-muted">{t('why')}</p>
       </div>
-      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 rounded-[2px] border border-border bg-surface p-5">
+      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5">
         <div className="flex flex-col gap-1.5">
           <label htmlFor={`${id}-title`} className="text-sm font-semibold text-ink">{t('nameLabel')}</label>
           <input id={`${id}-title`} value={title} maxLength={120} placeholder={t('namePlaceholder')}
@@ -103,7 +103,7 @@ export function ClassProjectForm({
           {rows.length === 0 && <p className="text-[13px] leading-7 text-muted">{t('noTasks')}</p>}
           <ol className="flex flex-col gap-3">
             {rows.map((row, i) => (
-              <li key={i} className={`flex flex-col gap-2 rounded-[2px] border p-3 ${taskIndex === i ? 'border-accent' : 'border-border'}`}>
+              <li key={i} className={`flex flex-col gap-2 rounded-lg border p-3 ${taskIndex === i ? 'border-accent' : 'border-border'}`}>
                 <div className="flex flex-col gap-1">
                   <label htmlFor={`${id}-t${i}`} className="text-[13px] font-semibold text-ink">{t('taskTitleLabel', { n: i + 1 })}</label>
                   <input id={`${id}-t${i}`} value={row.title} maxLength={120} onChange={(e) => update(i, { title: e.target.value })} className={control} />

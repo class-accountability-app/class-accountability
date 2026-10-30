@@ -44,7 +44,7 @@ export function TaskStatusControl({ classId, taskId, status }: { classId: string
         value={value}
         disabled={isPending}
         onChange={(e) => change(e.target.value as TaskStatus)}
-        className="h-11 rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-2.5 text-base text-ink disabled:opacity-50"
+        className="h-11 rounded-lg border border-[#747775] bg-[#ffffff] px-2.5 text-base text-ink disabled:opacity-50"
       >
         {TASK_STATUSES.map((s) => (
           <option key={s} value={s}>
@@ -199,7 +199,7 @@ export function TemplateTasksForm({ classId, projectId }: { classId: string; pro
           id={`template-${projectId}`}
           value={template}
           onChange={(e) => setTemplate(e.target.value as ProjectTemplateKey)}
-          className="h-11 min-w-0 flex-1 rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-2.5 text-base text-ink"
+          className="h-11 min-w-0 flex-1 rounded-lg border border-[#747775] bg-[#ffffff] px-2.5 text-base text-ink"
         >
           {PROJECT_TEMPLATE_KEYS.map((key) => (
             <option key={key} value={key}>

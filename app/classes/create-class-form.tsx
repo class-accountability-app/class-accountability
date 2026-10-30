@@ -10,7 +10,7 @@ const FIELDS = ['name', 'university', 'term'] as const
 type Field = (typeof FIELDS)[number]
 
 const inputClass =
-  'rounded-[2px] border border-border bg-surface px-3 py-3 text-ink placeholder:text-muted'
+  'rounded-lg border border-border bg-surface px-3 py-3 text-ink placeholder:text-muted'
 
 export function CreateClassForm() {
   const t = useTranslations('classForm')
@@ -78,7 +78,7 @@ export function CreateClassForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="btn rounded-[2px] bg-accent px-3 py-3 text-sm font-medium text-white disabled:opacity-50"
+        className="btn rounded-full bg-accent px-3 py-3 text-sm font-medium text-white disabled:opacity-50"
       >
         {isPending ? tCommon('creating') : t('submit')}
       </button>

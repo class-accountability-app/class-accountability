@@ -113,7 +113,7 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
 
   return (
     <form ref={formRef} onSubmit={submit} noValidate className="flex w-full flex-col gap-5">
-      <div className="flex flex-col gap-4 rounded-[2px] border border-border bg-surface p-5">
+      <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5">
         <div className="flex flex-col gap-1.5">
           <label htmlFor={`${id}-title`} className="text-sm font-semibold text-ink">
             {t('poll.titleLabel')}
@@ -137,8 +137,8 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
             {POLL_DURATIONS.map((d) => (
               <label
                 key={d}
-                className={`inline-flex h-11 min-w-14 cursor-pointer items-center justify-center rounded-[2px] px-3.5 text-[15px] font-semibold has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent ${
-                  duration === d ? 'bg-ink text-surface' : 'bg-[#fffdf7] text-ink shadow-[inset_0_0_0_1px_#b9a57c]'
+                className={`inline-flex h-11 min-w-14 cursor-pointer items-center justify-center rounded-lg px-3.5 text-[15px] font-semibold has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent ${
+                  duration === d ? 'bg-ink text-surface' : 'bg-[#ffffff] text-ink shadow-[inset_0_0_0_1px_#747775]'
                 }`}
               >
                 <input type="radio" name="duration" value={d} checked={duration === d} onChange={() => setDuration(d)} className="sr-only" />
@@ -183,7 +183,7 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
             {t('poll.halfHours')}
           </label>
 
-          <div className="max-h-[420px] overflow-y-auto rounded-[2px] border border-border">
+          <div className="max-h-[420px] overflow-y-auto rounded-lg border border-border">
             <table className="w-full table-fixed border-collapse text-center">
               <caption className="sr-only">{t('poll.gridCaption')}</caption>
               <thead className="sticky top-0 z-10 bg-surface">
@@ -218,12 +218,12 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
                             aria-label={slotLabel(key)}
                             disabled={past || (full && !on)}
                             onClick={() => toggle(key)}
-                            className={`h-9 w-full rounded-[2px] text-xs font-bold ${
+                            className={`h-9 w-full rounded-lg text-xs font-bold ${
                               on
                                 ? 'bg-accent text-white'
                                 : past
                                   ? 'bg-transparent'
-                                  : 'bg-[#fffdf7] shadow-[inset_0_0_0_1px_#e3d7bd] disabled:opacity-40'
+                                  : 'bg-[#ffffff] shadow-[inset_0_0_0_1px_#c4c7c5] disabled:opacity-40'
                             }`}
                           >
                             {on ? '○' : ''}
@@ -247,7 +247,7 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
                   <button
                     type="button"
                     onClick={() => toggle(key)}
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-[2px] bg-[#fffdf7] px-3 text-sm text-ink shadow-[inset_0_0_0_1px_#b9a57c]"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-[#ffffff] px-3 text-sm text-ink shadow-[inset_0_0_0_1px_#747775]"
                     aria-label={t('poll.removeTime', { when: slotLabel(key) })}
                   >
                     {slotLabel(key)} <span aria-hidden>✕</span>
@@ -288,8 +288,8 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
             {(['none', ...VOTE_BY_DAYS.map(String), 'custom'] as VoteByChoice[]).map((choice) => (
               <label
                 key={choice}
-                className={`inline-flex h-11 cursor-pointer items-center justify-center rounded-[2px] px-3.5 text-[15px] font-semibold has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent ${
-                  voteByChoice === choice ? 'bg-ink text-surface' : 'bg-[#fffdf7] text-ink shadow-[inset_0_0_0_1px_#b9a57c]'
+                className={`inline-flex h-11 cursor-pointer items-center justify-center rounded-lg px-3.5 text-[15px] font-semibold has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent ${
+                  voteByChoice === choice ? 'bg-ink text-surface' : 'bg-[#ffffff] text-ink shadow-[inset_0_0_0_1px_#747775]'
                 }`}
               >
                 <input

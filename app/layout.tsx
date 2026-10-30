@@ -1,11 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import {
-  Fraunces,
-  Schibsted_Grotesk,
-  Courier_Prime,
-  Zen_Kaku_Gothic_New,
-  Shippori_Mincho,
-} from 'next/font/google'
+import { Roboto, Noto_Sans_JP } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
@@ -17,40 +11,19 @@ import { PwaSupport } from '@/components/pwa'
 import { PushSync } from '@/components/push'
 import './globals.css'
 
-const fraunces = Fraunces({
-  variable: '--font-fraunces',
+// Material 3 (item H): Google's own faces. Roboto for Latin; Japanese
+// characters fall through to Noto Sans JP. With preload: false nothing is
+// preloaded, so `subsets` has no effect (and next/font rejects 'japanese');
+// the browser downloads only the unicode-range blocks a page needs.
+const roboto = Roboto({
+  variable: '--font-roboto',
   subsets: ['latin'],
-  weight: ['500', '600'],
-})
-
-// 600 is the landing page's button and label weight (docs/mockups/phase1/16-*).
-// Schibsted Grotesk is a variable font: all three weights come from the same
-// file, so 600 adds no download, only a real semibold instead of a synthesized one.
-const schibstedGrotesk = Schibsted_Grotesk({
-  variable: '--font-schibsted-grotesk',
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-})
-
-const courierPrime = Courier_Prime({
-  variable: '--font-courier-prime',
-  subsets: ['latin'],
-  weight: ['400', '700'],
-})
-
-// Japanese fallbacks after the Latin faces. With preload: false nothing is
-// preloaded, so `subsets` has no effect (and next/font rejects 'japanese').
-// The generated CSS still covers every unicode-range block; the browser
-// downloads only the blocks a page's characters need.
-const zenKakuGothicNew = Zen_Kaku_Gothic_New({
-  variable: '--font-zen-kaku-gothic-new',
   weight: ['400', '500', '700'],
-  preload: false,
 })
 
-const shipporiMincho = Shippori_Mincho({
-  variable: '--font-shippori-mincho',
-  weight: ['500', '700'],
+const notoSansJp = Noto_Sans_JP({
+  variable: '--font-noto-sans-jp',
+  weight: ['400', '500', '700'],
   preload: false,
 })
 
@@ -87,7 +60,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#fbf6e8',
+  themeColor: '#f8fafd',
 }
 
 export default async function RootLayout({
@@ -110,7 +83,7 @@ export default async function RootLayout({
     : { data: null }
   const classIds = (memberships ?? []).map((m) => m.class_id)
 
-  const fontVariables = [fraunces, schibstedGrotesk, courierPrime, zenKakuGothicNew, shipporiMincho]
+  const fontVariables = [roboto, notoSansJp]
     .map((font) => font.variable)
     .join(' ')
 
