@@ -83,7 +83,7 @@ export default async function SettingsPage() {
             {t('notificationsHeading')}
           </h2>
           <PushRow />
-          <div className="border-t border-dashed border-[#e3d4b0]">
+          <div className="border-t border-dashed border-[#c4c7c5]">
             <OnlineRow initialOn={presence?.share_online ?? true} />
           </div>
         </section>

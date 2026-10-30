@@ -74,7 +74,7 @@ export function TeamInviteCard({
       {small && <p className="text-[13px] leading-7 font-semibold text-ink">{t('smallTeam')}</p>}
       <p className="text-[13px] leading-7 text-muted">{t('body')}</p>
       <p className="sr-only">{t('messageLabel')}</p>
-      <p className="mt-1.5 rounded-[2px] bg-[#fffdf7] px-3 py-1.5 text-[13px] leading-6 text-ink shadow-[inset_0_0_0_1px_#e3d7bd] [overflow-wrap:anywhere]">
+      <p className="mt-1.5 rounded-lg bg-[#ffffff] px-3 py-1.5 text-[13px] leading-6 text-ink shadow-[inset_0_0_0_1px_#c4c7c5] [overflow-wrap:anywhere]">
         {message}
       </p>
       <div className="flex flex-wrap gap-2 pt-3.5">
