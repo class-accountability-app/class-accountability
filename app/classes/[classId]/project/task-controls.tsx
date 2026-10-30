@@ -6,8 +6,8 @@ import { useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
 import { TASK_STATUSES, type TaskStatus } from '@/lib/tasks'
 import { FormError } from '@/components/form-errors'
-import { secondaryButtonClass } from '@/components/buttons'
-import { claimTask, setTaskStatus, writeInApp } from './actions'
+import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
+import { claimTask, finishProject, setTaskStatus, writeInApp } from './actions'
 
 // The status of one of my tasks: a native select, so it's one tap on a phone
 // and the keyboard works without extra code.
@@ -115,6 +115,62 @@ export function ClaimButton({ classId, taskId }: { classId: string; taskId: stri
       >
         {isPending ? tCommon('working') : t('claim')}
       </button>
+      <FormError error={error} />
+    </div>
+  )
+}
+
+// プロジェクトを完了する (0033): a link first, then a confirm step that says
+// what finishing means, so nobody ends the team's project by a stray tap.
+export function FinishProjectButton({ classId, projectId }: { classId: string; projectId: string }) {
+  const t = useTranslations('project.finish')
+  const tCommon = useTranslations('common')
+  const router = useRouter()
+  const [asking, setAsking] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<ErrorKey | null>(null)
+
+  if (!asking) {
+    return (
+      <button
+        type="button"
+        className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-accent-text underline underline-offset-4"
+        onClick={() => setAsking(true)}
+      >
+        {t('button')}
+      </button>
+    )
+  }
+
+  return (
+    <div role="group" aria-labelledby={`finish-${projectId}`} className="rule-card flex flex-col px-3.5 py-3.5">
+      <p id={`finish-${projectId}`} className="font-heading text-[17px] leading-7 font-bold text-ink">
+        {t('confirmTitle')}
+      </p>
+      <p className="text-[13px] leading-7 text-muted">{t('confirmBody')}</p>
+      <div className="flex flex-wrap gap-3.5 pt-3.5">
+        <button
+          type="button"
+          disabled={isPending}
+          className={primaryButtonClass}
+          onClick={() =>
+            startTransition(async () => {
+              setError(null)
+              const result = await finishProject(classId, projectId)
+              if (result.error) {
+                setError(result.error)
+                return
+              }
+              router.refresh()
+            })
+          }
+        >
+          {isPending ? tCommon('working') : t('confirm')}
+        </button>
+        <button type="button" disabled={isPending} className={secondaryButtonClass} onClick={() => setAsking(false)}>
+          {t('cancel')}
+        </button>
+      </div>
       <FormError error={error} />
     </div>
   )

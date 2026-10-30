@@ -75,6 +75,16 @@ export async function createProject(classId: string, formData: FormData): Promis
   return { error: null }
 }
 
+// 0033: any member marks the team's project finished. It stays as history and
+// the team can start the next one.
+export async function finishProject(classId: string, projectId: string): Promise<ActionResult> {
+  const supabase = await createClient()
+  const { error } = await supabase.rpc('finish_project', { p_project: projectId })
+  if (error) return { error: toErrorKey('finishProject', error) }
+  refresh(classId)
+  return { error: null }
+}
+
 export async function addTask(classId: string, projectId: string, formData: FormData): Promise<ActionResult> {
   const supabase = await createClient()
   const {

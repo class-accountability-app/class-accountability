@@ -48,6 +48,9 @@ const POLL_TIMES_INVALID = 'SP013'
 const TEAM_FULL = 'SP014'
 // Raised by join_pod_by_code (0028): no active team has this code.
 const TEAM_CODE_UNKNOWN = 'SP015'
+// Raised by guard_finished_project (0033_project_lifecycle.sql): the project is
+// finished, so it can't change any more. Means the same everywhere.
+const PROJECT_FINISHED = 'SP016'
 
 export const DB_CODES = {
   uniqueViolation: PG_UNIQUE_VIOLATION,
@@ -68,6 +71,7 @@ export const DB_CODES = {
   pollTimesInvalid: POLL_TIMES_INVALID,
   teamFull: TEAM_FULL,
   teamCodeUnknown: TEAM_CODE_UNKNOWN,
+  projectFinished: PROJECT_FINISHED,
 } as const
 
 const EMAIL_PATTERN = /[^\s"'<>(),;:]+@[^\s"'<>(),;:]+/g
@@ -109,6 +113,7 @@ export function errorKeyFor(
 ): ErrorKey {
   const code = error?.code
   if (code && byCode[code]) return byCode[code]
+  if (code === PROJECT_FINISHED) return 'projectFinished'
   if (isEmailDomainError(error)) return 'emailDomain'
   if (code === 'email_address_invalid') return 'emailInvalid'
   if ((code && RATE_LIMIT_CODES.has(code)) || error?.status === 429) return 'rateLimited'

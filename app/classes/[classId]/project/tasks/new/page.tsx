@@ -27,7 +27,7 @@ export default async function NewTaskPage({ params }: { params: Promise<{ classI
   if (!myPod) redirect(`/classes/${classId}/project`)
 
   const [{ data: project }, { data: memberRows }] = await Promise.all([
-    supabase.from('projects').select('id, title').eq('pairing_id', myPod.pairing_id).maybeSingle(),
+    supabase.from('projects').select('id, title').eq('pairing_id', myPod.pairing_id).eq('status', 'active').maybeSingle(),
     supabase
       .from('pairing_members')
       .select('user_id, joined_at, profiles(display_name)')

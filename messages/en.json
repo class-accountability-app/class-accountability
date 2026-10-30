@@ -348,7 +348,8 @@
     "classProjectTooManyTasks": "A class project can have up to 30 tasks.",
     "classProjectDaysInvalid": "For “days before the deadline”, enter a whole number from 0 to 365.",
     "taskDocumentLocked": "A task with progress logged can’t switch to Write in Study Pods.",
-    "authOtherBrowser": "The email’s button doesn’t work when it opens in a different browser or app from the one where you typed your email. Send the email again and type the 6-digit code on this screen instead."
+    "authOtherBrowser": "The email’s button doesn’t work when it opens in a different browser or app from the one where you typed your email. Send the email again and type the 6-digit code on this screen instead.",
+    "projectFinished": "This project is finished. Please reload the page."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -414,11 +415,12 @@
   "push": {
     "title": "Study Pods",
     "one": "{name} sent you a nudge",
-    "oneUnknown": "A podmate sent you a nudge",
+    "oneUnknown": "A teammate sent you a nudge",
     "many": "{count} nudges arrived overnight",
     "meeting": "Your meeting starts {when}",
     "meetingCheckin": "Your meeting starts {when}. Check in before then",
-    "stalled": "“{task}” hasn’t moved for {days} days. Even a little progress helps"
+    "stalled": "“{task}” hasn’t moved for {days} days. Even a little progress helps",
+    "checkinDue": "Check-in day: share your progress with your team today"
   },
   "empty": {
     "findPod": "Find a team",
@@ -1132,7 +1134,20 @@
     "membersWhyLive": "Who is doing what. Teammates’ numbers are live. The text itself and the memos on your logs stay yours.",
     "teacherSees": "Your teacher sees only how the team as a whole is doing: no names, no individual numbers.",
     "writeInApp": "Write in Study Pods (counts characters for you)",
-    "keepWriting": "Write"
+    "keepWriting": "Write",
+    "finish": {
+      "button": "Finish project",
+      "confirmTitle": "Finish this project?",
+      "confirmBody": "Once finished, nobody can log on its tasks, check in or schedule meetings for it. Its numbers stay as history, and your team can start the next project.",
+      "confirm": "Finish",
+      "cancel": "Cancel"
+    },
+    "history": {
+      "heading": "Past projects",
+      "finished": "Finished {date}"
+    },
+    "nextTitle": "Start your next project",
+    "nextWhy": "Your last project is finished. Decide the next goal together."
   },
   "google": {
     "kicker": "AUTOMATIC LOGGING",

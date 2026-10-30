@@ -2,7 +2,7 @@
 // nudge says only who nudged (or how many nudges came overnight), never the
 // memo, a class or progress numbers. A meeting reminder says when, not what;
 // a stalled-task push names the task (it goes to its owner only) but never a
-// number.
+// number; the check-in-day push names nothing.
 //
 // The Edge Function can't read messages/*.json once deployed, so these are a
 // copy of their "push" keys; push-text.test.ts fails if the two drift.
@@ -18,15 +18,17 @@ export const PUSH_TEXT = {
     meeting: '打ち合わせは{when}からです',
     meetingCheckin: '打ち合わせは{when}からです。その前にチェックインしましょう',
     stalled: '「{task}」が{days}日止まっています。少しだけでも進めてみませんか',
+    checkinDue: '今日はチェックインの日です。チームに進み具合を共有しましょう',
   },
   en: {
     title: 'Study Pods',
     one: '{name} sent you a nudge',
-    oneUnknown: 'A podmate sent you a nudge',
+    oneUnknown: 'A teammate sent you a nudge',
     many: '{count} nudges arrived overnight',
     meeting: 'Your meeting starts {when}',
     meetingCheckin: 'Your meeting starts {when}. Check in before then',
     stalled: '“{task}” hasn’t moved for {days} days. Even a little progress helps',
+    checkinDue: 'Check-in day: share your progress with your team today',
   },
 } as const
 
@@ -90,4 +92,9 @@ export function meetingReminderText(
 export function stalledTaskText(locale: string, task: string, days: number): { title: string; body: string } {
   const t = textFor(locale)
   return { title: t.title, body: fill(fill(t.stalled, 'task', task), 'days', String(days)) }
+}
+
+export function checkinDueText(locale: string): { title: string; body: string } {
+  const t = textFor(locale)
+  return { title: t.title, body: t.checkinDue }
 }

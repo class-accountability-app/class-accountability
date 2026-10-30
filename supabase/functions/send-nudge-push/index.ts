@@ -13,7 +13,7 @@
 import webpush from 'npm:web-push@3.6.7'
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.110.2'
 import { isQuietHours } from '../_shared/quiet-hours.ts'
-import { meetingReminderText, pushText, stalledTaskText } from '../_shared/push-text.ts'
+import { checkinDueText, meetingReminderText, pushText, stalledTaskText } from '../_shared/push-text.ts'
 import { meetingPath, projectPath } from '../_shared/push-path.ts'
 import { verifySignature } from '../_shared/signature.ts'
 
@@ -87,9 +87,10 @@ async function notify(db: SupabaseClient, toUserId: string, nudges: Sender[]) {
 type PushEvent = {
   id: string
   user_id: string
-  kind: 'meeting_reminder' | 'task_stalled'
+  kind: 'meeting_reminder' | 'task_stalled' | 'checkin_due'
   poll_id: string | null
   task_id: string | null
+  project_id: string | null
   needs_checkin: boolean
 }
 
@@ -97,6 +98,18 @@ type PushEvent = {
 async function classOfProject(db: SupabaseClient, projectId: string): Promise<string | null> {
   const { data } = await db.from('projects').select('pairings(class_id)').eq('id', projectId).maybeSingle()
   return (data?.pairings as unknown as { class_id: string } | null)?.class_id ?? null
+}
+
+// Today in Tokyo as YYYY-MM-DD.
+function tokyoToday(): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo' }).format(new Date())
+}
+
+// The same rule as public.checkin_round_start (0022) and lib/checkin.ts.
+function roundStart(start: string, every: number, today: string): string {
+  const day = 86_400_000
+  const elapsed = Math.max(0, Math.round((Date.parse(today) - Date.parse(start)) / day))
+  return new Date(Date.parse(start) + Math.floor(elapsed / every) * every * day).toISOString().slice(0, 10)
 }
 
 // 0025: claims every unsent push_events row (marking it sent first, so a
@@ -109,7 +122,7 @@ async function sendEvents(db: SupabaseClient) {
     .update({ sent_at: new Date().toISOString() })
     .is('sent_at', null)
     .gt('created_at', new Date(Date.now() - MAX_EVENT_AGE_MS).toISOString())
-    .select('id, user_id, kind, poll_id, task_id, needs_checkin')
+    .select('id, user_id, kind, poll_id, task_id, project_id, needs_checkin')
   // Anything older was never sent in time: mark it so it is not looked at again.
   await db.from('push_events').update({ sent_at: new Date().toISOString() }).is('sent_at', null)
 
@@ -142,6 +155,28 @@ async function sendEvents(db: SupabaseClient) {
       await sendToUser(db, event.user_id, 'stalled', (locale) => ({
         ...stalledTaskText(locale, task.title, STALL_DAYS),
         kind: 'task_stalled',
+        path: projectPath(classId),
+      }))
+    } else if (event.kind === 'checkin_due' && event.project_id) {
+      // 0033: still active, and they still haven't shared this round.
+      const { data: project } = await db
+        .from('projects')
+        .select('id, status, start_date, checkin_every_days')
+        .eq('id', event.project_id)
+        .maybeSingle()
+      if (!project || project.status !== 'active') continue
+      const { count } = await db
+        .from('project_checkins')
+        .select('id', { count: 'exact', head: true })
+        .eq('project_id', project.id)
+        .eq('user_id', event.user_id)
+        .eq('round_start', roundStart(project.start_date, project.checkin_every_days, tokyoToday()))
+      if ((count ?? 0) > 0) continue
+      const classId = await classOfProject(db, project.id)
+      if (!classId) continue
+      await sendToUser(db, event.user_id, 'checkin', (locale) => ({
+        ...checkinDueText(locale),
+        kind: 'checkin_due',
         path: projectPath(classId),
       }))
     }

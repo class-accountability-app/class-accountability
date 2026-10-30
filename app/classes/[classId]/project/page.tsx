@@ -15,7 +15,7 @@ import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { CreateProjectForm } from './create-project-form'
 import { STATUS_PILL_CLASS, loadLiveTotals, loadMyPodProject, taskValueText, type TaskRow } from './load'
 import { chosenStart, formatMeeting, isUpcoming, loadPolls } from './meetings/load'
-import { ClaimButton, TaskStatusControl, WriteInAppButton } from './task-controls'
+import { ClaimButton, FinishProjectButton, TaskStatusControl, WriteInAppButton } from './task-controls'
 import { CreateGroupDocButton, GoogleSyncOnOpen } from './google-controls'
 import { TaskLog } from './task-log'
 import { loadTeamInvite } from '@/app/team/load'
@@ -117,15 +117,42 @@ export default async function ProjectPage({
   )
 
   if (!project) {
+    // 0033: finished projects stay as history; the team starts the next one.
+    const { data: pastRows } = await supabase
+      .from('projects')
+      .select('id, title, finished_at')
+      .eq('pairing_id', pod.podId)
+      .eq('status', 'done')
+      .order('finished_at', { ascending: false })
+    const past = (pastRows as { id: string; title: string; finished_at: string }[] | null) ?? []
     return wrap(
       <>
         {header}
         <div className="px-0.5">
-          <h1 className="font-heading text-[26px] leading-7 font-bold text-ink">{t('startTitle')}</h1>
-          <p className="text-[13px] leading-7 text-muted">{t('startWhy')}</p>
+          <h1 className="font-heading text-[26px] leading-7 font-bold text-ink">
+            {past.length > 0 ? t('nextTitle') : t('startTitle')}
+          </h1>
+          <p className="text-[13px] leading-7 text-muted">{past.length > 0 ? t('nextWhy') : t('startWhy')}</p>
         </div>
         <CreateProjectForm classId={classId} />
         {inviteCard}
+        {past.length > 0 && (
+          <section aria-labelledby="history-heading" className="flex flex-col gap-3.5">
+            <h2 id="history-heading" className="px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
+              {t('history.heading')}
+            </h2>
+            <ul className="rule-card flex flex-col px-3.5 py-3.5">
+              {past.map((p) => (
+                <li key={p.id}>
+                  <p className="text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{p.title}</p>
+                  <p className="font-meta text-xs leading-7 text-muted">
+                    {t('history.finished', { date: formatDate(p.finished_at, locale) })}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </>
     )
   }
@@ -489,6 +516,9 @@ export default async function ProjectPage({
         </div>
         {inviteCard}
         <p className="px-0.5 text-[13px] leading-7 text-muted">{t('teacherSees')}</p>
+        <div className="px-0.5">
+          <FinishProjectButton classId={classId} projectId={project.id} />
+        </div>
       </section>
 
       <section aria-labelledby="nudges-heading" className="flex flex-col gap-3.5">
