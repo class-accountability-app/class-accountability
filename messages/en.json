@@ -1147,7 +1147,12 @@
       "finished": "Finished {date}"
     },
     "nextTitle": "Start your next project",
-    "nextWhy": "Your last project is finished. Decide the next goal together."
+    "nextWhy": "Your last project is finished. Decide the next goal together.",
+    "templateLabel": "Task template (optional)",
+    "templateNone": "None (add tasks later)",
+    "templateHint": "Adds its tasks, with due dates counted back from the deadline. You can change everything later.",
+    "templateAddLabel": "Add tasks from a template",
+    "templateAdd": "Add"
   },
   "google": {
     "kicker": "AUTOMATIC LOGGING",
@@ -1277,10 +1282,6 @@
     "everyLabel": "Check-in interval",
     "everySuffix": "days",
     "tasksLabel": "Tasks",
-    "preset": {
-      "presentation": "Presentation template",
-      "report": "Report template"
-    },
     "noTasks": "No tasks yet. Pick a template or add a task.",
     "taskTitleLabel": "Task {n}",
     "metricLabel": "How progress is measured",
@@ -1300,5 +1301,15 @@
     "saving": "Saving…",
     "saved": "Saved.",
     "taskProblemAt": "Check task {n}."
+  },
+  "templates": {
+    "presentation": "Presentation",
+    "report": "Report",
+    "poster": "Poster session",
+    "video": "Video",
+    "survey": "Survey study",
+    "proposal": "Proposal and pitch",
+    "literatureReview": "Literature review",
+    "caseStudy": "Case study"
   }
 }

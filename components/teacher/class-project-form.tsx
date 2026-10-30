@@ -4,7 +4,8 @@ import { useId, useState, useTransition } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
 import { TASK_METRICS } from '@/lib/tasks'
-import { CLASS_PROJECT_MAX_TASKS, CLASS_PROJECT_PRESETS, type ClassProjectTaskRow } from '@/lib/class-project'
+import { CLASS_PROJECT_MAX_TASKS, type ClassProjectTaskRow } from '@/lib/class-project'
+import { PROJECT_TEMPLATES, PROJECT_TEMPLATE_KEYS } from '@/lib/project-templates'
 import { FormError } from '@/components/form-errors'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { saveClassProject } from '@/app/classes/[classId]/class-project-actions'
@@ -26,6 +27,7 @@ export function ClassProjectForm({
   initial: { title: string; deadline: string; every: string; tasks: ClassProjectTaskRow[] } | null
 }) {
   const t = useTranslations('classProject')
+  const tTemplates = useTranslations('templates')
   const locale = useLocale() === 'en' ? 'en' : 'ja'
   const id = useId()
   const [title, setTitle] = useState(initial?.title ?? '')
@@ -91,10 +93,10 @@ export function ClassProjectForm({
         <fieldset className="flex flex-col gap-3">
           <legend className="text-sm font-semibold text-ink">{t('tasksLabel')}</legend>
           <div className="flex flex-wrap gap-2">
-            {(Object.keys(CLASS_PROJECT_PRESETS) as (keyof typeof CLASS_PROJECT_PRESETS)[]).map((key) => (
+            {PROJECT_TEMPLATE_KEYS.map((key) => (
               <button key={key} type="button" className={secondaryButtonClass}
-                onClick={() => { setRows(CLASS_PROJECT_PRESETS[key][locale].map((r) => ({ ...r }))); setSaved(false) }}>
-                {t(`preset.${key}`)}
+                onClick={() => { setRows(PROJECT_TEMPLATES[key][locale].map((r) => ({ ...r }))); setSaved(false) }}>
+                {tTemplates(key)}
               </button>
             ))}
           </div>

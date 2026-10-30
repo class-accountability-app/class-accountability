@@ -6,6 +6,8 @@ import { DB_CODES, toErrorKey, type ActionResult } from '@/lib/errors'
 import { tokyoToday } from '@/lib/date'
 import { checkTask, isTaskMetric, isTaskStatus, parseWholeAmount, type TaskProblem } from '@/lib/tasks'
 import type { ErrorKey } from '@/lib/errors'
+import { getLocale } from 'next-intl/server'
+import { isProjectTemplateKey, templateTasks } from '@/lib/project-templates'
 
 // Group projects (0022). The database decides who may do what: any pod member
 // starts the project and edits its tasks, only a task's owner logs on it. The
@@ -59,16 +61,32 @@ export async function createProject(classId: string, formData: FormData): Promis
   if (podError) return { error: toErrorKey('createProject.pod', podError) }
   if (!pod) return { error: 'projectNeedsPod' }
 
-  const { error } = await supabase.from('projects').insert({
-    pairing_id: pod.pairing_id,
-    title,
-    deadline,
-    checkin_every_days: every,
-    created_by: user.id,
-  })
+  const { data: project, error } = await supabase
+    .from('projects')
+    .insert({
+      pairing_id: pod.pairing_id,
+      title,
+      deadline,
+      checkin_every_days: every,
+      created_by: user.id,
+    })
+    .select('id')
+    .single()
   if (error) {
-    // One project per pod: a podmate started it a moment ago.
+    // One active project per team: a teammate started it a moment ago.
     return { error: toErrorKey('createProject', error, { [DB_CODES.uniqueViolation]: 'projectExists' }) }
+  }
+
+  // A template's tasks, in the language of the person starting it. The
+  // project exists either way; if the tasks fail, the team adds them by hand.
+  const template = formData.get('template')?.toString()
+  if (isProjectTemplateKey(template)) {
+    const locale = (await getLocale()) === 'en' ? 'en' : 'ja'
+    const rows = templateTasks(template, locale, deadline, tokyoToday())
+    const { error: taskError } = await supabase
+      .from('project_tasks')
+      .insert(rows.map((r) => ({ ...r, project_id: project.id })))
+    if (taskError) toErrorKey('createProject.template', taskError)
   }
 
   refresh(classId)
@@ -81,6 +99,32 @@ export async function finishProject(classId: string, projectId: string): Promise
   const supabase = await createClient()
   const { error } = await supabase.rpc('finish_project', { p_project: projectId })
   if (error) return { error: toErrorKey('finishProject', error) }
+  refresh(classId)
+  return { error: null }
+}
+
+// A project started without tasks: add one template's tasks in one go. Only
+// while it has none, so a second tap can't double them.
+export async function addTemplateTasks(classId: string, projectId: string, template: string): Promise<ActionResult> {
+  if (!isProjectTemplateKey(template)) return { error: 'generic' }
+  const supabase = await createClient()
+
+  const [{ data: project, error: projectError }, { count, error: countError }] = await Promise.all([
+    supabase.from('projects').select('id, deadline').eq('id', projectId).maybeSingle(),
+    supabase.from('project_tasks').select('id', { count: 'exact', head: true }).eq('project_id', projectId),
+  ])
+  if (projectError || countError) return { error: toErrorKey('addTemplateTasks.read', projectError ?? countError) }
+  if (!project) return { error: 'notAllowed' }
+  if ((count ?? 0) > 0) {
+    refresh(classId)
+    return { error: null }
+  }
+
+  const locale = (await getLocale()) === 'en' ? 'en' : 'ja'
+  const rows = templateTasks(template, locale, project.deadline, tokyoToday())
+  const { error } = await supabase.from('project_tasks').insert(rows.map((r) => ({ ...r, project_id: project.id })))
+  if (error) return { error: toErrorKey('addTemplateTasks', error, { [DB_CODES.insufficientPrivilege]: 'notAllowed' }) }
+
   refresh(classId)
   return { error: null }
 }

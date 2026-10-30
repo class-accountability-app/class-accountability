@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
 import { FieldError, FormError, describedField, useFocusFirstInvalid } from '@/components/form-errors'
 import { primaryButtonClass } from '@/components/buttons'
+import { PROJECT_TEMPLATE_KEYS } from '@/lib/project-templates'
 import { createProject } from './actions'
 
 type Field = 'title' | 'deadline' | 'checkin_every'
@@ -20,10 +21,12 @@ export const controlClass =
   'h-12 w-full rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-3.5 text-base text-ink placeholder:text-muted'
 
 // Starting the pod's one project: a title, an optional deadline and how often
-// everyone checks in (every 4 days unless changed, 1–14).
+// everyone checks in (every 4 days unless changed, 1–14), and optionally a
+// task template (lib/project-templates.ts) so the board starts with tasks.
 export function CreateProjectForm({ classId }: { classId: string }) {
   const t = useTranslations('project')
   const tCommon = useTranslations('common')
+  const tTemplates = useTranslations('templates')
   const router = useRouter()
   const id = useId()
   const formRef = useRef<HTMLFormElement>(null)
@@ -106,6 +109,29 @@ export function CreateProjectForm({ classId }: { classId: string }) {
             {t('checkinHint')}
           </p>
           <FieldError id={`${id}-every-error`} error={fieldError('checkin_every')} />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor={`${id}-template`} className="text-sm font-semibold text-ink">
+            {t('templateLabel')}
+          </label>
+          <select
+            id={`${id}-template`}
+            name="template"
+            defaultValue=""
+            aria-describedby={`${id}-template-hint`}
+            className={controlClass}
+          >
+            <option value="">{t('templateNone')}</option>
+            {PROJECT_TEMPLATE_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {tTemplates(key)}
+              </option>
+            ))}
+          </select>
+          <p id={`${id}-template-hint`} className="text-[13px] leading-[1.7] text-muted">
+            {t('templateHint')}
+          </p>
         </div>
       </div>
 

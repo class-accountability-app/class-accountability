@@ -1147,7 +1147,12 @@
       "finished": "{date}に完了"
     },
     "nextTitle": "次のプロジェクトを始めましょう",
-    "nextWhy": "前のプロジェクトは完了しました。チームで次の目標を決めましょう。"
+    "nextWhy": "前のプロジェクトは完了しました。チームで次の目標を決めましょう。",
+    "templateLabel": "タスクのひな形（任意）",
+    "templateNone": "使わない（タスクは後で追加）",
+    "templateHint": "選ぶと、タスクと締め切りから逆算した期日が入ります。あとで自由に変えられます。",
+    "templateAddLabel": "ひな形からタスクを追加",
+    "templateAdd": "追加する"
   },
   "google": {
     "kicker": "自動で記録",
@@ -1277,10 +1282,6 @@
     "everyLabel": "チェックインの間隔",
     "everySuffix": "日ごと",
     "tasksLabel": "タスク",
-    "preset": {
-      "presentation": "発表のひな形",
-      "report": "レポートのひな形"
-    },
     "noTasks": "タスクがまだありません。ひな形を選ぶか、タスクを追加してください。",
     "taskTitleLabel": "タスク{n}",
     "metricLabel": "進み具合の測り方",
@@ -1300,5 +1301,15 @@
     "saving": "保存しています…",
     "saved": "保存しました。",
     "taskProblemAt": "タスク{n}を確認してください。"
+  },
+  "templates": {
+    "presentation": "発表",
+    "report": "レポート",
+    "poster": "ポスター発表",
+    "video": "動画制作",
+    "survey": "アンケート調査",
+    "proposal": "企画提案・ピッチ",
+    "literatureReview": "文献レビュー",
+    "caseStudy": "ケーススタディ"
   }
 }

@@ -15,7 +15,7 @@ import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { CreateProjectForm } from './create-project-form'
 import { STATUS_PILL_CLASS, loadLiveTotals, loadMyPodProject, taskValueText, type TaskRow } from './load'
 import { chosenStart, formatMeeting, isUpcoming, loadPolls } from './meetings/load'
-import { ClaimButton, FinishProjectButton, TaskStatusControl, WriteInAppButton } from './task-controls'
+import { ClaimButton, FinishProjectButton, TaskStatusControl, TemplateTasksForm, WriteInAppButton } from './task-controls'
 import { CreateGroupDocButton, GoogleSyncOnOpen } from './google-controls'
 import { TaskLog } from './task-log'
 import { loadTeamInvite } from '@/app/team/load'
@@ -388,6 +388,8 @@ export default async function ProjectPage({
             <p className="text-[13px] leading-7 text-muted">{t(teamLive ? 'membersWhyLive' : 'membersWhy')}</p>
           </div>
         </div>
+
+        {tasks.length === 0 && <TemplateTasksForm classId={classId} projectId={project.id} />}
 
         {groups.map((group) => {
           const mine = group.ownerId === user.id
