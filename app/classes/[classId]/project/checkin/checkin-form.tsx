@@ -49,6 +49,25 @@ export function CheckinForm({ classId, projectId }: { classId: string; projectId
           {...describedField(noteError, `${id}-note-error`, `${id}-fine`)}
         />
         <FieldError id={`${id}-note-error`} error={noteError} />
+        {/* Feature batch 1: tap a prompt to start a line with it. */}
+        <div className="flex flex-wrap gap-2 pt-1" role="group" aria-label={t('checkin.promptsLabel')}>
+          {(['promptDone', 'promptStuck', 'promptNext'] as const).map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() =>
+                setNote((current) => {
+                  const line = `${t(`checkin.${key}`)}`
+                  const next = current.trim() === '' ? line : `${current.replace(/\s+$/, '')}\n${line}`
+                  return next.slice(0, 280)
+                })
+              }
+              className="inline-flex min-h-9 items-center rounded-lg border border-outline px-3 text-[13px] text-ink"
+            >
+              ＋ {t(`checkin.${key}`)}
+            </button>
+          ))}
+        </div>
       </div>
       <button type="submit" disabled={isPending} className={`${primaryButtonClass} h-[52px] w-full`}>
         {isPending ? tCommon('sending') : t('checkin.send')}
