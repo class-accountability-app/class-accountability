@@ -59,7 +59,7 @@ function Stamp({ stale = false, style }: { stale?: boolean; style?: CSSPropertie
   const color = stale ? '#747775' : '#146c2e'
   return (
     <span
-      className="mt-px inline-flex size-[22px] shrink-0 -rotate-[7deg] items-center justify-center rounded-full border-[1.5px]"
+      className="mt-px inline-flex size-[22px] shrink-0 items-center justify-center rounded-full border-[1.5px]"
       style={{ borderColor: color, ...style }}
     >
       <span className="size-[7px] rounded-full" style={{ background: color }} />
@@ -69,8 +69,8 @@ function Stamp({ stale = false, style }: { stale?: boolean; style?: CSSPropertie
 
 function Bar({ width, style }: { width: string; style?: CSSProperties }) {
   return (
-    <div className="mt-2 h-1.5 overflow-hidden rounded-lg bg-border">
-      <div className="h-full origin-left bg-ink" style={{ width, ...style }} />
+    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-primary-container">
+      <div className="h-full origin-left rounded-full bg-accent" style={{ width, ...style }} />
     </div>
   )
 }
@@ -87,26 +87,8 @@ export async function Demo() {
   return (
     <figure className="relative z-[1] m-0" style={{ animation: 'lp-rise 0.8s ease 0.3s both' }}>
       <figcaption className="sr-only">{t('description')}</figcaption>
-      {/* Tape and paper clip, as in the design. */}
-      <div
-        aria-hidden
-        className="absolute -top-3.5 left-1/2 z-[2] -ml-[66px] h-7 w-[132px] -rotate-3 bg-[rgba(201,164,104,0.5)] bg-[repeating-linear-gradient(90deg,rgba(255,255,255,0.18)_0,rgba(255,255,255,0.18)_6px,transparent_6px,transparent_12px)]"
-      />
-      <svg
-        aria-hidden
-        width="24"
-        height="60"
-        viewBox="0 0 26 66"
-        fill="none"
-        stroke="#747775"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        className="absolute -top-[22px] right-10 z-[2]"
-      >
-        <path d="M8 54 V16 a5 5 0 0 1 10 0 V52 a8 8 0 0 1 -16 0 V20" />
-      </svg>
 
-      <div aria-hidden className="overflow-hidden rounded-lg border border-border bg-surface shadow-[0_10px_24px_-18px_rgba(58,47,34,0.45)]">
+      <div aria-hidden className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_1px_3px_rgba(0,0,0,0.12),0_6px_16px_2px_rgba(0,0,0,0.06)]">
         <div className="flex h-[38px] items-center gap-1.5 border-b border-border bg-[#f0f4f9] px-3.5">
           <span className="size-[9px] rounded-full border border-[#747775]" />
           <span className="size-[9px] rounded-full border border-[#747775]" />
