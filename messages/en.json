@@ -353,7 +353,11 @@
     "teamSetupInvalid": "A team needs at least one student. Automatic teams take 2 to 6 people.",
     "teamNameTooLong": "Team names can be up to 30 characters.",
     "announcementRequired": "Write the announcement first.",
-    "announcementTooLong": "Announcements can be up to 500 characters."
+    "announcementTooLong": "Announcements can be up to 500 characters.",
+    "dependencyInvalid": "That order can't be set (the tasks would wait for each other).",
+    "meetingNoteTooLong": "Notes can be up to 2,000 characters.",
+    "milestoneInvalid": "Enter a name (up to 60 characters), a date and a percentage from 1 to 100.",
+    "milestoneLimit": "A class can have up to 20 milestones."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -431,7 +435,9 @@
     "stalled": "“{task}” hasn’t moved for {days} days. Even a little progress helps",
     "checkinDue": "Check-in day: share your progress with your team today",
     "pollVote": "A meeting poll is waiting for your answer",
-    "announcement": "Your teacher posted an announcement"
+    "announcement": "Your teacher posted an announcement",
+    "weeklyDigest": "A new week: check this week’s plan on your team board",
+    "teamInactive": "A team has been quiet for a week. See your class page"
   },
   "empty": {
     "findPod": "Find a team",
@@ -1439,5 +1445,36 @@
     "late": "{date} (overdue)",
     "addToCalendar": "Add to calendar",
     "todayLine": "The black line is today."
+  },
+  "planning": {
+    "orderHeading": "Task order",
+    "orderCount": "{count} set",
+    "orderWhy": "Set tasks that start only after another one is done. The board then shows \"Waiting for …\".",
+    "orderLine": "\"{after}\" comes after \"{before}\"",
+    "orderRemove": "Remove",
+    "orderAfterLabel": "This task",
+    "orderBeforeLabel": "starts after this one is done",
+    "orderNotAllowed": "This pair can't be set (same task, already set, or the tasks would wait for each other).",
+    "orderAdd": "Add order",
+    "waitingOn": "Waiting for: {titles}",
+    "notesHeading": "Meeting notes",
+    "notesLabel": "What was decided and what's next",
+    "notesHint": "Everyone on the team can read and edit this (up to {max} characters)",
+    "notesUpdated": "Updated by {name}, {when}",
+    "notesSave": "Save notes",
+    "notesSaved": "Saved",
+    "milestonesHeading": "Milestones",
+    "milestonesWhy": "Show teams checkpoints such as \"30% by 20 November\". Each team sees the next one on its board; here you see only how many teams reached each.",
+    "milestoneLine": "{percent}% by {date}",
+    "milestoneReached": "{reached}/{teams} teams reached",
+    "milestoneDelete": "Delete",
+    "milestoneTitleLabel": "Milestone name",
+    "milestoneTitleExample": "e.g. Outline ready",
+    "milestoneDueLabel": "Date",
+    "milestonePercentLabel": "Target (%)",
+    "milestoneAdd": "Add milestone",
+    "boardMilestone": "Teacher's milestone \"{title}\": {percent}% by {date}",
+    "boardMilestoneReached": "reached",
+    "boardMilestoneGap": "{gap} points to go"
   }
 }

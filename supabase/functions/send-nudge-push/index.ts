@@ -1,7 +1,7 @@
 // send-nudge-push: sends Web Pushes. A new nudge (0018), and the pushes the
 // database queues in push_events (0025: meeting reminders, stalled tasks;
 // 0033: check-in day; 0034: a meeting poll not yet answered; 0037: a
-// teacher's announcement).
+// teacher's announcement; 0038: the weekly digest and the team-inactive alert).
 //
 // Called only by our database (0018: the nudges trigger and pg_cron at
 // 07:00 JST; 0025: pg_cron with {"events": true}), never by a browser.
@@ -15,8 +15,8 @@
 import webpush from 'npm:web-push@3.6.7'
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.110.2'
 import { isQuietHours } from '../_shared/quiet-hours.ts'
-import { announcementText, checkinDueText, meetingReminderText, pollVoteText, pushText, stalledTaskText } from '../_shared/push-text.ts'
-import { meetingPath, projectPath } from '../_shared/push-path.ts'
+import { announcementText, checkinDueText, meetingReminderText, pollVoteText, pushText, stalledTaskText, teamInactiveText, weeklyDigestText } from '../_shared/push-text.ts'
+import { classPath, meetingPath, projectPath } from '../_shared/push-path.ts'
 import { verifySignature } from '../_shared/signature.ts'
 
 const MAX_NUDGE_AGE_MS = 10 * 60 * 1000 // a live call is for a nudge just sent
@@ -89,11 +89,12 @@ async function notify(db: SupabaseClient, toUserId: string, nudges: Sender[]) {
 type PushEvent = {
   id: string
   user_id: string
-  kind: 'meeting_reminder' | 'task_stalled' | 'checkin_due' | 'poll_vote_due' | 'announcement'
+  kind: 'meeting_reminder' | 'task_stalled' | 'checkin_due' | 'poll_vote_due' | 'announcement' | 'weekly_digest' | 'team_inactive'
   poll_id: string | null
   task_id: string | null
   project_id: string | null
   announcement_id: string | null
+  class_id: string | null
   needs_checkin: boolean
 }
 
@@ -197,6 +198,32 @@ async function sendEvents(db: SupabaseClient) {
         ...announcementText(locale),
         kind: 'announcement',
         path: projectPath(note.class_id),
+      }))
+    } else if (event.kind === 'weekly_digest' && event.project_id) {
+      // 0038: the project is still active.
+      const { data: project } = await db.from('projects').select('id, status').eq('id', event.project_id).maybeSingle()
+      if (!project || project.status !== 'active') continue
+      const classId = await classOfProject(db, project.id)
+      if (!classId) continue
+      await sendToUser(db, event.user_id, 'digest', (locale) => ({
+        ...weeklyDigestText(locale),
+        kind: 'weekly_digest',
+        path: projectPath(classId),
+      }))
+    } else if (event.kind === 'team_inactive' && event.class_id) {
+      // 0038: still this class's organizer.
+      const { count } = await db
+        .from('class_memberships')
+        .select('id', { count: 'exact', head: true })
+        .eq('class_id', event.class_id)
+        .eq('user_id', event.user_id)
+        .eq('role', 'organizer')
+      if ((count ?? 0) === 0) continue
+      const classId = event.class_id
+      await sendToUser(db, event.user_id, 'inactive', (locale) => ({
+        ...teamInactiveText(locale),
+        kind: 'team_inactive',
+        path: classPath(classId),
       }))
     } else if (event.kind === 'checkin_due' && event.project_id) {
       // 0033: still active, and they still haven't shared this round.
