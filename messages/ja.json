@@ -430,7 +430,8 @@
     "meetingCheckin": "打ち合わせは{when}からです。その前にチェックインしましょう",
     "stalled": "「{task}」が{days}日止まっています。少しだけでも進めてみませんか",
     "checkinDue": "今日はチェックインの日です。チームに進み具合を共有しましょう",
-    "pollVote": "打ち合わせの日程調整が、あなたの回答を待っています"
+    "pollVote": "打ち合わせの日程調整が、あなたの回答を待っています",
+    "announcement": "先生からお知らせが届きました"
   },
   "empty": {
     "findPod": "チームを探す",
@@ -1389,5 +1390,13 @@
     "announceSend": "お知らせする",
     "announceDelete": "このお知らせを消す",
     "fromTeacher": "先生からのお知らせ"
+  },
+  "teamName": {
+    "unnamed": "チーム名はまだありません",
+    "giveName": "チーム名をつける",
+    "rename": "名前を変える",
+    "label": "チーム名",
+    "save": "保存",
+    "cancel": "やめる"
   }
 }

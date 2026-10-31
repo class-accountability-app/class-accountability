@@ -430,7 +430,8 @@
     "meetingCheckin": "Your meeting starts {when}. Check in before then",
     "stalled": "“{task}” hasn’t moved for {days} days. Even a little progress helps",
     "checkinDue": "Check-in day: share your progress with your team today",
-    "pollVote": "A meeting poll is waiting for your answer"
+    "pollVote": "A meeting poll is waiting for your answer",
+    "announcement": "Your teacher posted an announcement"
   },
   "empty": {
     "findPod": "Find a team",
@@ -1389,5 +1390,13 @@
     "announceSend": "Post",
     "announceDelete": "Delete this announcement",
     "fromTeacher": "From your teacher"
+  },
+  "teamName": {
+    "unnamed": "No team name yet",
+    "giveName": "Name your team",
+    "rename": "Rename",
+    "label": "Team name",
+    "save": "Save",
+    "cancel": "Cancel"
   }
 }

@@ -21,6 +21,7 @@ import { TaskLog } from './task-log'
 import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
 import { ClassAnnouncements } from '@/components/class-announcements'
+import { TeamName } from '@/components/team/team-name'
 import { inviteFirst } from '@/lib/team-invite'
 import { TeamTable, type PresenceRow } from '@/components/team/team-table'
 import { TeamCodeForm } from '@/components/team/team-code-form'
@@ -106,6 +107,15 @@ export default async function ProjectPage({
   }
 
   const { project, members } = pod
+  // 0036: the team's name (errors before that migration: then not shown).
+  const { data: teamRow, error: teamNameError } = await supabase
+    .from('pairings')
+    .select('name')
+    .eq('id', pod.podId)
+    .maybeSingle<{ name: string | null }>()
+  const teamName = !teamNameError && teamRow ? (
+    <TeamName classId={classId} podId={pod.podId} name={teamRow.name} />
+  ) : null
   // チームに招待する (0028): the code and QR while there is room.
   const invite = members.length < 6 ? await loadTeamInvite(supabase, pod.podId) : null
   const inviteCard = invite && (
@@ -136,6 +146,7 @@ export default async function ProjectPage({
     return wrap(
       <>
         {header}
+        {teamName && <div className="-mt-7 px-0.5">{teamName}</div>}
         <div className="px-0.5">
           <h1 className="font-heading text-[26px] leading-7 font-bold text-ink">
             {past.length > 0 ? t('nextTitle') : t('startTitle')}
@@ -279,6 +290,7 @@ export default async function ProjectPage({
     <NudgeListProvider nudges={(nudgeRows as NudgeItem[] | null) ?? []}>
       <div className="px-0.5">
         <p className="font-meta text-[13px] leading-7 text-muted">{cls.name}</p>
+        {teamName}
         <h1 className="font-heading text-[26px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">{project.title}</h1>
         <p className="font-meta text-xs leading-7 text-muted">{dueLine}</p>
         <div className="flex h-7 items-center">
