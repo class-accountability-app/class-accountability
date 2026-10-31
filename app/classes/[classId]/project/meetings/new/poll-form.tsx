@@ -138,7 +138,7 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
               <label
                 key={d}
                 className={`inline-flex h-11 min-w-14 cursor-pointer items-center justify-center rounded-lg px-3.5 text-[15px] font-semibold has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent ${
-                  duration === d ? 'bg-ink text-surface' : 'bg-[#ffffff] text-ink shadow-[inset_0_0_0_1px_#747775]'
+                  duration === d ? 'bg-ink text-surface' : 'bg-surface text-ink shadow-[inset_0_0_0_1px_var(--outline)]'
                 }`}
               >
                 <input type="radio" name="duration" value={d} checked={duration === d} onChange={() => setDuration(d)} className="sr-only" />
@@ -223,7 +223,7 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
                                 ? 'bg-accent text-white'
                                 : past
                                   ? 'bg-transparent'
-                                  : 'bg-[#ffffff] shadow-[inset_0_0_0_1px_#c4c7c5] disabled:opacity-40'
+                                  : 'bg-surface shadow-[inset_0_0_0_1px_var(--border)] disabled:opacity-40'
                             }`}
                           >
                             {on ? '○' : ''}
@@ -247,7 +247,7 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
                   <button
                     type="button"
                     onClick={() => toggle(key)}
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-[#ffffff] px-3 text-sm text-ink shadow-[inset_0_0_0_1px_#747775]"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-surface px-3 text-sm text-ink shadow-[inset_0_0_0_1px_var(--outline)]"
                     aria-label={t('poll.removeTime', { when: slotLabel(key) })}
                   >
                     {slotLabel(key)} <span aria-hidden>✕</span>
@@ -289,7 +289,7 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
               <label
                 key={choice}
                 className={`inline-flex h-11 cursor-pointer items-center justify-center rounded-lg px-3.5 text-[15px] font-semibold has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent ${
-                  voteByChoice === choice ? 'bg-ink text-surface' : 'bg-[#ffffff] text-ink shadow-[inset_0_0_0_1px_#747775]'
+                  voteByChoice === choice ? 'bg-ink text-surface' : 'bg-surface text-ink shadow-[inset_0_0_0_1px_var(--outline)]'
                 }`}
               >
                 <input

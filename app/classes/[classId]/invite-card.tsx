@@ -80,7 +80,7 @@ export function InviteCard({
               readOnly
               value={shortUrl}
               onFocus={(e) => e.currentTarget.select()}
-              className="h-11 w-full min-w-0 rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 font-meta text-ink"
+              className="h-11 w-full min-w-0 rounded-lg border border-outline bg-surface px-3.5 font-meta text-ink"
             />
             <button
               type="button"
@@ -98,7 +98,7 @@ export function InviteCard({
             <div
               role="img"
               aria-label={t('qrLabel', { url: shortUrl })}
-              className="w-[134px] shrink-0 rounded-lg border border-border bg-[#ffffff] p-1 [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
+              className="w-[134px] shrink-0 rounded-lg border border-border bg-surface p-1 [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
               dangerouslySetInnerHTML={{ __html: qrSvg }}
             />
             <div className="flex flex-col gap-1.5">
@@ -183,7 +183,7 @@ function PresentDialog({
       ref={dialogRef}
       aria-labelledby={`${id}-title`}
       onClose={onClose}
-      className="m-0 h-dvh max-h-none w-dvw max-w-none bg-[#ffffff] p-0 text-ink backdrop:bg-ink/60"
+      className="m-0 h-dvh max-h-none w-dvw max-w-none bg-surface p-0 text-ink backdrop:bg-ink/60"
     >
       <div className="flex h-full w-full flex-col items-center justify-center gap-[2.5vh] px-6 py-6">
         <form method="dialog" className="absolute top-4 right-4">

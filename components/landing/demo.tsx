@@ -78,7 +78,7 @@ function Bar({ width, style }: { width: string; style?: CSSProperties }) {
 const button =
   'inline-flex h-[34px] shrink-0 items-center rounded-lg bg-accent px-3.5 text-[13px] font-semibold text-white shadow-[0_2px_0_rgba(58,47,34,0.35)]'
 const field =
-  'flex h-[34px] items-center rounded-lg border border-border bg-[#f0f4f9] px-3 text-[15px]'
+  'flex h-[34px] items-center rounded-lg border border-border bg-surface-container px-3 text-[15px]'
 
 export async function Demo() {
   const t = await getTranslations('landing.demo')
@@ -89,10 +89,10 @@ export async function Demo() {
       <figcaption className="sr-only">{t('description')}</figcaption>
 
       <div aria-hidden className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_1px_3px_rgba(0,0,0,0.12),0_6px_16px_2px_rgba(0,0,0,0.06)]">
-        <div className="flex h-[38px] items-center gap-1.5 border-b border-border bg-[#f0f4f9] px-3.5">
-          <span className="size-[9px] rounded-full border border-[#747775]" />
-          <span className="size-[9px] rounded-full border border-[#747775]" />
-          <span className="size-[9px] rounded-full border border-[#747775]" />
+        <div className="flex h-[38px] items-center gap-1.5 border-b border-border bg-surface-container px-3.5">
+          <span className="size-[9px] rounded-full border border-outline" />
+          <span className="size-[9px] rounded-full border border-outline" />
+          <span className="size-[9px] rounded-full border border-outline" />
           <span className="mr-10 grow text-center font-meta text-xs text-muted">{t('host')}</span>
         </div>
 
@@ -113,7 +113,7 @@ export async function Demo() {
                   {t('joinButton')}
                 </span>
                 <span
-                  className="col-start-1 row-start-1 self-center justify-self-center rounded-lg border-2 border-[#146c2e] px-2.5 py-0.5 font-meta text-sm font-bold text-[#146c2e]"
+                  className="col-start-1 row-start-1 self-center justify-self-center rounded-lg border-2 border-status-active px-2.5 py-0.5 font-meta text-sm font-bold text-status-active"
                   style={{ opacity: 0, ...loop('lp-joined', 0) }}
                 >
                   {t('joined')}
@@ -134,7 +134,7 @@ export async function Demo() {
               ].map(([name, anim]) => (
                 <div
                   key={anim}
-                  className="flex items-center gap-2.5 border-b border-dashed border-[#c4c7c5] py-2"
+                  className="flex items-center gap-2.5 border-b border-dashed border-border py-2"
                   style={{ opacity: 0, ...loop(anim, 1) }}
                 >
                   <Stamp />
@@ -202,7 +202,7 @@ export async function Demo() {
           <Scene index={3}>
             <Eyebrow>{t('progressHeading')}</Eyebrow>
             <div className="rounded-lg border border-border bg-surface px-3.5 py-1">
-              <div className="flex gap-2.5 border-b border-dashed border-[#c4c7c5] py-2.5">
+              <div className="flex gap-2.5 border-b border-dashed border-border py-2.5">
                 <Stamp style={loop('lp-stamp-late', 3)} />
                 <div className="grow">
                   <div className="flex items-baseline justify-between">
@@ -226,7 +226,7 @@ export async function Demo() {
                 [t('sato'), t('today'), '80%', t('amount1600'), false],
                 [t('tanaka'), t('daysAgo'), '10%', t('amount200'), true],
               ].map(([name, when, width, amount, stale]) => (
-                <div key={String(name)} className="flex gap-2.5 border-b border-dashed border-[#c4c7c5] py-2.5 last:border-b-0">
+                <div key={String(name)} className="flex gap-2.5 border-b border-dashed border-border py-2.5 last:border-b-0">
                   <Stamp stale={Boolean(stale)} />
                   <div className="grow">
                     <div className="flex items-baseline justify-between">
@@ -245,7 +245,7 @@ export async function Demo() {
           <Scene index={4}>
             <Eyebrow>{t('podHeadingShort')}</Eyebrow>
             <div className="rounded-lg border border-border bg-surface px-3.5 py-1">
-              <div className="flex gap-2.5 border-b border-dashed border-[#c4c7c5] py-2.5">
+              <div className="flex gap-2.5 border-b border-dashed border-border py-2.5">
                 <Stamp />
                 <div className="grow">
                   <div className="flex items-baseline justify-between">
@@ -272,7 +272,7 @@ export async function Demo() {
               </div>
             </div>
             <div
-              className="rounded-lg border border-border bg-[#f0f4f9] px-3.5 py-3"
+              className="rounded-lg border border-border bg-surface-container px-3.5 py-3"
               style={{ opacity: 0, ...loop('lp-note-late', 4) }}
             >
               <div className="font-meta text-[11px] text-muted">{t('nudgeEyebrow')}</div>

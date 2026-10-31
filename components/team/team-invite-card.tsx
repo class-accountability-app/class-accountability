@@ -74,7 +74,7 @@ export function TeamInviteCard({
       {small && <p className="text-[13px] leading-7 font-semibold text-ink">{t('smallTeam')}</p>}
       <p className="text-[13px] leading-7 text-muted">{t('body')}</p>
       <p className="sr-only">{t('messageLabel')}</p>
-      <p className="mt-1.5 rounded-lg bg-[#ffffff] px-3 py-1.5 text-[13px] leading-6 text-ink shadow-[inset_0_0_0_1px_#c4c7c5] [overflow-wrap:anywhere]">
+      <p className="mt-1.5 rounded-lg bg-surface px-3 py-1.5 text-[13px] leading-6 text-ink shadow-[inset_0_0_0_1px_var(--border)] [overflow-wrap:anywhere]">
         {message}
       </p>
       <div className="flex flex-wrap gap-2 pt-3.5">
@@ -99,7 +99,7 @@ export function TeamInviteCard({
         <div
           role="img"
           aria-label={t('qrLabel', { url: shortUrl })}
-          className="w-[126px] shrink-0 rounded-lg border border-border bg-[#ffffff] p-1 [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
+          className="w-[126px] shrink-0 rounded-lg border border-border bg-surface p-1 [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
           dangerouslySetInnerHTML={{ __html: qrSvg }}
         />
         <div className="flex min-w-0 flex-col">

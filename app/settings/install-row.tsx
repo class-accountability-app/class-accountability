@@ -31,7 +31,7 @@ export function InstallRow({ rowClass }: { rowClass: string }) {
 
   if (hint === null || hint === 'installed' || hint === 'none') return null
 
-  const row = `${rowClass} border-b border-dashed border-[#c4c7c5] text-ink text-left`
+  const row = `${rowClass} border-b border-dashed border-border text-ink text-left`
 
   if (hint === 'prompt') {
     return (
@@ -44,7 +44,7 @@ export function InstallRow({ rowClass }: { rowClass: string }) {
 
   // iPhone steps, or "open this in Safari / a browser first": both expand in place.
   return (
-    <div id={INSTALL_ROW_ID} className="scroll-mt-20 border-b border-dashed border-[#c4c7c5]">
+    <div id={INSTALL_ROW_ID} className="scroll-mt-20 border-b border-dashed border-border">
       <button
         type="button"
         aria-expanded={open}

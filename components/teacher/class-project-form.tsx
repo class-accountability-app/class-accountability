@@ -11,7 +11,7 @@ import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { saveClassProject } from '@/app/classes/[classId]/class-project-actions'
 
 const control =
-  'h-12 w-full min-w-0 rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 text-base text-ink placeholder:text-muted'
+  'h-12 w-full min-w-0 rounded-lg border border-outline bg-surface px-3.5 text-base text-ink placeholder:text-muted'
 
 const emptyRow = (): ClassProjectTaskRow => ({ title: '', metric: 'status', unit: '', target: '', daysBefore: '' })
 

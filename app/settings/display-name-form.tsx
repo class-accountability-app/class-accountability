@@ -53,7 +53,7 @@ export function DisplayNameForm({ currentName, emailNoteId }: { currentName: str
           autoComplete="nickname"
           defaultValue={currentName}
           onChange={() => setSaved(false)}
-          className="h-12 min-w-0 flex-1 rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 text-ink"
+          className="h-12 min-w-0 flex-1 rounded-lg border border-outline bg-surface px-3.5 text-ink"
           {...describedField(error, errorId, emailNoteId)}
         />
         <button

@@ -105,8 +105,8 @@ export function LinkForm({
         {options.map((option) => (
           <label
             key={option}
-            className={`flex cursor-pointer gap-3 rounded-lg bg-[#ffffff] p-3.5 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent ${
-              choice === option ? 'shadow-[inset_0_0_0_2px_var(--color-ink)]' : 'shadow-[inset_0_0_0_1px_#747775]'
+            className={`flex cursor-pointer gap-3 rounded-lg bg-surface p-3.5 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent ${
+              choice === option ? 'shadow-[inset_0_0_0_2px_var(--color-ink)]' : 'shadow-[inset_0_0_0_1px_var(--outline)]'
             }`}
           >
             <input
@@ -138,7 +138,7 @@ export function LinkForm({
             value={heading}
             onChange={(e) => setHeading(e.target.value)}
             disabled={!headings}
-            className="h-12 w-full rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 text-base text-ink disabled:opacity-60"
+            className="h-12 w-full rounded-lg border border-outline bg-surface px-3.5 text-base text-ink disabled:opacity-60"
           >
             {!headings && <option value="">{tCommon('working')}</option>}
             {headings?.map((h) => (
