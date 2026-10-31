@@ -43,19 +43,12 @@ function SectionHeading({ id, children }: { id?: string; children: ReactNode }) 
 
 function StepNumber({ n }: { n: string }) {
   return (
-    <span className="inline-flex size-[42px] -rotate-[8deg] items-center justify-center rounded-full border-[1.5px] border-accent-text font-meta text-[15px] text-accent-text">
+    <span className="inline-flex size-[42px] items-center justify-center rounded-full border-[1.5px] border-accent-text font-meta text-[15px] text-accent-text">
       {n}
     </span>
   )
 }
 
-function ComingSoon({ children }: { children: ReactNode }) {
-  return (
-    <span className="inline-block -rotate-3 rounded-lg border border-accent-text px-2.5 py-1 font-meta text-xs text-accent-text">
-      {children}
-    </span>
-  )
-}
 
 export async function Landing({ accountDeleted = false }: { accountDeleted?: boolean }) {
   const [t, locale] = await Promise.all([getTranslations('landing'), getLocale()])
@@ -78,10 +71,6 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
         aria-labelledby="landing-title"
         className="relative mx-auto grid w-full max-w-[1440px] grid-cols-[minmax(0,1fr)] gap-10 px-5 pt-12 pb-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-[72px] lg:px-[120px] lg:pt-[104px] lg:pb-28"
       >
-        <svg aria-hidden width="190" height="190" viewBox="0 0 190 190" fill="none" className="absolute top-[30px] right-9 hidden lg:block">
-          <circle cx="95" cy="95" r="74" stroke="rgba(150,105,55,0.18)" strokeWidth="8" />
-          <circle cx="98" cy="92" r="67" stroke="rgba(150,105,55,0.10)" strokeWidth="3" />
-        </svg>
         <div>
           <p className="mb-4 font-meta text-[13px] tracking-[0.04em] text-muted lg:mb-5 lg:text-sm" style={rise(0.1)}>
             {t('hero.eyebrow')}
@@ -92,21 +81,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
             {t('hero.titleLine2')}
             {/* Japanese breaks before the last line; English flows on, as in the design. */}
             {locale === 'ja' ? <br /> : ' '}
-            <span className="relative inline-block">
-              {t('hero.titleLine3')}
-              <svg aria-hidden viewBox="0 0 300 16" preserveAspectRatio="none" className="absolute -bottom-1 left-0 h-3.5 w-full overflow-visible">
-                <path
-                  className="lp-draw"
-                  d="M3 10 C 60 3, 120 14, 180 7 S 270 5, 297 9"
-                  fill="none"
-                  stroke="#0b57d0"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  pathLength={1}
-                  style={draw(0.9, 0.9)}
-                />
-              </svg>
-            </span>
+            <span className="text-accent-text">{t('hero.titleLine3')}</span>
           </h1>
           <p className={`mt-6 max-w-[560px] text-base leading-[1.9] lg:mt-7 lg:text-lg ${body}`} style={rise(0.35)}>
             {t('hero.body')}
@@ -115,13 +90,6 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
             <Link href="/login" className={`${primaryCta} w-full lg:w-auto`}>
               {t('hero.cta')}
             </Link>
-            <span aria-hidden className="hidden -rotate-[5deg] items-center gap-1 text-lg font-semibold whitespace-nowrap text-muted lg:inline-flex">
-              <svg width="40" height="22" viewBox="0 0 40 22" fill="none" stroke="#444746" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M38 15 C 28 4, 14 4, 4 12" />
-                <path d="M4 12 L 11 5 M4 12 L 12 15" />
-              </svg>
-              {t('hero.note')}
-            </span>
             <a href="#how" className="inline-flex min-h-11 items-center self-center font-semibold whitespace-nowrap text-accent-text underline underline-offset-4 lg:ml-3 lg:self-auto">
               {t('hero.how')}
             </a>
@@ -171,9 +139,9 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
                 ['72%', '0s'],
                 ['40%', '0.8s'],
               ].map(([w, d]) => (
-                <div key={d} className="h-2 overflow-hidden rounded-lg bg-border">
+                <div key={d} className="h-2 overflow-hidden rounded-full bg-primary-container">
                   <div
-                    className="h-full origin-left bg-ink"
+                    className="h-full origin-left rounded-full bg-accent"
                     style={{ width: w, animation: `lp-loopbar 3.2s ease-in-out ${d} infinite alternate` }}
                   />
                 </div>
@@ -184,7 +152,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
             <div className="flex h-16 items-center gap-7">
               <span className="flex items-center gap-2.5">
                 <span
-                  className="inline-flex size-7 -rotate-[7deg] items-center justify-center rounded-full border-[1.5px] border-[#146c2e]"
+                  className="inline-flex size-7 items-center justify-center rounded-full border-[1.5px] border-[#146c2e]"
                   style={{ animation: 'lp-restamp 4.5s cubic-bezier(.2,1.4,.4,1) 0.5s infinite both' }}
                 >
                   <span className="size-[9px] rounded-full bg-[#146c2e]" />
@@ -192,7 +160,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
                 <span className={`font-meta text-[13px] ${body}`}>{t('features.activeLabel')}</span>
               </span>
               <span className="flex items-center gap-2.5">
-                <span className="inline-flex size-7 -rotate-[7deg] items-center justify-center rounded-full border-[1.5px] border-status-stale">
+                <span className="inline-flex size-7 items-center justify-center rounded-full border-[1.5px] border-status-stale">
                   <span className="size-[9px] rounded-full bg-status-stale" />
                 </span>
                 <span className={`font-meta text-[13px] ${body}`}>{t('features.staleLabel')}</span>
@@ -203,7 +171,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
             <div className="flex h-16 items-center">
               <div
                 className="rounded-lg border border-border bg-[#f0f4f9] px-3.5 py-2.5 text-sm"
-                style={{ animation: 'lp-wiggle 3.2s ease-in-out infinite' }}
+                
               >
                 {t('features.nudgeSample')}
               </div>
@@ -227,7 +195,6 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
               </svg>
               <span className="font-meta text-[15px]">{t('features.docsCount')}</span>
               <span className="ml-auto">
-                <ComingSoon>{t('features.comingSoon')}</ComingSoon>
               </span>
             </div>
           </Feature>
@@ -242,7 +209,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
           <DataCard
             title={t('data.sharedTitle')}
             stamp={t('data.sharedStamp')}
-            stampClass="-rotate-6 border-[#146c2e] text-[#146c2e]"
+            stampClass="border-[#146c2e] text-[#146c2e]"
             stampAnimation="lp-box-l 0.5s cubic-bezier(.2,1.4,.4,1) 0.9s both"
             items={[t('data.shared1'), t('data.shared2'), t('data.shared3'), t('data.shared4')]}
             delay={0.3}
@@ -250,7 +217,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
           <DataCard
             title={t('data.privateTitle')}
             stamp={t('data.privateStamp')}
-            stampClass="rotate-[8deg] border-accent-text text-accent-text"
+            stampClass="border-accent-text text-accent-text"
             stampAnimation="lp-box 0.5s cubic-bezier(.2,1.4,.4,1) 1.1s both"
             items={[t('data.private1'), t('data.private2'), t('data.private3')]}
             delay={0.45}
@@ -283,7 +250,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
               <div className="flex h-11 min-w-0 grow items-center overflow-hidden rounded-lg border border-border bg-[#f0f4f9] px-3 font-meta text-sm whitespace-nowrap">
                 {t('classLink.link')}
               </div>
-              <span className="inline-flex h-11 shrink-0 items-center rounded-lg border border-ink bg-surface px-4 text-sm font-semibold shadow-[0_2px_0_rgba(58,47,34,0.25)]">
+              <span className="inline-flex h-11 shrink-0 items-center rounded-full border border-outline bg-surface px-5 text-sm font-medium text-accent-text">
                 {t('classLink.copy')}
               </span>
             </div>
@@ -294,8 +261,8 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
             <div className="flex flex-wrap items-center gap-4 lg:gap-[18px]">
               <ExampleQr />
               <div className="flex flex-col items-start gap-3">
-                <p className="max-w-[12em] -rotate-3 text-[15px] leading-[1.6] font-semibold text-muted">{t('classLink.qrNote')}</p>
-                <span className="inline-flex h-11 items-center rounded-lg border border-ink bg-surface px-4 text-sm font-semibold shadow-[0_2px_0_rgba(58,47,34,0.25)]">
+                <p className="max-w-[12em] text-[15px] leading-[1.6] font-semibold text-muted">{t('classLink.qrNote')}</p>
+                <span className="inline-flex h-11 items-center rounded-full border border-outline bg-surface px-5 text-sm font-medium text-accent-text">
                   {t('classLink.present')}
                 </span>
               </div>
@@ -342,7 +309,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
       >
         <svg aria-hidden width="170" height="80" viewBox="0 0 170 80" fill="none" className="absolute -top-9 right-12 hidden overflow-visible lg:block">
           <path d="M4 74 C 40 78, 58 42, 94 50 S 132 52, 144 28" stroke="#444746" strokeWidth="1.5" strokeDasharray="4 6" strokeLinecap="round" />
-          <g style={{ transformBox: 'fill-box', transformOrigin: 'center', animation: 'lp-float 3.2s ease-in-out infinite' }}>
+          <g style={{ transformBox: 'fill-box', transformOrigin: 'center', animation: 'none' }}>
             <path d="M140 24 L168 8 L156 34 L150 26 Z" stroke="#1f1f1f" strokeWidth="1.5" strokeLinejoin="round" fill="#ffffff" />
             <path d="M150 26 L168 8" stroke="#1f1f1f" strokeWidth="1.5" />
           </g>

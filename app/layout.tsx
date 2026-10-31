@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Roboto, Noto_Sans_JP } from 'next/font/google'
+import { Roboto } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
@@ -12,20 +12,15 @@ import { PushSync } from '@/components/push'
 import { PresencePing } from '@/components/presence'
 import './globals.css'
 
-// Material 3 (item H): Google's own faces. Roboto for Latin; Japanese
-// characters fall through to Noto Sans JP. With preload: false nothing is
-// preloaded, so `subsets` has no effect (and next/font rejects 'japanese');
-// the browser downloads only the unicode-range blocks a page needs.
+// Material 3 (item H): Roboto for Latin, loaded by next/font. Japanese uses
+// the phone's own system font (Hiragino Sans on iPhone, Noto Sans CJK on
+// Android, which is Material's own Japanese face), listed in globals.css.
+// A downloaded Noto Sans JP meant hundreds of files fetched at build time and
+// broke CI twice when one failed; system fonts also load instantly.
 const roboto = Roboto({
   variable: '--font-roboto',
   subsets: ['latin'],
   weight: ['400', '500', '700'],
-})
-
-const notoSansJp = Noto_Sans_JP({
-  variable: '--font-noto-sans-jp',
-  weight: ['400', '500', '700'],
-  preload: false,
 })
 
 // Everything behind the login is noindex; the landing page (/) and the
@@ -84,7 +79,7 @@ export default async function RootLayout({
     : { data: null }
   const classIds = (memberships ?? []).map((m) => m.class_id)
 
-  const fontVariables = [roboto, notoSansJp]
+  const fontVariables = [roboto]
     .map((font) => font.variable)
     .join(' ')
 
