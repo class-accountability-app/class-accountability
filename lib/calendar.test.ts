@@ -21,6 +21,11 @@ describe('calendar', () => {
     expect(url.searchParams.get('dates')).toBe('20261130/20261201')
   })
 
+  it('escapes semicolons, commas and backslashes in the title', () => {
+    const ics = icsFile({ ...meeting, title: 'a;b,c\\d' }, 'x', new Date('2026-11-01T00:00:00Z'))
+    expect(ics).toContain('SUMMARY:a\\;b\\,c\\\\d\r\n')
+  })
+
   it('writes a valid, escaped .ics', () => {
     const ics = icsFile(meeting, 'abc', new Date('2026-11-01T00:00:00Z'))
     expect(ics).toContain('DTSTART:20261105T073000Z\r\n')

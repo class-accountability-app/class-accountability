@@ -26,7 +26,7 @@ export function googleCalendarUrl(e: CalendarEvent): string {
 }
 
 // RFC 5545 text: escape \ ; , and newlines.
-const esc = (s: string) => s.replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n')
+const esc = (s: string) => s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n')
 
 export function icsFile(e: CalendarEvent, uid: string, now: Date = new Date()): string {
   const when =
