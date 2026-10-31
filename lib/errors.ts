@@ -54,6 +54,10 @@ const PROJECT_FINISHED = 'SP016'
 // Raised by organizer_create_team / organizer_auto_split (0036): a team needs
 // at least one student, and auto-split takes a size of 2–6.
 const TEAM_SETUP_INVALID = 'SP017'
+// Raised in 0038_planning_tools.sql: a task can't wait on a task in another
+// project or on one that (through others) waits on it; a class has at most 20
+// milestones. Call sites give it the right key for their context.
+const PLANNING_INVALID = 'SP018'
 
 export const DB_CODES = {
   uniqueViolation: PG_UNIQUE_VIOLATION,
@@ -76,6 +80,7 @@ export const DB_CODES = {
   teamCodeUnknown: TEAM_CODE_UNKNOWN,
   projectFinished: PROJECT_FINISHED,
   teamSetupInvalid: TEAM_SETUP_INVALID,
+  planningInvalid: PLANNING_INVALID,
 } as const
 
 const EMAIL_PATTERN = /[^\s"'<>(),;:]+@[^\s"'<>(),;:]+/g

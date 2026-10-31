@@ -22,6 +22,8 @@ import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
 import { ClassAnnouncements } from '@/components/class-announcements'
 import { TaskTimeline } from '@/components/project/task-timeline'
+import { TaskOrder } from '@/components/project/task-order'
+import { nextMilestone, waitingOn, type Dependency, type Milestone } from '@/lib/planning'
 import { imbalance, openLoads } from '@/lib/team-balance'
 import { appOrigin } from '@/lib/app-origin'
 import { tokyoToday } from '@/lib/date'
@@ -273,7 +275,7 @@ export default async function ProjectPage({
   const linkHref = (taskId: string) => `${boardPath}/tasks/${taskId}/link`
 
   // 声かけ in this team that I sent or received (RLS shows nothing else).
-  const [{ data: nudgeRows }, tNudges, { data: presenceRows }] = await Promise.all([
+  const [{ data: nudgeRows }, tNudges, { data: presenceRows }, { data: depRows }, { data: milestoneRows }, tPlanning] = await Promise.all([
     supabase
       .from('nudges')
       .select('id, from_user_id, to_user_id, content, created_at')
@@ -284,7 +286,15 @@ export default async function ProjectPage({
     getTranslations('nudges'),
     // チームのようす (0035). Before that migration this errors: no table then.
     supabase.rpc('team_presence', { p_pod: pod.podId }),
+    // 0038: task order and the teacher's milestones (both error before it).
+    tasks.length > 0
+      ? supabase.from('task_dependencies').select('task_id, depends_on').in('task_id', tasks.map((x) => x.id))
+      : Promise.resolve({ data: [] as Dependency[] }),
+    supabase.from('class_milestones').select('id, title, due, target_percent').eq('class_id', classId),
+    getTranslations('planning'),
   ])
+  const deps = (depRows as Dependency[] | null) ?? null
+  const milestone = nextMilestone((milestoneRows as Milestone[] | null) ?? [], percent, tokyoToday())
   // Feature batch 1: a gentle hint when open tasks are very unevenly shared.
   const balance = imbalance(openLoads(members.map((m) => m.id), tasks))
   const teamRows = members.map((m) => {
@@ -303,6 +313,16 @@ export default async function ProjectPage({
           <ProgressBar value={percent} max={100} valueText={t('overall', { percent })} />
         </div>
         <p className="text-[13px] leading-7 text-muted">{t('overall', { percent })}</p>
+        {milestone && (
+          <p className={`text-[13px] leading-7 ${milestone.reached ? 'text-status-active' : 'text-muted'}`}>
+            {tPlanning('boardMilestone', {
+              title: milestone.milestone.title,
+              date: formatDate(milestone.milestone.due, locale),
+              percent: milestone.milestone.target_percent,
+            })}{' '}
+            · {milestone.reached ? tPlanning('boardMilestoneReached') : tPlanning('boardMilestoneGap', { gap: milestone.gap })}
+          </p>
+        )}
       </div>
 
       <ClassAnnouncements classId={classId} />
@@ -438,6 +458,10 @@ export default async function ProjectPage({
         boardUrl={`${await appOrigin()}/classes/${classId}/project`}
       />
 
+      {deps && tasks.length >= 2 && (
+        <TaskOrder classId={classId} tasks={tasks.map((x) => ({ id: x.id, title: x.title }))} deps={deps} />
+      )}
+
       <section aria-labelledby="members-heading" className="flex flex-col gap-7">
         <div className="-mb-7 flex items-start justify-between gap-3 px-0.5">
           <div className="min-w-0">
@@ -484,6 +508,7 @@ export default async function ProjectPage({
                   {group.tasks.map((task) => {
                     const value = valueText(task)
                     const overdue = isOverdue(task, now)
+                    const waits = deps && task.status !== 'done' ? waitingOn(task.id, deps, tasks) : []
                     return (
                       <li key={task.id} className="flex flex-col border-b border-dashed border-border py-0 last:border-b-0">
                         <div className="flex min-h-7 items-center justify-between gap-2.5">
@@ -497,6 +522,11 @@ export default async function ProjectPage({
                           )}
                         </div>
                         {value && <p className="text-[13px] leading-7 text-muted">{value}</p>}
+                        {waits.length > 0 && (
+                          <p className="text-[13px] leading-7 text-muted [overflow-wrap:anywhere]">
+                            {tPlanning('waitingOn', { titles: waits.map((w) => w.title).join(tCommon('listSeparator')) })}
+                          </p>
+                        )}
                         {value && task.targetAmount !== null && (
                           <div className="flex h-7 items-center">
                             <ProgressBar value={task.shown.total ?? 0} max={task.targetAmount} valueText={value} />

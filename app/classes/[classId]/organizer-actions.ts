@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { DB_CODES, toErrorKey, type ActionResult } from '@/lib/errors'
 import { ANNOUNCEMENT_MAX, TEAM_NAME_MAX, isAutoSplitSize } from '@/lib/organizer'
+import { isMilestoneInput } from '@/lib/planning'
 
 // The organizer's team tools (0036). The database checks that the caller is
 // this class's organizer and keeps every team rule (students only, one team
@@ -80,6 +81,29 @@ export async function deleteAnnouncement(classId: string, id: string): Promise<A
   const supabase = await createClient()
   const { error } = await supabase.rpc('delete_class_announcement', { p_id: id })
   if (error) return { error: toErrorKey('deleteAnnouncement', error, TEAM_ERRORS) }
+  refresh(classId)
+  return { error: null }
+}
+
+// 目安 (0038): the organizer's checkpoints for every team in the class.
+export async function addMilestone(classId: string, title: string, due: string, percent: number): Promise<ActionResult> {
+  if (!isMilestoneInput(title, due, percent)) return { error: 'milestoneInvalid' }
+  const supabase = await createClient()
+  const { error } = await supabase.rpc('add_class_milestone', {
+    p_class: classId,
+    p_title: title.trim(),
+    p_due: due,
+    p_percent: percent,
+  })
+  if (error) return { error: toErrorKey('addMilestone', error, { [DB_CODES.planningInvalid]: 'milestoneLimit', [DB_CODES.insufficientPrivilege]: 'notAllowed' }) }
+  refresh(classId)
+  return { error: null }
+}
+
+export async function deleteMilestone(classId: string, id: string): Promise<ActionResult> {
+  const supabase = await createClient()
+  const { error } = await supabase.rpc('delete_class_milestone', { p_id: id })
+  if (error) return { error: toErrorKey('deleteMilestone', error, TEAM_ERRORS) }
   refresh(classId)
   return { error: null }
 }

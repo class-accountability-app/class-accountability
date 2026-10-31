@@ -6,7 +6,7 @@
 -- 1. Auto-done: when Google counting (source 'google_docs') brings a counted
 --    task with a goal to its goal, the task becomes 'done'.
 -- 2. task_dependencies: "this task waits on that one", within one project.
---    The team reads and writes them; no loops of two, no self-links.
+--    The team reads and writes them; no loops (of any length), no self-links.
 -- 3. meeting_notes: one shared note per meeting (decisions, next steps), up to
 --    2,000 characters. The team reads and writes it.
 -- 4. Weekly digest push (kind 'weekly_digest'): Monday 09:15 JST to members of
@@ -85,7 +85,15 @@ begin
      is distinct from (select project_id from project_tasks where id = new.depends_on) then
     raise exception 'tasks are in different projects' using errcode = 'SP018';
   end if;
-  if exists (select 1 from task_dependencies where task_id = new.depends_on and depends_on = new.task_id) then
+  -- Any loop: following "waits for" from depends_on must never reach task_id.
+  if exists (
+    with recursive chain(id) as (
+      select new.depends_on
+      union
+      select d.depends_on from task_dependencies d join chain c on d.task_id = c.id
+    )
+    select 1 from chain where id = new.task_id
+  ) then
     raise exception 'that would be a loop' using errcode = 'SP018';
   end if;
   return new;
@@ -132,6 +140,22 @@ create policy "team edits meeting notes"
   on public.meeting_notes for update to authenticated
   using ( public.is_poll_member(poll_id) )
   with check ( public.is_poll_member(poll_id) and updated_by = auth.uid() );
+
+-- The server's clock, never the browser's.
+create or replace function public.stamp_meeting_note()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  new.updated_at := now();
+  return new;
+end;
+$$;
+revoke execute on function public.stamp_meeting_note() from public, anon, authenticated;
+create trigger meeting_notes_stamp
+  before insert or update on public.meeting_notes
+  for each row execute function public.stamp_meeting_note();
 
 revoke all on public.meeting_notes from public, anon, authenticated;
 grant select, insert, update (body, updated_by, updated_at) on public.meeting_notes to authenticated;

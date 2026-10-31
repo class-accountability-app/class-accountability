@@ -1,6 +1,7 @@
 import { TeamSummary } from '@/components/teacher/team-summary'
 import { TeamManager } from '@/components/teacher/team-manager'
 import { AnnouncementManager, type Announcement } from '@/components/teacher/announcement-manager'
+import { MilestoneManager, type MilestoneStatus } from '@/components/teacher/milestone-manager'
 import { ClassAnnouncements } from '@/components/class-announcements'
 import type { RosterRow } from '@/lib/organizer'
 import { ClassProjectForm } from '@/components/teacher/class-project-form'
@@ -99,7 +100,13 @@ export default async function ClassPodsPage({
   // have joined. Since 0036 they also see students' names and teams and run
   // the teams (チームの管理, お知らせ); never progress, tasks or text.
   if (membership.role === 'organizer') {
-    const [{ data: byCode }, { data: classProject }, { data: rosterRows, error: rosterError }, { data: announcementRows }] = await Promise.all([
+    const [
+      { data: byCode },
+      { data: classProject },
+      { data: rosterRows, error: rosterError },
+      { data: announcementRows },
+      { data: milestoneRows, error: milestoneError },
+    ] = await Promise.all([
       supabase.rpc('class_by_join_code', { code: cls.join_code }).maybeSingle<{ member_count: number }>(),
       supabase
         .from('class_projects')
@@ -114,6 +121,8 @@ export default async function ClassPodsPage({
         .eq('class_id', classId)
         .order('created_at', { ascending: false })
         .limit(20),
+      // 0038: milestones with how many teams reached each (errors before it).
+      supabase.rpc('class_milestone_status', { p_class: classId }),
     ])
     return (
       <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12 sm:items-start sm:pl-16">
@@ -131,6 +140,9 @@ export default async function ClassPodsPage({
             <TeamManager classId={classId} roster={rosterRows as RosterRow[]} />
             <AnnouncementManager classId={classId} announcements={(announcementRows as Announcement[] | null) ?? []} />
           </>
+        )}
+        {!milestoneError && milestoneRows && (
+          <MilestoneManager classId={classId} milestones={milestoneRows as MilestoneStatus[]} />
         )}
         <ClassProjectForm
           classId={classId}

@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
 import { createClient } from '@/lib/supabase/server'
-import { tokyoToday } from '@/lib/date'
+import { formatDateTime, tokyoToday } from '@/lib/date'
 import { bestOption, tallyOptions, type PollAnswer } from '@/lib/meeting-poll'
 import { latestCheckins, type CheckinRow } from '@/lib/project-board'
 import { missingCheckins, roundStartFor } from '@/lib/checkin'
@@ -13,6 +13,7 @@ import { chosenStart, formatMeeting, formatSlot, loadPolls } from '../load'
 import { googleCalendarUrl } from '@/lib/calendar'
 import { appOrigin } from '@/lib/app-origin'
 import { CancelPoll, ConfirmPoll, VoteGrid } from './poll-controls'
+import { MeetingNotes } from '@/components/project/meeting-notes'
 
 // One poll. Open: the vote grid (mockup "vote") and 〜にきめる. Confirmed: the
 // meeting (mockup "meeting") with each member's latest check-in as the agenda.
@@ -71,10 +72,19 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
 
   if (poll.status === 'confirmed') {
     const start = chosenStart(poll)!
-    const { data: checkinRows } = await supabase
-      .from('project_checkins')
-      .select('user_id, round_start, created_at, snapshot, note')
-      .eq('project_id', project.id)
+    const [{ data: checkinRows }, { data: note, error: noteError }, tPlanning] = await Promise.all([
+      supabase
+        .from('project_checkins')
+        .select('user_id, round_start, created_at, snapshot, note')
+        .eq('project_id', project.id),
+      // 0038: the meeting's shared note (errors before that migration: hidden).
+      supabase
+        .from('meeting_notes')
+        .select('body, updated_by, updated_at')
+        .eq('poll_id', poll.id)
+        .maybeSingle<{ body: string; updated_by: string | null; updated_at: string }>(),
+      getTranslations('planning'),
+    ])
     const rows = checkinRows ?? []
     const latest = latestCheckins(
       rows.map((r): CheckinRow => ({ userId: r.user_id, roundStart: r.round_start, createdAt: r.created_at, snapshot: r.snapshot }))
@@ -150,6 +160,21 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
           >
             {t('meeting.checkinFirst')}
           </Link>
+        )}
+        {!noteError && (
+          <MeetingNotes
+            classId={classId}
+            pollId={poll.id}
+            initial={note?.body ?? ''}
+            updatedLine={
+              note
+                ? tPlanning('notesUpdated', {
+                    name: note.updated_by ? displayName(note.updated_by) : tCommon('unknownPerson'),
+                    when: formatDateTime(note.updated_at, locale),
+                  })
+                : null
+            }
+          />
         )}
         <CancelPoll classId={classId} pollId={poll.id} label={t('meeting.cancel')} />
       </>

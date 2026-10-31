@@ -353,7 +353,11 @@
     "teamSetupInvalid": "チームには学生を1人以上入れてください。自動で分けるときは2〜6人です。",
     "teamNameTooLong": "チーム名は30文字までです。",
     "announcementRequired": "お知らせの内容を入力してください。",
-    "announcementTooLong": "お知らせは500文字までです。"
+    "announcementTooLong": "お知らせは500文字までです。",
+    "dependencyInvalid": "その順番は設定できません（同じタスクどうしが待ち合ってしまいます）。",
+    "meetingNoteTooLong": "メモは2,000文字までです。",
+    "milestoneInvalid": "目安の名前（60文字まで）、日付、1〜100の％を入力してください。",
+    "milestoneLimit": "目安は1クラス20件までです。"
   },
   "welcome": {
     "eyebrow": "ようこそ",
@@ -1414,5 +1418,36 @@
     "late": "{date}（期限切れ）",
     "addToCalendar": "カレンダーに追加",
     "todayLine": "黒い線が今日です。"
+  },
+  "planning": {
+    "orderHeading": "タスクの順番",
+    "orderCount": "{count}件",
+    "orderWhy": "前のタスクが終わってから始めるタスクを設定できます。ボードに「〜を待っています」と出ます。",
+    "orderLine": "「{after}」は「{before}」のあと",
+    "orderRemove": "外す",
+    "orderAfterLabel": "このタスクは",
+    "orderBeforeLabel": "このタスクが終わってから始める",
+    "orderNotAllowed": "この組み合わせは設定できません（同じタスク、設定済み、または待ち合いになります）。",
+    "orderAdd": "順番を追加する",
+    "waitingOn": "待っています：{titles}",
+    "notesHeading": "打ち合わせのメモ",
+    "notesLabel": "決まったこと・次にやること",
+    "notesHint": "チーム全員が読めて、書き直せます（{max}文字まで）",
+    "notesUpdated": "{name}が{when}に更新",
+    "notesSave": "メモを保存する",
+    "notesSaved": "保存しました",
+    "milestonesHeading": "目安",
+    "milestonesWhy": "「11月20日までに30%」のような目安をチームに見せられます。各チームのボードに次の目安が出ます。ここでは達成したチームの数だけがわかります。",
+    "milestoneLine": "{date}までに{percent}%",
+    "milestoneReached": "{reached}/{teams}チームが達成",
+    "milestoneDelete": "消す",
+    "milestoneTitleLabel": "目安の名前",
+    "milestoneTitleExample": "例：構成ができている",
+    "milestoneDueLabel": "日付",
+    "milestonePercentLabel": "目標（%）",
+    "milestoneAdd": "目安を追加する",
+    "boardMilestone": "先生の目安「{title}」：{date}までに{percent}%",
+    "boardMilestoneReached": "達成しています",
+    "boardMilestoneGap": "あと{gap}ポイント"
   }
 }
