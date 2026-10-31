@@ -115,6 +115,8 @@ Task templates (no migration): `lib/project-templates.ts` holds 8 templates in j
 
 Board tools (feature batch 1, K1; no migration): the re-balance hint (`lib/team-balance.ts`: open tasks per member, shown when the gap is 3 or more), タイムライン (`components/project/task-timeline.tsx` + `lib/timeline.ts`: bars from the project's start to each due day, late in `--error`), "add to calendar" (`lib/calendar.ts`: Google Calendar link and RFC 5545 .ics; a confirmed meeting's .ics is `meetings/[pollId]/calendar`, readable only through RLS), check-in starter prompts, and a manifest shortcut to the board. All pure helpers are tested.
 
+Project wrap-up (feature batch 1, K2; no migration): finished projects in the board's history link to `project/history/[projectId]` (まとめ: tasks with owners, final numbers through `project_task_totals`, each member's done/owned tasks and check-in count; RLS shows it to the team only). 「このタスクで新しいプロジェクトを始める」 (`copyProject`) starts a new active project with the same title, check-in rhythm and tasks, without owners, dates or progress. The organizer's team summary downloads as CSV from `/classes/[classId]/team-summary` (`lib/csv.ts`: BOM for Excel, formula cells neutralised; no names, rows only for the organizer).
+
 ## Writing editor (Prompt 12)
 
 - Route `app/classes/[classId]/project/tasks/[taskId]/write/` (moved from targets in 0030; Tiptap 3, all `@tiptap/*` pinned to one exact version) and `…/write/print` (the PDF view). The plan of record is `docs/plans/prompt12-editor-plan.md`.

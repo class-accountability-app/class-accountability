@@ -129,6 +129,45 @@ export async function addTemplateTasks(classId: string, projectId: string, templ
   return { error: null }
 }
 
+// まとめ → 「このタスクで新しいプロジェクトを始める」 (feature batch 1): a new
+// active project with the same title and check-in rhythm and the finished
+// one's tasks, without owners, due dates, progress or status. Only while the
+// team has no active project (0033 allows one at a time).
+export async function copyProject(classId: string, fromProjectId: string): Promise<ActionResult> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'signedOut' }
+
+  const { data: from } = await supabase
+    .from('projects')
+    .select('id, title, checkin_every_days, pairing_id, status')
+    .eq('id', fromProjectId)
+    .maybeSingle()
+  if (!from || from.status !== 'done') return { error: 'notAllowed' }
+
+  const { data: project, error } = await supabase
+    .from('projects')
+    .insert({ pairing_id: from.pairing_id, title: from.title, checkin_every_days: from.checkin_every_days, created_by: user.id })
+    .select('id')
+    .single()
+  if (error) return { error: toErrorKey('copyProject', error, { [DB_CODES.uniqueViolation]: 'projectExists' }) }
+
+  const { data: tasks } = await supabase
+    .from('project_tasks')
+    .select('title, metric, unit, target_amount, position')
+    .eq('project_id', fromProjectId)
+    .order('position')
+  if (tasks && tasks.length > 0) {
+    const { error: taskError } = await supabase.from('project_tasks').insert(tasks.map((x) => ({ ...x, project_id: project.id })))
+    if (taskError) toErrorKey('copyProject.tasks', taskError)
+  }
+
+  refresh(classId)
+  return { error: null }
+}
+
 export async function addTask(classId: string, projectId: string, formData: FormData): Promise<ActionResult> {
   const supabase = await createClient()
   const {
