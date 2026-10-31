@@ -113,6 +113,8 @@ Task templates (no migration): `lib/project-templates.ts` holds 8 templates in j
 
 0037 (announcement push; needs 0036): `push_events.kind` `announcement` (+ `announcement_id`, cascades with the announcement). Trigger `class_announcements_push` queues one push per student of the class and calls `private.send_push_events()`; a failure only warns, so posting never fails. The push says only 「先生からお知らせが届きました」 and opens the board. `send-nudge-push` selects `*` from `push_events` so it can be deployed before a migration adds a column (v8 deployed 2026-10-31). Team names on the student board: `components/team/team-name.tsx` (shown once `pairings.name` exists; any member renames through `rename_team`). Test: `rls_announcement_push.sql`; `dry36_37.sql` runs 0036 + 0037 with both tests.
 
+Project wrap-up (feature batch 1, K2; no migration): finished projects in the board's history link to `project/history/[projectId]` (まとめ: tasks with owners, final numbers through `project_task_totals`, each member's done/owned tasks and check-in count; RLS shows it to the team only). 「このタスクで新しいプロジェクトを始める」 (`copyProject`) starts a new active project with the same title, check-in rhythm and tasks, without owners, dates or progress. The organizer's team summary downloads as CSV from `/classes/[classId]/team-summary` (`lib/csv.ts`: BOM for Excel, formula cells neutralised; no names, rows only for the organizer).
+
 ## Writing editor (Prompt 12)
 
 - Route `app/classes/[classId]/project/tasks/[taskId]/write/` (moved from targets in 0030; Tiptap 3, all `@tiptap/*` pinned to one exact version) and `…/write/print` (the PDF view). The plan of record is `docs/plans/prompt12-editor-plan.md`.

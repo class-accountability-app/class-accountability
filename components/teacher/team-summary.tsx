@@ -45,6 +45,14 @@ export async function TeamSummary({ classId }: { classId: string }) {
         </h2>
         <p className="text-[13px] leading-7 text-muted">{t('why')}</p>
       </div>
+      {rows.length > 0 && (
+        <a
+          href={`/classes/${classId}/team-summary`}
+          className="inline-flex min-h-11 items-center self-start text-[13px] font-semibold text-accent-text underline underline-offset-4"
+        >
+          {t('downloadCsv')}
+        </a>
+      )}
       {rows.length === 0 ? (
         <p className="text-sm leading-7 text-muted">{t('noTeams')}</p>
       ) : (

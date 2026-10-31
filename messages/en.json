@@ -1271,6 +1271,20 @@
       "onTrack": "On track",
       "behind": "Behind",
       "notStarted": "Not started"
+    },
+    "downloadCsv": "Download as CSV (no names)",
+    "csv": {
+      "team": "Team",
+      "members": "Members",
+      "hasProject": "Project",
+      "start": "Start",
+      "deadline": "Deadline",
+      "tasks": "Tasks",
+      "percent": "Progress (%)",
+      "lastActivity": "Last activity",
+      "checkins": "Check-ins this round",
+      "yes": "yes",
+      "no": "no"
     }
   },
   "teamJoin": {
@@ -1398,5 +1412,18 @@
     "label": "Team name",
     "save": "Save",
     "cancel": "Cancel"
+  },
+  "wrapUp": {
+    "back": "← Team board",
+    "kicker": "Finished project summary",
+    "dates": "{start} – {end}",
+    "percent": "{percent}% done",
+    "tasks": "Tasks and owners",
+    "members": "Members",
+    "memberLine": "{done}/{total} done · {checkins} check-ins",
+    "noOwner": "No owner",
+    "formerMember": "Former member",
+    "copyHint": "Start your next project with the same tasks (owners, due dates and progress are reset).",
+    "copy": "Start a new project with these tasks"
   }
 }

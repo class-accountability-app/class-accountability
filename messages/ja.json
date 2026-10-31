@@ -1271,6 +1271,20 @@
       "onTrack": "順調",
       "behind": "遅れ気味",
       "notStarted": "未開始"
+    },
+    "downloadCsv": "CSVでダウンロード（名前は含みません）",
+    "csv": {
+      "team": "チーム",
+      "members": "人数",
+      "hasProject": "プロジェクト",
+      "start": "開始日",
+      "deadline": "締め切り",
+      "tasks": "タスク数",
+      "percent": "進み具合(%)",
+      "lastActivity": "最後の動き",
+      "checkins": "今回のチェックイン",
+      "yes": "あり",
+      "no": "なし"
     }
   },
   "teamJoin": {
@@ -1398,5 +1412,18 @@
     "label": "チーム名",
     "save": "保存",
     "cancel": "やめる"
+  },
+  "wrapUp": {
+    "back": "← チームのボードへ",
+    "kicker": "完了したプロジェクトのまとめ",
+    "dates": "{start} 〜 {end}",
+    "percent": "達成 {percent}%",
+    "tasks": "タスクと担当",
+    "members": "メンバー",
+    "memberLine": "完了 {done}/{total} · チェックイン {checkins}回",
+    "noOwner": "担当なし",
+    "formerMember": "抜けたメンバー",
+    "copyHint": "同じタスクで次のプロジェクトを始められます（担当・期日・進み具合はリセットされます）。",
+    "copy": "このタスクで新しいプロジェクトを始める"
   }
 }
