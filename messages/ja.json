@@ -1077,7 +1077,11 @@
       "noteLabel": "ひと言（任意）",
       "notePlaceholder": "例：スライドは今週中に10枚そろえます。データ待ちです。",
       "send": "仲間に共有する",
-      "fine": "共有されるのは、タスクの数字・状態とこのひと言だけです。書いた文章は共有されません。"
+      "fine": "共有されるのは、タスクの数字・状態とこのひと言だけです。書いた文章は共有されません。",
+      "promptsLabel": "書き出しのヒント",
+      "promptDone": "今回やったこと：",
+      "promptStuck": "困っていること：",
+      "promptNext": "次にやること："
     },
     "feed": {
       "title": "{date}のチェックイン",
@@ -1151,7 +1155,9 @@
       "agenda": "話すこと（チェックインから）",
       "waiting": "まだチェックインしていません：{names}",
       "checkinFirst": "打ち合わせの前にチェックインする",
-      "cancel": "この打ち合わせをとりやめる"
+      "cancel": "この打ち合わせをとりやめる",
+      "googleCalendar": "Googleカレンダーに追加",
+      "icsFile": "カレンダーファイル（.ics）"
     },
     "meetingCard": {
       "kicker": "次の打ち合わせ",
@@ -1182,7 +1188,8 @@
     "templateNone": "使わない（タスクは後で追加）",
     "templateHint": "選ぶと、タスクと締め切りから逆算した期日が入ります。あとで自由に変えられます。",
     "templateAddLabel": "ひな形からタスクを追加",
-    "templateAdd": "追加する"
+    "templateAdd": "追加する",
+    "balanceHint": "{heavy}さんの未完了タスクが{heavyCount}つ、{light}さんは{lightCount}つです。分担を見直してみませんか？"
   },
   "google": {
     "kicker": "自動で記録",
@@ -1398,5 +1405,12 @@
     "label": "チーム名",
     "save": "保存",
     "cancel": "やめる"
+  },
+  "timeline": {
+    "heading": "タイムライン",
+    "count": "{count}件",
+    "late": "{date}（期限切れ）",
+    "addToCalendar": "カレンダーに追加",
+    "todayLine": "黒い線が今日です。"
   }
 }

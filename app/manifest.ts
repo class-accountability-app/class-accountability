@@ -8,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Study Pods',
     short_name: 'Study Pods',
     description:
-      '同じ授業の、小さな学習グループ。同じ授業を受けている2〜6人の「ポッド」で、課題やレポートの進み具合をゆるやかに見せ合うアプリです。',
+      'グループ課題のための、チームの進捗ボード。同じ授業の2〜6人のチームで、発表やレポートをタスクに分けて進めます。',
     lang: 'ja',
     start_url: '/',
     scope: '/',
@@ -17,6 +17,9 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: '#f8fafd',
     // The page colour: the splash screen while the app starts.
     background_color: '#f8fafd',
+    // Feature batch 1: long-press the app icon to jump straight to the team
+    // board (Home redirects there), the fastest way to ＋記録.
+    shortcuts: [{ name: 'チームのボード', short_name: 'ボード', url: '/?from=shortcut' }],
     icons: [
       { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
       { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },

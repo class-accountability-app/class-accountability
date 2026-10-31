@@ -24,6 +24,7 @@
   --accent-text: #0b57d0;
   --status-active: #146c2e;
   --status-stale: #747775;
+  --error: #b3261e; /* M3 error; 6.5:1 on white */
 
   /* Layout rhythm kept from the notebook theme (28px lines); the ruled dots
      are gone with Material 3. */
@@ -43,6 +44,7 @@
   --color-status-active: var(--status-active);
   --color-status-stale: var(--status-stale);
   --color-outline: var(--outline);
+  --color-error: var(--error);
   --color-surface-container: var(--surface-container);
   --color-primary-container: var(--primary-container);
   --color-on-primary-container: var(--on-primary-container);
