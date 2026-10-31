@@ -10,6 +10,8 @@ import { missingCheckins, roundStartFor } from '@/lib/checkin'
 import { StatusStamp } from '@/components/status-stamp'
 import { loadMyPodProject, taskValueText } from '../../load'
 import { chosenStart, formatMeeting, formatSlot, loadPolls } from '../load'
+import { googleCalendarUrl } from '@/lib/calendar'
+import { appOrigin } from '@/lib/app-origin'
 import { CancelPoll, ConfirmPoll, VoteGrid } from './poll-controls'
 
 // One poll. Open: the vote grid (mockup "vote") and 〜にきめる. Confirmed: the
@@ -84,6 +86,28 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
     return wrap(
       <>
         {header(formatMeeting(start, poll.durationMinutes, locale))}
+        <div className="-mt-3.5 flex flex-wrap gap-x-4 px-0.5">
+          <a
+            href={googleCalendarUrl({
+              kind: 'meeting',
+              title: poll.title,
+              start: new Date(start),
+              minutes: poll.durationMinutes,
+              url: `${await appOrigin()}/classes/${classId}/project/meetings/${poll.id}`,
+            })}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center text-[13px] font-semibold text-accent-text underline underline-offset-4"
+          >
+            {t('meeting.googleCalendar')}
+          </a>
+          <a
+            href={`/classes/${classId}/project/meetings/${poll.id}/calendar`}
+            className="inline-flex min-h-11 items-center text-[13px] font-semibold text-accent-text underline underline-offset-4"
+          >
+            {t('meeting.icsFile')}
+          </a>
+        </div>
         <section aria-labelledby="agenda-heading" className="rule-card flex flex-col px-3.5 py-3.5">
           <h2 id="agenda-heading" className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">
             {t('meeting.agenda')}

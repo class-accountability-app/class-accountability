@@ -1077,7 +1077,11 @@
       "noteLabel": "A line for the group (optional)",
       "notePlaceholder": "e.g. I’ll have all 10 slides by the end of the week. Waiting on data.",
       "send": "Share with the group",
-      "fine": "Only your task numbers, statuses and this note are shared. Your writing is never shared."
+      "fine": "Only your task numbers, statuses and this note are shared. Your writing is never shared.",
+      "promptsLabel": "Starter prompts",
+      "promptDone": "Done this round:",
+      "promptStuck": "Stuck on:",
+      "promptNext": "Next:"
     },
     "feed": {
       "title": "Check-in, {date}",
@@ -1151,7 +1155,9 @@
       "agenda": "To talk about (from check-ins)",
       "waiting": "Hasn’t checked in yet: {names}",
       "checkinFirst": "Check in before the meeting",
-      "cancel": "Call off this meeting"
+      "cancel": "Call off this meeting",
+      "googleCalendar": "Add to Google Calendar",
+      "icsFile": "Calendar file (.ics)"
     },
     "meetingCard": {
       "kicker": "NEXT MEETING",
@@ -1182,7 +1188,8 @@
     "templateNone": "None (add tasks later)",
     "templateHint": "Adds its tasks, with due dates counted back from the deadline. You can change everything later.",
     "templateAddLabel": "Add tasks from a template",
-    "templateAdd": "Add"
+    "templateAdd": "Add",
+    "balanceHint": "{heavy} has {heavyCount} open tasks and {light} has {lightCount}. Want to rebalance?"
   },
   "google": {
     "kicker": "AUTOMATIC LOGGING",
@@ -1425,5 +1432,12 @@
     "formerMember": "Former member",
     "copyHint": "Start your next project with the same tasks (owners, due dates and progress are reset).",
     "copy": "Start a new project with these tasks"
+  },
+  "timeline": {
+    "heading": "Timeline",
+    "count": "{count} tasks",
+    "late": "{date} (overdue)",
+    "addToCalendar": "Add to calendar",
+    "todayLine": "The black line is today."
   }
 }
