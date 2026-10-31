@@ -22,6 +22,8 @@ export const PUSH_TEXT = {
     checkinDue: '今日はチェックインの日です。チームに進み具合を共有しましょう',
     pollVote: '打ち合わせの日程調整が、あなたの回答を待っています',
     announcement: '先生からお知らせが届きました',
+    weeklyDigest: '新しい週です。チームのボードで今週の予定を確認しましょう',
+    teamInactive: '1週間動きのないチームがあります。クラスのページで確認できます',
   },
   en: {
     title: 'Study Pods',
@@ -34,6 +36,8 @@ export const PUSH_TEXT = {
     checkinDue: 'Check-in day: share your progress with your team today',
     pollVote: 'A meeting poll is waiting for your answer',
     announcement: 'Your teacher posted an announcement',
+    weeklyDigest: 'A new week: check this week’s plan on your team board',
+    teamInactive: 'A team has been quiet for a week. See your class page',
   },
 } as const
 
@@ -112,4 +116,14 @@ export function pollVoteText(locale: string): { title: string; body: string } {
 export function announcementText(locale: string): { title: string; body: string } {
   const t = textFor(locale)
   return { title: t.title, body: t.announcement }
+}
+
+export function weeklyDigestText(locale: string): { title: string; body: string } {
+  const t = textFor(locale)
+  return { title: t.title, body: t.weeklyDigest }
+}
+
+export function teamInactiveText(locale: string): { title: string; body: string } {
+  const t = textFor(locale)
+  return { title: t.title, body: t.teamInactive }
 }

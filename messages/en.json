@@ -431,7 +431,9 @@
     "stalled": "“{task}” hasn’t moved for {days} days. Even a little progress helps",
     "checkinDue": "Check-in day: share your progress with your team today",
     "pollVote": "A meeting poll is waiting for your answer",
-    "announcement": "Your teacher posted an announcement"
+    "announcement": "Your teacher posted an announcement",
+    "weeklyDigest": "A new week: check this week’s plan on your team board",
+    "teamInactive": "A team has been quiet for a week. See your class page"
   },
   "empty": {
     "findPod": "Find a team",

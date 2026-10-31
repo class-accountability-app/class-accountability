@@ -113,7 +113,7 @@ const NUDGES_URL = '/nudges'
 const PUSH_KINDS = ['nudge', 'meeting_reminder', 'task_stalled']
 // The only pages a push may open besides 声かけ: the project board and a
 // meeting (supabase/functions/_shared/push-path.ts; a test checks they match).
-const PUSH_PATH = /^\/classes\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/project(\/meetings\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?$/
+const PUSH_PATH = /^\/classes\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(\/project(\/meetings\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?)?$/
 
 self.addEventListener('push', (event) => {
   let data = {}
