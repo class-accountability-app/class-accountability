@@ -357,7 +357,8 @@
     "dependencyInvalid": "That order can't be set (the tasks would wait for each other).",
     "meetingNoteTooLong": "Notes can be up to 2,000 characters.",
     "milestoneInvalid": "Enter a name (up to 60 characters), a date and a percentage from 1 to 100.",
-    "milestoneLimit": "A class can have up to 20 milestones."
+    "milestoneLimit": "A class can have up to 20 milestones.",
+    "offlineNotSaved": "You're offline and this couldn't be kept on this device. Try again where you have a signal."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -892,8 +893,8 @@
     }
   },
   "signOut": {
-    "unsavedTitle": "Some writing isn’t saved yet",
-    "unsavedBody": "If you log out, writing on this device that hasn’t been saved will be deleted. To be safe, open the document first and wait until it says Saved.",
+    "unsavedTitle": "Some writing or entries haven’t been sent yet",
+    "unsavedBody": "Signing out deletes unsaved writing on this device and any entries you logged offline that haven’t been sent yet. To be safe, go online and open the writing page or your board, and wait a moment.",
     "confirm": "Log out",
     "cancel": "Cancel"
   },
@@ -1044,7 +1045,8 @@
       "notePlaceholder": "e.g. Finished the data analysis part",
       "submit": "Save",
       "saved": "Saved",
-      "fine": "Only you see your own logs. Your group sees what you share in a check-in."
+      "fine": "Only you see your own logs. Your group sees what you share in a check-in.",
+      "queued": "You're offline. Saved on this device; it will be sent automatically when you're back online."
     },
     "newTask": {
       "pageTitle": "New task",

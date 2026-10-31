@@ -8,6 +8,7 @@ import { PRIVACY_POLICY_PATH } from '@/lib/contact'
 import { loadLoginAttempt, type LoginAttempt } from '@/lib/auth/login-code'
 import { safeNextPath } from '@/lib/auth/next-path'
 import { clearAll } from '@/lib/local-draft'
+import { clearQueue } from '@/lib/offline-log'
 import { EmailStep } from './email-step'
 import { CodeStep } from './code-step'
 
@@ -28,6 +29,7 @@ function LoginFlow() {
   // this covers signing out without JavaScript and expired sessions.
   useEffect(() => {
     void clearAll()
+    void clearQueue()
   }, [])
 
   useEffect(() => {

@@ -570,7 +570,7 @@ export default async function ProjectPage({
                         )}
                         {mine && task.inputMode === 'manual' && !sources.has(task.id) && task.metric !== 'status' && task.status !== 'done' && (
                           <>
-                            <TaskLog classId={classId} taskId={task.id} title={task.title} metric={task.metric} unit={task.unit} />
+                            <TaskLog classId={classId} taskId={task.id} userId={user.id} title={task.title} metric={task.metric} unit={task.unit} />
                             <Link href={linkHref(task.id)} className="-mt-2 inline-flex min-h-11 items-center self-start pb-1 text-[13px] font-semibold text-accent-text underline underline-offset-4">
                               {tGoogle('linkTask')}
                             </Link>
