@@ -83,7 +83,7 @@ export default async function SettingsPage() {
             {t('notificationsHeading')}
           </h2>
           <PushRow />
-          <div className="border-t border-dashed border-[#c4c7c5]">
+          <div className="border-t border-dashed border-border">
             <OnlineRow initialOn={presence?.share_online ?? true} />
           </div>
         </section>
@@ -105,7 +105,7 @@ export default async function SettingsPage() {
             action={setLocale}
             role="group"
             aria-labelledby="settings-language"
-            className="flex overflow-hidden rounded-lg border border-[#747775]"
+            className="flex overflow-hidden rounded-lg border border-outline"
           >
             {locales.map((option, index) => {
               const isCurrent = option === locale
@@ -117,8 +117,8 @@ export default async function SettingsPage() {
                   value={option}
                   lang={option}
                   aria-pressed={isCurrent}
-                  className={`min-h-11 flex-1 px-2 py-1.5 text-sm ${index > 0 ? 'border-l border-[#747775]' : ''} ${
-                    isCurrent ? 'bg-ink text-surface' : 'bg-[#ffffff] text-ink'
+                  className={`min-h-11 flex-1 px-2 py-1.5 text-sm ${index > 0 ? 'border-l border-outline' : ''} ${
+                    isCurrent ? 'bg-ink text-surface' : 'bg-surface text-ink'
                   }`}
                 >
                   {LANGUAGE_NAMES[option]}
@@ -130,14 +130,14 @@ export default async function SettingsPage() {
 
         <section className={`${sectionClass} px-[18px] py-1.5`}>
           <InstallRow rowClass={rowClass} />
-          <Link href={PRIVACY_POLICY_PATH} className={`${rowClass} border-b border-dashed border-[#c4c7c5] text-ink`}>
+          <Link href={PRIVACY_POLICY_PATH} className={`${rowClass} border-b border-dashed border-border text-ink`}>
             {t('privacyPolicy')}
             <Chevron />
           </Link>
           {/* Deleting by email is still possible; the page says how. */}
           <Link
             href={DELETE_ACCOUNT_PATH}
-            className={`${rowClass} border-b border-dashed border-[#c4c7c5] text-ink`}
+            className={`${rowClass} border-b border-dashed border-border text-ink`}
           >
             {t('deleteAccount')}
             <Chevron />

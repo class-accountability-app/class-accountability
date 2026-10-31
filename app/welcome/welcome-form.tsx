@@ -61,7 +61,7 @@ export function WelcomeForm({
           autoComplete="nickname"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="h-12 w-full rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 text-ink"
+          className="h-12 w-full rounded-lg border border-outline bg-surface px-3.5 text-ink"
           {...describedField(error, errorId, hintId)}
         />
         <FieldError id={errorId} error={error} />

@@ -14,6 +14,7 @@
   --page-bg: #f8fafd; /* surface */
   --surface: #ffffff; /* surface-container-lowest (cards) */
   --surface-container: #f0f4f9;
+  --surface-container-highest: #e1e3e1; /* switch track when off */
   --primary-container: #d3e3fd;
   --on-primary-container: #041e49;
   --border: #c4c7c5; /* outline-variant */
@@ -46,6 +47,7 @@
   --color-outline: var(--outline);
   --color-error: var(--error);
   --color-surface-container: var(--surface-container);
+  --color-surface-container-highest: var(--surface-container-highest);
   --color-primary-container: var(--primary-container);
   --color-on-primary-container: var(--on-primary-container);
 

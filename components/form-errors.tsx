@@ -13,7 +13,7 @@ export function FieldError({ id, error }: { id: string; error: ErrorKey | undefi
   const t = useTranslations('errors')
   if (!error) return null
   return (
-    <p id={id} role="alert" className="text-sm text-red-700">
+    <p id={id} role="alert" className="text-sm text-error">
       {t(error)}
     </p>
   )
@@ -24,7 +24,7 @@ export function FormError({ error }: { error: ErrorKey | null }) {
   const t = useTranslations('errors')
   if (!error) return null
   return (
-    <p role="alert" className="text-sm text-red-700">
+    <p role="alert" className="text-sm text-error">
       {t(error)}
     </p>
   )

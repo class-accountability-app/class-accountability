@@ -46,7 +46,7 @@ export function ProgressBar({
           <span
             key={tick}
             aria-hidden
-            className={`absolute inset-y-0 w-0.5 -translate-x-1/2 ${pct >= tick ? 'bg-surface' : 'bg-[#747775]'}`}
+            className={`absolute inset-y-0 w-0.5 -translate-x-1/2 ${pct >= tick ? 'bg-surface' : 'bg-outline'}`}
             style={{ left: `${tick}%` }}
           />
         ))}

@@ -98,13 +98,13 @@ export function TaskForm({
 
         <fieldset className="flex flex-col gap-1.5" aria-describedby={`${id}-how-hint`}>
           <legend className="mb-1.5 text-sm font-semibold text-ink">{t('newTask.how')}</legend>
-          <div className="flex overflow-hidden rounded-lg border border-[#747775]">
+          <div className="flex overflow-hidden rounded-lg border border-outline">
             {TASK_METRICS.map((m, i) => (
               <label
                 key={m}
                 className={`flex min-h-11 flex-1 cursor-pointer items-center justify-center px-1.5 py-1.5 text-center text-sm leading-[1.4] has-[:focus-visible]:outline-2 has-[:focus-visible]:-outline-offset-4 has-[:focus-visible]:outline-accent ${
-                  i > 0 ? 'border-l border-[#747775]' : ''
-                } ${metric === m ? 'bg-ink text-surface' : 'bg-[#ffffff] text-ink'}`}
+                  i > 0 ? 'border-l border-outline' : ''
+                } ${metric === m ? 'bg-ink text-surface' : 'bg-surface text-ink'}`}
               >
                 <input
                   type="radio"
