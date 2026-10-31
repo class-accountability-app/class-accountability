@@ -48,9 +48,9 @@
   --color-on-primary-container: var(--on-primary-container);
 
   /* Latin face first; Japanese characters fall through to the second face. */
-  --font-heading: var(--font-roboto), var(--font-noto-sans-jp), sans-serif;
-  --font-body: var(--font-roboto), var(--font-noto-sans-jp), sans-serif;
-  --font-meta: var(--font-roboto), var(--font-noto-sans-jp), sans-serif;
+  --font-heading: var(--font-roboto), 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans CJK JP', 'Noto Sans JP', 'Yu Gothic UI', Meiryo, sans-serif;
+  --font-body: var(--font-roboto), 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans CJK JP', 'Noto Sans JP', 'Yu Gothic UI', Meiryo, sans-serif;
+  --font-meta: var(--font-roboto), 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans CJK JP', 'Noto Sans JP', 'Yu Gothic UI', Meiryo, sans-serif;
 }
 
 /*
