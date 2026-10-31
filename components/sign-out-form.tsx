@@ -4,6 +4,7 @@ import { useRef, useState, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { releaseThisDevice } from '@/components/push'
 import { clearAll, hasAnyDraft } from '@/lib/local-draft'
+import { clearQueue, hasQueuedLogs } from '@/lib/offline-log'
 import { ChoiceDialog } from '@/components/choice-dialog'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 
@@ -36,6 +37,7 @@ export function SignOutForm({
     if (releasing.current) return
     releasing.current = true
     await clearAll({ seal: true })
+    await clearQueue({ seal: true })
     const endpoint = await releaseThisDevice()
     if (endpointRef.current) endpointRef.current.value = endpoint ?? ''
     formRef.current?.submit()
@@ -44,7 +46,7 @@ export function SignOutForm({
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (releasing.current) return
-    if (await hasAnyDraft()) {
+    if ((await hasAnyDraft()) || (await hasQueuedLogs())) {
       setWarning(true)
       return
     }

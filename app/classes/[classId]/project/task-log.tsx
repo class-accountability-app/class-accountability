@@ -7,6 +7,7 @@ import type { ErrorKey } from '@/lib/errors'
 import { TASK_CHIPS, parseWholeAmount, type TaskMetric } from '@/lib/tasks'
 import { FieldError, FormError, describedField } from '@/components/form-errors'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
+import { isOffline, queueLog } from '@/lib/offline-log'
 import { logTaskProgress } from './actions'
 import { controlClass } from './create-project-form'
 
@@ -16,12 +17,14 @@ import { controlClass } from './create-project-form'
 export function TaskLog({
   classId,
   taskId,
+  userId,
   title,
   metric,
   unit,
 }: {
   classId: string
   taskId: string
+  userId: string
   title: string
   metric: Exclude<TaskMetric, 'status'>
   unit: string | null
@@ -35,7 +38,7 @@ export function TaskLog({
   const [amount, setAmount] = useState('')
   const [note, setNote] = useState('')
   const [clientId, setClientId] = useState(() => crypto.randomUUID())
-  const [saved, setSaved] = useState(false)
+  const [saved, setSaved] = useState<'saved' | 'queued' | null>(null)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<ErrorKey | null>(null)
 
@@ -55,17 +58,36 @@ export function TaskLog({
       amountRef.current?.focus()
       return
     }
-    startTransition(async () => {
-      const result = await logTaskProgress(classId, taskId, { amount, note, clientId })
-      if (result.error) {
-        setError(result.error)
-        return
-      }
+    const done = (how: 'saved' | 'queued') => {
       setAmount('')
       setNote('')
       setClientId(crypto.randomUUID())
       setOpen(false)
-      setSaved(true)
+      setSaved(how)
+    }
+    // No connection (feature batch 3): keep it on this phone and send later.
+    const queue = async () => {
+      const ok = await queueLog({ clientId, userId, classId, taskId, amount, note, queuedAt: Date.now() })
+      if (ok) done('queued')
+      else setError('offlineNotSaved')
+    }
+    startTransition(async () => {
+      if (isOffline(navigator)) {
+        await queue()
+        return
+      }
+      let result
+      try {
+        result = await logTaskProgress(classId, taskId, { amount, note, clientId })
+      } catch {
+        await queue()
+        return
+      }
+      if (result.error) {
+        setError(result.error)
+        return
+      }
+      done('saved')
       router.refresh()
     })
   }
@@ -78,14 +100,14 @@ export function TaskLog({
           className={secondaryButtonClass}
           onClick={() => {
             setOpen(true)
-            setSaved(false)
+            setSaved(null)
           }}
         >
           {t('log.open')}
         </button>
         {saved && (
-          <span role="status" className="text-[13px] leading-7 text-status-active">
-            {t('log.saved')}
+          <span role="status" className={`text-[13px] leading-7 ${saved === 'saved' ? 'text-status-active' : 'text-muted'}`}>
+            {saved === 'saved' ? t('log.saved') : t('log.queued')}
           </span>
         )}
       </div>
