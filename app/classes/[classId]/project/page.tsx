@@ -454,7 +454,7 @@ export default async function ProjectPage({
                           {mine ? (
                             <TaskStatusControl classId={classId} taskId={task.id} status={task.status} />
                           ) : (
-                            <span className={`shrink-0 rounded-[2px] px-2 font-meta text-xs leading-5 font-bold ${STATUS_PILL_CLASS[task.status]}`}>
+                            <span className={`shrink-0 rounded-lg px-2 font-meta text-xs leading-5 font-bold ${STATUS_PILL_CLASS[task.status]}`}>
                               {t(`status.${task.status}`)}
                             </span>
                           )}

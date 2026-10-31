@@ -207,7 +207,7 @@ export function Toolbar({ editor }: { editor: Editor | null }) {
       role="toolbar"
       aria-label={t('label')}
       aria-controls="document-editor"
-      className="sticky top-0 z-10 -mx-5 flex gap-0.5 overflow-x-auto border-y border-border bg-surface px-5 py-1 sm:mx-0 sm:rounded-[2px] sm:border-x"
+      className="sticky top-0 z-10 -mx-5 flex gap-0.5 overflow-x-auto border-y border-border bg-surface px-5 py-1 sm:mx-0 sm:rounded-lg sm:border-x"
     >
       {ITEMS.map((item, i) => {
         if (item === 'sep') return <span key={`sep-${i}`} aria-hidden className="mx-1 my-2 w-px shrink-0 bg-border" />
@@ -224,7 +224,7 @@ export function Toolbar({ editor }: { editor: Editor | null }) {
             // Keep the selection in the text when a button is clicked.
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => editor && item.run(editor)}
-            className="inline-flex h-11 min-w-11 shrink-0 items-center justify-center rounded-[2px] px-2 text-ink aria-pressed:bg-ink aria-pressed:text-surface disabled:opacity-40"
+            className="inline-flex h-11 min-w-11 shrink-0 items-center justify-center rounded-lg px-2 text-ink aria-pressed:bg-ink aria-pressed:text-surface disabled:opacity-40"
           >
             {item.icon}
           </button>

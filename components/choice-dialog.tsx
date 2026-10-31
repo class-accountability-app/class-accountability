@@ -33,7 +33,7 @@ export function ChoiceDialog({
         e.preventDefault()
         onCancel?.()
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-[2px] bg-surface p-5 text-ink shadow-[inset_0_0_0_1px_var(--border)] backdrop:bg-ink/40"
+      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-lg bg-surface p-5 text-ink shadow-[inset_0_0_0_1px_var(--border)] backdrop:bg-ink/40"
     >
       {open && children}
     </dialog>

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 // Full-width primary action, as in the mockups' empty states (12-nudges-empty).
 export const emptyActionClass =
-  'btn flex min-h-12 w-full items-center justify-center rounded-[2px] bg-accent px-4 text-[15px] font-semibold text-white'
+  'btn flex min-h-12 w-full items-center justify-center rounded-full bg-accent px-4 text-[15px] font-semibold text-white'
 
 export type Illustration = 'nudges' | 'classes' | 'pod' | 'target' | 'log' | 'notFound'
 
@@ -110,7 +110,7 @@ export function EmptyState({
     )
   }
   return (
-    <div className="flex w-full flex-col items-center gap-3 rounded-[2px] border border-border bg-surface px-5 py-6 text-center">
+    <div className="flex w-full flex-col items-center gap-3 rounded-lg border border-border bg-surface px-5 py-6 text-center">
       <Drawing name={illustration} />
       {title && <Heading className="font-heading text-lg font-bold text-ink">{title}</Heading>}
       <p className="text-sm text-ink/85">{body}</p>

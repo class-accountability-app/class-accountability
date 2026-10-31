@@ -47,7 +47,7 @@ export function CreatePodButton({
           buttonClassName ??
           (block
             ? `${emptyActionClass} disabled:opacity-50`
-            : 'btn rounded-[2px] bg-accent px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50')
+            : 'btn rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50')
         }
       >
         {isPending ? tCommon('creating') : t('createPod')}

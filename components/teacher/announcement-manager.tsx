@@ -39,7 +39,7 @@ export function AnnouncementManager({ classId, announcements }: { classId: strin
   }
 
   return (
-    <section aria-labelledby={`${id}-heading`} className="flex w-full max-w-md flex-col gap-3 rounded-[2px] border border-border bg-surface p-4">
+    <section aria-labelledby={`${id}-heading`} className="flex w-full max-w-md flex-col gap-3 rounded-lg border border-border bg-surface p-4">
       <h2 id={`${id}-heading`} className="font-heading text-xl font-bold text-ink">
         {t('announceHeading')}
       </h2>
@@ -52,7 +52,7 @@ export function AnnouncementManager({ classId, announcements }: { classId: strin
         maxLength={ANNOUNCEMENT_MAX}
         rows={3}
         onChange={(e) => setBody(e.target.value)}
-        className="rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-3 py-2 text-base text-ink"
+        className="rounded-lg border border-[#747775] bg-[#ffffff] px-3 py-2 text-base text-ink"
         {...describedField(error, `${id}-error`, `${id}-hint`)}
       />
       <p id={`${id}-hint`} className="text-[13px] text-muted">
@@ -70,7 +70,7 @@ export function AnnouncementManager({ classId, announcements }: { classId: strin
       {announcements.length > 0 && (
         <ul className="flex flex-col">
           {announcements.map((a) => (
-            <li key={a.id} className="flex flex-col gap-1 border-t border-dashed border-[#e3d4b0] py-2">
+            <li key={a.id} className="flex flex-col gap-1 border-t border-dashed border-[#c4c7c5] py-2">
               <p className="font-meta text-xs text-muted">{formatDateTime(a.created_at, locale)}</p>
               <p className="text-[15px] leading-[1.7] whitespace-pre-wrap text-ink [overflow-wrap:anywhere]">{a.body}</p>
               <button

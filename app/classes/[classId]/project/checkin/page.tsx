@@ -89,7 +89,7 @@ export default async function CheckinPage({ params }: { params: Promise<{ classI
                       <li key={x.id} className="flex flex-col border-b border-dashed border-border last:border-b-0">
                         <div className="flex min-h-7 items-center justify-between gap-2.5">
                           <span className="text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{x.title}</span>
-                          <span className={`shrink-0 rounded-[2px] px-2 font-meta text-xs leading-5 font-bold ${STATUS_PILL_CLASS[x.status]}`}>
+                          <span className={`shrink-0 rounded-lg px-2 font-meta text-xs leading-5 font-bold ${STATUS_PILL_CLASS[x.status]}`}>
                             {t(`status.${x.status}`)}
                           </span>
                         </div>

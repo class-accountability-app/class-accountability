@@ -49,12 +49,12 @@ export function OnlineRow({ initialOn }: { initialOn: boolean }) {
           disabled={isPending}
           onClick={toggle}
           className={`relative h-8 w-[52px] shrink-0 rounded-full border disabled:opacity-50 ${
-            on ? 'border-[#5b7a52] bg-[#5b7a52]' : 'border-[#b9a57c] bg-[#e9dcc0]'
+            on ? 'border-[#0b57d0] bg-[#0b57d0]' : 'border-[#747775] bg-[#e1e3e1]'
           }`}
         >
           <span
             aria-hidden
-            className={`absolute top-[3px] h-6 w-6 rounded-full border border-[#b9a57c] bg-[#fbf6ea] ${
+            className={`absolute top-[3px] h-6 w-6 rounded-full border border-[#747775] bg-[#ffffff] ${
               on ? 'left-[23px]' : 'left-[3px]'
             }`}
           />

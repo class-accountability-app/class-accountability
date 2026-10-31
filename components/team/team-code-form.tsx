@@ -52,13 +52,13 @@ export function TeamCodeForm() {
           enterKeyHint="go"
           placeholder={t('placeholder')}
           onChange={() => error && setError(null)}
-          className="h-11 w-full min-w-0 rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-3.5 font-meta text-ink uppercase placeholder:normal-case placeholder:text-muted"
+          className="h-11 w-full min-w-0 rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 font-meta text-ink uppercase placeholder:normal-case placeholder:text-muted"
           {...describedField(error, errorId, hintId)}
         />
         <button
           type="submit"
           disabled={isOpening}
-          className="btn h-11 shrink-0 rounded-[2px] border border-ink bg-surface px-4 text-sm font-semibold text-ink disabled:opacity-50"
+          className="btn h-11 shrink-0 rounded-full border border-ink bg-surface px-4 text-sm font-semibold text-ink disabled:opacity-50"
         >
           {t('submit')}
         </button>

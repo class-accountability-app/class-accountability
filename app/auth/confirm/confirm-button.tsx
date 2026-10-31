@@ -84,9 +84,9 @@ export function ConfirmButton() {
   }
 
   const cardClass =
-    'mt-6 flex flex-col gap-4 rounded-[2px] border border-border bg-surface px-[22px] py-7'
+    'mt-6 flex flex-col gap-4 rounded-lg border border-border bg-surface px-[22px] py-7'
   const primaryClass =
-    'btn mt-1 flex h-13 w-full items-center justify-center rounded-[2px] bg-accent text-base font-semibold text-white no-underline'
+    'btn mt-1 flex h-13 w-full items-center justify-center rounded-full bg-accent text-base font-semibold text-white no-underline'
 
   if (expired) {
     const newCodeHref = link.next === '/' ? '/login' : `/login?next=${encodeURIComponent(link.next)}`
@@ -110,7 +110,7 @@ export function ConfirmButton() {
           </Link>
           <Link
             href="/"
-            className="flex h-12 w-full items-center justify-center rounded-[2px] border border-border bg-surface text-[15px] font-semibold text-ink no-underline"
+            className="flex h-12 w-full items-center justify-center rounded-lg border border-border bg-surface text-[15px] font-semibold text-ink no-underline"
           >
             {t('openHome')}
           </Link>

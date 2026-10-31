@@ -68,12 +68,12 @@ export function TeamTable({
             const row = byId.get(m.id)
             const online = row?.online ?? false
             return (
-              <tr key={m.id} className="border-t border-dashed border-[#e3d4b0]">
+              <tr key={m.id} className="border-t border-dashed border-[#c4c7c5]">
                 <th scope="row" className="py-2 pr-2 font-semibold text-ink [overflow-wrap:anywhere]">
                   <span className="inline-flex items-center gap-2">
                     <span
                       aria-hidden
-                      className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${online ? 'bg-status-active' : 'bg-[#d8ccb0]'}`}
+                      className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${online ? 'bg-status-active' : 'bg-[#c4c7c5]'}`}
                     />
                     {m.id === me ? t('you', { name: m.name }) : m.name}
                     <span className="sr-only">{online ? t('online') : t('offline')}</span>

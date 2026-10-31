@@ -9,7 +9,7 @@ import { FormError } from '@/components/form-errors'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { autoSplit, createTeam, moveStudent, renameTeam } from '@/app/classes/[classId]/organizer-actions'
 
-const control = 'h-11 rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-2.5 text-base text-ink'
+const control = 'h-11 rounded-lg border border-[#747775] bg-[#ffffff] px-2.5 text-base text-ink'
 
 // チームの管理 (0036, item G): the organizer sees every student by name and
 // team, makes a team from students without one, splits them automatically,
@@ -53,7 +53,7 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
       </div>
       <FormError error={error} />
 
-      <div className="flex flex-col gap-3 rounded-[2px] border border-border bg-surface p-4">
+      <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4">
         <h3 className="text-[15px] font-semibold text-ink">{t('unassignedHeading', { count: unassigned.length })}</h3>
         {unassigned.length === 0 ? (
           <p className="text-[13px] text-muted">{t('unassignedNone')}</p>
@@ -109,7 +109,7 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
               {isPending ? tCommon('working') : t('makeTeam', { count: picked.size })}
             </button>
 
-            <div className="mt-2 flex flex-col gap-1.5 border-t border-dashed border-[#e3d4b0] pt-3">
+            <div className="mt-2 flex flex-col gap-1.5 border-t border-dashed border-[#c4c7c5] pt-3">
               <label htmlFor={`${id}-size`} className="text-sm font-semibold text-ink">
                 {t('autoSplitLabel')}
               </label>
@@ -174,7 +174,7 @@ function TeamCard({
   const [name, setName] = useState(team.name ?? '')
 
   return (
-    <div className="flex flex-col gap-2.5 rounded-[2px] border border-border bg-surface p-4">
+    <div className="flex flex-col gap-2.5 rounded-lg border border-border bg-surface p-4">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-[15px] font-semibold text-ink [overflow-wrap:anywhere]">{label}</h3>
         <span className="font-meta text-xs text-muted">{t('memberCount', { count: team.members.length })}</span>
@@ -204,7 +204,7 @@ function TeamCard({
       </div>
       <ul className="flex flex-col">
         {team.members.map((m) => (
-          <li key={m.user_id} className="flex min-h-11 items-center justify-between gap-2 border-t border-dashed border-[#e3d4b0] py-1">
+          <li key={m.user_id} className="flex min-h-11 items-center justify-between gap-2 border-t border-dashed border-[#c4c7c5] py-1">
             <span className="text-[15px] text-ink [overflow-wrap:anywhere]">{m.display_name}</span>
             <label className="sr-only" htmlFor={`${id}-${m.user_id}`}>
               {t('moveLabel', { name: m.display_name })}

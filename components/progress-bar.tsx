@@ -38,7 +38,7 @@ export function ProgressBar({
       aria-valuemax={max}
       aria-valuenow={Math.min(value, max)}
       aria-valuetext={valueText}
-      className={`relative w-full overflow-hidden rounded-[2px] bg-border ${ticks ? 'h-2' : 'h-1.5'}`}
+      className={`relative w-full overflow-hidden rounded-lg bg-border ${ticks ? 'h-2' : 'h-1.5'}`}
     >
       <div className="progress-bar-fill h-full w-full bg-ink" style={{ transform: `scaleX(${pct / 100})` }} />
       {ticks &&
@@ -46,7 +46,7 @@ export function ProgressBar({
           <span
             key={tick}
             aria-hidden
-            className={`absolute inset-y-0 w-0.5 -translate-x-1/2 ${pct >= tick ? 'bg-surface' : 'bg-[#b9a57c]'}`}
+            className={`absolute inset-y-0 w-0.5 -translate-x-1/2 ${pct >= tick ? 'bg-surface' : 'bg-[#747775]'}`}
             style={{ left: `${tick}%` }}
           />
         ))}

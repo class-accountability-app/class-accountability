@@ -46,8 +46,8 @@ function Cursor({ scene }: { scene: number }) {
     >
       <path
         d="M2 2 L2 19 L7 14.5 L10.5 22 L13.5 20.6 L10 13.2 L16.5 13.2 Z"
-        fill="#3a2f22"
-        stroke="#fbf6ea"
+        fill="#1f1f1f"
+        stroke="#ffffff"
         strokeWidth="1.2"
         strokeLinejoin="round"
       />
@@ -56,7 +56,7 @@ function Cursor({ scene }: { scene: number }) {
 }
 
 function Stamp({ stale = false, style }: { stale?: boolean; style?: CSSProperties }) {
-  const color = stale ? '#948e78' : '#54714c'
+  const color = stale ? '#747775' : '#146c2e'
   return (
     <span
       className="mt-px inline-flex size-[22px] shrink-0 -rotate-[7deg] items-center justify-center rounded-full border-[1.5px]"
@@ -69,16 +69,16 @@ function Stamp({ stale = false, style }: { stale?: boolean; style?: CSSPropertie
 
 function Bar({ width, style }: { width: string; style?: CSSProperties }) {
   return (
-    <div className="mt-2 h-1.5 overflow-hidden rounded-[2px] bg-border">
+    <div className="mt-2 h-1.5 overflow-hidden rounded-lg bg-border">
       <div className="h-full origin-left bg-ink" style={{ width, ...style }} />
     </div>
   )
 }
 
 const button =
-  'inline-flex h-[34px] shrink-0 items-center rounded-[2px] bg-accent px-3.5 text-[13px] font-semibold text-white shadow-[0_2px_0_rgba(58,47,34,0.35)]'
+  'inline-flex h-[34px] shrink-0 items-center rounded-lg bg-accent px-3.5 text-[13px] font-semibold text-white shadow-[0_2px_0_rgba(58,47,34,0.35)]'
 const field =
-  'flex h-[34px] items-center rounded-[2px] border border-border bg-[#f3e9d6] px-3 text-[15px]'
+  'flex h-[34px] items-center rounded-lg border border-border bg-[#f0f4f9] px-3 text-[15px]'
 
 export async function Demo() {
   const t = await getTranslations('landing.demo')
@@ -98,7 +98,7 @@ export async function Demo() {
         height="60"
         viewBox="0 0 26 66"
         fill="none"
-        stroke="#8a8272"
+        stroke="#747775"
         strokeWidth="2.5"
         strokeLinecap="round"
         className="absolute -top-[22px] right-10 z-[2]"
@@ -106,11 +106,11 @@ export async function Demo() {
         <path d="M8 54 V16 a5 5 0 0 1 10 0 V52 a8 8 0 0 1 -16 0 V20" />
       </svg>
 
-      <div aria-hidden className="overflow-hidden rounded-[2px] border border-border bg-surface shadow-[0_10px_24px_-18px_rgba(58,47,34,0.45)]">
-        <div className="flex h-[38px] items-center gap-1.5 border-b border-border bg-[#f5ecda] px-3.5">
-          <span className="size-[9px] rounded-full border border-[#b9a57c]" />
-          <span className="size-[9px] rounded-full border border-[#b9a57c]" />
-          <span className="size-[9px] rounded-full border border-[#b9a57c]" />
+      <div aria-hidden className="overflow-hidden rounded-lg border border-border bg-surface shadow-[0_10px_24px_-18px_rgba(58,47,34,0.45)]">
+        <div className="flex h-[38px] items-center gap-1.5 border-b border-border bg-[#f0f4f9] px-3.5">
+          <span className="size-[9px] rounded-full border border-[#747775]" />
+          <span className="size-[9px] rounded-full border border-[#747775]" />
+          <span className="size-[9px] rounded-full border border-[#747775]" />
           <span className="mr-10 grow text-center font-meta text-xs text-muted">{t('host')}</span>
         </div>
 
@@ -118,7 +118,7 @@ export async function Demo() {
           {/* 1. The class invitation (screen 04). */}
           <Scene index={0}>
             <Eyebrow>{t('inviteEyebrow')}</Eyebrow>
-            <div className="flex flex-col gap-3 rounded-[2px] border border-border bg-surface p-4">
+            <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4">
               <div>
                 <div className="font-heading text-xl font-bold">{t('className')}</div>
                 <div className="mt-0.5 font-meta text-xs text-muted">{t('classMeta')}</div>
@@ -131,7 +131,7 @@ export async function Demo() {
                   {t('joinButton')}
                 </span>
                 <span
-                  className="col-start-1 row-start-1 self-center justify-self-center rounded-[3px] border-2 border-[#54714c] px-2.5 py-0.5 font-meta text-sm font-bold text-[#54714c]"
+                  className="col-start-1 row-start-1 self-center justify-self-center rounded-lg border-2 border-[#146c2e] px-2.5 py-0.5 font-meta text-sm font-bold text-[#146c2e]"
                   style={{ opacity: 0, ...loop('lp-joined', 0) }}
                 >
                   {t('joined')}
@@ -144,7 +144,7 @@ export async function Demo() {
           {/* 2. Forming a pod. */}
           <Scene index={1}>
             <Eyebrow>{t('podHeading')}</Eyebrow>
-            <div className="rounded-[2px] border border-border bg-surface px-3.5 py-3">
+            <div className="rounded-lg border border-border bg-surface px-3.5 py-3">
               {[
                 [t('you'), 'lp-ap1'],
                 [t('sato'), 'lp-ap2'],
@@ -152,7 +152,7 @@ export async function Demo() {
               ].map(([name, anim]) => (
                 <div
                   key={anim}
-                  className="flex items-center gap-2.5 border-b border-dashed border-[#e3d4b0] py-2"
+                  className="flex items-center gap-2.5 border-b border-dashed border-[#c4c7c5] py-2"
                   style={{ opacity: 0, ...loop(anim, 1) }}
                 >
                   <Stamp />
@@ -164,7 +164,7 @@ export async function Demo() {
             <div className="flex items-center gap-2">
               <div className={`${field} h-9 grow justify-between`}>
                 <span>{t('tanaka')}</span>
-                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="#3a2f22" strokeWidth="1.5">
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="#1f1f1f" strokeWidth="1.5">
                   <path d="M1 1l4 4 4-4" />
                 </svg>
               </div>
@@ -219,8 +219,8 @@ export async function Demo() {
           {/* 4. Progress moves (the still frame). */}
           <Scene index={3}>
             <Eyebrow>{t('progressHeading')}</Eyebrow>
-            <div className="rounded-[2px] border border-border bg-surface px-3.5 py-1">
-              <div className="flex gap-2.5 border-b border-dashed border-[#e3d4b0] py-2.5">
+            <div className="rounded-lg border border-border bg-surface px-3.5 py-1">
+              <div className="flex gap-2.5 border-b border-dashed border-[#c4c7c5] py-2.5">
                 <Stamp style={loop('lp-stamp-late', 3)} />
                 <div className="grow">
                   <div className="flex items-baseline justify-between">
@@ -244,7 +244,7 @@ export async function Demo() {
                 [t('sato'), t('today'), '80%', t('amount1600'), false],
                 [t('tanaka'), t('daysAgo'), '10%', t('amount200'), true],
               ].map(([name, when, width, amount, stale]) => (
-                <div key={String(name)} className="flex gap-2.5 border-b border-dashed border-[#e3d4b0] py-2.5 last:border-b-0">
+                <div key={String(name)} className="flex gap-2.5 border-b border-dashed border-[#c4c7c5] py-2.5 last:border-b-0">
                   <Stamp stale={Boolean(stale)} />
                   <div className="grow">
                     <div className="flex items-baseline justify-between">
@@ -262,8 +262,8 @@ export async function Demo() {
           {/* 5. A nudge. */}
           <Scene index={4}>
             <Eyebrow>{t('podHeadingShort')}</Eyebrow>
-            <div className="rounded-[2px] border border-border bg-surface px-3.5 py-1">
-              <div className="flex gap-2.5 border-b border-dashed border-[#e3d4b0] py-2.5">
+            <div className="rounded-lg border border-border bg-surface px-3.5 py-1">
+              <div className="flex gap-2.5 border-b border-dashed border-[#c4c7c5] py-2.5">
                 <Stamp />
                 <div className="grow">
                   <div className="flex items-baseline justify-between">
@@ -290,7 +290,7 @@ export async function Demo() {
               </div>
             </div>
             <div
-              className="rounded-[2px] border border-border bg-[#f3e9d6] px-3.5 py-3"
+              className="rounded-lg border border-border bg-[#f0f4f9] px-3.5 py-3"
               style={{ opacity: 0, ...loop('lp-note-late', 4) }}
             >
               <div className="font-meta text-[11px] text-muted">{t('nudgeEyebrow')}</div>
@@ -317,7 +317,7 @@ export async function Demo() {
               <span
                 key={caption}
                 className="size-2 rounded-full"
-                style={{ background: i === STILL ? '#3a2f22' : '#d9c69a', ...loop('lp-dot', i) }}
+                style={{ background: i === STILL ? '#1f1f1f' : '#c4c7c5', ...loop('lp-dot', i) }}
               />
             ))}
           </div>

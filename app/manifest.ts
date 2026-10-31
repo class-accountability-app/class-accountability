@@ -14,9 +14,9 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: '/',
     display: 'standalone',
     // The header's surface colour, so the status bar and title bar match it.
-    theme_color: '#fbf6e8',
+    theme_color: '#f8fafd',
     // The page colour: the splash screen while the app starts.
-    background_color: '#f6ecd6',
+    background_color: '#f8fafd',
     icons: [
       { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
       { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },

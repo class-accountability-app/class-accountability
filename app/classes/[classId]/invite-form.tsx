@@ -47,7 +47,7 @@ export function InviteForm({
           id={selectId}
           value={selectedId}
           onChange={(e) => setSelectedId(e.target.value)}
-          className="rounded-[2px] border border-border bg-surface px-2 py-2 text-ink"
+          className="rounded-lg border border-border bg-surface px-2 py-2 text-ink"
           {...describedField(error, errorId)}
         >
           {eligibleClassmates.map((c) => (
@@ -60,7 +60,7 @@ export function InviteForm({
           type="button"
           onClick={handleInvite}
           disabled={isPending}
-          className="btn rounded-[2px] bg-accent px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+          className="btn rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
         >
           {isPending ? t('inviting') : t('invite')}
         </button>

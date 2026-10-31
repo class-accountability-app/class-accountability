@@ -19,11 +19,11 @@ function draw(duration: number, delay: number, easing = 'ease'): CSSProperties {
   return { animation: `lp-draw ${duration}s ${easing} ${delay}s forwards` }
 }
 
-const body = 'text-[#4a3d2c]'
-const card = 'rounded-[2px] border border-border bg-surface'
+const body = 'text-[#1f1f1f]'
+const card = 'rounded-lg border border-border bg-surface'
 const section = 'mx-auto w-full max-w-[1440px] border-t border-border px-5 py-12 lg:px-[120px] lg:py-24'
 const primaryCta =
-  'btn inline-flex h-[52px] items-center justify-center rounded-[2px] bg-accent px-7 text-base font-semibold whitespace-nowrap text-white'
+  'btn inline-flex h-[52px] items-center justify-center rounded-full bg-accent px-7 text-base font-semibold whitespace-nowrap text-white'
 
 function Eyebrow({ children }: { children: ReactNode }) {
   return (
@@ -51,7 +51,7 @@ function StepNumber({ n }: { n: string }) {
 
 function ComingSoon({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-block -rotate-3 rounded-[2px] border border-accent-text px-2.5 py-1 font-meta text-xs text-accent-text">
+    <span className="inline-block -rotate-3 rounded-lg border border-accent-text px-2.5 py-1 font-meta text-xs text-accent-text">
       {children}
     </span>
   )
@@ -67,7 +67,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
         <div className="mx-auto w-full max-w-[1440px] px-5 pt-6 lg:px-[120px]">
           <p
             role="status"
-            className="rounded-[2px] border border-accent-text bg-surface px-4 py-3 text-[15px] font-semibold text-ink"
+            className="rounded-lg border border-accent-text bg-surface px-4 py-3 text-[15px] font-semibold text-ink"
           >
             {t('accountDeleted')}
           </p>
@@ -99,7 +99,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
                   className="lp-draw"
                   d="M3 10 C 60 3, 120 14, 180 7 S 270 5, 297 9"
                   fill="none"
-                  stroke="#b5583f"
+                  stroke="#0b57d0"
                   strokeWidth="3"
                   strokeLinecap="round"
                   pathLength={1}
@@ -116,7 +116,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
               {t('hero.cta')}
             </Link>
             <span aria-hidden className="hidden -rotate-[5deg] items-center gap-1 text-lg font-semibold whitespace-nowrap text-muted lg:inline-flex">
-              <svg width="40" height="22" viewBox="0 0 40 22" fill="none" stroke="#6b5636" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="40" height="22" viewBox="0 0 40 22" fill="none" stroke="#444746" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M38 15 C 28 4, 14 4, 4 12" />
                 <path d="M4 12 L 11 5 M4 12 L 12 15" />
               </svg>
@@ -171,7 +171,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
                 ['72%', '0s'],
                 ['40%', '0.8s'],
               ].map(([w, d]) => (
-                <div key={d} className="h-2 overflow-hidden rounded-[2px] bg-border">
+                <div key={d} className="h-2 overflow-hidden rounded-lg bg-border">
                   <div
                     className="h-full origin-left bg-ink"
                     style={{ width: w, animation: `lp-loopbar 3.2s ease-in-out ${d} infinite alternate` }}
@@ -184,10 +184,10 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
             <div className="flex h-16 items-center gap-7">
               <span className="flex items-center gap-2.5">
                 <span
-                  className="inline-flex size-7 -rotate-[7deg] items-center justify-center rounded-full border-[1.5px] border-[#54714c]"
+                  className="inline-flex size-7 -rotate-[7deg] items-center justify-center rounded-full border-[1.5px] border-[#146c2e]"
                   style={{ animation: 'lp-restamp 4.5s cubic-bezier(.2,1.4,.4,1) 0.5s infinite both' }}
                 >
-                  <span className="size-[9px] rounded-full bg-[#54714c]" />
+                  <span className="size-[9px] rounded-full bg-[#146c2e]" />
                 </span>
                 <span className={`font-meta text-[13px] ${body}`}>{t('features.activeLabel')}</span>
               </span>
@@ -202,7 +202,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
           <Feature title={t('features.nudgeTitle')} text={t('features.nudgeBody')} delay={0.6}>
             <div className="flex h-16 items-center">
               <div
-                className="rounded-[2px] border border-border bg-[#f3e9d6] px-3.5 py-2.5 text-sm"
+                className="rounded-lg border border-border bg-[#f0f4f9] px-3.5 py-2.5 text-sm"
                 style={{ animation: 'lp-wiggle 3.2s ease-in-out infinite' }}
               >
                 {t('features.nudgeSample')}
@@ -211,7 +211,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
           </Feature>
           <Feature title={t('features.docsTitle')} text={t('features.docsBody')} delay={0.75}>
             <div className="flex h-16 items-center gap-4">
-              <svg width="44" height="52" viewBox="0 0 44 52" fill="none" stroke="#3a2f22" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="44" height="52" viewBox="0 0 44 52" fill="none" stroke="#1f1f1f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 2h26l10 10v38H4z" />
                 <path d="M30 2v10h10" />
                 {[
@@ -222,7 +222,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
                   <path key={d} className="lp-draw" d={d} pathLength={1} style={{ animation: `lp-lines 3s ease-in-out ${delay} infinite alternate` }} />
                 ))}
               </svg>
-              <svg width="28" height="14" viewBox="0 0 28 14" fill="none" stroke="#6b5636" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="28" height="14" viewBox="0 0 28 14" fill="none" stroke="#444746" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M2 7h22M18 2l6 5-6 5" />
               </svg>
               <span className="font-meta text-[15px]">{t('features.docsCount')}</span>
@@ -242,7 +242,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
           <DataCard
             title={t('data.sharedTitle')}
             stamp={t('data.sharedStamp')}
-            stampClass="-rotate-6 border-[#54714c] text-[#54714c]"
+            stampClass="-rotate-6 border-[#146c2e] text-[#146c2e]"
             stampAnimation="lp-box-l 0.5s cubic-bezier(.2,1.4,.4,1) 0.9s both"
             items={[t('data.shared1'), t('data.shared2'), t('data.shared3'), t('data.shared4')]}
             delay={0.3}
@@ -275,15 +275,15 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
         <figure className={`${card} relative m-0 flex flex-col gap-4 p-6 lg:p-8`} style={rise(0.35, 0.6)}>
           <figcaption className="sr-only">{t('classLink.figureLabel')}</figcaption>
           <div aria-hidden className="flex flex-col gap-4">
-            <span className="absolute top-[18px] right-5 rounded-[2px] border border-dashed border-[#b9a57c] px-2 py-0.5 font-meta text-[11px] text-muted">
+            <span className="absolute top-[18px] right-5 rounded-lg border border-dashed border-[#747775] px-2 py-0.5 font-meta text-[11px] text-muted">
               {t('classLink.example')}
             </span>
             <div className="pr-14 font-heading text-lg font-bold lg:text-xl">{t('classLink.cardTitle')}</div>
             <div className="flex items-stretch gap-2">
-              <div className="flex h-11 min-w-0 grow items-center overflow-hidden rounded-[2px] border border-border bg-[#f3e9d6] px-3 font-meta text-sm whitespace-nowrap">
+              <div className="flex h-11 min-w-0 grow items-center overflow-hidden rounded-lg border border-border bg-[#f0f4f9] px-3 font-meta text-sm whitespace-nowrap">
                 {t('classLink.link')}
               </div>
-              <span className="inline-flex h-11 shrink-0 items-center rounded-[2px] border border-ink bg-surface px-4 text-sm font-semibold shadow-[0_2px_0_rgba(58,47,34,0.25)]">
+              <span className="inline-flex h-11 shrink-0 items-center rounded-lg border border-ink bg-surface px-4 text-sm font-semibold shadow-[0_2px_0_rgba(58,47,34,0.25)]">
                 {t('classLink.copy')}
               </span>
             </div>
@@ -295,7 +295,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
               <ExampleQr />
               <div className="flex flex-col items-start gap-3">
                 <p className="max-w-[12em] -rotate-3 text-[15px] leading-[1.6] font-semibold text-muted">{t('classLink.qrNote')}</p>
-                <span className="inline-flex h-11 items-center rounded-[2px] border border-ink bg-surface px-4 text-sm font-semibold shadow-[0_2px_0_rgba(58,47,34,0.25)]">
+                <span className="inline-flex h-11 items-center rounded-lg border border-ink bg-surface px-4 text-sm font-semibold shadow-[0_2px_0_rgba(58,47,34,0.25)]">
                   {t('classLink.present')}
                 </span>
               </div>
@@ -324,7 +324,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
             <details key={q} open={i === 0} className="border-b border-border">
               <summary className="flex min-h-[68px] cursor-pointer list-none items-center justify-between gap-4 py-3 font-heading text-lg leading-[1.5] font-bold lg:text-xl">
                 {t(`faq.${q}`)}
-                <svg aria-hidden width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#9c4830" strokeWidth="1.8" strokeLinecap="round" className="lp-faq-icon shrink-0 transition-transform duration-200">
+                <svg aria-hidden width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#0b57d0" strokeWidth="1.8" strokeLinecap="round" className="lp-faq-icon shrink-0 transition-transform duration-200">
                   <path d="M9 3v12M3 9h12" />
                 </svg>
               </summary>
@@ -337,14 +337,14 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
       {/* Closing CTA */}
       <section
         aria-labelledby="closing-heading"
-        className="relative mx-5 mb-12 flex flex-col gap-6 rounded-[2px] border border-border bg-surface px-[22px] py-7 lg:mx-auto lg:mb-24 lg:w-[calc(100%-240px)] lg:max-w-[1200px] lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:px-16 lg:py-14"
+        className="relative mx-5 mb-12 flex flex-col gap-6 rounded-lg border border-border bg-surface px-[22px] py-7 lg:mx-auto lg:mb-24 lg:w-[calc(100%-240px)] lg:max-w-[1200px] lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:px-16 lg:py-14"
         style={rise(0.2)}
       >
         <svg aria-hidden width="170" height="80" viewBox="0 0 170 80" fill="none" className="absolute -top-9 right-12 hidden overflow-visible lg:block">
-          <path d="M4 74 C 40 78, 58 42, 94 50 S 132 52, 144 28" stroke="#6b5636" strokeWidth="1.5" strokeDasharray="4 6" strokeLinecap="round" />
+          <path d="M4 74 C 40 78, 58 42, 94 50 S 132 52, 144 28" stroke="#444746" strokeWidth="1.5" strokeDasharray="4 6" strokeLinecap="round" />
           <g style={{ transformBox: 'fill-box', transformOrigin: 'center', animation: 'lp-float 3.2s ease-in-out infinite' }}>
-            <path d="M140 24 L168 8 L156 34 L150 26 Z" stroke="#3a2f22" strokeWidth="1.5" strokeLinejoin="round" fill="#fbf6ea" />
-            <path d="M150 26 L168 8" stroke="#3a2f22" strokeWidth="1.5" />
+            <path d="M140 24 L168 8 L156 34 L150 26 Z" stroke="#1f1f1f" strokeWidth="1.5" strokeLinejoin="round" fill="#ffffff" />
+            <path d="M150 26 L168 8" stroke="#1f1f1f" strokeWidth="1.5" />
           </g>
         </svg>
         <div>
@@ -390,7 +390,7 @@ function DataCard({
     <div className={`${card} relative overflow-hidden p-6 lg:p-8`} style={rise(delay)}>
       <span
         aria-hidden
-        className={`absolute top-[22px] right-5 rounded-[3px] border-2 px-3 py-1 font-meta text-[15px] font-bold tracking-[0.12em] lg:top-[26px] lg:right-7 ${stampClass}`}
+        className={`absolute top-[22px] right-5 rounded-lg border-2 px-3 py-1 font-meta text-[15px] font-bold tracking-[0.12em] lg:top-[26px] lg:right-7 ${stampClass}`}
         style={{ animation: stampAnimation }}
       >
         {stamp}
@@ -409,7 +409,7 @@ function DataCard({
 
 const stroke = {
   fill: 'none',
-  stroke: '#3a2f22',
+  stroke: '#1f1f1f',
   strokeWidth: 1.5,
   strokeLinecap: 'round' as const,
   strokeLinejoin: 'round' as const,
@@ -421,7 +421,7 @@ function StepOneArt() {
       <rect className="lp-draw" x="14" y="4" width="46" height="48" rx="2" pathLength={1} style={draw(1, 0.6)} />
       <path className="lp-draw" d="M9 14h9M9 26h9M9 38h9" pathLength={1} style={draw(0.6, 1.2)} />
       <path className="lp-draw" d="M25 18h26M25 28h26M25 38h14" pathLength={1} style={draw(0.8, 1.4)} />
-      <path className="lp-draw" d="M42 37l4 4 9-10" stroke="#b5583f" strokeWidth="2.2" pathLength={1} style={draw(0.4, 2)} />
+      <path className="lp-draw" d="M42 37l4 4 9-10" stroke="#0b57d0" strokeWidth="2.2" pathLength={1} style={draw(0.4, 2)} />
     </svg>
   )
 }
@@ -429,7 +429,7 @@ function StepOneArt() {
 function StepTwoArt() {
   return (
     <svg aria-hidden width="68" height="56" viewBox="0 0 68 56" {...stroke}>
-      <ellipse cx="34" cy="30" rx="31" ry="23" stroke="#9c4830" strokeDasharray="3 4" />
+      <ellipse cx="34" cy="30" rx="31" ry="23" stroke="#0b57d0" strokeDasharray="3 4" />
       <circle className="lp-draw" cx="22" cy="24" r="5" pathLength={1} style={draw(0.5, 0.9)} />
       <circle className="lp-draw" cx="34" cy="19" r="5" pathLength={1} style={draw(0.5, 1.1)} />
       <circle className="lp-draw" cx="46" cy="24" r="5" pathLength={1} style={draw(0.5, 1.3)} />
@@ -442,7 +442,7 @@ function StepThreeArt() {
   return (
     <svg aria-hidden width="68" height="56" viewBox="0 0 68 56" {...stroke}>
       <path d="M6 44h50" />
-      <path className="lp-draw" d="M6 44h32" stroke="#b5583f" strokeWidth="4" pathLength={1} style={draw(1.2, 1.2, 'cubic-bezier(.3,.9,.3,1)')} />
+      <path className="lp-draw" d="M6 44h32" stroke="#0b57d0" strokeWidth="4" pathLength={1} style={draw(1.2, 1.2, 'cubic-bezier(.3,.9,.3,1)')} />
       <path className="lp-draw" d="M58 44V8" pathLength={1} style={draw(0.5, 0.8)} />
       <path className="lp-draw" d="M58 10h-16l5 6-5 6h16" pathLength={1} style={draw(0.6, 1.3)} />
     </svg>
@@ -466,7 +466,7 @@ function ExampleQr() {
     </g>
   )
   return (
-    <svg width="150" height="150" viewBox="-2 -2 29 29" className="shrink-0 rounded-[2px] border border-border bg-white" fill="#3a2f22">
+    <svg width="150" height="150" viewBox="-2 -2 29 29" className="shrink-0 rounded-lg border border-border bg-white" fill="#1f1f1f">
       {finder(0, 0)}
       {finder(18, 0)}
       {finder(0, 18)}

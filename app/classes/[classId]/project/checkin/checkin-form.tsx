@@ -45,7 +45,7 @@ export function CheckinForm({ classId, projectId }: { classId: string; projectId
           maxLength={280}
           rows={4}
           placeholder={t('checkin.notePlaceholder')}
-          className="w-full rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-3.5 py-2 text-base leading-7 text-ink placeholder:text-muted"
+          className="w-full rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 py-2 text-base leading-7 text-ink placeholder:text-muted"
           {...describedField(noteError, `${id}-note-error`, `${id}-fine`)}
         />
         <FieldError id={`${id}-note-error`} error={noteError} />

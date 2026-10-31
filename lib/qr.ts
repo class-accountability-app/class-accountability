@@ -9,7 +9,7 @@ import QRCode from 'qrcode'
 const OPTIONS = {
   errorCorrectionLevel: 'M',
   margin: 2,
-  color: { dark: '#3a2f22', light: '#fffdf7' },
+  color: { dark: '#1f1f1f', light: '#ffffff' },
 } as const
 
 // An <svg> string with a viewBox and no fixed size, so CSS sizes it.

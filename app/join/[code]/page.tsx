@@ -74,7 +74,7 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
           <StepHead step={1} />
         </div>
       )}
-      <div className="relative mt-12 flex w-full max-w-md flex-col gap-3.5 rounded-[2px] border border-border bg-surface px-[22px] py-7">
+      <div className="relative mt-12 flex w-full max-w-md flex-col gap-3.5 rounded-lg border border-border bg-surface px-[22px] py-7">
         {/* Masking tape, as in the mockup. */}
         <div
           aria-hidden

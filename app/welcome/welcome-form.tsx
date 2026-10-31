@@ -61,7 +61,7 @@ export function WelcomeForm({
           autoComplete="nickname"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="h-12 w-full rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-3.5 text-ink"
+          className="h-12 w-full rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 text-ink"
           {...describedField(error, errorId, hintId)}
         />
         <FieldError id={errorId} error={error} />
@@ -75,7 +75,7 @@ export function WelcomeForm({
         <button
           type="submit"
           disabled={isPending}
-          className="btn flex h-[52px] w-full items-center justify-center rounded-[2px] bg-accent text-base font-semibold text-white disabled:opacity-50"
+          className="btn flex h-[52px] w-full items-center justify-center rounded-full bg-accent text-base font-semibold text-white disabled:opacity-50"
         >
           {isPending ? (joining ? t('joining') : t('saving')) : joining ? t('join') : t('submit')}
         </button>

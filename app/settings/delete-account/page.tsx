@@ -66,7 +66,7 @@ export default async function DeleteAccountPage() {
         <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink">{t('title')}</h1>
 
         {blocked ? (
-          <section className="flex flex-col gap-3 rounded-[2px] border border-border bg-surface p-[18px]">
+          <section className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-[18px]">
             <p className="text-[15px] leading-[1.8] text-ink">{t('organizerBlocked')}</p>
             <a
               href={dataDeletionHref(t('organizerSubject'))}
@@ -76,7 +76,7 @@ export default async function DeleteAccountPage() {
             </a>
           </section>
         ) : (
-          <section className="flex flex-col gap-4 rounded-[2px] border border-border bg-surface p-[18px]">
+          <section className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-[18px]">
             <p className="text-[15px] leading-[1.8] text-ink">{t('intro')}</p>
             <ul className="flex list-disc flex-col gap-1 pl-5 text-[15px] leading-[1.7] text-ink">
               {items.map((item) => (

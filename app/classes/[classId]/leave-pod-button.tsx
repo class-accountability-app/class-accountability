@@ -55,7 +55,7 @@ export function LeavePodButton({ classId, podId }: { classId: string; podId: str
       onKeyDown={(e) => {
         if (e.key === 'Escape' && !isPending) setConfirming(false)
       }}
-      className="flex flex-col gap-2 rounded-[2px] border border-accent-text bg-page-bg p-3"
+      className="flex flex-col gap-2 rounded-lg border border-accent-text bg-page-bg p-3"
     >
       <p id={`leave-confirm-${podId}`} className="text-sm text-ink">
         {t('leaveConfirm')}
@@ -65,7 +65,7 @@ export function LeavePodButton({ classId, podId }: { classId: string; podId: str
           type="button"
           onClick={handleLeave}
           disabled={isPending}
-          className="btn inline-flex h-11 items-center rounded-[2px] bg-accent px-4 text-sm font-semibold text-white disabled:opacity-50"
+          className="btn inline-flex h-11 items-center rounded-full bg-accent px-4 text-sm font-semibold text-white disabled:opacity-50"
         >
           {isPending ? t('leaving') : t('leaveYes')}
         </button>
@@ -74,7 +74,7 @@ export function LeavePodButton({ classId, podId }: { classId: string; podId: str
           type="button"
           onClick={() => setConfirming(false)}
           disabled={isPending}
-          className="inline-flex h-11 items-center rounded-[2px] border border-ink bg-surface px-4 text-sm font-semibold text-ink disabled:opacity-50"
+          className="inline-flex h-11 items-center rounded-lg border border-ink bg-surface px-4 text-sm font-semibold text-ink disabled:opacity-50"
         >
           {t('leaveNo')}
         </button>

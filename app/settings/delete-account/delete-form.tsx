@@ -62,14 +62,14 @@ export function DeleteAccountForm() {
           setWord(e.target.value)
           setError(null)
         }}
-        className="h-12 min-w-0 rounded-[2px] border border-[#b9a57c] bg-[#fffdf7] px-3.5 text-base text-ink"
+        className="h-12 min-w-0 rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 text-base text-ink"
         {...describedField(error, errorId)}
       />
       <FieldError id={errorId} error={error} />
       <button
         type="submit"
         disabled={!ready || isPending}
-        className="btn inline-flex min-h-12 items-center justify-center rounded-[2px] bg-accent px-4 text-[15px] font-semibold text-white disabled:opacity-50"
+        className="btn inline-flex min-h-12 items-center justify-center rounded-full bg-accent px-4 text-[15px] font-semibold text-white disabled:opacity-50"
       >
         {isPending ? t('deleting') : t('submit')}
       </button>

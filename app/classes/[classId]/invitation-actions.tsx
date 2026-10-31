@@ -33,7 +33,7 @@ export function InvitationActions({ invitationId }: { invitationId: string }) {
           type="button"
           onClick={() => run('accept')}
           disabled={isPending}
-          className="btn rounded-[2px] bg-accent px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+          className="btn rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50"
         >
           {isPending && pendingAction === 'accept' ? tCommon('working') : t('accept')}
         </button>
@@ -41,7 +41,7 @@ export function InvitationActions({ invitationId }: { invitationId: string }) {
           type="button"
           onClick={() => run('decline')}
           disabled={isPending}
-          className="btn rounded-[2px] border border-border bg-surface px-4 py-2.5 text-sm font-medium text-ink disabled:opacity-50"
+          className="btn rounded-full border border-border bg-surface px-4 py-2.5 text-sm font-medium text-ink disabled:opacity-50"
         >
           {isPending && pendingAction === 'decline' ? tCommon('working') : t('decline')}
         </button>
