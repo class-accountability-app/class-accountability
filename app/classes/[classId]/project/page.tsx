@@ -170,7 +170,12 @@ export default async function ProjectPage({
             <ul className="rule-card flex flex-col px-3.5 py-3.5">
               {past.map((p) => (
                 <li key={p.id}>
-                  <p className="text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{p.title}</p>
+                  <Link
+                    href={`/classes/${classId}/project/history/${p.id}`}
+                    className="text-[15px] leading-7 font-semibold text-accent-text underline underline-offset-4 [overflow-wrap:anywhere]"
+                  >
+                    {p.title}
+                  </Link>
                   <p className="font-meta text-xs leading-7 text-muted">
                     {t('history.finished', { date: formatDate(p.finished_at, locale) })}
                   </p>
