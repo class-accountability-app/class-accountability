@@ -1,6 +1,7 @@
 // send-nudge-push: sends Web Pushes. A new nudge (0018), and the pushes the
 // database queues in push_events (0025: meeting reminders, stalled tasks;
-// 0033: check-in day; 0034: a meeting poll not yet answered).
+// 0033: check-in day; 0034: a meeting poll not yet answered; 0037: a
+// teacher's announcement).
 //
 // Called only by our database (0018: the nudges trigger and pg_cron at
 // 07:00 JST; 0025: pg_cron with {"events": true}), never by a browser.
@@ -14,7 +15,7 @@
 import webpush from 'npm:web-push@3.6.7'
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.110.2'
 import { isQuietHours } from '../_shared/quiet-hours.ts'
-import { checkinDueText, meetingReminderText, pollVoteText, pushText, stalledTaskText } from '../_shared/push-text.ts'
+import { announcementText, checkinDueText, meetingReminderText, pollVoteText, pushText, stalledTaskText } from '../_shared/push-text.ts'
 import { meetingPath, projectPath } from '../_shared/push-path.ts'
 import { verifySignature } from '../_shared/signature.ts'
 
@@ -88,10 +89,11 @@ async function notify(db: SupabaseClient, toUserId: string, nudges: Sender[]) {
 type PushEvent = {
   id: string
   user_id: string
-  kind: 'meeting_reminder' | 'task_stalled' | 'checkin_due' | 'poll_vote_due'
+  kind: 'meeting_reminder' | 'task_stalled' | 'checkin_due' | 'poll_vote_due' | 'announcement'
   poll_id: string | null
   task_id: string | null
   project_id: string | null
+  announcement_id: string | null
   needs_checkin: boolean
 }
 
@@ -123,7 +125,9 @@ async function sendEvents(db: SupabaseClient) {
     .update({ sent_at: new Date().toISOString() })
     .is('sent_at', null)
     .gt('created_at', new Date(Date.now() - MAX_EVENT_AGE_MS).toISOString())
-    .select('id, user_id, kind, poll_id, task_id, project_id, needs_checkin')
+    // All columns: works before and after a migration adds one (0037's
+    // announcement_id), so the function can be deployed first.
+    .select('*')
   // Anything older was never sent in time: mark it so it is not looked at again.
   await db.from('push_events').update({ sent_at: new Date().toISOString() }).is('sent_at', null)
 
@@ -180,6 +184,19 @@ async function sendEvents(db: SupabaseClient) {
         ...pollVoteText(locale),
         kind: 'poll_vote_due',
         path: meetingPath(classId, poll.id),
+      }))
+    } else if (event.kind === 'announcement' && event.announcement_id) {
+      // 0037: the announcement still exists; it opens the class's board.
+      const { data: note } = await db
+        .from('class_announcements')
+        .select('id, class_id')
+        .eq('id', event.announcement_id)
+        .maybeSingle()
+      if (!note) continue
+      await sendToUser(db, event.user_id, 'announcement', (locale) => ({
+        ...announcementText(locale),
+        kind: 'announcement',
+        path: projectPath(note.class_id),
       }))
     } else if (event.kind === 'checkin_due' && event.project_id) {
       // 0033: still active, and they still haven't shared this round.
