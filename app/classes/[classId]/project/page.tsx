@@ -21,6 +21,10 @@ import { TaskLog } from './task-log'
 import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
 import { ClassAnnouncements } from '@/components/class-announcements'
+import { TaskTimeline } from '@/components/project/task-timeline'
+import { imbalance, openLoads } from '@/lib/team-balance'
+import { appOrigin } from '@/lib/app-origin'
+import { tokyoToday } from '@/lib/date'
 import { TeamName } from '@/components/team/team-name'
 import { inviteFirst } from '@/lib/team-invite'
 import { TeamTable, type PresenceRow } from '@/components/team/team-table'
@@ -281,6 +285,8 @@ export default async function ProjectPage({
     // チームのようす (0035). Before that migration this errors: no table then.
     supabase.rpc('team_presence', { p_pod: pod.podId }),
   ])
+  // Feature batch 1: a gentle hint when open tasks are very unevenly shared.
+  const balance = imbalance(openLoads(members.map((m) => m.id), tasks))
   const teamRows = members.map((m) => {
     const theirs = tasks.filter((x) => x.owner_id === m.id)
     return { id: m.id, name: m.name, total: theirs.length, done: theirs.filter((x) => x.status === 'done').length }
@@ -412,6 +418,25 @@ export default async function ProjectPage({
       {presenceRows && (
         <TeamTable podId={pod.podId} me={user.id} members={teamRows} initial={presenceRows as PresenceRow[]} />
       )}
+
+      {balance && (
+        <p className="rounded-2xl bg-primary-container px-4 py-3 text-[13px] leading-6 text-on-primary-container">
+          {t('balanceHint', {
+            heavy: nameOf.get(balance.heavy.id) ?? tCommon('unknownPerson'),
+            heavyCount: balance.heavy.open,
+            light: nameOf.get(balance.light.id) ?? tCommon('unknownPerson'),
+            lightCount: balance.light.open,
+          })}
+        </p>
+      )}
+
+      <TaskTimeline
+        tasks={tasks.map((x) => ({ id: x.id, title: x.title, due: x.due, status: x.status }))}
+        start={project.start_date}
+        deadline={project.deadline}
+        today={tokyoToday()}
+        boardUrl={`${await appOrigin()}/classes/${classId}/project`}
+      />
 
       <section aria-labelledby="members-heading" className="flex flex-col gap-7">
         <div className="-mb-7 flex items-start justify-between gap-3 px-0.5">

@@ -113,6 +113,8 @@ Task templates (no migration): `lib/project-templates.ts` holds 8 templates in j
 
 0037 (announcement push; needs 0036): `push_events.kind` `announcement` (+ `announcement_id`, cascades with the announcement). Trigger `class_announcements_push` queues one push per student of the class and calls `private.send_push_events()`; a failure only warns, so posting never fails. The push says only 「先生からお知らせが届きました」 and opens the board. `send-nudge-push` selects `*` from `push_events` so it can be deployed before a migration adds a column (v8 deployed 2026-10-31). Team names on the student board: `components/team/team-name.tsx` (shown once `pairings.name` exists; any member renames through `rename_team`). Test: `rls_announcement_push.sql`; `dry36_37.sql` runs 0036 + 0037 with both tests.
 
+Board tools (feature batch 1, K1; no migration): the re-balance hint (`lib/team-balance.ts`: open tasks per member, shown when the gap is 3 or more), タイムライン (`components/project/task-timeline.tsx` + `lib/timeline.ts`: bars from the project's start to each due day, late in `--error`), "add to calendar" (`lib/calendar.ts`: Google Calendar link and RFC 5545 .ics; a confirmed meeting's .ics is `meetings/[pollId]/calendar`, readable only through RLS), check-in starter prompts, and a manifest shortcut to the board. All pure helpers are tested.
+
 ## Writing editor (Prompt 12)
 
 - Route `app/classes/[classId]/project/tasks/[taskId]/write/` (moved from targets in 0030; Tiptap 3, all `@tiptap/*` pinned to one exact version) and `…/write/print` (the PDF view). The plan of record is `docs/plans/prompt12-editor-plan.md`.
