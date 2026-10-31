@@ -18,7 +18,7 @@ const FIELD_FOR_ERROR: Partial<Record<ErrorKey, Field>> = {
 }
 
 export const controlClass =
-  'h-12 w-full rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 text-base text-ink placeholder:text-muted'
+  'h-12 w-full rounded-lg border border-outline bg-surface px-3.5 text-base text-ink placeholder:text-muted'
 
 // Starting the pod's one project: a title, an optional deadline and how often
 // everyone checks in (every 4 days unless changed, 1–14), and optionally a

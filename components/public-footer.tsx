@@ -29,7 +29,7 @@ export function PublicFooter({ signedIn }: { signedIn: boolean }) {
             >
               {t('privacy')}
             </Link>
-            <span className="inline-flex min-h-11 flex-wrap items-center text-[#1f1f1f]">
+            <span className="inline-flex min-h-11 flex-wrap items-center text-ink">
               {t('contact')}
               <a href={`mailto:${CONTACT_EMAIL}`} className="text-accent-text underline underline-offset-4">
                 {CONTACT_EMAIL}

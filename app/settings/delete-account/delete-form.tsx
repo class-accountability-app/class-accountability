@@ -62,7 +62,7 @@ export function DeleteAccountForm() {
           setWord(e.target.value)
           setError(null)
         }}
-        className="h-12 min-w-0 rounded-lg border border-[#747775] bg-[#ffffff] px-3.5 text-base text-ink"
+        className="h-12 min-w-0 rounded-lg border border-outline bg-surface px-3.5 text-base text-ink"
         {...describedField(error, errorId)}
       />
       <FieldError id={errorId} error={error} />

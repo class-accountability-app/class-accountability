@@ -75,7 +75,7 @@ export function PushCard() {
           <p className="text-sm leading-7 text-ink">{t('body')}</p>
 
           {device.state === 'ios-install-first' && (
-            <div className="rounded-lg bg-[#ffffff] px-4 py-2.5 text-sm leading-7 shadow-[inset_0_0_0_1px_#c4c7c5]">
+            <div className="rounded-lg bg-surface px-4 py-2.5 text-sm leading-7 shadow-[inset_0_0_0_1px_var(--border)]">
               <p className="font-semibold text-ink">{t('iosTitle')}</p>
               <Link
                 href={`/settings#${INSTALL_ROW_ID}`}
@@ -94,7 +94,7 @@ export function PushCard() {
           <button
             type="button"
             onClick={later}
-            className="flex min-h-12 w-full items-center justify-center rounded-lg border border-border bg-[#ffffff] text-[15px] font-semibold text-ink"
+            className="flex min-h-12 w-full items-center justify-center rounded-lg border border-border bg-surface text-[15px] font-semibold text-ink"
           >
             {t('later')}
           </button>

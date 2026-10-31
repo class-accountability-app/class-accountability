@@ -9,7 +9,7 @@ import { FormError } from '@/components/form-errors'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { autoSplit, createTeam, moveStudent, renameTeam } from '@/app/classes/[classId]/organizer-actions'
 
-const control = 'h-11 rounded-lg border border-[#747775] bg-[#ffffff] px-2.5 text-base text-ink'
+const control = 'h-11 rounded-lg border border-outline bg-surface px-2.5 text-base text-ink'
 
 // チームの管理 (0036, item G): the organizer sees every student by name and
 // team, makes a team from students without one, splits them automatically,
@@ -109,7 +109,7 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
               {isPending ? tCommon('working') : t('makeTeam', { count: picked.size })}
             </button>
 
-            <div className="mt-2 flex flex-col gap-1.5 border-t border-dashed border-[#c4c7c5] pt-3">
+            <div className="mt-2 flex flex-col gap-1.5 border-t border-dashed border-border pt-3">
               <label htmlFor={`${id}-size`} className="text-sm font-semibold text-ink">
                 {t('autoSplitLabel')}
               </label>
@@ -204,7 +204,7 @@ function TeamCard({
       </div>
       <ul className="flex flex-col">
         {team.members.map((m) => (
-          <li key={m.user_id} className="flex min-h-11 items-center justify-between gap-2 border-t border-dashed border-[#c4c7c5] py-1">
+          <li key={m.user_id} className="flex min-h-11 items-center justify-between gap-2 border-t border-dashed border-border py-1">
             <span className="text-[15px] text-ink [overflow-wrap:anywhere]">{m.display_name}</span>
             <label className="sr-only" htmlFor={`${id}-${m.user_id}`}>
               {t('moveLabel', { name: m.display_name })}

@@ -19,7 +19,7 @@ function draw(duration: number, delay: number, easing = 'ease'): CSSProperties {
   return { animation: `lp-draw ${duration}s ${easing} ${delay}s forwards` }
 }
 
-const body = 'text-[#1f1f1f]'
+const body = 'text-ink'
 const card = 'rounded-lg border border-border bg-surface'
 const section = 'mx-auto w-full max-w-[1440px] border-t border-border px-5 py-12 lg:px-[120px] lg:py-24'
 const primaryCta =
@@ -152,10 +152,10 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
             <div className="flex h-16 items-center gap-7">
               <span className="flex items-center gap-2.5">
                 <span
-                  className="inline-flex size-7 items-center justify-center rounded-full border-[1.5px] border-[#146c2e]"
+                  className="inline-flex size-7 items-center justify-center rounded-full border-[1.5px] border-status-active"
                   style={{ animation: 'lp-restamp 4.5s cubic-bezier(.2,1.4,.4,1) 0.5s infinite both' }}
                 >
-                  <span className="size-[9px] rounded-full bg-[#146c2e]" />
+                  <span className="size-[9px] rounded-full bg-status-active" />
                 </span>
                 <span className={`font-meta text-[13px] ${body}`}>{t('features.activeLabel')}</span>
               </span>
@@ -170,7 +170,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
           <Feature title={t('features.nudgeTitle')} text={t('features.nudgeBody')} delay={0.6}>
             <div className="flex h-16 items-center">
               <div
-                className="rounded-lg border border-border bg-[#f0f4f9] px-3.5 py-2.5 text-sm"
+                className="rounded-lg border border-border bg-surface-container px-3.5 py-2.5 text-sm"
                 
               >
                 {t('features.nudgeSample')}
@@ -190,7 +190,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
                   <path key={d} className="lp-draw" d={d} pathLength={1} style={{ animation: `lp-lines 3s ease-in-out ${delay} infinite alternate` }} />
                 ))}
               </svg>
-              <svg width="28" height="14" viewBox="0 0 28 14" fill="none" stroke="#444746" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="28" height="14" viewBox="0 0 28 14" fill="none" className="stroke-muted" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M2 7h22M18 2l6 5-6 5" />
               </svg>
               <span className="font-meta text-[15px]">{t('features.docsCount')}</span>
@@ -209,7 +209,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
           <DataCard
             title={t('data.sharedTitle')}
             stamp={t('data.sharedStamp')}
-            stampClass="border-[#146c2e] text-[#146c2e]"
+            stampClass="border-status-active text-status-active"
             stampAnimation="lp-box-l 0.5s cubic-bezier(.2,1.4,.4,1) 0.9s both"
             items={[t('data.shared1'), t('data.shared2'), t('data.shared3'), t('data.shared4')]}
             delay={0.3}
@@ -242,12 +242,12 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
         <figure className={`${card} relative m-0 flex flex-col gap-4 p-6 lg:p-8`} style={rise(0.35, 0.6)}>
           <figcaption className="sr-only">{t('classLink.figureLabel')}</figcaption>
           <div aria-hidden className="flex flex-col gap-4">
-            <span className="absolute top-[18px] right-5 rounded-lg border border-dashed border-[#747775] px-2 py-0.5 font-meta text-[11px] text-muted">
+            <span className="absolute top-[18px] right-5 rounded-lg border border-dashed border-outline px-2 py-0.5 font-meta text-[11px] text-muted">
               {t('classLink.example')}
             </span>
             <div className="pr-14 font-heading text-lg font-bold lg:text-xl">{t('classLink.cardTitle')}</div>
             <div className="flex items-stretch gap-2">
-              <div className="flex h-11 min-w-0 grow items-center overflow-hidden rounded-lg border border-border bg-[#f0f4f9] px-3 font-meta text-sm whitespace-nowrap">
+              <div className="flex h-11 min-w-0 grow items-center overflow-hidden rounded-lg border border-border bg-surface-container px-3 font-meta text-sm whitespace-nowrap">
                 {t('classLink.link')}
               </div>
               <span className="inline-flex h-11 shrink-0 items-center rounded-full border border-outline bg-surface px-5 text-sm font-medium text-accent-text">
@@ -308,7 +308,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
         style={rise(0.2)}
       >
         <svg aria-hidden width="170" height="80" viewBox="0 0 170 80" fill="none" className="absolute -top-9 right-12 hidden overflow-visible lg:block">
-          <path d="M4 74 C 40 78, 58 42, 94 50 S 132 52, 144 28" stroke="#444746" strokeWidth="1.5" strokeDasharray="4 6" strokeLinecap="round" />
+          <path d="M4 74 C 40 78, 58 42, 94 50 S 132 52, 144 28" className="stroke-muted" strokeWidth="1.5" strokeDasharray="4 6" strokeLinecap="round" />
           <g style={{ transformBox: 'fill-box', transformOrigin: 'center', animation: 'none' }}>
             <path d="M140 24 L168 8 L156 34 L150 26 Z" stroke="#1f1f1f" strokeWidth="1.5" strokeLinejoin="round" fill="#ffffff" />
             <path d="M150 26 L168 8" stroke="#1f1f1f" strokeWidth="1.5" />

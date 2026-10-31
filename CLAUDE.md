@@ -40,6 +40,8 @@ Students log in with a 6-digit code or a button sent to their university email (
 - `npm test` — unit tests (Vitest)
 - `npm run build` — production build
 - Run lint + typecheck + test + build locally before every push; CI runs all four.
+- `node scripts/axe-public.mjs [baseUrl]` — axe (WCAG 2.1 AA) on the pages that need no login, against a running production build (K3). Logged-in pages: the author checks them in Chrome DevTools.
+- Demo reset: `docs/demo-reset.md` (keeps organizers and their classes; dry run by default).
 
 ### RLS tests
 
