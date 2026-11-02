@@ -7,14 +7,16 @@ import type { ErrorKey } from '@/lib/errors'
 import { AUTO_SPLIT_SIZES, TEAM_NAME_MAX, groupRoster, splitPreview, type RosterRow, type RosterTeam } from '@/lib/organizer'
 import { FormError } from '@/components/form-errors'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
-import { autoSplit, createTeam, moveStudent, renameTeam } from '@/app/classes/[classId]/organizer-actions'
+import { autoSplit, createTeam, moveStudent, renameTeam, swapStudents } from '@/app/classes/[classId]/organizer-actions'
 
 const control = 'h-11 rounded-lg border border-outline bg-surface px-2.5 text-base text-ink'
+// A move menu value that means "swap with this student" instead of a team id.
+const SWAP = 'swap:'
 
 // チームの管理 (0036, item G): the organizer sees every student by name and
 // team, makes a team from students without one, puts one straight into an
-// existing team, splits them automatically, renames teams and moves a
-// student (or takes them out of a team). Names and
+// existing team, splits them automatically, renames teams, moves a student
+// (or takes them out of a team) and swaps two students between teams (0039). Names and
 // teams only: no numbers, tasks or text.
 export function TeamManager({ classId, roster }: { classId: string; roster: RosterRow[] }) {
   const t = useTranslations('organizer')
@@ -181,6 +183,7 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
           pending={isPending}
           onRename={(name) => run(() => renameTeam(classId, team.podId, name))}
           onMove={(userId, to) => run(() => moveStudent(classId, userId, to))}
+          onSwap={(userId, other) => run(() => swapStudents(classId, userId, other))}
         />
       ))}
     </section>
@@ -195,6 +198,7 @@ function TeamCard({
   pending,
   onRename,
   onMove,
+  onSwap,
 }: {
   team: RosterTeam
   label: string
@@ -203,6 +207,7 @@ function TeamCard({
   pending: boolean
   onRename: (name: string) => void
   onMove: (userId: string, to: string | null) => void
+  onSwap: (userId: string, otherUserId: string) => void
 }) {
   const t = useTranslations('organizer')
   const id = useId()
@@ -248,7 +253,11 @@ function TeamCard({
               id={`${id}-${m.user_id}`}
               value={team.podId}
               disabled={pending}
-              onChange={(e) => onMove(m.user_id, e.target.value === '' ? null : e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value
+                if (value.startsWith(SWAP)) onSwap(m.user_id, value.slice(SWAP.length))
+                else onMove(m.user_id, value === '' ? null : value)
+              }}
               className={`${control} max-w-[11rem]`}
             >
               {teams.map((other) => (
@@ -261,6 +270,18 @@ function TeamCard({
                 </option>
               ))}
               <option value="">{t('removeFromTeam')}</option>
+              {/* 入れ替える (0039): change places with someone in another team. */}
+              {teams
+                .filter((other) => other.podId !== team.podId)
+                .map((other) => (
+                  <optgroup key={other.podId} label={t('swapWith', { team: teamLabel(other) })}>
+                    {other.members.map((o) => (
+                      <option key={o.user_id} value={`${SWAP}${o.user_id}`}>
+                        {t('swapOption', { name: o.display_name })}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
             </select>
           </li>
         ))}

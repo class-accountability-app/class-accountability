@@ -1421,7 +1421,9 @@
     "fromTeacher": "From your teacher",
     "placeIn": "Add to a team…",
     "placeLabel": "Team to add {name} to",
-    "teamFull": "{team} (full)"
+    "teamFull": "{team} (full)",
+    "swapWith": "Swap with someone in {team}",
+    "swapOption": "⇄ {name}"
   },
   "teamName": {
     "unnamed": "No team name yet",

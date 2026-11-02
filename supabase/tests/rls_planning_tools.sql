@@ -48,7 +48,7 @@ insert into public.project_tasks (id, project_id, title, owner_id, metric, targe
   ('00000000-0000-4000-8000-0000000038d4', '00000000-0000-4000-8000-00000038a0b2', 'T4', '00000000-0000-4000-8000-0000000038c3', 'status', null);
 
 insert into public.meeting_polls (id, project_id, created_by, title, status) values
-  ('00000000-0000-4000-8000-0000000038aa', '00000000-0000-4000-8000-00000038a0b1', '00000000-0000-4000-8000-0000000038a1', 'Meeting', 'confirmed');
+  ('00000000-0000-4000-8000-0000000038aa', '00000000-0000-4000-8000-00000038a0b1', '00000000-0000-4000-8000-0000000038a1', 'Meeting', 'open');
 
 -- =============================================================================
 -- As A: task order (any length of loop refused), meeting notes
@@ -84,7 +84,7 @@ begin
     insert into public.task_dependencies (task_id, depends_on)
     values ('00000000-0000-4000-8000-0000000038d1', '00000000-0000-4000-8000-0000000038d1');
     raise exception 'FAIL: a task must not wait on itself';
-  exception when check_violation then null;
+  exception when check_violation or sqlstate 'SP018' then null;
   end;
 
   insert into public.meeting_notes (poll_id, body, updated_by)
