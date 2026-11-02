@@ -1421,7 +1421,9 @@
     "fromTeacher": "先生からのお知らせ",
     "placeIn": "チームに入れる…",
     "placeLabel": "{name}さんを入れるチーム",
-    "teamFull": "{team}（満員）"
+    "teamFull": "{team}（満員）",
+    "swapWith": "{team}の人と入れ替える",
+    "swapOption": "⇄ {name}さん"
   },
   "teamName": {
     "unnamed": "チーム名はまだありません",

@@ -107,3 +107,14 @@ export async function deleteMilestone(classId: string, id: string): Promise<Acti
   refresh(classId)
   return { error: null }
 }
+
+// 入れ替える (0039): two students in different teams change places in one
+// step, so it works between full teams too.
+export async function swapStudents(classId: string, a: string, b: string): Promise<ActionResult> {
+  if (a === b) return { error: 'teamSetupInvalid' }
+  const supabase = await createClient()
+  const { error } = await supabase.rpc('organizer_swap_students', { p_class: classId, p_a: a, p_b: b })
+  if (error) return { error: toErrorKey('swapStudents', error, TEAM_ERRORS) }
+  refresh(classId)
+  return { error: null }
+}
