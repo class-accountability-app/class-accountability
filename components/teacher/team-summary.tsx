@@ -5,6 +5,8 @@ import { formatDayAgo } from '@/lib/date'
 import { expectedPercent, teamPace, type TeamPace } from '@/lib/team-summary'
 import { ProgressBar } from '@/components/progress-bar'
 
+type RosterName = { display_name: string; team_no: number | null; team_name: string | null }
+
 type SummaryRow = {
   team_no: number
   members: number
@@ -24,17 +26,28 @@ const PACE_PILL: Record<TeamPace, string> = {
 }
 
 // The organizer's view of the class (0027, project first): one line per team,
-// from class_team_summary(), which returns no names, ids or per-person
-// numbers. If the function isn't there yet, nothing is shown.
+// from class_team_summary(), which returns no ids or per-person numbers.
+// Since 0036 the organizer also sees who is in each team: names come from
+// class_roster(), matched by team number (both count active teams in creation
+// order). Before 0036 the names are simply left out.
 export async function TeamSummary({ classId }: { classId: string }) {
   const supabase = await createClient()
-  const [{ data, error }, t, locale] = await Promise.all([
+  const [{ data, error }, { data: rosterRows }, t, locale] = await Promise.all([
     supabase.rpc('class_team_summary', { p_class: classId }),
+    supabase.rpc('class_roster', { p_class: classId }),
     getTranslations('teacher'),
     getLocale() as Promise<Locale>,
   ])
   if (error) return null
   const rows = (data as SummaryRow[] | null) ?? []
+  const namesByTeam = new Map<number, string[]>()
+  const teamName = new Map<number, string>()
+  for (const r of (rosterRows as RosterName[] | null) ?? []) {
+    if (r.team_no === null) continue
+    namesByTeam.set(r.team_no, [...(namesByTeam.get(r.team_no) ?? []), r.display_name])
+    if (r.team_name) teamName.set(r.team_no, r.team_name)
+  }
+  const separator = locale === 'ja' ? '、' : ', '
   const now = new Date()
 
   return (
@@ -68,13 +81,18 @@ export async function TeamSummary({ classId }: { classId: string }) {
               <li key={r.team_no} className="flex flex-col border-b border-dashed border-border py-1.5 last:border-b-0">
                 <div className="flex min-h-7 items-center justify-between gap-2.5">
                   <span className="text-[15px] leading-7 font-semibold text-ink">
-                    {t('team', { number: r.team_no })}
+                    {teamName.get(r.team_no) ?? t('team', { number: r.team_no })}
                     <span className="font-meta text-xs font-normal text-muted"> · {t('members', { count: r.members })}</span>
                   </span>
                   <span className={`shrink-0 rounded-lg px-2 font-meta text-xs leading-5 font-bold ${PACE_PILL[pace]}`}>
                     {t(`pace.${pace}`)}
                   </span>
                 </div>
+                {namesByTeam.has(r.team_no) && (
+                  <p className="text-[13px] leading-6 text-ink [overflow-wrap:anywhere]">
+                    {namesByTeam.get(r.team_no)!.join(separator)}
+                  </p>
+                )}
                 {r.has_project ? (
                   <>
                     <div className="flex h-7 items-center">
