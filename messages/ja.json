@@ -1418,7 +1418,10 @@
     "announceHint": "クラスの学生全員のボードに表示されます（{max}文字まで）。",
     "announceSend": "お知らせする",
     "announceDelete": "このお知らせを消す",
-    "fromTeacher": "先生からのお知らせ"
+    "fromTeacher": "先生からのお知らせ",
+    "placeIn": "チームに入れる…",
+    "placeLabel": "{name}さんを入れるチーム",
+    "teamFull": "{team}（満員）"
   },
   "teamName": {
     "unnamed": "チーム名はまだありません",

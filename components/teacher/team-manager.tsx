@@ -12,8 +12,9 @@ import { autoSplit, createTeam, moveStudent, renameTeam } from '@/app/classes/[c
 const control = 'h-11 rounded-lg border border-outline bg-surface px-2.5 text-base text-ink'
 
 // チームの管理 (0036, item G): the organizer sees every student by name and
-// team, makes a team from students without one, splits them automatically,
-// renames teams and moves a student (or takes them out of a team). Names and
+// team, makes a team from students without one, puts one straight into an
+// existing team, splits them automatically, renames teams and moves a
+// student (or takes them out of a team). Names and
 // teams only: no numbers, tasks or text.
 export function TeamManager({ classId, roster }: { classId: string; roster: RosterRow[] }) {
   const t = useTranslations('organizer')
@@ -62,22 +63,56 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
             <fieldset className="flex flex-col gap-1">
               <legend className="sr-only">{t('pickLegend')}</legend>
               {unassigned.map((s) => (
-                <label key={s.user_id} className="flex min-h-11 items-center gap-2.5 text-[15px] text-ink">
-                  <input
-                    type="checkbox"
-                    className="h-5 w-5"
-                    checked={picked.has(s.user_id)}
-                    onChange={(e) =>
-                      setPicked((cur) => {
-                        const next = new Set(cur)
-                        if (e.target.checked) next.add(s.user_id)
-                        else next.delete(s.user_id)
-                        return next
-                      })
-                    }
-                  />
-                  {s.display_name}
-                </label>
+                <div key={s.user_id} className="flex min-h-11 items-center justify-between gap-2">
+                  <label className="flex min-h-11 min-w-0 items-center gap-2.5 text-[15px] text-ink [overflow-wrap:anywhere]">
+                    <input
+                      type="checkbox"
+                      className="h-5 w-5 shrink-0"
+                      checked={picked.has(s.user_id)}
+                      onChange={(e) =>
+                        setPicked((cur) => {
+                          const next = new Set(cur)
+                          if (e.target.checked) next.add(s.user_id)
+                          else next.delete(s.user_id)
+                          return next
+                        })
+                      }
+                    />
+                    {s.display_name}
+                  </label>
+                  {/* Straight into an existing team (place_student keeps the cap of 6). */}
+                  {teams.length > 0 && (
+                    <>
+                      <label className="sr-only" htmlFor={`${id}-place-${s.user_id}`}>
+                        {t('placeLabel', { name: s.display_name })}
+                      </label>
+                      <select
+                        id={`${id}-place-${s.user_id}`}
+                        value=""
+                        disabled={isPending}
+                        onChange={(e) => {
+                          const to = e.target.value
+                          if (!to) return
+                          run(() => moveStudent(classId, s.user_id, to), () =>
+                            setPicked((cur) => {
+                              const next = new Set(cur)
+                              next.delete(s.user_id)
+                              return next
+                            })
+                          )
+                        }}
+                        className={`${control} max-w-[11rem]`}
+                      >
+                        <option value="">{t('placeIn')}</option>
+                        {teams.map((team) => (
+                          <option key={team.podId} value={team.podId} disabled={team.members.length >= 6}>
+                            {team.members.length >= 6 ? t('teamFull', { team: teamLabel(team) }) : teamLabel(team)}
+                          </option>
+                        ))}
+                      </select>
+                    </>
+                  )}
+                </div>
               ))}
             </fieldset>
             <div className="flex flex-col gap-1.5">
@@ -218,7 +253,11 @@ function TeamCard({
             >
               {teams.map((other) => (
                 <option key={other.podId} value={other.podId} disabled={other.podId !== team.podId && other.members.length >= 6}>
-                  {other.podId === team.podId ? t('stayIn', { team: teamLabel(other) }) : t('moveTo', { team: teamLabel(other) })}
+                  {other.podId === team.podId
+                    ? t('stayIn', { team: teamLabel(other) })
+                    : other.members.length >= 6
+                      ? t('teamFull', { team: teamLabel(other) })
+                      : t('moveTo', { team: teamLabel(other) })}
                 </option>
               ))}
               <option value="">{t('removeFromTeam')}</option>
