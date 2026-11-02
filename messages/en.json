@@ -1418,7 +1418,10 @@
     "announceHint": "Shown on every student’s board in this class (up to {max} characters).",
     "announceSend": "Post",
     "announceDelete": "Delete this announcement",
-    "fromTeacher": "From your teacher"
+    "fromTeacher": "From your teacher",
+    "placeIn": "Add to a team…",
+    "placeLabel": "Team to add {name} to",
+    "teamFull": "{team} (full)"
   },
   "teamName": {
     "unnamed": "No team name yet",
