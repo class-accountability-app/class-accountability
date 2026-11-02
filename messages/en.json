@@ -408,7 +408,9 @@
       "label": "Show when I’m online",
       "hint": "While on, teammates see a green dot when you have the app open. The day you last opened it is shown either way.",
       "failed": "Couldn’t change this. Please try again."
-    }
+    },
+    "feedback": "Give feedback",
+    "feedbackHint": "Tell us how it went (a Google Form, a few minutes)"
   },
   "nudgesPage": {
     "title": "Nudges",
@@ -1310,7 +1312,9 @@
       "checkins": "Check-ins this round",
       "yes": "yes",
       "no": "no"
-    }
+    },
+    "googleLost": "{count} of {links} Google links can’t be read (the file was deleted or unshared, or Google was disconnected). Students see it on their board; ask them to link the file again.",
+    "googleStuck": "{count} of {links} Google links haven’t been counted for over a day. Automatic counting may have stopped; please tell the developer."
   },
   "teamJoin": {
     "eyebrow": "Team invitation",
@@ -1459,7 +1463,7 @@
   "timeline": {
     "heading": "Timeline",
     "count": "{count} tasks",
-    "late": "{date} (overdue)",
+    "late": "{date} (past its due date)",
     "addToCalendar": "Add to calendar",
     "todayLine": "The black line is today."
   },
@@ -1477,7 +1481,7 @@
     "notesHeading": "Meeting notes",
     "notesLabel": "What was decided and what's next",
     "notesHint": "Everyone on the team can read and edit this (up to {max} characters)",
-    "notesUpdated": "Updated by {name}, {when}",
+    "notesUpdated": "Last updated: {name}, {when}",
     "notesSave": "Save notes",
     "notesSaved": "Saved",
     "milestonesHeading": "Milestones",

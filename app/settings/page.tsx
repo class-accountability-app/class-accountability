@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { setLocale } from '@/i18n/actions'
 import { locales } from '@/i18n/config'
 import { DELETE_ACCOUNT_PATH, PRIVACY_POLICY_PATH } from '@/lib/contact'
+import { feedbackUrl } from '@/lib/feedback'
 import { DisplayNameForm } from './display-name-form'
 import { InstallRow } from './install-row'
 import { PushRow } from './push-row'
@@ -42,6 +43,8 @@ export default async function SettingsPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser()
+
+  const feedback = feedbackUrl(process.env.NEXT_PUBLIC_FEEDBACK_URL)
 
   if (!user) {
     redirect('/login')
@@ -130,6 +133,21 @@ export default async function SettingsPage() {
 
         <section className={`${sectionClass} px-[18px] py-1.5`}>
           <InstallRow rowClass={rowClass} />
+          {/* The pilot's feedback form (lib/feedback.ts), when one is set. */}
+          {feedback && (
+            <a
+              href={feedback}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${rowClass} border-b border-dashed border-border text-ink`}
+            >
+              <span className="flex flex-col py-2">
+                {t('feedback')}
+                <span className="text-[13px] font-normal text-muted">{t('feedbackHint')}</span>
+              </span>
+              <Chevron />
+            </a>
+          )}
           <Link href={PRIVACY_POLICY_PATH} className={`${rowClass} border-b border-dashed border-border text-ink`}>
             {t('privacyPolicy')}
             <Chevron />
