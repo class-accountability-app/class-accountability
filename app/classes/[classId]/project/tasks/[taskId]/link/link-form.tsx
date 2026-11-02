@@ -10,8 +10,19 @@ import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { pickGoogleFile } from '@/components/google-picker'
 import { googleDocHeadings, googlePickerToken, linkTaskSource, unlinkTaskSource } from '../../../google-actions'
 
-type Choice = 'section' | 'doc' | 'slides' | 'manual'
-type Current = { kind: 'doc' | 'doc_section' | 'slides'; fileId: string; headingId: string | null; state: string } | null
+type Choice = 'section' | 'doc' | 'slides' | 'words' | 'sheet' | 'manual'
+type SourceKind = 'doc' | 'doc_section' | 'slides' | 'doc_words' | 'sheet'
+type Current = { kind: SourceKind; fileId: string; headingId: string | null; state: string } | null
+
+// The link kind each picked-file choice saves (0040 adds words and sheet), and
+// the kind it was saved as back to the choice.
+const KIND_OF: Record<'doc' | 'slides' | 'words' | 'sheet', SourceKind> = {
+  doc: 'doc',
+  slides: 'slides',
+  words: 'doc_words',
+  sheet: 'sheet',
+}
+const CHOICE_OF: Record<SourceKind, Choice> = { doc: 'doc', doc_section: 'section', slides: 'slides', doc_words: 'words', sheet: 'sheet' }
 
 // The mockup's four options as native radios (one tap, keyboard for free).
 // A section needs a heading chosen from the group Doc; a Doc or Slides file is
@@ -38,9 +49,10 @@ export function LinkForm({
   const router = useRouter()
   const id = useId()
   const options: Choice[] =
-    metric === 'count' ? ['slides', 'manual'] : [...(groupDocId ? (['section'] as const) : []), 'doc', 'manual']
-  const initial: Choice =
-    current?.kind === 'doc_section' ? 'section' : current?.kind === 'doc' ? 'doc' : current?.kind === 'slides' ? 'slides' : options[0]
+    metric === 'count'
+      ? ['slides', 'words', 'sheet', 'manual']
+      : [...(groupDocId ? (['section'] as const) : []), 'doc', 'manual']
+  const initial: Choice = current ? CHOICE_OF[current.kind] : options[0]
   const [choice, setChoice] = useState<Choice>(options.includes(initial) ? initial : options[0])
   const [headings, setHeadings] = useState<{ id: string; text: string }[] | null>(null)
   const [heading, setHeading] = useState<string>(current?.kind === 'doc_section' ? (current.headingId ?? '') : '')
@@ -82,17 +94,17 @@ export function LinkForm({
         const result = await linkTaskSource(classId, taskId, { kind: 'doc_section', fileId: groupDocId, headingId: heading, label: title })
         return result.error ? setError(result.error) : done()
       }
-      // A Doc or Slides file: Google's picker in this browser.
+      // A Doc, Slides or Sheets file: Google's picker in this browser.
       const token = await googlePickerToken()
       if (token.error || !token.token) return setError(token.error ?? 'googleFailed')
       let file: { id: string; name: string } | null = null
       try {
-        file = await pickGoogleFile(choice === 'slides' ? 'slides' : 'doc', token.token, locale)
+        file = await pickGoogleFile(choice === 'slides' ? 'slides' : choice === 'sheet' ? 'sheet' : 'doc', token.token, locale)
       } catch {
         return setError('googleFailed')
       }
       if (!file) return
-      const result = await linkTaskSource(classId, taskId, { kind: choice, fileId: file.id, label: file.name || title })
+      const result = await linkTaskSource(classId, taskId, { kind: KIND_OF[choice], fileId: file.id, label: file.name || title })
       return result.error ? setError(result.error) : done()
     })
   }
@@ -152,7 +164,7 @@ export function LinkForm({
       )}
 
       <button type="submit" disabled={isPending} className={`${primaryButtonClass} h-[52px] w-full`}>
-        {isPending ? tCommon('working') : choice === 'doc' || choice === 'slides' ? t('pickAndLink') : t('save')}
+        {isPending ? tCommon('working') : choice === 'section' || choice === 'manual' ? t('save') : t('pickAndLink')}
       </button>
       {current && choice !== 'manual' && (
         <p className="text-[13px] leading-7 text-muted">{t('relinkNote')}</p>

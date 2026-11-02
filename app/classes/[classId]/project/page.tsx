@@ -40,7 +40,12 @@ type BoardTask = TaskLike & {
   inputMode: 'manual' | 'document'
   shown: ReturnType<typeof visibleTotal>
 }
-type SourceRow = { task_id: string; kind: 'doc' | 'doc_section' | 'slides'; file_id: string; state: 'ok' | 'lost_access' }
+type SourceRow = {
+  task_id: string
+  kind: 'doc' | 'doc_section' | 'slides' | 'doc_words' | 'sheet'
+  file_id: string
+  state: 'ok' | 'lost_access'
+}
 const GOOGLE_RESULTS = ['connected', 'denied', 'failed', 'unavailable'] as const
 
 // The team board (docs/mockups/phase4/group-projects.html, view "board"): the

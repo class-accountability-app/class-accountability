@@ -1221,7 +1221,9 @@
     "kind": {
       "doc": "Google ドキュメント",
       "doc_section": "グループのドキュメント",
-      "slides": "Google スライド"
+      "slides": "Google スライド",
+      "doc_words": "Google ドキュメント（単語数）",
+      "sheet": "Google スプレッドシート"
     },
     "updated": "{when}に確認",
     "notYet": "まもなく数えます",
@@ -1247,6 +1249,14 @@
       "slides": {
         "title": "Google スライド",
         "hint": "選んだスライドの枚数"
+      },
+      "words": {
+        "title": "ドキュメントの英単語数",
+        "hint": "選んだドキュメント全体の単語数（英語の課題向け）"
+      },
+      "sheet": {
+        "title": "Google スプレッドシートの行数",
+        "hint": "最初のシートの、見出し行を除いた入力済みの行数（フォームの回答数など）"
       },
       "manual": {
         "title": "手で記録する",

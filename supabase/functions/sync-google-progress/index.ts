@@ -8,8 +8,9 @@
 // secret PUSH_WEBHOOK_SECRET), anything else gets a 401.
 //
 // For each linked task it uses the token of whoever linked the file, reads
-// the Doc (whole, or one heading's section) or the Slides file, counts it in
-// memory and calls record_synced_count(). The text is never stored, logged or
+// the Doc (whole, or one heading's section; characters, or words since 0040),
+// the Slides file or the Sheet (0040: filled rows), counts it in memory and
+// calls record_synced_count(). The text is never stored, logged or
 // returned. It logs only what failed and how: never a token, file id or text.
 //
 // Secrets: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_TOKEN_KEY,
@@ -17,8 +18,8 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.110.2'
 import { verifySignature } from '../_shared/signature.ts'
 import { decryptToken } from '../_shared/token-crypto.ts'
-import { fetchDoc, fetchPresentation, refreshAccessToken, type GoogleClient } from '../_shared/google-api.ts'
-import { countDoc, countSlides, type DocsDocument } from '../_shared/google-count.ts'
+import { fetchDoc, fetchPresentation, fetchSheetValues, refreshAccessToken, type GoogleClient } from '../_shared/google-api.ts'
+import { countDoc, countDocWords, countSheetRows, countSlides, type DocsDocument } from '../_shared/google-count.ts'
 
 const MAX_BODY_BYTES = 8 * 1024
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -32,7 +33,13 @@ function adminKey(): string {
   return env('SUPABASE_SERVICE_ROLE_KEY')
 }
 
-type Source = { task_id: string; kind: 'doc' | 'doc_section' | 'slides'; file_id: string; heading_id: string | null; linked_by: string }
+type Source = {
+  task_id: string
+  kind: 'doc' | 'doc_section' | 'slides' | 'doc_words' | 'sheet'
+  file_id: string
+  heading_id: string | null
+  linked_by: string
+}
 
 async function markLost(db: SupabaseClient, taskIds: string[]) {
   for (const id of taskIds) await db.rpc('mark_task_source_lost', { p_task: id })
@@ -62,11 +69,20 @@ async function syncLinker(db: SupabaseClient, client: GoogleClient, tokenKey: st
       const res = await fetchPresentation(token.accessToken, s.file_id)
       if (res.ok) count = countSlides(res.value)
       else lost = res.reason === 'lost'
+    } else if (s.kind === 'sheet') {
+      // 0040: filled rows of the first tab, less the header.
+      const res = await fetchSheetValues(token.accessToken, s.file_id)
+      if (res.ok) count = countSheetRows(res.value)
+      else lost = res.reason === 'lost'
     } else {
       if (!docs.has(s.file_id)) docs.set(s.file_id, fetchDoc(token.accessToken, s.file_id))
       const res = await docs.get(s.file_id)!
       if (res.ok) {
-        count = countDoc(res.value as DocsDocument, s.kind === 'doc_section' ? s.heading_id : null)
+        // 0040: a doc_words link counts English words instead of characters.
+        count =
+          s.kind === 'doc_words'
+            ? countDocWords(res.value as DocsDocument)
+            : countDoc(res.value as DocsDocument, s.kind === 'doc_section' ? s.heading_id : null)
         lost = count === null // the heading was deleted
       } else {
         lost = res.reason === 'lost'

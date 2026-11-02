@@ -1221,7 +1221,9 @@
     "kind": {
       "doc": "Google Docs",
       "doc_section": "Group Doc",
-      "slides": "Google Slides"
+      "slides": "Google Slides",
+      "doc_words": "Google Docs (words)",
+      "sheet": "Google Sheets"
     },
     "updated": "checked {when}",
     "notYet": "counting soon",
@@ -1247,6 +1249,14 @@
       "slides": {
         "title": "Google Slides",
         "hint": "Number of slides in the file you choose"
+      },
+      "words": {
+        "title": "Words in a Doc",
+        "hint": "Words in the whole Doc you choose (for English writing)"
+      },
+      "sheet": {
+        "title": "Rows in Google Sheets",
+        "hint": "Filled rows on the first sheet, not counting the header row (e.g. form responses)"
       },
       "manual": {
         "title": "Log by hand",

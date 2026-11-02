@@ -20,6 +20,7 @@ export const DOC_FIELDS =
   'body(content(paragraph(elements(textRun(content)),paragraphStyle(namedStyleType,headingId)),' +
   'table(tableRows(tableCells(content(paragraph(elements(textRun(content)))))))))'
 export const SLIDES_FIELDS = 'slides(objectId)'
+export const SHEET_FIELDS = 'values'
 
 // TITLE is above HEADING_1; ordinary paragraphs have no level.
 function headingLevel(p: DocsParagraph | undefined): number | null {
@@ -74,6 +75,29 @@ export function countDoc(doc: DocsDocument, headingId: string | null): number | 
     text += elementText(content[i])
   }
   return countText(text)
+}
+
+// Words in the whole document (0040), counted like Word does for English:
+// whitespace-separated pieces that contain a letter or a digit, so "well-known"
+// is one word and a lone "—" is none.
+export function countDocWords(doc: DocsDocument): number {
+  return countWords((doc.body?.content ?? []).map(elementText).join(''))
+}
+
+export function countWords(text: string): number {
+  let n = 0
+  for (const piece of text.split(/\s+/u)) if (/[\p{L}\p{N}]/u.test(piece)) n++
+  return n
+}
+
+// The rows of a sheet's first tab that have anything in them, less the header
+// row (0040): a Forms responses sheet gives the number of answers. The values
+// API leaves out empty rows at the end; empty rows in between come as [].
+export function countSheetRows(sheet: { values?: unknown[][] }): number {
+  const filled = (sheet.values ?? []).filter((row) =>
+    row.some((cell) => cell !== null && cell !== undefined && String(cell).trim() !== '')
+  ).length
+  return Math.max(0, filled - 1)
 }
 
 export function countSlides(presentation: { slides?: unknown[] }): number {
