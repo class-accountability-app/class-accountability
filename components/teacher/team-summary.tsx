@@ -32,9 +32,11 @@ const PACE_PILL: Record<TeamPace, string> = {
 // order). Before 0036 the names are simply left out.
 export async function TeamSummary({ classId }: { classId: string }) {
   const supabase = await createClient()
-  const [{ data, error }, { data: rosterRows }, t, locale] = await Promise.all([
+  const [{ data, error }, { data: rosterRows }, { data: health }, t, locale] = await Promise.all([
     supabase.rpc('class_team_summary', { p_class: classId }),
     supabase.rpc('class_roster', { p_class: classId }),
+    // 0042: Google links that can't be read or haven't been counted for a day.
+    supabase.rpc('class_google_health', { p_class: classId }).maybeSingle<{ links: number; lost: number; stuck: number }>(),
     getTranslations('teacher'),
     getLocale() as Promise<Locale>,
   ])
@@ -58,6 +60,12 @@ export async function TeamSummary({ classId }: { classId: string }) {
         </h2>
         <p className="text-[13px] leading-7 text-muted">{t('why')}</p>
       </div>
+      {health && (health.lost > 0 || health.stuck > 0) && (
+        <div role="status" className="rounded-2xl bg-primary-container px-4 py-3 text-[13px] leading-6 text-on-primary-container">
+          {health.lost > 0 && <p>{t('googleLost', { count: health.lost, links: health.links })}</p>}
+          {health.stuck > 0 && <p>{t('googleStuck', { count: health.stuck, links: health.links })}</p>}
+        </div>
+      )}
       {rows.length > 0 && (
         <a
           href={`/classes/${classId}/team-summary`}

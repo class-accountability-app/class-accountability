@@ -354,7 +354,7 @@
     "teamNameTooLong": "チーム名は30文字までです。",
     "announcementRequired": "お知らせの内容を入力してください。",
     "announcementTooLong": "お知らせは500文字までです。",
-    "dependencyInvalid": "その順番は設定できません（同じタスクどうしが待ち合ってしまいます）。",
+    "dependencyInvalid": "タスクどうしがお互いを待つことになるため、その順番は設定できません。",
     "meetingNoteTooLong": "メモは2,000文字までです。",
     "milestoneInvalid": "目安の名前（60文字まで）、日付、1〜100の％を入力してください。",
     "milestoneLimit": "目安は1クラス20件までです。",
@@ -408,7 +408,9 @@
       "label": "オンライン表示",
       "hint": "オンのとき、アプリを開いている間はチームの仲間に緑の点が表示されます。最後に開いた日は、オフでも表示されます。",
       "failed": "切り替えられませんでした。もう一度お試しください。"
-    }
+    },
+    "feedback": "アンケートに答える",
+    "feedbackHint": "使ってみた感想を教えてください（Google フォーム・数分で終わります）"
   },
   "nudgesPage": {
     "title": "声かけ",
@@ -1197,7 +1199,7 @@
     "templateHint": "選ぶと、タスクと締め切りから逆算した期日が入ります。あとで自由に変えられます。",
     "templateAddLabel": "ひな形からタスクを追加",
     "templateAdd": "追加する",
-    "balanceHint": "{heavy}さんの未完了タスクが{heavyCount}つ、{light}さんは{lightCount}つです。分担を見直してみませんか？"
+    "balanceHint": "{heavy}さんの未完了タスクが{heavyCount}件、{light}さんは{lightCount}件です。分担を見直してみませんか？"
   },
   "google": {
     "kicker": "自動で記録",
@@ -1310,7 +1312,9 @@
       "checkins": "今回のチェックイン",
       "yes": "あり",
       "no": "なし"
-    }
+    },
+    "googleLost": "Google とつないだ記録のうち {count}件（全{links}件中）が読めなくなっています。ファイルの削除や共有の解除、Google 連携の解除などが考えられます。学生のボードにも表示されているので、つなぎ直すよう声をかけてください。",
+    "googleStuck": "Google とつないだ記録のうち {count}件（全{links}件中）が1日以上数えられていません。自動の集計が止まっている可能性があるので、開発者に知らせてください。"
   },
   "teamJoin": {
     "eyebrow": "チームへの招待",
@@ -1459,7 +1463,7 @@
   "timeline": {
     "heading": "タイムライン",
     "count": "{count}件",
-    "late": "{date}（期限切れ）",
+    "late": "{date}（期限を過ぎています）",
     "addToCalendar": "カレンダーに追加",
     "todayLine": "黒い線が今日です。"
   },
@@ -1471,13 +1475,13 @@
     "orderRemove": "外す",
     "orderAfterLabel": "このタスクは",
     "orderBeforeLabel": "このタスクが終わってから始める",
-    "orderNotAllowed": "この組み合わせは設定できません（同じタスク、設定済み、または待ち合いになります）。",
+    "orderNotAllowed": "この組み合わせは設定できません（同じタスク、設定済み、またはお互いを待つ順番になります）。",
     "orderAdd": "順番を追加する",
     "waitingOn": "待っています：{titles}",
     "notesHeading": "打ち合わせのメモ",
     "notesLabel": "決まったこと・次にやること",
     "notesHint": "チーム全員が読めて、書き直せます（{max}文字まで）",
-    "notesUpdated": "{name}が{when}に更新",
+    "notesUpdated": "最終更新：{name}・{when}",
     "notesSave": "メモを保存する",
     "notesSaved": "保存しました",
     "milestonesHeading": "目安",
