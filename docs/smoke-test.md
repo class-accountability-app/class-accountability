@@ -1,0 +1,163 @@
+# Smoke test (before the pilot)
+
+A walk through every feature, end to end, on the live site. Most of what
+shipped between 2026-10-30 and 2026-11-02 is covered by unit tests and the
+RLS tests in `supabase/tests/`, but not by anyone tapping through it. This
+script is for the author: the assistant never signs in as anyone (CLAUDE.md,
+Working style).
+
+**You need**
+- The organizer account (`O`).
+- Three student test accounts, `A`, `B`, `C`: addresses in
+  `private.allowed_test_emails` (never written in the repo). Test accounts are
+  left out of research automatically.
+- Two devices or browser profiles (one per person at a time). A phone for the
+  push and offline steps; iPhone needs the app added to the home screen.
+- A Google account for `A` with one Doc, one Slides file and one Sheet you can
+  pick (any content; a Google Form's responses sheet is ideal).
+
+Tick each box. Anything that doesn't match the **Expect** line: note the step
+number, the account and a screenshot, and send it to me.
+
+When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
+
+---
+
+## 1. Login and first run
+
+- [ ] 1.1 `A` opens the site, enters the email, gets the code mail. **Expect:**
+  6-digit code and a button; the code screen links to Gmail and Outlook.
+- [ ] 1.2 `A` enters the code. **Expect:** 「表示名を決めましょう」; saving a
+  name goes to Home.
+- [ ] 1.3 Settings → language switch to English and back. **Expect:** the
+  whole UI changes, no untranslated keys (`project.xyz`-style text).
+
+## 2. Organizer: class, teams, names, swap (0036, 0039)
+
+- [ ] 2.1 `O` opens the class page. **Expect:** join link + QR, student count,
+  チームの管理, お知らせ, 目安, the class project form, the team summary.
+- [ ] 2.2 `A`, `B`, `C` join the class with the code or QR. **Expect:** `O`'s
+  student count goes to 3; チームの管理 lists all three without a team.
+- [ ] 2.3 `O` ticks `A` and `B`, names the team, 「チームを作る」. **Expect:**
+  a team card with A and B; `C` still without a team.
+- [ ] 2.4 `O` uses `C`'s 「チームに入れる…」 menu → the A/B team. **Expect:**
+  C moves into it (3 members).
+- [ ] 2.5 `O` makes a second team: move `C` out (「チームから外す」), then make
+  a team of `C` alone. Then on `A`'s menu pick 「…の人と入れ替える」 → `C`.
+  **Expect:** A and C have changed teams; both teams keep their size.
+- [ ] 2.6 Put everyone back as you want them for the rest (A, B, C in one team
+  is easiest). **Expect:** the team summary lists each team with its members'
+  names, no numbers per person.
+- [ ] 2.7 `O` posts an お知らせ. **Expect:** students see it on their board and
+  class page; with push on (step 8), a push 「先生からお知らせが届きました」.
+
+## 3. Project and tasks
+
+- [ ] 3.1 `A` opens the board → start a project from a template (e.g. 発表).
+  **Expect:** tasks appear, without owners; due dates not before today.
+- [ ] 3.2 `A`, `B`, `C` each 「担当する」 one or more tasks. **Expect:** tasks
+  group under each person; unclaimed ones stay under
+  「担当が決まっていません」.
+- [ ] 3.3 `A` adds a task: count, unit "words", goal 100. Another: count, unit
+  "answers", goal 5. **Expect:** both appear under 「担当が決まっていません」 until claimed.
+- [ ] 3.4 Team name: a student renames the team on the board. **Expect:** `O`
+  sees the new name in チームの管理 and the summary.
+
+## 4. Logging
+
+- [ ] 4.1 `A` ＋記録 on a counted task (chips, then 記録する). **Expect:**
+  「記録しました」; the bar moves; teammates see the new total (live).
+- [ ] 4.2 Double-tap 記録する quickly. **Expect:** one entry, not two.
+- [ ] 4.3 Offline: phone in airplane mode, ＋記録. **Expect:** 「オフラインです。
+  この端末に保存しました…」. Airplane mode off, open the board. **Expect:** the
+  entry arrives once, within a few seconds.
+- [ ] 4.4 「Study Pods で書く」 on a characters task with nothing logged: write
+  two sentences, wait for 「保存しました」. **Expect:** the count on the board
+  matches the editor's; teammates see the count, never the text.
+
+## 5. Google (0023, 0026, 0040)
+
+- [ ] 5.1 `A`: board → 「Google とつなぐ」 → consent (drive.file only).
+  **Expect:** back on the board, 「Google とつなぎました。」.
+- [ ] 5.2 Link a characters task to `A`'s Doc (自分のドキュメント). **Expect:**
+  within ~5 min (or on reopening the board) the count appears and matches
+  Google Docs' character count without spaces.
+- [ ] 5.3 Link the "words" task → 「ドキュメントの英単語数」 → an English Doc.
+  **Expect:** the number matches Google Docs' word count (Tools → Word count)
+  within a word or two.
+- [ ] 5.4 Link the "answers" task → 「Google スプレッドシートの行数」 → the
+  Form's responses Sheet. **Expect:** number of responses (header not counted).
+  Submit one more Form response, reopen the board: +1.
+- [ ] 5.5 Delete a response row in the Sheet. **Expect:** the total goes down
+  by one at the next count.
+- [ ] 5.6 Push the Sheet's count to the goal (5). **Expect:** the task turns
+  完了 by itself (auto-done).
+- [ ] 5.7 Link a count task to Slides. **Expect:** the slide count.
+- [ ] 5.8 Google card → 「グループのドキュメントをつくる」 → 「つくってつなぐ」. **Expect:** a Doc
+  with one heading per characters task; the board shows its link; linking a
+  task to a heading counts only that section.
+- [ ] 5.9 Settings → 「Google との連携を解除する」. **Expect:** linked tasks show
+  「ファイルが読めなくなりました」 at the next count, numbers so far kept.
+
+## 6. Check-ins, timeline, order
+
+- [ ] 6.1 `A` 「チェックインする」 with a note (try a starter prompt chip).
+  **Expect:** it appears in 「みんなのチェックイン」; a second one in the same round is
+  refused.
+- [ ] 6.2 タイムライン: open it. **Expect:** a bar per task with a due date; a
+  late one in red; 「カレンダーに追加」 opens Google Calendar.
+- [ ] 6.3 タスクの順番: set "B's task after A's task". **Expect:** 「待っています：…」
+  on B's task until A's is done; a loop is refused.
+- [ ] 6.4 Give one person 3+ more open tasks than another. **Expect:** the
+  re-balance hint appears.
+
+## 7. Meetings
+
+- [ ] 7.1 `A` creates a poll: pick 3 times on the week grid, deadline 1 day.
+  **Expect:** the poll page with the vote grid.
+- [ ] 7.2 `B` and `C` vote. **Expect:** tallies update; the best time is marked.
+- [ ] 7.3 Confirm a time. **Expect:** the board's 次の打ち合わせ card shows it;
+  Google Calendar and .ics links work; 打ち合わせのメモ saves and shows who
+  updated it.
+
+## 8. Push (phone)
+
+- [ ] 8.1 Settings → 声かけの通知 on (iPhone: from the home-screen app).
+  **Expect:** permission prompt, then on.
+- [ ] 8.2 `B` sends `A` a 声かけ. **Expect:** a push on `A`'s phone within a
+  minute (unless 23:00–07:00 JST: then at 07:00).
+- [ ] 8.3 Tap the push. **Expect:** it opens the app at 声かけ (or the board for
+  board pushes), never anywhere else.
+
+## 9. Teacher milestones and team view
+
+- [ ] 9.1 `O` adds a 目安 "30% by <a date next week>". **Expect:** students see
+  it under the project's %; `O` sees "n/m teams reached".
+- [ ] 9.2 `O`'s team summary: **Expect:** each team's %, on track / behind,
+  last activity, check-ins this round, member names; CSV download opens in
+  Excel without garbled Japanese.
+
+## 10. Finish and wrap-up
+
+- [ ] 10.1 `A` 「プロジェクトを完了する」 (confirm). **Expect:** the board shows
+  the start form and 「これまでのプロジェクト」; editing old tasks is refused.
+- [ ] 10.2 Open the finished project's まとめ. **Expect:** tasks, owners, final
+  numbers, each member's done/owned and check-ins.
+- [ ] 10.3 「このタスクで新しいプロジェクトを始める」. **Expect:** a new project
+  with the same tasks, no owners, no progress.
+
+## 11. Leaving and deleting
+
+- [ ] 11.1 `C` leaves the team. **Expect:** C's tasks move to 「担当が決まっていません」 with their
+  numbers kept.
+- [ ] 11.2 `C` deletes the account (Settings → アカウントを削除, type 「削除」).
+  **Expect:** signed out, landing page; `O`'s student count drops by one.
+- [ ] 11.3 Sign out of `A` with something queued offline or an unsaved draft.
+  **Expect:** a warning first.
+
+## After
+
+- Count `auth.users` again if you used new test addresses; run
+  `docs/demo-reset.md` (dry run first) for a clean demo.
+- Logged-in accessibility: Lighthouse in Chrome DevTools on the board, the
+  class page and Settings (CLAUDE.md: never with a captured session).
