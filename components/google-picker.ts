@@ -20,7 +20,7 @@ type PickerBuilder = {
 }
 type PickerNamespace = {
   DocsView: new (viewId: unknown) => { setMode?: (mode: unknown) => unknown }
-  ViewId: { DOCUMENTS: unknown; PRESENTATIONS: unknown }
+  ViewId: { DOCUMENTS: unknown; PRESENTATIONS: unknown; SPREADSHEETS: unknown }
   Action: { PICKED: string; CANCEL: string }
   PickerBuilder: new () => PickerBuilder
 }
@@ -52,16 +52,18 @@ function loadPicker(): Promise<PickerNamespace> {
   return loading
 }
 
-// Opens the picker for Docs or Slides; resolves with the chosen file, or null
-// when the student closes it.
+// Opens the picker for Docs, Slides or Sheets (0040); resolves with the chosen
+// file, or null when the student closes it.
 export async function pickGoogleFile(
-  kind: 'doc' | 'slides',
+  kind: 'doc' | 'slides' | 'sheet',
   token: string,
   locale: string
 ): Promise<PickerDoc | null> {
   const picker = await loadPicker()
   return new Promise((resolve) => {
-    const view = new picker.DocsView(kind === 'slides' ? picker.ViewId.PRESENTATIONS : picker.ViewId.DOCUMENTS)
+    const view = new picker.DocsView(
+      kind === 'slides' ? picker.ViewId.PRESENTATIONS : kind === 'sheet' ? picker.ViewId.SPREADSHEETS : picker.ViewId.DOCUMENTS
+    )
     new picker.PickerBuilder()
       .addView(view)
       .setOAuthToken(token)

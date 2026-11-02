@@ -65,7 +65,7 @@ export async function googleDocHeadings(fileId: string): Promise<{ error: ErrorK
 export async function linkTaskSource(
   classId: string,
   taskId: string,
-  input: { kind: 'doc' | 'doc_section' | 'slides'; fileId: string; label: string; headingId?: string | null }
+  input: { kind: 'doc' | 'doc_section' | 'slides' | 'doc_words' | 'sheet'; fileId: string; label: string; headingId?: string | null }
 ): Promise<ActionResult> {
   const me = await signedIn()
   if (!me) return { error: 'signedOut' }

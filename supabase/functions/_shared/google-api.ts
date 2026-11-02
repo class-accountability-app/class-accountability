@@ -1,4 +1,4 @@
-import { DOC_FIELDS, SLIDES_FIELDS, type DocsDocument } from './google-count.ts'
+import { DOC_FIELDS, SHEET_FIELDS, SLIDES_FIELDS, type DocsDocument } from './google-count.ts'
 
 // The few Google calls the app makes, with plain fetch so the same code runs
 // in the Edge Function (Deno) and on the Next.js server (Node). Scope is
@@ -85,6 +85,15 @@ export function fetchDoc(accessToken: string, fileId: string): Promise<Fetched<D
 export function fetchPresentation(accessToken: string, fileId: string): Promise<Fetched<{ slides?: unknown[] }>> {
   return getJson(
     `https://slides.googleapis.com/v1/presentations/${encodeURIComponent(fileId)}?fields=${encodeURIComponent(SLIDES_FIELDS)}`,
+    accessToken
+  )
+}
+
+// The first tab's cell values (0040). A range with no sheet name means the
+// first tab; A:ZZ is wide enough for any Forms responses sheet.
+export function fetchSheetValues(accessToken: string, fileId: string): Promise<Fetched<{ values?: unknown[][] }>> {
+  return getJson(
+    `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(fileId)}/values/${encodeURIComponent('A:ZZ')}?fields=${encodeURIComponent(SHEET_FIELDS)}`,
     accessToken
   )
 }
