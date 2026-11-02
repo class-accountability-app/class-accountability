@@ -130,7 +130,7 @@
     "inviting": "Inviting…",
     "noOneToInvite": "No classmates left to invite.",
     "notInPodTitle": "You're not in a team yet",
-    "organizerNote": "You organize this class. You see one summary per team, never an individual student’s progress or name.",
+    "organizerNote": "You organize this class. You see one summary per team and each team’s members by display name, never an individual student’s progress.",
     "studentCount": "{count, plural, one {# student has joined} other {# students have joined}}",
     "leavePod": "Leave team",
     "leaveConfirm": "If you leave, your teammates can no longer see your progress. Your targets and logs stay.",
@@ -1176,7 +1176,7 @@
       "open": "See the meeting"
     },
     "membersWhyLive": "Who is doing what. Teammates’ numbers are live. The text itself and the memos on your logs stay yours.",
-    "teacherSees": "Your teacher sees only how the team as a whole is doing: no names, no individual numbers.",
+    "teacherSees": "Your teacher sees how the team as a whole is doing and who is in it (display names), never individual numbers or notes.",
     "writeInApp": "Write in Study Pods (counts characters for you)",
     "keepWriting": "Write",
     "finish": {
@@ -1281,7 +1281,7 @@
     "noActivity": "nothing logged yet",
     "checkins": "check-ins {count}/{members}",
     "noProject": "No project yet",
-    "privacy": "No student names, individual numbers or text are shown.",
+    "privacy": "You see each team's members by display name. Individual numbers, notes, text and email addresses are never shown.",
     "pace": {
       "onTrack": "On track",
       "behind": "Behind",
