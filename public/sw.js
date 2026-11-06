@@ -14,7 +14,7 @@
 // for a new version on every visit. Bump VERSION when the cached shell
 // changes; activate deletes every cache from other versions.
 
-const VERSION = 'sp-v1'
+const VERSION = 'sp-v2'
 const SHELL_CACHE = `shell-${VERSION}`
 const STATIC_CACHE = `static-${VERSION}`
 // Hashed files change with every deploy; keep the newest ones only.
