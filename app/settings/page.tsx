@@ -15,7 +15,8 @@ import { SignOutForm } from '@/components/sign-out-form'
 
 const LANGUAGE_NAMES = { ja: '日本語', en: 'English' } as const
 
-const sectionClass = 'flex flex-col rounded-lg border border-border bg-surface'
+// Soft pastel (2026-11-06): 20px white cards on the porcelain page.
+const sectionClass = 'rule-card flex flex-col'
 const rowClass =
   'flex min-h-[52px] w-full items-center justify-between text-[15px] font-semibold'
 
@@ -62,11 +63,15 @@ export default async function SettingsPage() {
   const emailNoteId = 'settings-email-note'
 
   return (
-    <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
-      <div className="flex w-full max-w-md flex-col gap-5">
-        <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink">{t('title')}</h1>
+    <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-7 md:max-w-xl lg:max-w-5xl">
+        <h1 className="px-0.5 font-heading text-[28px] leading-tight font-bold text-ink lg:text-[36px]">{t('title')}</h1>
+        {/* Two columns from 1024px: you and your notifications on the left,
+            connections, language and the links on the right. */}
+        <div className="grid gap-7 lg:grid-cols-2 lg:items-start">
+        <div className="flex min-w-0 flex-col gap-7">
 
-        <section aria-labelledby="settings-profile" className={`${sectionClass} gap-2.5 p-[18px]`}>
+        <section aria-labelledby="settings-profile" className={`${sectionClass} gap-2.5 px-5 py-5`}>
           <h2 id="settings-profile" className="font-heading text-xl font-bold text-ink">
             {t('profileHeading')}
           </h2>
@@ -80,25 +85,28 @@ export default async function SettingsPage() {
 
         <section
           aria-labelledby="settings-notifications"
-          className={`${sectionClass} px-[18px] pt-1.5 pb-2.5`}
+          className={`${sectionClass} px-5 pt-2 pb-3`}
         >
           <h2 id="settings-notifications" className="mt-3 font-heading text-xl font-bold text-ink">
             {t('notificationsHeading')}
           </h2>
           <PushRow />
-          <div className="border-t border-dashed border-border">
+          <div className="border-t border-border">
             <OnlineRow initialOn={presence?.share_online ?? true} />
           </div>
         </section>
+        </div>
 
-        <section aria-labelledby="settings-google" className={`${sectionClass} gap-2.5 p-[18px]`}>
+        <div className="flex min-w-0 flex-col gap-7">
+
+        <section aria-labelledby="settings-google" className={`${sectionClass} gap-2.5 px-5 py-5`}>
           <h2 id="settings-google" className="font-heading text-xl font-bold text-ink">
             {tGoogle('settingsHeading')}
           </h2>
           <GoogleRow connected={hasGoogle === true} />
         </section>
 
-        <section aria-labelledby="settings-language"className={`${sectionClass} gap-2.5 p-[18px]`}>
+        <section aria-labelledby="settings-language" className={`${sectionClass} gap-2.5 px-5 py-5`}>
           <h2 id="settings-language" className="font-heading text-xl font-bold text-ink">
             {t('languageHeading')}
           </h2>
@@ -108,9 +116,9 @@ export default async function SettingsPage() {
             action={setLocale}
             role="group"
             aria-labelledby="settings-language"
-            className="flex overflow-hidden rounded-lg border border-outline"
+            className="flex gap-1 rounded-full bg-surface-container p-1"
           >
-            {locales.map((option, index) => {
+            {locales.map((option) => {
               const isCurrent = option === locale
               return (
                 <button
@@ -120,8 +128,8 @@ export default async function SettingsPage() {
                   value={option}
                   lang={option}
                   aria-pressed={isCurrent}
-                  className={`min-h-11 flex-1 px-2 py-1.5 text-sm ${index > 0 ? 'border-l border-outline' : ''} ${
-                    isCurrent ? 'bg-ink text-surface' : 'bg-surface text-ink'
+                  className={`min-h-11 flex-1 rounded-full px-2 py-1.5 text-sm font-semibold ${
+                    isCurrent ? 'bg-ink text-surface' : 'text-ink hover:bg-surface'
                   }`}
                 >
                   {LANGUAGE_NAMES[option]}
@@ -131,7 +139,7 @@ export default async function SettingsPage() {
           </form>
         </section>
 
-        <section className={`${sectionClass} px-[18px] py-1.5`}>
+        <section className={`${sectionClass} px-5 py-2`}>
           <InstallRow rowClass={rowClass} />
           {/* The pilot's feedback form (lib/feedback.ts), when one is set. */}
           {feedback && (
@@ -139,7 +147,7 @@ export default async function SettingsPage() {
               href={feedback}
               target="_blank"
               rel="noopener noreferrer"
-              className={`${rowClass} border-b border-dashed border-border text-ink`}
+              className={`${rowClass} border-b border-border text-ink`}
             >
               <span className="flex flex-col py-2">
                 {t('feedback')}
@@ -148,14 +156,14 @@ export default async function SettingsPage() {
               <Chevron />
             </a>
           )}
-          <Link href={PRIVACY_POLICY_PATH} className={`${rowClass} border-b border-dashed border-border text-ink`}>
+          <Link href={PRIVACY_POLICY_PATH} className={`${rowClass} border-b border-border text-ink`}>
             {t('privacyPolicy')}
             <Chevron />
           </Link>
           {/* Deleting by email is still possible; the page says how. */}
           <Link
             href={DELETE_ACCOUNT_PATH}
-            className={`${rowClass} border-b border-dashed border-border text-ink`}
+            className={`${rowClass} border-b border-border text-ink`}
           >
             {t('deleteAccount')}
             <Chevron />
@@ -165,6 +173,8 @@ export default async function SettingsPage() {
             <Chevron />
           </SignOutForm>
         </section>
+        </div>
+        </div>
       </div>
     </div>
   )
