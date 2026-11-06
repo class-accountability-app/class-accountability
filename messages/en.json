@@ -1119,7 +1119,9 @@
       "promptsLabel": "Starter prompts",
       "promptDone": "Done this round:",
       "promptStuck": "Stuck on:",
-      "promptNext": "Next:"
+      "promptNext": "Next:",
+      "titleKicker": "This round's",
+      "intro": "Your numbers and note go to your team. Your writing itself is never shown."
     },
     "feed": {
       "title": "Check-in, {date}",

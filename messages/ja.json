@@ -1119,7 +1119,9 @@
       "promptsLabel": "書き出しのヒント",
       "promptDone": "今回やったこと：",
       "promptStuck": "困っていること：",
-      "promptNext": "次にやること："
+      "promptNext": "次にやること：",
+      "titleKicker": "今回の",
+      "intro": "あなたの数字とひとことを、チームに見せます。文章の中身は見えません。"
     },
     "feed": {
       "title": "{date}のチェックイン",
