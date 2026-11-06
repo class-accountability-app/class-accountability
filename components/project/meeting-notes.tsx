@@ -30,7 +30,7 @@ export function MeetingNotes({
   const [isPending, startTransition] = useTransition()
 
   return (
-    <section aria-labelledby={`${id}-heading`} className="rule-card flex flex-col gap-2 px-3.5 py-3.5">
+    <section aria-labelledby={`${id}-heading`} className="rule-card flex flex-col gap-2 px-5 py-5">
       <h2 id={`${id}-heading`} className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">
         {t('notesHeading')}
       </h2>

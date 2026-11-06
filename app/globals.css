@@ -1,34 +1,35 @@
 @import "tailwindcss";
 
 /*
- * Vintage-notebook palette. Base hexes come from the design brief; a few are
- * darkened from the brief's literal values to clear WCAG AA contrast at small
- * text sizes (muted text, accent-as-text, the stale status dot) — see the
- * PR description for the exact ratios. Single theme, no dark mode.
+ * Soft pastel (the author's choice, 2026-11-06, replacing Material 3): French
+ * Porcelain page, white cards, Umbra ink and buttons, and four tints that each
+ * mean one thing: Penna = your own work, Hudson = needs attention, Country
+ * Rubble = from the teacher, Farmer's Market = done / on track. Token names are
+ * kept from the earlier themes so every utility (bg-surface, text-muted...)
+ * follows. All text pairs pass WCAG AA. Single theme, no dark mode.
  */
 :root {
-  /* Material 3 (author's choice, 2026-10-30, item H): Google's baseline
-     light scheme with Google blue as primary. Token names are kept from the
-     notebook theme so every utility (bg-surface, text-muted...) follows.
-     All text pairs pass WCAG AA. Single theme, no dark mode. */
-  --page-bg: #f8fafd; /* surface */
-  --surface: #ffffff; /* surface-container-lowest (cards) */
-  --surface-container: #f0f4f9;
-  --surface-container-highest: #e1e3e1; /* switch track when off */
-  --primary-container: #d3e3fd;
-  --on-primary-container: #041e49;
-  --border: #c4c7c5; /* outline-variant */
-  --outline: #747775;
-  --ink: #1f1f1f; /* on-surface */
-  --muted: #444746; /* on-surface-variant */
-  --accent: #0b57d0; /* primary; white text on it is 6.3:1 */
-  --accent-text: #0b57d0;
-  --status-active: #146c2e;
-  --status-stale: #747775;
-  --error: #b3261e; /* M3 error; 6.5:1 on white */
+  --page-bg: #f5f4f7; /* French Porcelain */
+  --surface: #ffffff; /* cards */
+  --surface-container: #ebe9ee; /* quiet fills: fields, toggles, chips */
+  --surface-container-highest: #d9d6dd; /* switch track when off */
+  --primary-container: #bac8e0; /* Penna: your own work, hints */
+  --on-primary-container: #1f1f1f;
+  --border: #d9d6dd; /* hairlines, progress tracks */
+  --outline: #6b6970; /* field outlines; 5.5:1 on white */
+  --ink: #1f1f1f; /* Umbra */
+  --muted: #4a4a4a; /* 8.9:1 on white */
+  --accent: #1f1f1f; /* filled buttons: Umbra, white text 16:1 */
+  --accent-text: #1f1f1f; /* links are Umbra and underlined */
+  --status-active: #55573f; /* Farmer's Market, darkened for text: 7.3:1 */
+  --status-stale: #6b6970;
+  --error: #b3261e; /* 6.5:1 on white; the palette has no red */
+  --tint-penna: #bac8e0;
+  --tint-hudson: #ebdbd3;
+  --tint-rubble: #d0bea3;
+  --tint-olive: #8f917c;
 
-  /* Layout rhythm kept from the notebook theme (28px lines); the ruled dots
-     are gone with Material 3. */
+  /* Layout rhythm kept from the notebook theme (28px lines). */
   --rule: 28px;
   --rule-line: 22px;
   --rule-color: transparent;
@@ -50,11 +51,15 @@
   --color-surface-container-highest: var(--surface-container-highest);
   --color-primary-container: var(--primary-container);
   --color-on-primary-container: var(--on-primary-container);
+  --color-tint-penna: var(--tint-penna);
+  --color-tint-hudson: var(--tint-hudson);
+  --color-tint-rubble: var(--tint-rubble);
+  --color-tint-olive: var(--tint-olive);
 
   /* Latin face first; Japanese characters fall through to the second face. */
-  --font-heading: var(--font-roboto), 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans CJK JP', 'Noto Sans JP', 'Yu Gothic UI', Meiryo, sans-serif;
-  --font-body: var(--font-roboto), 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans CJK JP', 'Noto Sans JP', 'Yu Gothic UI', Meiryo, sans-serif;
-  --font-meta: var(--font-roboto), 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans CJK JP', 'Noto Sans JP', 'Yu Gothic UI', Meiryo, sans-serif;
+  --font-heading: var(--font-outfit), 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans CJK JP', 'Noto Sans JP', 'Yu Gothic UI', Meiryo, sans-serif;
+  --font-body: var(--font-outfit), 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans CJK JP', 'Noto Sans JP', 'Yu Gothic UI', Meiryo, sans-serif;
+  --font-meta: var(--font-outfit), 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans CJK JP', 'Noto Sans JP', 'Yu Gothic UI', Meiryo, sans-serif;
 }
 
 /*
@@ -105,10 +110,22 @@ body {
    off the rule). Heights come out as whole lines when the padding is
    14 + 14px and every line inside is 28px. */
 .rule-card {
-  /* Material 3 outlined card. */
-  border-radius: 16px;
+  /* Soft pastel card: white on the porcelain page, 20px corners, a hairline
+     so it still reads on a white background. */
+  border-radius: 20px;
   background-color: var(--surface);
-  box-shadow: inset 0 0 0 1px var(--border);
+  box-shadow: inset 0 0 0 1px rgba(31, 31, 31, 0.06);
+}
+
+/* A tinted card keeps the shape and drops the hairline. */
+.rule-card.tint-penna { background-color: var(--tint-penna); box-shadow: none; }
+.rule-card.tint-hudson { background-color: var(--tint-hudson); box-shadow: none; }
+.rule-card.tint-rubble { background-color: var(--tint-rubble); box-shadow: none; }
+
+/* Visible keyboard focus everywhere: an Umbra ring with a white gap. */
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
 }
 
 html:lang(ja) body {
@@ -161,8 +178,7 @@ html:lang(ja) body {
 }
 
 .btn {
-  /* Material 3 filled button: no resting shadow, a soft one on hover, and a
-     state layer darkening the fill. */
+  /* Filled pill: no resting shadow, a soft one on hover. */
   transition:
     box-shadow 0.15s ease,
     filter 0.15s ease;
@@ -170,7 +186,7 @@ html:lang(ja) body {
 
 .btn:hover:not(:disabled) {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
-  filter: brightness(0.94);
+  filter: brightness(1.25);
 }
 
 /* Scales from the left instead of animating width, so the fill moves

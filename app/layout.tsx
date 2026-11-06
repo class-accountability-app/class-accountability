@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from 'next'
-import { Roboto } from 'next/font/google'
+import { Outfit } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { appOrigin } from '@/lib/app-origin'
 import { Nav } from '@/components/nav'
-import { TabBar } from '@/components/app-nav'
+import { SideMenu, TabBar } from '@/components/app-nav'
 import { PublicFooter } from '@/components/public-footer'
 import { PwaSupport } from '@/components/pwa'
 import { PushSync } from '@/components/push'
@@ -13,15 +13,15 @@ import { PresencePing } from '@/components/presence'
 import { OfflineLogSync } from '@/components/offline-log-sync'
 import './globals.css'
 
-// Material 3 (item H): Roboto for Latin, loaded by next/font. Japanese uses
-// the phone's own system font (Hiragino Sans on iPhone, Noto Sans CJK on
-// Android, which is Material's own Japanese face), listed in globals.css.
-// A downloaded Noto Sans JP meant hundreds of files fetched at build time and
-// broke CI twice when one failed; system fonts also load instantly.
-const roboto = Roboto({
-  variable: '--font-roboto',
+// Soft pastel (2026-11-06): Outfit for Latin, loaded by next/font. Japanese
+// uses the phone's own system font (Hiragino Sans on iPhone, Noto Sans CJK on
+// Android), listed in globals.css. A downloaded Noto Sans JP meant hundreds of
+// files fetched at build time and broke CI twice when one failed; system
+// fonts also load instantly.
+const outfit = Outfit({
+  variable: '--font-outfit',
   subsets: ['latin'],
-  weight: ['400', '500', '700'],
+  weight: ['300', '400', '500', '600', '700'],
 })
 
 // Everything behind the login is noindex; the landing page (/) and the
@@ -57,7 +57,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#f8fafd',
+  themeColor: '#f5f4f7',
 }
 
 export default async function RootLayout({
@@ -80,7 +80,7 @@ export default async function RootLayout({
     : { data: null }
   const classIds = (memberships ?? []).map((m) => m.class_id)
 
-  const fontVariables = [roboto]
+  const fontVariables = [outfit]
     .map((font) => font.variable)
     .join(' ')
 
@@ -88,13 +88,12 @@ export default async function RootLayout({
     <html lang={locale} className={`${fontVariables} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-body">
         <NextIntlClientProvider>
-          <Nav signedIn={!!user} classIds={classIds} />
-          <div className="ruled relative flex flex-1 flex-col">
-            <div
-              aria-hidden
-              className="print-hidden pointer-events-none fixed inset-y-0 left-6 hidden w-px bg-accent/60 sm:left-10 sm:block"
-            />
-            <main className="flex flex-1 flex-col">{children}</main>
+          <Nav signedIn={!!user} />
+          <div className="flex flex-1">
+            {user && <SideMenu classIds={classIds} />}
+            <div className="ruled relative flex min-w-0 flex-1 flex-col">
+              <main className="flex flex-1 flex-col">{children}</main>
+            </div>
           </div>
           <PublicFooter signedIn={!!user} />
           {user && <TabBar classIds={classIds} />}

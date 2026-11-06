@@ -60,7 +60,7 @@ export function InviteCard({
   // button and gaps come to 13 whole lines; RuleSnap only steps in if the
   // QR hint wraps to a fourth line.
   return (
-    <section aria-labelledby={`${id}-heading`} className="rule-card w-full px-5 py-3.5">
+    <section aria-labelledby={`${id}-heading`} className="rule-card w-full px-5 py-5">
       <RuleSnap>
         <div className="flex flex-col gap-3.5">
           <h2 id={`${id}-heading`} className="font-heading text-xl leading-7 font-bold text-ink">

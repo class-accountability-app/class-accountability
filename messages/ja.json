@@ -1199,7 +1199,9 @@
     "templateHint": "選ぶと、タスクと締め切りから逆算した期日が入ります。あとで自由に変えられます。",
     "templateAddLabel": "ひな形からタスクを追加",
     "templateAdd": "追加する",
-    "balanceHint": "{heavy}さんの未完了タスクが{heavyCount}件、{light}さんは{lightCount}件です。分担を見直してみませんか？"
+    "balanceHint": "{heavy}さんの未完了タスクが{heavyCount}件、{light}さんは{lightCount}件です。分担を見直してみませんか？",
+    "boardKicker": "チームのプロジェクト",
+    "sideColumn": "チームの予定と記録"
   },
   "google": {
     "kicker": "自動で記録",

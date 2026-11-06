@@ -48,7 +48,7 @@ export function TeamTable({
   const onlineCount = members.filter((m) => byId.get(m.id)?.online).length
 
   return (
-    <section aria-labelledby="team-table-heading" className="rule-card flex flex-col px-3.5 py-3.5">
+    <section aria-labelledby="team-table-heading" className="rule-card flex flex-col px-5 py-5">
       <h2 id="team-table-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
         {t('heading')}
       </h2>

@@ -301,7 +301,7 @@ export default async function ClassPodsPage({
               </h2>
               <ul className="flex flex-col gap-7">
                 {invitesToMe.map((inv) => (
-                  <li key={inv.id} className="rule-card flex flex-wrap items-center justify-between gap-x-3 px-3.5 py-3.5">
+                  <li key={inv.id} className="rule-card flex flex-wrap items-center justify-between gap-x-3 px-5 py-5">
                     <RuleSnap>
                       <span className="text-sm leading-7 text-ink">
                         {t('invitedTo', { members: memberNames(inv.pod_id) || t('emptyPod') })}
@@ -340,7 +340,7 @@ export default async function ClassPodsPage({
 
                   return (
                     <div key={podId} className="flex flex-col gap-7">
-                      <div className="rule-card flex flex-col px-3.5 py-3.5">
+                      <div className="rule-card flex flex-col px-5 py-5">
                         <span className="text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">
                           {memberNames(podId)}
                         </span>
@@ -408,7 +408,7 @@ export default async function ClassPodsPage({
                       const alreadyRequested = myPendingRequestPodIds.has(podId)
 
                       return (
-                        <li key={podId} className="rule-card flex flex-wrap items-center justify-between gap-x-3 px-3.5 py-3.5">
+                        <li key={podId} className="rule-card flex flex-wrap items-center justify-between gap-x-3 px-5 py-5">
                           <div className="flex min-w-0 flex-col">
                             <span className="text-sm leading-7 text-ink">{memberNames(podId) || t('emptyPod')}</span>
                             <span className="font-meta text-xs leading-7 text-muted">{memberCount(podId)}</span>

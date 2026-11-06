@@ -87,7 +87,7 @@ export default async function CheckinFeedPage({
           const items = snapshotItems(c.snapshot)
           const name = c.user_id === user.id ? t('you', { name: nameOf.get(user.id) ?? '' }) : (nameOf.get(c.user_id) ?? tCommon('unknownPerson'))
           return (
-            <article key={c.user_id} className="rule-card flex flex-col px-3.5 py-3.5">
+            <article key={c.user_id} className="rule-card flex flex-col px-5 py-5">
               <div className="flex min-h-7 items-center gap-2.5">
                 <StatusStamp status="active" />
                 <h2 className="flex-1 text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{name}</h2>
@@ -109,7 +109,7 @@ export default async function CheckinFeedPage({
         })}
 
         {waiting.length > 0 && (
-          <div className="rule-card flex flex-col px-3.5 py-3.5">
+          <div className="rule-card flex flex-col px-5 py-5">
             <p className="text-[13px] leading-7 text-muted">
               {t('feed.waiting', {
                 names: waiting.map((id) => (id === user.id ? t('you', { name: nameOf.get(id) ?? '' }) : nameOf.get(id))).join(tCommon('listSeparator')),

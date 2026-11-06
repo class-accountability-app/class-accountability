@@ -3,7 +3,8 @@ import type { Locale } from '@/i18n/config'
 import { createClient } from '@/lib/supabase/server'
 import { formatDateTime } from '@/lib/date'
 
-// 先生からのお知らせ (0036) for students: the newest 3 of the class. Shows
+// 先生からのお知らせ (0036) for students: the newest 3 of the class, on the
+// Country Rubble tint that marks anything from the teacher. Shows
 // nothing when there are none, or before 0036 (the table isn't there yet).
 export async function ClassAnnouncements({ classId }: { classId: string }) {
   const supabase = await createClient()
@@ -17,8 +18,7 @@ export async function ClassAnnouncements({ classId }: { classId: string }) {
   const [t, locale] = await Promise.all([getTranslations('organizer'), getLocale() as Promise<Locale>])
 
   return (
-    <section aria-labelledby="announcements-heading" className="rule-card relative flex flex-col px-3.5 py-3.5 pl-[18px]">
-      <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-ink" />
+    <section aria-labelledby="announcements-heading" className="rule-card tint-rubble flex flex-col px-5 py-5">
       <h2 id="announcements-heading" className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-ink">
         {t('fromTeacher')}
       </h2>

@@ -118,7 +118,7 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
             {t('meeting.icsFile')}
           </a>
         </div>
-        <section aria-labelledby="agenda-heading" className="rule-card flex flex-col px-3.5 py-3.5">
+        <section aria-labelledby="agenda-heading" className="rule-card flex flex-col px-5 py-5">
           <h2 id="agenda-heading" className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">
             {t('meeting.agenda')}
           </h2>

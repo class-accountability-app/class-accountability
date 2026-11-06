@@ -91,8 +91,8 @@ export async function loadMyLiveTotals(supabase: Supabase, tasks: readonly TaskR
 // The status pill of a task the viewer can't change (a teammate's, or in a
 // check-in): the mockup's .pill.todo / .doing / .done.
 export const STATUS_PILL_CLASS: Record<TaskStatus, string> = {
-  todo: 'text-status-stale shadow-[inset_0_0_0_1px_var(--color-border)]',
-  doing: 'text-status-active shadow-[inset_0_0_0_1px_var(--color-status-active)]',
+  todo: 'bg-surface text-status-stale shadow-[inset_0_0_0_1px_var(--color-border)]',
+  doing: 'bg-surface text-status-active shadow-[inset_0_0_0_1px_var(--color-status-active)]',
   done: 'bg-status-active text-white',
 }
 

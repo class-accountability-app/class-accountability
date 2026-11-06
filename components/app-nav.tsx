@@ -59,9 +59,9 @@ function TabIcon({ tab }: { tab: TabId }) {
   )
 }
 
-// Phones (under 768px): fixed to the bottom, above the home indicator. The
-// spacer sits in the page flow with the bar's height, so the last thing on a
-// page can always scroll clear of it.
+// Phones (under 768px): a floating Umbra bar above the home indicator, the
+// current tab on a porcelain pill. The spacer sits in the page flow with the
+// bar's height, so the last thing on a page can always scroll clear of it.
 export function TabBar({ classIds }: { classIds: string[] }) {
   const t = useTranslations('nav')
   const pathname = usePathname()
@@ -70,12 +70,12 @@ export function TabBar({ classIds }: { classIds: string[] }) {
 
   return (
     <>
-      <div aria-hidden className="h-[calc(72px+env(safe-area-inset-bottom))] shrink-0 md:hidden" />
+      <div aria-hidden className="h-[calc(96px+env(safe-area-inset-bottom))] shrink-0 md:hidden" />
       <nav
         aria-label={t('main')}
-        className="tab-bar fixed inset-x-0 bottom-0 z-20 bg-surface-container pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] md:hidden"
+        className="tab-bar fixed right-[calc(12px+env(safe-area-inset-right))] bottom-[calc(12px+env(safe-area-inset-bottom))] left-[calc(12px+env(safe-area-inset-left))] z-20 rounded-[28px] bg-ink md:hidden"
       >
-        <ul className="grid h-[72px] grid-cols-4">
+        <ul className="grid h-[68px] grid-cols-4 px-1.5">
           {TAB_IDS.map((tab) => {
             const isCurrent = tab === current
             return (
@@ -84,15 +84,14 @@ export function TabBar({ classIds }: { classIds: string[] }) {
                   href={tabHref(tab, classIds)}
                   transitionTypes={tabTransitionTypes(current, tab)}
                   aria-current={isCurrent ? 'page' : undefined}
-                  className={`relative flex min-h-12 flex-1 flex-col items-center justify-center gap-[3px] text-[11px] ${
-                    isCurrent ? 'font-bold text-ink' : 'font-medium text-muted'
+                  className={`relative flex min-h-12 flex-1 flex-col items-center justify-center gap-[3px] rounded-[22px] text-[11px] text-page-bg focus-visible:outline-page-bg ${
+                    isCurrent ? 'font-bold' : 'font-medium'
                   }`}
                 >
-                  {/* Material 3 navigation bar: a pill behind the active icon. */}
                   <span
                     aria-hidden
-                    className={`flex h-8 w-16 items-center justify-center rounded-full transition-colors ${
-                      isCurrent ? 'bg-primary-container text-on-primary-container' : ''
+                    className={`flex h-8 w-14 items-center justify-center rounded-full transition-colors ${
+                      isCurrent ? 'bg-page-bg text-ink' : ''
                     }`}
                   >
                     <TabIcon tab={tab} />
@@ -108,32 +107,49 @@ export function TabBar({ classIds }: { classIds: string[] }) {
   )
 }
 
-// 768px and up: the same four destinations as text links in the header.
-export function DesktopLinks({ classIds }: { classIds: string[] }) {
+// 768px and up: the same four destinations as a dark side menu on the left
+// (screen A of the 2026-11-06 design). A spacer keeps the page clear of it.
+export function SideMenu({ classIds }: { classIds: string[] }) {
   const t = useTranslations('nav')
   const pathname = usePathname()
   if (isOutsideApp(pathname)) return null
   const current = activeTab(pathname)
 
   return (
-    <nav aria-label={t('main')} className="hidden md:block">
-      <ul className="flex items-center gap-1">
-        {TAB_IDS.map((tab) => (
-          <li key={tab}>
-            <Link
-              href={tabHref(tab, classIds)}
-              transitionTypes={tabTransitionTypes(current, tab)}
-              aria-current={tab === current ? 'page' : undefined}
-              className={`nav-link inline-flex min-h-11 items-center px-2 text-sm ${
-                tab === current ? 'font-semibold text-accent-text' : 'text-muted'
-              }`}
-            >
-              {t(`tabs.${tab}`)}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <div className="hidden w-[120px] shrink-0 md:block">
+      <nav
+        aria-label={t('main')}
+        className="tab-bar sticky top-4 mt-4 ml-4 w-24 rounded-[28px] bg-ink py-4"
+      >
+        <ul className="flex flex-col items-center gap-2">
+          {TAB_IDS.map((tab) => {
+            const isCurrent = tab === current
+            return (
+              <li key={tab}>
+                <Link
+                  href={tabHref(tab, classIds)}
+                  transitionTypes={tabTransitionTypes(current, tab)}
+                  aria-current={isCurrent ? 'page' : undefined}
+                  className={`flex min-h-16 w-20 flex-col items-center justify-center gap-1 rounded-[20px] text-xs text-page-bg focus-visible:outline-page-bg ${
+                    isCurrent ? 'font-bold' : 'font-medium'
+                  }`}
+                >
+                  <span
+                    aria-hidden
+                    className={`flex h-9 w-14 items-center justify-center rounded-full transition-colors ${
+                      isCurrent ? 'bg-page-bg text-ink' : ''
+                    }`}
+                  >
+                    <TabIcon tab={tab} />
+                  </span>
+                  {t(`tabs.${tab}`)}
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      </nav>
+    </div>
   )
 }
 

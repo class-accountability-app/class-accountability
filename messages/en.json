@@ -1199,7 +1199,9 @@
     "templateHint": "Adds its tasks, with due dates counted back from the deadline. You can change everything later.",
     "templateAddLabel": "Add tasks from a template",
     "templateAdd": "Add",
-    "balanceHint": "{heavy} has {heavyCount} open tasks and {light} has {lightCount}. Want to rebalance?"
+    "balanceHint": "{heavy} has {heavyCount} open tasks and {light} has {lightCount}. Want to rebalance?",
+    "boardKicker": "Team project",
+    "sideColumn": "Team schedule and records"
   },
   "google": {
     "kicker": "AUTOMATIC LOGGING",

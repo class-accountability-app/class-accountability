@@ -10,43 +10,55 @@
     chrome --headless=new --hide-scrollbars --window-size=1200,630
            --virtual-time-budget=5000 --screenshot=app/opengraph-image.png
            file:///…/docs/og-image/og-image.html
-  Material 3 (item H): the app's palette (app/globals.css), Roboto + Noto Sans JP.
+  Soft pastel (2026-11-06): the app's palette (app/globals.css), Outfit +
+  Noto Sans JP, and the sp mark (docs/icons/sp-mark.svg).
 -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700&family=Roboto:wght@500;700&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;500;700&family=Outfit:wght@300;500;700&display=block">
 <style>
   html, body { margin: 0; }
   body {
     width: 1200px; height: 630px; overflow: hidden; position: relative;
-    background: #f8fafd; color: #1f1f1f;
-    font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+    background: #f5f4f7; color: #1f1f1f;
+    font-family: 'Outfit', 'Noto Sans JP', sans-serif;
   }
-  .eyebrow { position: absolute; left: 96px; top: 84px; margin: 0; font: 500 28px/1.3 'Noto Sans JP', sans-serif;
-             color: #444746; }
-  h1 { position: absolute; left: 92px; top: 150px; margin: 0; font: 700 64px/90px 'Noto Sans JP', sans-serif; }
+  .eyebrow { position: absolute; left: 96px; top: 80px; margin: 0; font: 500 26px/1.3 'Noto Sans JP', sans-serif; color: #4a4a4a; }
+  h1 { position: absolute; left: 92px; top: 140px; margin: 0; font: 300 60px/86px 'Noto Sans JP', sans-serif; }
   h1 span { display: block; }
-  h1 .accent { color: #0b57d0; }
-  .board { position: absolute; right: 88px; top: 112px; width: 300px; padding: 22px 24px; box-sizing: border-box;
-           background: #ffffff; border-radius: 24px; box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 6px 16px 2px rgba(0,0,0,.06); }
+  h1 .strong { font-weight: 700; }
+  .board { position: absolute; right: 88px; top: 96px; width: 330px; padding: 26px 28px; box-sizing: border-box;
+           background: #bac8e0; border-radius: 28px; }
+  .board h2 { margin: 0 0 18px; font: 700 22px 'Noto Sans JP', sans-serif; }
   .row { margin-bottom: 18px; }
   .row:last-child { margin-bottom: 0; }
-  .label { font: 500 20px 'Noto Sans JP', sans-serif; color: #444746; margin-bottom: 8px; }
-  .track { height: 10px; border-radius: 999px; background: #d3e3fd; overflow: hidden; }
-  .fill { height: 100%; border-radius: 999px; background: #0b57d0; }
-  footer { position: absolute; left: 0; right: 0; bottom: 0; height: 104px; background: #f0f4f9;
+  .label { font: 500 19px 'Noto Sans JP', sans-serif; margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .track { height: 12px; border-radius: 999px; background: rgba(255,255,255,.7); overflow: hidden; }
+  .fill { height: 100%; border-radius: 999px; background: #1f1f1f; }
+  .late { position: absolute; right: 88px; top: 404px; width: 330px; padding: 18px 28px; box-sizing: border-box;
+          background: #ebdbd3; border-radius: 28px; font: 500 19px 'Noto Sans JP', sans-serif; }
+  footer { position: absolute; left: 0; right: 0; bottom: 0; height: 104px; background: #ffffff;
            display: flex; align-items: center; justify-content: space-between;
            padding: 0 96px; box-sizing: border-box; }
-  .brand { font: 700 40px 'Roboto', sans-serif; }
-  .url { font: 500 26px 'Roboto', sans-serif; color: #444746; }
+  .brand { display: flex; align-items: center; gap: 16px; font: 700 38px 'Outfit', sans-serif; }
+  .mark { width: 56px; height: 56px; }
+  .url { font: 500 26px 'Outfit', sans-serif; color: #4a4a4a; }
 </style>
 </head>
 <body>
   <p class="eyebrow">グループ課題のための、チームの進捗ボード</p>
-  <h1><span>グループ課題を、</span><span>チームで分けて、</span><span class="accent">最後まで終わらせる。</span></h1>
+  <h1><span>グループ課題を、</span><span>チームで分けて、</span><span class="strong">最後まで終わらせる。</span></h1>
   <div class="board" aria-hidden="true">
-    <div class="row"><div class="label">スライド 12/15</div><div class="track"><div class="fill" style="width:80%"></div></div></div>
-    <div class="row"><div class="label">発表原稿 1,800/3,000字</div><div class="track"><div class="fill" style="width:60%"></div></div></div>
-    <div class="row"><div class="label">図表 2/6</div><div class="track"><div class="fill" style="width:33%"></div></div></div>
+    <h2>チームの進み具合</h2>
+    <div class="row"><div class="label"><span>スライド</span><span>12/15</span></div><div class="track"><div class="fill" style="width:80%"></div></div></div>
+    <div class="row"><div class="label"><span>発表原稿</span><span>1,800/3,000字</span></div><div class="track"><div class="fill" style="width:60%"></div></div></div>
+    <div class="row"><div class="label"><span>図表</span><span>2/6</span></div><div class="track"><div class="fill" style="width:33%"></div></div></div>
   </div>
-  <footer><span class="brand">Study Pods</span><span class="url">study-pods.org</span></footer>
+  <div class="late" aria-hidden="true">図表 · 期限を過ぎています</div>
+  <footer><span class="brand"><svg class="mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true">
+  <rect x="4" y="4" width="92" height="92" rx="26" fill="#ebdbd3"/>
+  <path transform="translate(22 60) scale(0.05 -0.05)" fill="#1f1f1f" d="M231 -12Q188 -12 146.5 -1.0Q105 10 69.5 30.5Q34 51 9 78L96 166Q120 140 153.0 125.5Q186 111 225 111Q252 111 266.5 119.0Q281 127 281 141Q281 159 263.5 168.5Q246 178 219.0 185.5Q192 193 162.0 202.0Q132 211 105.0 227.0Q78 243 61.0 271.5Q44 300 44 344Q44 391 68.0 425.5Q92 460 136.0 480.0Q180 500 239 500Q301 500 353.5 478.5Q406 457 439 415L352 327Q329 354 300.5 365.0Q272 376 245 376Q219 376 206.0 368.5Q193 361 193 347Q193 332 210.0 323.0Q227 314 254.0 307.0Q281 300 311.0 290.0Q341 280 368.0 263.0Q395 246 412.0 217.5Q429 189 429 143Q429 72 375.5 30.0Q322 -12 231 -12Z"/>
+  <rect x="51" y="35" width="9" height="45" rx="4.5" fill="#1f1f1f"/>
+  <circle cx="67" cy="47" r="12" fill="#1f1f1f"/>
+</svg>
+Study Pods</span><span class="url">study-pods.org</span></footer>
 </body>
 </html>

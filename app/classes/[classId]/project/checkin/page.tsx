@@ -63,7 +63,7 @@ export default async function CheckinPage({ params }: { params: Promise<{ classI
         </div>
 
         {round.submitted ? (
-          <div className="rule-card flex flex-col px-3.5 py-3.5">
+          <div className="rule-card flex flex-col px-5 py-5">
             <p className="text-[15px] leading-7 text-ink">{t('checkin.done', { date: formatDate(round.nextRoundStart, locale) })}</p>
             <div className="pt-3.5">
               <Link href={`/classes/${classId}/project/checkins`} className={secondaryButtonClass}>
@@ -73,7 +73,7 @@ export default async function CheckinPage({ params }: { params: Promise<{ classI
           </div>
         ) : (
           <>
-            <section aria-labelledby="preview-heading" className="rule-card flex flex-col px-3.5 py-3.5">
+            <section aria-labelledby="preview-heading" className="rule-card flex flex-col px-5 py-5">
               <h2 id="preview-heading" className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">
                 {t('checkin.preview')}
               </h2>
