@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { secondaryButtonClass } from '@/components/buttons'
 import { notFound, redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
@@ -47,16 +48,16 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
     <div className="px-0.5">
       <Link
         href={`/classes/${classId}/project/meetings`}
-        className="inline-flex min-h-11 items-center text-sm font-semibold text-accent-text"
+        className="-ml-2 inline-flex min-h-11 items-center rounded-full px-2 text-sm font-semibold text-ink hover:bg-surface-container"
       >
         {t('back')}
       </Link>
-      <h1 className="font-heading text-[26px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">{poll.title}</h1>
-      <p className="font-meta text-xs leading-7 text-muted">{meta}</p>
+      <h1 className="font-heading text-[28px] leading-tight font-bold text-ink [overflow-wrap:anywhere] lg:text-[36px]">{poll.title}</h1>
+      <p className="pt-1 font-meta text-[13px] leading-7 text-muted">{meta}</p>
     </div>
   )
   const wrap = (children: React.ReactNode) => (
-    <div className="flex flex-1 flex-col px-4 py-7 sm:px-6 sm:pl-16">
+    <div className="flex flex-1 flex-col px-4 py-7 sm:px-6">
       <div className="mx-auto flex w-full max-w-md flex-col gap-7 md:max-w-xl">{children}</div>
     </div>
   )
@@ -96,7 +97,7 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
     return wrap(
       <>
         {header(formatMeeting(start, poll.durationMinutes, locale))}
-        <div className="-mt-3.5 flex flex-wrap gap-x-4 px-0.5">
+        <div className="-mt-3.5 flex flex-wrap gap-3 px-0.5">
           <a
             href={googleCalendarUrl({
               kind: 'meeting',
@@ -107,26 +108,26 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
             })}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center text-[13px] font-semibold text-accent-text underline underline-offset-4"
+            className="inline-flex min-h-11 items-center rounded-full bg-surface px-4 text-sm font-semibold text-ink shadow-[inset_0_0_0_1.5px_var(--ink)] hover:bg-surface-container"
           >
             {t('meeting.googleCalendar')}
           </a>
           <a
             href={`/classes/${classId}/project/meetings/${poll.id}/calendar`}
-            className="inline-flex min-h-11 items-center text-[13px] font-semibold text-accent-text underline underline-offset-4"
+            className="inline-flex min-h-11 items-center rounded-full bg-surface px-4 text-sm font-semibold text-ink shadow-[inset_0_0_0_1.5px_var(--ink)] hover:bg-surface-container"
           >
             {t('meeting.icsFile')}
           </a>
         </div>
-        <section aria-labelledby="agenda-heading" className="rule-card flex flex-col px-5 py-5">
-          <h2 id="agenda-heading" className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">
+        <section aria-labelledby="agenda-heading" className="rule-card flex flex-col gap-1 px-5 py-5">
+          <h2 id="agenda-heading" className="font-heading text-lg leading-7 font-bold text-ink">
             {t('meeting.agenda')}
           </h2>
           {members.map((m) => {
             const checkin = latest.get(m.id)
             const items = checkin ? [...checkin.items.values()] : []
             return (
-              <div key={m.id} className="flex flex-col border-b border-dashed border-border last:border-b-0">
+              <div key={m.id} className="flex flex-col border-b border-ink/10 py-2 last:border-b-0">
                 <div className="flex min-h-7 items-center gap-2.5">
                   <StatusStamp status={checkin ? 'active' : 'stale'} />
                   <h3 className="text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{displayName(m.id)}</h3>
@@ -156,7 +157,7 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
         {waiting.includes(user.id) && (
           <Link
             href={`/classes/${classId}/project/checkin`}
-            className="inline-flex min-h-11 items-center self-start px-0.5 text-sm font-semibold text-accent-text underline underline-offset-4"
+            className={`${secondaryButtonClass} self-start`}
           >
             {t('meeting.checkinFirst')}
           </Link>

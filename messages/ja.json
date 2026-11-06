@@ -1141,7 +1141,9 @@
       "noUpcoming": "まだ決まった打ち合わせはありません。",
       "open": "回答を集めている日程",
       "noOpen": "いま回答を集めている日程はありません。",
-      "answered": "{total}人中{answered}人が回答"
+      "answered": "{total}人中{answered}人が回答",
+      "titleKicker": "チームの",
+      "notAnswered": "まだ回答していません"
     },
     "poll": {
       "pageTitle": "打ち合わせの日程",
