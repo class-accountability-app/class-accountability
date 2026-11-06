@@ -451,7 +451,10 @@
       "iosTitle": "On iPhone, add the app to your Home Screen first",
       "iosLink": "How to add to Home Screen",
       "footnote": "You can turn them off in Settings at any time."
-    }
+    },
+    "kicker": "From your team",
+    "receivedHeading": "Nudges for you ({count})",
+    "from": "From {name}"
   },
   "push": {
     "title": "Study Pods",

@@ -49,17 +49,26 @@ export default async function NudgesPage() {
   const classIds = (memberships ?? []).map((m) => m.class_id)
   const podHref = classIds.length === 1 ? `/classes/${classIds[0]}/project` : '/classes'
 
-  // On the notebook rule (Prompt 13a), like Home: text on 28px lines, gaps
-  // of one line, and cards (.rule-card, 14px padding) whole lines tall.
+  // Soft pastel (2026-11-06): a light kicker over a bold title with the
+  // daily limit right under it, each 声かけ as a card with the sender's
+  // initial, and from 1024px the notification card beside the list.
+  const list = nudges ?? []
   return (
-    <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
-      <div className="flex w-full max-w-md flex-col gap-7">
-        <h1 className="font-heading text-[27px] leading-7 font-bold text-ink">{t('title')}</h1>
+    <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-7 md:max-w-xl lg:max-w-5xl">
+        <header className="px-0.5">
+          <h1 className="font-heading text-[28px] leading-tight font-light text-ink lg:text-[36px]">
+            {t('kicker')}
+            <br />
+            <span className="font-bold">{t('title')}</span>
+          </h1>
+          <p className="pt-1 text-sm leading-7 text-muted">{t('rule')}</p>
+        </header>
 
-        {/* Offered only once a nudge has actually arrived. */}
-        {(nudges ?? []).length > 0 && <PushCard />}
+        <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+        <div className="flex min-w-0 flex-col gap-7">
 
-        {(nudges ?? []).length === 0 ? (
+        {list.length === 0 ? (
           <EmptyState
             illustration="nudges"
             title={t('emptyTitle')}
@@ -72,26 +81,42 @@ export default async function NudgesPage() {
             ruled
           />
         ) : (
-          <ul className="flex flex-col gap-7">
-            {(nudges ?? []).map((n) => (
-              <li key={n.id} className="rule-card flex flex-col px-4 py-3.5">
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className="font-heading text-sm leading-7 font-semibold text-accent-text [overflow-wrap:anywhere]">
-                    {senderNames.get(n.from_user_id) ?? tCommon('unknownPerson')}
-                  </span>
-                  {/* leading-none: a second 28px line in another size would
-                      make the row taller than one line. */}
-                  <span className="shrink-0 font-meta text-xs leading-none text-muted">
-                    {formatTimeAgo(n.created_at, locale, now)}
-                  </span>
-                </div>
-                {n.content && <p className="text-sm leading-7 text-ink [overflow-wrap:anywhere]">{n.content}</p>}
-              </li>
-            ))}
-          </ul>
+          <section aria-labelledby="received-heading" className="flex flex-col gap-3.5">
+            <h2 id="received-heading" className="px-0.5 font-heading text-lg leading-7 font-bold text-ink">
+              {t('receivedHeading', { count: list.length })}
+            </h2>
+            <ul className="flex flex-col gap-4">
+              {list.map((n) => {
+                const name = senderNames.get(n.from_user_id) ?? tCommon('unknownPerson')
+                return (
+                  <li key={n.id} className="rule-card flex items-start gap-4 px-5 py-4">
+                    <span aria-hidden className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-tint-penna text-base font-bold text-ink">
+                      {[...name][0]}
+                    </span>
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <div className="flex items-baseline justify-between gap-3">
+                        <span className="text-[15px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">
+                          {t('from', { name })}
+                        </span>
+                        <span className="shrink-0 font-meta text-xs text-muted">{formatTimeAgo(n.created_at, locale, now)}</span>
+                      </div>
+                      {n.content && <p className="text-sm leading-7 text-ink [overflow-wrap:anywhere]">{n.content}</p>}
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
         )}
+        </div>
 
-        <p className="text-[13px] leading-7 text-muted">{t('rule')}</p>
+        {/* Offered only once a nudge has actually arrived. */}
+        {list.length > 0 && (
+          <aside className="flex min-w-0 flex-col gap-7">
+            <PushCard />
+          </aside>
+        )}
+        </div>
       </div>
     </div>
   )
