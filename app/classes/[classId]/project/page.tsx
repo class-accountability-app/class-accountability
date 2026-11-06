@@ -366,7 +366,10 @@ export default async function ProjectPage({
 
   return wrap(
     <NudgeListProvider nudges={(nudgeRows as NudgeItem[] | null) ?? []}>
-      <div className="px-0.5">
+      {/* Anyone in the team adds tasks (0022 RLS), not only the teacher's
+          class project, so the button sits next to the title (screen A). */}
+      <div className="flex flex-wrap items-end justify-between gap-x-5 gap-y-3 px-0.5">
+      <div className="min-w-0">
         <p className="font-meta text-[13px] leading-7 text-muted">{cls.name}</p>
         {teamName}
         <h1 className="font-heading text-[28px] leading-tight font-light text-ink [overflow-wrap:anywhere] lg:text-[36px]">
@@ -375,6 +378,10 @@ export default async function ProjectPage({
           <span className="font-bold">{project.title}</span>
         </h1>
         <p className="pt-1 font-meta text-[13px] leading-7 text-muted">{dueLine}</p>
+      </div>
+        <Link href={`/classes/${classId}/project/tasks/new`} className={secondaryButtonClass}>
+          ＋ {t('addTask')}
+        </Link>
       </div>
 
       <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
