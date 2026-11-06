@@ -72,7 +72,7 @@ export function WriteInAppButton({ classId, taskId }: { classId: string; taskId:
       <button
         type="button"
         disabled={isPending}
-        className="inline-flex min-h-11 items-center text-[13px] font-semibold text-accent-text underline underline-offset-4 disabled:opacity-50"
+        className={secondaryButtonClass}
         onClick={() =>
           startTransition(async () => {
             setError(null)
@@ -85,6 +85,7 @@ export function WriteInAppButton({ classId, taskId }: { classId: string; taskId:
           })
         }
       >
+        <svg aria-hidden width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M14 6l4 4" /></svg>
         {isPending ? tCommon('working') : t('writeInApp')}
       </button>
       <FormError error={error} />

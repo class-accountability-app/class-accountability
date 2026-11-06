@@ -1099,7 +1099,12 @@
       "unitPlaceholder": "例：枚",
       "goal": "目標（任意）",
       "due": "期限（任意）",
-      "submit": "タスクを追加"
+      "submit": "タスクを追加",
+      "where": "どこで書きますか",
+      "whereHere": "Study Pods で書く（おすすめ）",
+      "whereHereHint": "アプリの中で書けます。文字数は自動で記録されます。.docx や PDF にも書き出せます。",
+      "whereElsewhere": "ほかで書く",
+      "whereElsewhereHint": "Google ドキュメントなどで書きます。つなぐと自動で、つながないときは ＋記録 で記録します。"
     },
     "checkin": {
       "kicker": "次のチェックイン",
