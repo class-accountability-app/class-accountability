@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { primaryButtonClass } from '@/components/buttons'
 import { notFound, redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
@@ -46,23 +47,23 @@ export default async function LinkTaskPage({ params }: { params: Promise<{ class
   const thisPath = `${backHref}/tasks/${task.id}/link`
 
   return (
-    <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
-      <div className="flex w-full max-w-md flex-col gap-5">
-        <Link href={backHref} className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-accent-text">
+    <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-5 md:max-w-xl">
+        <Link href={backHref} className="-ml-2 inline-flex min-h-11 items-center self-start rounded-full px-2 text-sm font-semibold text-ink hover:bg-surface-container">
           {t('back')}
         </Link>
-        <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink [overflow-wrap:anywhere]">
+        <h1 className="font-heading text-[28px] leading-tight font-bold text-ink [overflow-wrap:anywhere] lg:text-[36px]">
           {t('linkTitle', { title: task.title })}
         </h1>
         {task.metric === 'status' || task.input_mode !== 'manual' ? (
           <p className="text-sm leading-7 text-muted">{t('linkNotCountable')}</p>
         ) : !hasGoogle ? (
-          <div className="flex flex-col gap-3">
-            <p className="text-sm leading-7 text-muted">{t('connectWhy')}</p>
-            <a href={`/api/google/connect?return=${encodeURIComponent(thisPath)}`} className="btn inline-flex h-[52px] w-full items-center justify-center rounded-full bg-accent text-base font-semibold text-white">
+          <div className="rule-card tint-penna flex flex-col gap-3 px-5 py-5">
+            <p className="text-sm leading-7 text-ink">{t('connectWhy')}</p>
+            <a href={`/api/google/connect?return=${encodeURIComponent(thisPath)}`} className={`${primaryButtonClass} w-full`}>
               {t('connect')}
             </a>
-            <p className="text-[13px] leading-7 text-muted">{t('connectFine')}</p>
+            <p className="text-[13px] leading-7 text-ink">{t('connectFine')}</p>
           </div>
         ) : (
           <LinkForm
