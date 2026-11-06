@@ -319,13 +319,28 @@ export default async function ClassPodsPage({
     </div>
   )
 
+  // Soft pastel (2026-11-06): the class name big under a light クラス line,
+  // the board one tap away, my team on Penna, an invitation to me on Hudson;
+  // from 1024px my team on the left, inviting and other teams on the right.
+  const [tTeacher, tHome] = await Promise.all([getTranslations('teacher'), getTranslations('home')])
   return (
-      <div className="flex flex-1 flex-col px-4 py-7 sm:px-6 sm:pl-16 lg:px-16 lg:pb-14">
-        <div className="mx-auto grid w-full max-w-md gap-7 md:max-w-xl lg:max-w-[1120px] lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start lg:gap-x-8">
-          <div className="px-0.5 lg:col-span-2">
-            <p className="font-meta text-[13px] leading-7 text-muted">{cls.term}</p>
-            <h1 className="font-heading text-[26px] leading-7 font-bold text-ink">{cls.name}</h1>
-          </div>
+      <div className="flex flex-1 flex-col px-4 py-7 sm:px-6 lg:pb-14">
+        <div className="mx-auto grid w-full max-w-md gap-7 md:max-w-xl lg:max-w-6xl lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-x-8">
+          <header className="flex flex-wrap items-end justify-between gap-x-5 gap-y-3 px-0.5 lg:col-span-2">
+            <div className="min-w-0">
+              <p className="font-meta text-[13px] leading-7 text-muted">{cls.term}</p>
+              <h1 className="font-heading text-[28px] leading-tight font-light text-ink [overflow-wrap:anywhere] lg:text-[36px]">
+                {tTeacher('classKicker')}
+                <br />
+                <span className="font-bold">{cls.name}</span>
+              </h1>
+            </div>
+            {myPods.length > 0 && (
+              <Link href={`/classes/${classId}/project`} className={primaryButtonClass}>
+                {tHome('openBoard')}
+              </Link>
+            )}
+          </header>
 
           <div className="min-w-0 lg:col-span-2">
             <NextStepCard step={step} />
@@ -346,7 +361,7 @@ export default async function ClassPodsPage({
               </h2>
               <ul className="flex flex-col gap-7">
                 {invitesToMe.map((inv) => (
-                  <li key={inv.id} className="rule-card flex flex-wrap items-center justify-between gap-x-3 px-5 py-5">
+                  <li key={inv.id} className="rule-card tint-hudson flex flex-wrap items-center justify-between gap-x-3 px-5 py-5">
                     <RuleSnap>
                       <span className="text-sm leading-7 text-ink">
                         {t('invitedTo', { members: memberNames(inv.pod_id) || t('emptyPod') })}
@@ -361,7 +376,7 @@ export default async function ClassPodsPage({
             </section>
           )}
 
-          <div className="flex min-w-0 flex-col gap-7 lg:col-span-2">
+          <div className="flex min-w-0 flex-col gap-7">
             <section aria-labelledby="pod-heading" className="flex flex-col gap-7">
               {sectionHead('pod-heading', t('yourPod'), t('yourPodWhy'))}
               {myPods.length === 0 ? (
@@ -385,15 +400,15 @@ export default async function ClassPodsPage({
 
                   return (
                     <div key={podId} className="flex flex-col gap-7">
-                      <div className="rule-card flex flex-col px-5 py-5">
-                        <span className="text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">
+                      <div className="rule-card tint-penna flex flex-col px-5 py-5">
+                        <span className="text-[17px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">
                           {memberNames(podId)}
                         </span>
-                        <span className="font-meta text-xs leading-7 text-muted">{memberCount(podId)}</span>
+                        <span className="font-meta text-[13px] leading-7 text-ink">{memberCount(podId)}</span>
 
                         {incomingRequests.length > 0 && (
                           <RuleSnap>
-                            <div className="mt-3 flex flex-col gap-2 border-t border-dashed border-border pt-3">
+                            <div className="mt-3 flex flex-col gap-2 border-t border-ink/15 pt-3">
                               <span className="text-xs font-medium text-muted">{t('requestsHeading')}</span>
                               {incomingRequests.map((req) => (
                                 <div key={req.id} className="flex flex-wrap items-center justify-between gap-3">
@@ -408,7 +423,7 @@ export default async function ClassPodsPage({
                         <RuleSnap>
                           <div className="mt-3 flex flex-col gap-3">
                             {isFull ? (
-                              <p className="text-xs text-muted">{t('podFull')}</p>
+                              <p className="text-[13px] text-ink">{t('podFull')}</p>
                             ) : (
                               <InviteForm podId={podId} eligibleClassmates={eligibleClassmates} />
                             )}
@@ -426,7 +441,9 @@ export default async function ClassPodsPage({
                 })
               )}
             </section>
+          </div>
 
+          <aside aria-label={t('inviteHeading')} className="flex min-w-0 flex-col gap-7">
             <section id="invite" aria-labelledby="invite-heading" className="flex scroll-mt-4 flex-col">
               <div className="px-0.5">
                 <h2 id="invite-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
@@ -472,7 +489,7 @@ export default async function ClassPodsPage({
                 )}
               </section>
             )}
-          </div>
+          </aside>
         </div>
       </div>
   )
