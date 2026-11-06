@@ -113,7 +113,7 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
 
   return (
     <form ref={formRef} onSubmit={submit} noValidate className="flex w-full flex-col gap-5">
-      <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5">
+      <div className="rule-card flex flex-col gap-4 px-5 py-5">
         <div className="flex flex-col gap-1.5">
           <label htmlFor={`${id}-title`} className="text-sm font-semibold text-ink">
             {t('poll.titleLabel')}

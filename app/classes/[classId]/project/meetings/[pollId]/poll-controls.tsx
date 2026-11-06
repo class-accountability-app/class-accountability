@@ -58,7 +58,7 @@ export function VoteGrid({
         {rows.map((row) => (
           <li
             key={row.id}
-            className="flex min-h-14 items-center justify-between gap-2.5 border-b border-dashed border-border py-1.5 last:border-b-0"
+            className="flex min-h-14 items-center justify-between gap-2.5 border-b border-ink/10 py-1.5 last:border-b-0"
           >
             <div className="min-w-0">
               <p className="text-[15px] leading-7 text-ink">{row.label}</p>

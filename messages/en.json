@@ -1139,7 +1139,9 @@
       "noUpcoming": "No meeting has been set yet.",
       "open": "Collecting answers",
       "noOpen": "No poll is collecting answers right now.",
-      "answered": "{answered} of {total} have answered"
+      "answered": "{answered} of {total} have answered",
+      "titleKicker": "Team",
+      "notAnswered": "You haven't answered yet"
     },
     "poll": {
       "pageTitle": "Meeting time",
