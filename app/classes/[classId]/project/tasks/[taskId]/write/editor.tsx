@@ -192,22 +192,22 @@ export function Editor({
   }
 
   return (
-    <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
-      <div className="flex w-full max-w-3xl flex-col gap-3.5">
+    <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-3.5">
         <div className="flex flex-wrap items-center justify-between gap-x-4">
           <p className="font-meta text-[13px] leading-7 text-muted">{className}</p>
           <Link
             href={`/classes/${classId}/project`}
-            className="print-hidden inline-flex min-h-11 items-center text-sm font-semibold text-accent-text underline underline-offset-4"
+            className="print-hidden inline-flex min-h-11 items-center rounded-full bg-surface px-4 text-sm font-semibold text-ink shadow-[inset_0_0_0_1.5px_var(--ink)] hover:bg-surface-container"
           >
             {t('back')}
           </Link>
         </div>
-        <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink [overflow-wrap:anywhere]">{title}</h1>
+        <h1 className="font-heading text-[28px] leading-tight font-bold text-ink [overflow-wrap:anywhere] lg:text-[36px]">{title}</h1>
 
         <div className="flex flex-col gap-1">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-            <p className={`font-meta leading-7 ${tooLong ? 'font-bold text-accent-text' : 'text-ink'}`}>{countLine}</p>
+            <p className={`font-meta text-[15px] leading-7 font-semibold ${tooLong ? 'text-error' : 'text-ink'}`}>{countLine}</p>
             <div className="flex items-center gap-3">
               <HistoryPanel taskId={taskId} canRestore={state.status === 'saved'} onRestore={onRestore} />
               <ExportMenu
@@ -232,7 +232,7 @@ export function Editor({
         </div>
 
         <Toolbar editor={editor} />
-        <div className="rule-card px-5 py-5 sm:px-5">
+        <div className="rule-card px-5 py-6 sm:px-8">
           <EditorContent editor={editor} className="doc-body" />
         </div>
 

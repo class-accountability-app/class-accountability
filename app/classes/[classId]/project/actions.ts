@@ -185,12 +185,14 @@ export async function addTask(classId: string, projectId: string, formData: Form
     if (targetAmount === null) return { error: 'targetAmountPositive' }
   }
 
+  // A characters task can be written in the app (0030); anything else is logged.
+  const inputMode = metric === 'characters' && formData.get('input_mode')?.toString() === 'document' ? 'document' : 'manual'
   const checked = checkTask({
     title: formData.get('title')?.toString() ?? '',
     metric,
     unit: formData.get('unit')?.toString() ?? '',
     targetAmount,
-    inputMode: 'manual',
+    inputMode,
   })
   if (!checked.ok) return { error: TASK_PROBLEM_ERRORS[checked.problem] }
 
@@ -204,6 +206,7 @@ export async function addTask(classId: string, projectId: string, formData: Form
     metric: checked.value.metric,
     unit: checked.value.unit,
     target_amount: checked.value.targetAmount,
+    input_mode: checked.value.inputMode,
     due,
   })
   if (error) {

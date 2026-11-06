@@ -11,6 +11,7 @@ import { ClassAnnouncements } from '@/components/class-announcements'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { STATUS_PILL_CLASS, loadLiveTotals, loadMyPodProject, taskValueText, type TaskRow } from '@/app/classes/[classId]/project/load'
 import { chosenStart, formatMeeting, isUpcoming, loadPolls } from '@/app/classes/[classId]/project/meetings/load'
+import { WriteInAppButton } from '@/app/classes/[classId]/project/task-controls'
 
 // Home for a student whose team has a project (2026-11-06, replacing the
 // redirect to the board): what is mine to do, at a glance, with the board one
@@ -57,7 +58,14 @@ export async function ProjectHome({
       .limit(3),
   ])
   const tasks = (taskRows as TaskRow[] | null) ?? []
-  const { totals: liveTotals, teamLive } = await loadLiveTotals(supabase, project.id, tasks, userId)
+  const [{ totals: liveTotals, teamLive }, { data: sourceRows }] = await Promise.all([
+    loadLiveTotals(supabase, project.id, tasks, userId),
+    // Which of my tasks count from Google (no numbers here, 0023).
+    tasks.length > 0
+      ? supabase.from('task_sources').select('task_id').in('task_id', tasks.map((x) => x.id))
+      : Promise.resolve({ data: [] as { task_id: string }[] }),
+  ])
+  const linked = new Set(((sourceRows as { task_id: string }[] | null) ?? []).map((r) => r.task_id))
   const latest = latestCheckins(
     (checkinRows ?? []).map(
       (r): CheckinRow => ({ userId: r.user_id, roundStart: r.round_start, createdAt: r.created_at, snapshot: r.snapshot })
@@ -76,6 +84,7 @@ export async function ProjectHome({
       due: x.due,
       title: x.title,
       unit: x.unit,
+      inputMode: x.input_mode,
     }
   })
   const now = new Date()
@@ -139,6 +148,19 @@ export async function ProjectHome({
                           <ProgressBar value={task.shownTotal ?? 0} max={task.targetAmount} valueText={value} />
                         </div>
                       )}
+                      {/* Writing happens right here in the app (0030): 書く on a
+                          document task, the offer on an empty characters task. */}
+                      {task.inputMode === 'document' && task.status !== 'done' && (
+                        <Link href={`${board}/tasks/${task.id}/write`} className={`${primaryButtonClass} mt-1 self-start`}>
+                          <svg aria-hidden width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M14 6l4 4" /></svg>
+                          {tProject('keepWriting')}
+                        </Link>
+                      )}
+                      {task.inputMode === 'manual' && task.metric === 'characters' && (task.shownTotal ?? 0) === 0 && !linked.has(task.id) && task.status !== 'done' && (
+                        <div className="mt-1">
+                          <WriteInAppButton classId={classId} taskId={task.id} />
+                        </div>
+                      )}
                       {(value || task.due) && (
                         <p className={`font-meta text-xs leading-6 ${overdue ? 'font-bold text-ink' : 'text-ink'}`}>
                           {[value, task.due ? (overdue ? tProject('overdueTask') : tProject('dueTask', { date: formatDate(task.due, locale) })) : null]
@@ -152,7 +174,7 @@ export async function ProjectHome({
               </ul>
             )}
             <div>
-              <Link href={board} className={primaryButtonClass}>
+              <Link href={board} className={secondaryButtonClass}>
                 {mine.length > 0 ? t('logOnBoard') : t('openBoard')}
               </Link>
             </div>

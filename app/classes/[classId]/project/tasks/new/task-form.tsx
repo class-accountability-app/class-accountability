@@ -38,6 +38,8 @@ export function TaskForm({
   const id = useId()
   const formRef = useRef<HTMLFormElement>(null)
   const [metric, setMetric] = useState<TaskMetric>('count')
+  // Characters tasks: written in Study Pods (counted by itself) unless the team writes elsewhere.
+  const [writeHere, setWriteHere] = useState(true)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<ErrorKey | null>(null)
   useFocusFirstInvalid(formRef, error)
@@ -125,6 +127,33 @@ export function TaskForm({
             {t(`newTask.howHint.${metric}`)}
           </p>
         </fieldset>
+
+        {metric === 'characters' && (
+          <fieldset className="flex flex-col gap-2">
+            <legend className="mb-1.5 text-sm font-semibold text-ink">{t('newTask.where')}</legend>
+            <input type="hidden" name="input_mode" value={writeHere ? 'document' : 'manual'} />
+            {([true, false] as const).map((here) => (
+              <label
+                key={String(here)}
+                className={`flex min-h-12 cursor-pointer items-start gap-3 rounded-2xl px-4 py-3 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
+                  writeHere === here ? 'bg-tint-penna' : 'bg-surface shadow-[inset_0_0_0_1px_var(--border)]'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="write_where"
+                  checked={writeHere === here}
+                  onChange={() => setWriteHere(here)}
+                  className="mt-1 h-5 w-5 shrink-0 accent-[var(--ink)]"
+                />
+                <span className="flex flex-col">
+                  <span className="text-[15px] leading-6 font-semibold text-ink">{t(here ? 'newTask.whereHere' : 'newTask.whereElsewhere')}</span>
+                  <span className="text-[13px] leading-6 text-ink">{t(here ? 'newTask.whereHereHint' : 'newTask.whereElsewhereHint')}</span>
+                </span>
+              </label>
+            ))}
+          </fieldset>
+        )}
 
         {metric === 'count' && (
           <div className="flex flex-col gap-1.5">
