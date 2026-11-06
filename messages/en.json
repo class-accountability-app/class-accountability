@@ -1326,7 +1326,8 @@
       "onTrack": "Teams on track",
       "average": "Class average",
       "checkins": "Check-ins this round"
-    }
+    },
+    "newClass": "Create another class"
   },
   "teamJoin": {
     "eyebrow": "Team invitation",

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { TeamSummary } from '@/components/teacher/team-summary'
 import { TeamManager } from '@/components/teacher/team-manager'
 import { AnnouncementManager, type Announcement } from '@/components/teacher/announcement-manager'
@@ -107,6 +108,7 @@ export default async function ClassPodsPage({
       { data: rosterRows, error: rosterError },
       { data: announcementRows },
       { data: milestoneRows, error: milestoneError },
+      { data: creator },
     ] = await Promise.all([
       supabase.rpc('class_by_join_code', { code: cls.join_code }).maybeSingle<{ member_count: number }>(),
       supabase
@@ -124,6 +126,8 @@ export default async function ClassPodsPage({
         .limit(20),
       // 0038: milestones with how many teams reached each (errors before it).
       supabase.rpc('class_milestone_status', { p_class: classId }),
+      // 0015: only approved accounts create classes; they may make any number.
+      supabase.from('profiles').select('can_create_classes').eq('id', user.id).maybeSingle(),
     ])
     const tTeacher = await getTranslations('teacher')
     const hasTools = !rosterError && !!rosterRows
@@ -149,6 +153,13 @@ export default async function ClassPodsPage({
               <p className="text-sm leading-[1.8] text-muted">{t('organizerNote')}</p>
             </div>
             <div className="flex flex-wrap gap-3">
+              {/* With one class the クラス tab opens it directly, so the
+                  create form on /classes needs a way in from here. */}
+              {creator?.can_create_classes && (
+                <Link href="/classes#create-class" className={secondaryButtonClass}>
+                  ＋ {tTeacher('newClass')}
+                </Link>
+              )}
               <a href="#invite" className={secondaryButtonClass}>
                 {tTeacher('inviteLink')}
               </a>

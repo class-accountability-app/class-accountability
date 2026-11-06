@@ -1326,7 +1326,8 @@
       "onTrack": "予定どおりのチーム",
       "average": "クラスの平均",
       "checkins": "今回のチェックイン"
-    }
+    },
+    "newClass": "新しいクラスを作る"
   },
   "teamJoin": {
     "eyebrow": "チームへの招待",
