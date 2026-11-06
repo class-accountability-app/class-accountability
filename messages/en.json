@@ -50,7 +50,20 @@
     "targetsWhy": "Log each day with + Log.",
     "heroLabel": "Today’s target",
     "logAgain": "Log again",
-    "recentLogs": "Recent logs (edit, delete)"
+    "recentLogs": "Recent logs (edit, delete)",
+    "projectKicker": "{className} · Team project",
+    "openBoard": "Open the board",
+    "myTasks": "Your tasks",
+    "noMyTasks": "You don't own a task yet. You can add one on the board.",
+    "noMyTasksClaim": "You don't own a task yet. The board has {count, plural, one {# task} other {# tasks}} with no owner.",
+    "logOnBoard": "Log on the board",
+    "teamProgress": "Whole team progress",
+    "teamMembers": "Team of {count}",
+    "sideLabel": "Schedule and nudges",
+    "nudgesHeading": "Nudges for you",
+    "noNudges": "None yet.",
+    "nudgeFrom": "From {name}",
+    "seeNudges": "See nudges"
   },
   "login": {
     "eyebrow": "Log in",
@@ -1509,5 +1522,12 @@
     "boardMilestone": "Teacher's milestone \"{title}\": {percent}% by {date}",
     "boardMilestoneReached": "reached",
     "boardMilestoneGap": "{gap} points to go"
+  },
+  "joinClass": {
+    "button": "Join a class",
+    "create": "Create a class",
+    "title": "Join a class",
+    "why": "Enter the class code your teacher gave you.",
+    "close": "Close"
   }
 }

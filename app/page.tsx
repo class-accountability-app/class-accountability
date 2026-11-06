@@ -1,14 +1,14 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { secondaryButtonClass } from '@/components/buttons'
-import { redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
 import { createClient } from '@/lib/supabase/server'
-import { homeProjectHref } from '@/lib/home-project'
+import { pickHomeProject } from '@/lib/home-project'
+import { ProjectHome } from '@/components/home/project-home'
 import { nextStep } from '@/lib/next-step'
 import { formatDateWithWeekday } from '@/lib/date'
 import { NextStepCard } from '@/components/next-step-card'
+import { JoinClassButton } from '@/components/join-class-button'
 import { Landing } from '@/components/landing/landing'
 
 // / is the page crawlers and link previews see (always logged out), so it is
@@ -35,8 +35,10 @@ type MembershipRow = {
   classes: { id: string; name: string; term: string } | null
 }
 
-// Home (project first, 2026-10-30). A student whose team has a project never
-// sees it: they land on the project's board. Everyone else gets the greeting,
+// Home (project first, 2026-10-30; a real Home again since 2026-11-06). A
+// student whose team has a project sees what is theirs to do in it (tasks,
+// check-in, meeting, 声かけ, announcements) with the board one tap away.
+// Everyone else gets the greeting,
 // the one next step (lib/next-step.ts: join a class, answer an invitation,
 // start or join a team, start the project) and their classes. On the notebook
 // rule (--rule, 28px): text in 28px lines, cards whole lines tall, gaps of one
@@ -58,23 +60,23 @@ export default async function Home({
     return <Landing accountDeleted={deleted === '1'} />
   }
 
-  // Project first: a student whose team has a project lands on its board.
-  // RLS returns only the projects of pods I am in.
+  // Project first: a student whose team has a project sees its summary here
+  // (components/home/project-home.tsx), the one due soonest. RLS returns only
+  // the projects of pods I am in.
   const { data: projectRows } = await supabase
     .from('projects')
     .select('deadline, created_at, pairings!inner(class_id, status)')
     .eq('pairings.status', 'active')
     .eq('status', 'active')
-  const projectHref = homeProjectHref(
+  const homeProject = pickHomeProject(
     ((projectRows ?? []) as unknown as { deadline: string | null; created_at: string; pairings: { class_id: string } }[]).map(
       (r) => ({ classId: r.pairings.class_id, deadline: r.deadline, createdAt: r.created_at })
     )
   )
-  if (projectHref) redirect(projectHref)
 
   const now = new Date()
   const [{ data: profile }, { data: memberships }, { data: pods }, { data: invites }, t, locale] = await Promise.all([
-    supabase.from('profiles').select('display_name').eq('id', user.id).single(),
+    supabase.from('profiles').select('display_name, can_create_classes').eq('id', user.id).single(),
     supabase
       .from('class_memberships')
       .select('class_id, joined_at, role, classes(id, name, term)')
@@ -112,8 +114,7 @@ export default async function Home({
       organizer: m.role === 'organizer',
       podSize: teamSize.get(m.class_id) ?? null,
       invited: invitedTo.has(m.class_id),
-      // Any project would have sent me to its board above.
-      project: 'none' as const,
+      project: (homeProject?.classId === m.class_id ? 'started' : 'none') as 'started' | 'none',
     }))
   const step = nextStep({ classes })
 
@@ -122,16 +123,28 @@ export default async function Home({
   return (
     <div className="flex flex-1 flex-col px-4 py-7 sm:px-6 lg:pb-14">
       <div className="mx-auto flex w-full max-w-md flex-col gap-7 md:max-w-xl lg:max-w-4xl">
-        <div className="px-0.5">
-          <time dateTime={now.toISOString()} className="font-meta text-[13px] leading-7 text-muted">
-            {formatDateWithWeekday(now, locale)}
-          </time>
-          <h1 className="font-heading text-[28px] leading-tight font-bold text-ink [overflow-wrap:anywhere] lg:text-[36px]">
-            {profile?.display_name ? t('greeting', { name: profile.display_name }) : t('greetingNoName')}
-          </h1>
+        <div className="flex flex-wrap items-end justify-between gap-x-5 gap-y-3 px-0.5">
+          <div className="min-w-0">
+            <time dateTime={now.toISOString()} className="font-meta text-[13px] leading-7 text-muted">
+              {formatDateWithWeekday(now, locale)}
+            </time>
+            <h1 className="font-heading text-[28px] leading-tight font-bold text-ink [overflow-wrap:anywhere] lg:text-[36px]">
+              {profile?.display_name ? t('greeting', { name: profile.display_name }) : t('greetingNoName')}
+            </h1>
+          </div>
+          <JoinClassButton canCreate={profile?.can_create_classes === true} />
         </div>
 
-        <NextStepCard step={step} />
+        {homeProject ? (
+          <ProjectHome
+            classId={homeProject.classId}
+            className={classes.find((c) => c.id === homeProject.classId)?.name ?? ''}
+            userId={user.id}
+            locale={locale}
+          />
+        ) : (
+          <NextStepCard step={step} />
+        )}
 
         {classes.length > 0 && (
           <section aria-labelledby="classes-heading" className="flex flex-col gap-3.5">
@@ -161,11 +174,6 @@ export default async function Home({
                 </li>
               ))}
             </ul>
-            <div className="px-0.5">
-              <Link href="/classes" className={secondaryButtonClass}>
-                {t('joinAnotherClass')}
-              </Link>
-            </div>
           </section>
         )}
       </div>

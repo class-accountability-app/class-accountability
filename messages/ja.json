@@ -50,7 +50,20 @@
     "targetsWhy": "毎日の記録は ＋記録 から。",
     "heroLabel": "今日の目標",
     "logAgain": "もう一度記録",
-    "recentLogs": "最近の記録（編集・削除）"
+    "recentLogs": "最近の記録（編集・削除）",
+    "projectKicker": "{className} · チームのプロジェクト",
+    "openBoard": "ボードを開く",
+    "myTasks": "あなたのタスク",
+    "noMyTasks": "まだ担当しているタスクはありません。ボードでタスクを追加できます。",
+    "noMyTasksClaim": "まだ担当しているタスクはありません。ボードに担当が決まっていないタスクが{count}件あります。",
+    "logOnBoard": "ボードで記録する",
+    "teamProgress": "チーム全体の進み具合",
+    "teamMembers": "チーム {count}人",
+    "sideLabel": "予定と声かけ",
+    "nudgesHeading": "届いた声かけ",
+    "noNudges": "まだ届いていません。",
+    "nudgeFrom": "{name}さんから",
+    "seeNudges": "声かけを見る"
   },
   "login": {
     "eyebrow": "ログイン",
@@ -1509,5 +1522,12 @@
     "boardMilestone": "先生の目安「{title}」：{date}までに{percent}%",
     "boardMilestoneReached": "達成しています",
     "boardMilestoneGap": "あと{gap}ポイント"
+  },
+  "joinClass": {
+    "button": "クラスに参加",
+    "create": "クラスを作る",
+    "title": "クラスに参加",
+    "why": "先生から伝えられたクラスのコードを入れてください。",
+    "close": "閉じる"
   }
 }
