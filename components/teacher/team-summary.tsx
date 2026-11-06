@@ -19,10 +19,12 @@ type SummaryRow = {
   checkins_this_round: number
 }
 
+// Colour = meaning (2026-11-06): olive on track, Hudson with an outline for
+// behind; the word says it too.
 const PACE_PILL: Record<TeamPace, string> = {
-  onTrack: 'bg-status-active text-white',
-  behind: 'bg-accent text-white',
-  notStarted: 'text-status-stale shadow-[inset_0_0_0_1px_var(--color-border)]',
+  onTrack: 'bg-tint-olive text-ink',
+  behind: 'bg-tint-hudson text-ink shadow-[inset_0_0_0_1.5px_var(--ink)]',
+  notStarted: 'bg-surface text-status-stale shadow-[inset_0_0_0_1px_var(--color-border)]',
 }
 
 // The organizer's view of the class (0027, project first): one line per team,
@@ -51,9 +53,22 @@ export async function TeamSummary({ classId }: { classId: string }) {
   }
   const separator = locale === 'ja' ? '、' : ', '
   const now = new Date()
+  // The numbers at a glance (screen D): whole-class counts only.
+  const withProject = rows.filter((r) => r.has_project)
+  const onTrack = rows.filter(
+    (r) => teamPace({ hasProject: r.has_project, percent: r.percent, startDate: r.start_date, deadline: r.deadline }, now) === 'onTrack'
+  ).length
+  const average = withProject.length > 0 ? Math.round(withProject.reduce((a, r) => a + r.percent, 0) / withProject.length) : null
+  const checkedIn = withProject.reduce((a, r) => a + r.checkins_this_round, 0)
+  const inProjects = withProject.reduce((a, r) => a + r.members, 0)
+  const stats = [
+    { label: t('stats.onTrack'), value: `${onTrack} / ${rows.length}` },
+    { label: t('stats.average'), value: average === null ? '—' : `${average}%` },
+    { label: t('stats.checkins'), value: `${checkedIn} / ${inProjects}` },
+  ]
 
   return (
-    <section aria-labelledby="team-summary-heading" className="flex w-full max-w-md flex-col gap-3.5">
+    <section aria-labelledby="team-summary-heading" className="flex w-full flex-col gap-3.5">
       <div>
         <h2 id="team-summary-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
           {t('title')}
@@ -61,10 +76,20 @@ export async function TeamSummary({ classId }: { classId: string }) {
         <p className="text-[13px] leading-7 text-muted">{t('why')}</p>
       </div>
       {health && (health.lost > 0 || health.stuck > 0) && (
-        <div role="status" className="rounded-2xl bg-primary-container px-4 py-3 text-[13px] leading-6 text-on-primary-container">
+        <div role="status" className="rule-card tint-hudson px-5 py-4 text-sm leading-6 text-ink">
           {health.lost > 0 && <p>{t('googleLost', { count: health.lost, links: health.links })}</p>}
           {health.stuck > 0 && <p>{t('googleStuck', { count: health.stuck, links: health.links })}</p>}
         </div>
+      )}
+      {rows.length > 0 && (
+        <dl className="grid grid-cols-3 gap-3">
+          {stats.map((s) => (
+            <div key={s.label} className="rule-card flex flex-col gap-1 px-4 py-4">
+              <dt className="text-xs leading-5 font-semibold text-muted">{s.label}</dt>
+              <dd className="font-heading text-2xl leading-tight font-bold text-ink">{s.value}</dd>
+            </div>
+          ))}
+        </dl>
       )}
       {rows.length > 0 && (
         <a

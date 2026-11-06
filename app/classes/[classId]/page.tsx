@@ -7,6 +7,7 @@ import type { RosterRow } from '@/lib/organizer'
 import { ClassProjectForm } from '@/components/teacher/class-project-form'
 import { rowsFromTasks } from '@/lib/class-project'
 import { redirect } from 'next/navigation'
+import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { RequestJoinButton } from './request-join-button'
@@ -124,41 +125,74 @@ export default async function ClassPodsPage({
       // 0038: milestones with how many teams reached each (errors before it).
       supabase.rpc('class_milestone_status', { p_class: classId }),
     ])
+    const tTeacher = await getTranslations('teacher')
+    const hasTools = !rosterError && !!rosterRows
+    // Screen D of the 2026-11-06 design: the class name big, then the team
+    // summary with the class project on the left and the tools on the right
+    // from 1024px. Phones get one column in the same order.
     return (
-      <div className="flex flex-1 flex-col items-center gap-8 px-4 py-12 sm:items-start sm:pl-16">
-        <div className="flex w-full max-w-md flex-col gap-2">
-          <p className="font-meta text-[13px] text-muted">{cls.term}</p>
-          <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink">{cls.name}</h1>
-          <p className="font-meta text-sm text-ink">
-            {t('studentCount', { count: Number(byCode?.member_count ?? 0) })}
-          </p>
-          <p className="text-sm leading-[1.8] text-muted">{t('organizerNote')}</p>
-        </div>
-        <TeamSummary classId={classId} />
-        {!rosterError && rosterRows && (
-          <>
-            <TeamManager classId={classId} roster={rosterRows as RosterRow[]} />
-            <AnnouncementManager classId={classId} announcements={(announcementRows as Announcement[] | null) ?? []} />
-          </>
-        )}
-        {!milestoneError && milestoneRows && (
-          <MilestoneManager classId={classId} milestones={milestoneRows as MilestoneStatus[]} />
-        )}
-        <ClassProjectForm
-          classId={classId}
-          initial={
-            classProject
-              ? {
-                  title: classProject.title,
-                  deadline: classProject.deadline ?? '',
-                  every: String(classProject.checkin_every_days),
-                  tasks: rowsFromTasks(classProject.tasks),
+      <div className="flex flex-1 flex-col px-4 py-7 sm:px-6">
+        <div className="mx-auto flex w-full max-w-md flex-col gap-7 md:max-w-xl lg:max-w-6xl">
+          <header className="flex flex-wrap items-end justify-between gap-5 px-0.5">
+            <div className="min-w-0">
+              <p className="font-meta text-[13px] leading-7 text-muted">
+                {cls.term} · {tTeacher('organizerRole')}
+              </p>
+              <h1 className="font-heading text-[28px] leading-tight font-light text-ink [overflow-wrap:anywhere] lg:text-[36px]">
+                {tTeacher('classKicker')}
+                <br />
+                <span className="font-bold">{cls.name}</span>
+              </h1>
+              <p className="pt-1 font-meta text-sm leading-7 text-ink">
+                {t('studentCount', { count: Number(byCode?.member_count ?? 0) })}
+              </p>
+              <p className="text-sm leading-[1.8] text-muted">{t('organizerNote')}</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <a href="#invite" className={secondaryButtonClass}>
+                {tTeacher('inviteLink')}
+              </a>
+              {hasTools && (
+                <a href="#announcements" className={primaryButtonClass}>
+                  {tTeacher('announceLink')}
+                </a>
+              )}
+            </div>
+          </header>
+          <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
+            <div className="flex min-w-0 flex-col gap-7">
+              <TeamSummary classId={classId} />
+              <ClassProjectForm
+                classId={classId}
+                initial={
+                  classProject
+                    ? {
+                        title: classProject.title,
+                        deadline: classProject.deadline ?? '',
+                        every: String(classProject.checkin_every_days),
+                        tasks: rowsFromTasks(classProject.tasks),
+                      }
+                    : null
                 }
-              : null
-          }
-        />
-        <div id="invite" className="w-full max-w-md scroll-mt-4">
-          {inviteCard}
+              />
+            </div>
+            <aside aria-label={tTeacher('manageLabel')} className="flex min-w-0 flex-col gap-7">
+              {hasTools && (
+                <>
+                  <TeamManager classId={classId} roster={rosterRows as RosterRow[]} />
+                  <div id="announcements" className="scroll-mt-4">
+                    <AnnouncementManager classId={classId} announcements={(announcementRows as Announcement[] | null) ?? []} />
+                  </div>
+                </>
+              )}
+              {!milestoneError && milestoneRows && (
+                <MilestoneManager classId={classId} milestones={milestoneRows as MilestoneStatus[]} />
+              )}
+              <div id="invite" className="scroll-mt-4">
+                {inviteCard}
+              </div>
+            </aside>
+          </div>
         </div>
       </div>
     )

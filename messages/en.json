@@ -1316,7 +1316,17 @@
       "no": "no"
     },
     "googleLost": "{count} of {links} Google links can’t be read (the file was deleted or unshared, or Google was disconnected). Students see it on their board; ask them to link the file again.",
-    "googleStuck": "{count} of {links} Google links haven’t been counted for over a day. Automatic counting may have stopped; please tell the developer."
+    "googleStuck": "{count} of {links} Google links haven’t been counted for over a day. Automatic counting may have stopped; please tell the developer.",
+    "classKicker": "Class",
+    "organizerRole": "Organizer",
+    "inviteLink": "Join link and QR",
+    "announceLink": "Send an announcement",
+    "manageLabel": "Manage the class",
+    "stats": {
+      "onTrack": "Teams on track",
+      "average": "Class average",
+      "checkins": "Check-ins this round"
+    }
   },
   "teamJoin": {
     "eyebrow": "Team invitation",

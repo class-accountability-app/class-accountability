@@ -1316,7 +1316,17 @@
       "no": "なし"
     },
     "googleLost": "Google とつないだ記録のうち {count}件（全{links}件中）が読めなくなっています。ファイルの削除や共有の解除、Google 連携の解除などが考えられます。学生のボードにも表示されているので、つなぎ直すよう声をかけてください。",
-    "googleStuck": "Google とつないだ記録のうち {count}件（全{links}件中）が1日以上数えられていません。自動の集計が止まっている可能性があるので、開発者に知らせてください。"
+    "googleStuck": "Google とつないだ記録のうち {count}件（全{links}件中）が1日以上数えられていません。自動の集計が止まっている可能性があるので、開発者に知らせてください。",
+    "classKicker": "クラス",
+    "organizerRole": "運営者",
+    "inviteLink": "参加用のリンクと QR",
+    "announceLink": "お知らせを送る",
+    "manageLabel": "クラスの管理",
+    "stats": {
+      "onTrack": "予定どおりのチーム",
+      "average": "クラスの平均",
+      "checkins": "今回のチェックイン"
+    }
   },
   "teamJoin": {
     "eyebrow": "チームへの招待",
