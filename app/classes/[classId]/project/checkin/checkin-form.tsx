@@ -35,7 +35,7 @@ export function CheckinForm({ classId, projectId }: { classId: string; projectId
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-3.5">
       <div className="flex flex-col gap-1.5">
-        <label htmlFor={`${id}-note`} className="text-sm font-semibold text-ink">
+        <label htmlFor={`${id}-note`} className="text-[15px] font-semibold text-ink">
           {t('checkin.noteLabel')}
         </label>
         <textarea
@@ -45,7 +45,7 @@ export function CheckinForm({ classId, projectId }: { classId: string; projectId
           maxLength={280}
           rows={4}
           placeholder={t('checkin.notePlaceholder')}
-          className="w-full rounded-lg border border-outline bg-surface px-3.5 py-2 text-base leading-7 text-ink placeholder:text-muted"
+          className="w-full rounded-xl border-2 border-ink bg-surface px-3.5 py-2.5 text-base leading-7 text-ink placeholder:text-muted"
           {...describedField(noteError, `${id}-note-error`, `${id}-fine`)}
         />
         <FieldError id={`${id}-note-error`} error={noteError} />
@@ -62,14 +62,14 @@ export function CheckinForm({ classId, projectId }: { classId: string; projectId
                   return next.slice(0, 280)
                 })
               }
-              className="inline-flex min-h-9 items-center rounded-lg border border-outline px-3 text-[13px] text-ink"
+              className="inline-flex min-h-11 items-center rounded-full bg-surface px-4 text-sm font-semibold text-ink shadow-[inset_0_0_0_1.5px_var(--ink)] hover:bg-surface-container"
             >
               ＋ {t(`checkin.${key}`)}
             </button>
           ))}
         </div>
       </div>
-      <button type="submit" disabled={isPending} className={`${primaryButtonClass} h-[52px] w-full`}>
+      <button type="submit" disabled={isPending} className={`${primaryButtonClass} w-full`}>
         {isPending ? tCommon('sending') : t('checkin.send')}
       </button>
       <p id={`${id}-fine`} className="text-[13px] leading-7 text-muted">
