@@ -111,7 +111,19 @@
     "myClassesHeading": "Your classes",
     "noClasses": "You haven't joined a class yet. Open the link or QR code from your class, or enter the code above.",
     "teachersCreate": "Classes are created by teachers and organizers. Join with the link, QR code or class code you were given.",
-    "organizerMeta": "{term} · Organizer"
+    "organizerMeta": "{term} · Organizer",
+    "teachingHeading": "Classes you teach ({count})",
+    "studyingHeading": "Classes you're in ({count})",
+    "metaStudents": "{students} students · {teams} teams",
+    "metaTeam": "Team of {count}",
+    "metaTeamNamed": "{team} · {count} people",
+    "metaNoTeam": "Not in a team yet",
+    "metaProject": "{title} · due {date}",
+    "metaNoProject": "No project yet",
+    "allClasses": "All classes",
+    "switchClass": "Switch to another class",
+    "classNav": "Class navigation",
+    "organizerMark": "Organizer"
   },
   "classForm": {
     "nameLabel": "Class name",

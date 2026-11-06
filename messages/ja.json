@@ -111,7 +111,19 @@
     "myClassesHeading": "参加中のクラス",
     "noClasses": "まだクラスに参加していません。授業で配られたリンクかQRコードを開くか、上にコードを入力してください。",
     "teachersCreate": "クラスは先生や運営者が作ります。参加用のリンク、QRコード、またはコードで参加してください。",
-    "organizerMeta": "{term} · 運営"
+    "organizerMeta": "{term} · 運営",
+    "teachingHeading": "教えているクラス（{count}）",
+    "studyingHeading": "参加しているクラス（{count}）",
+    "metaStudents": "学生 {students}人 · チーム {teams}",
+    "metaTeam": "チーム {count}人",
+    "metaTeamNamed": "{team} · {count}人",
+    "metaNoTeam": "まだチームに入っていません",
+    "metaProject": "{title} · {date}まで",
+    "metaNoProject": "プロジェクトはまだありません",
+    "allClasses": "クラス一覧",
+    "switchClass": "ほかのクラスに切り替える",
+    "classNav": "クラスの移動",
+    "organizerMark": "運営"
   },
   "classForm": {
     "nameLabel": "クラス名",
