@@ -39,7 +39,7 @@ export function AnnouncementManager({ classId, announcements }: { classId: strin
   }
 
   return (
-    <section aria-labelledby={`${id}-heading`} className="flex w-full max-w-md flex-col gap-3 rounded-lg border border-border bg-surface p-4">
+    <section aria-labelledby={`${id}-heading`} className="rule-card tint-rubble flex w-full flex-col gap-3 px-5 py-5">
       <h2 id={`${id}-heading`} className="font-heading text-xl font-bold text-ink">
         {t('announceHeading')}
       </h2>

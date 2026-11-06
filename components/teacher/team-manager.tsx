@@ -47,7 +47,7 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
   const preview = splitPreview(unassigned.length, size)
 
   return (
-    <section aria-labelledby={`${id}-heading`} className="flex w-full max-w-md flex-col gap-4">
+    <section aria-labelledby={`${id}-heading`} className="flex w-full flex-col gap-4">
       <div>
         <h2 id={`${id}-heading`} className="font-heading text-xl font-bold text-ink">
           {t('heading')}
@@ -56,7 +56,7 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
       </div>
       <FormError error={error} />
 
-      <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4">
+      <div className="flex flex-col gap-3 rule-card px-5 py-5">
         <h3 className="text-[15px] font-semibold text-ink">{t('unassignedHeading', { count: unassigned.length })}</h3>
         {unassigned.length === 0 ? (
           <p className="text-[13px] text-muted">{t('unassignedNone')}</p>
@@ -214,7 +214,7 @@ function TeamCard({
   const [name, setName] = useState(team.name ?? '')
 
   return (
-    <div className="flex flex-col gap-2.5 rounded-lg border border-border bg-surface p-4">
+    <div className="flex flex-col gap-2.5 rule-card px-5 py-5">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-[15px] font-semibold text-ink [overflow-wrap:anywhere]">{label}</h3>
         <span className="font-meta text-xs text-muted">{t('memberCount', { count: team.members.length })}</span>

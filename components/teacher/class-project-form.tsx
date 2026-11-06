@@ -63,14 +63,14 @@ export function ClassProjectForm({
   }
 
   return (
-    <section aria-labelledby={`${id}-heading`} className="flex w-full max-w-md flex-col gap-3.5">
+    <section aria-labelledby={`${id}-heading`} className="flex w-full flex-col gap-3.5">
       <div>
         <h2 id={`${id}-heading`} className="font-heading text-[17px] leading-7 font-bold text-ink">
           {t('title')}
         </h2>
         <p className="text-[13px] leading-7 text-muted">{t('why')}</p>
       </div>
-      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5">
+      <form onSubmit={handleSubmit} noValidate className="rule-card flex flex-col gap-4 px-5 py-5">
         <div className="flex flex-col gap-1.5">
           <label htmlFor={`${id}-title`} className="text-sm font-semibold text-ink">{t('nameLabel')}</label>
           <input id={`${id}-title`} value={title} maxLength={120} placeholder={t('namePlaceholder')}
