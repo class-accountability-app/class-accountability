@@ -18,6 +18,7 @@ import { chosenStart, formatMeeting, isUpcoming, loadPolls } from './meetings/lo
 import { ClaimButton, FinishProjectButton, TaskStatusControl, TemplateTasksForm, WriteInAppButton } from './task-controls'
 import { CreateGroupDocButton, GoogleSyncOnOpen } from './google-controls'
 import { TaskLog } from './task-log'
+import { OpenSourceButton } from '@/components/project/open-source-button'
 import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
 import { ClassAnnouncements } from '@/components/class-announcements'
@@ -524,8 +525,18 @@ export default async function ProjectPage({
                             </Link>
                           </div>
                         )}
+                        {mine && sources.get(task.id)?.state === 'ok' && (
+                          <div className="pb-2">
+                            <OpenSourceButton kind={sources.get(task.id)!.kind} fileId={sources.get(task.id)!.file_id} small />
+                          </div>
+                        )}
                         {!mine && sources.get(task.id)?.kind === 'doc_section' && (
-                          <p className="font-meta text-xs leading-7 text-muted">{tGoogle('teammateLinked')}</p>
+                          <>
+                            <p className="font-meta text-xs leading-7 text-muted">{tGoogle('teammateLinked')}</p>
+                            <div className="pb-2">
+                              <OpenSourceButton kind="doc_section" fileId={sources.get(task.id)!.file_id} small />
+                            </div>
+                          </>
                         )}
                         {mine && task.inputMode === 'document' && (
                           <div className="pb-3.5">
