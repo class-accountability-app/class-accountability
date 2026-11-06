@@ -67,7 +67,7 @@ export function TaskForm({
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex w-full flex-col gap-5">
-      <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5">
+      <div className="rule-card flex flex-col gap-5 px-5 py-5">
         <div className="flex flex-col gap-1.5">
           <label htmlFor={`${id}-title`} className="text-sm font-semibold text-ink">
             {t('newTask.name')}
@@ -100,13 +100,13 @@ export function TaskForm({
 
         <fieldset className="flex flex-col gap-1.5" aria-describedby={`${id}-how-hint`}>
           <legend className="mb-1.5 text-sm font-semibold text-ink">{t('newTask.how')}</legend>
-          <div className="flex overflow-hidden rounded-lg border border-outline">
-            {TASK_METRICS.map((m, i) => (
+          <div className="flex gap-1 rounded-full bg-surface-container p-1">
+            {TASK_METRICS.map((m) => (
               <label
                 key={m}
-                className={`flex min-h-11 flex-1 cursor-pointer items-center justify-center px-1.5 py-1.5 text-center text-sm leading-[1.4] has-[:focus-visible]:outline-2 has-[:focus-visible]:-outline-offset-4 has-[:focus-visible]:outline-accent ${
-                  i > 0 ? 'border-l border-outline' : ''
-                } ${metric === m ? 'bg-ink text-surface' : 'bg-surface text-ink'}`}
+                className={`flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-full px-1.5 py-1.5 text-center text-sm leading-[1.4] font-semibold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
+                  metric === m ? 'bg-ink text-surface' : 'text-ink hover:bg-surface'
+                }`}
               >
                 <input
                   type="radio"
@@ -202,7 +202,7 @@ export function TaskForm({
         </div>
       </div>
 
-      <button type="submit" disabled={isPending} className={`${primaryButtonClass} h-[52px] w-full`}>
+      <button type="submit" disabled={isPending} className={`${primaryButtonClass} w-full`}>
         {isPending ? tCommon('creating') : t('newTask.submit')}
       </button>
       <FormError error={errorField ? null : error} />

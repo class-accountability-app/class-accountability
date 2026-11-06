@@ -44,16 +44,18 @@ export default async function NewTaskPage({ params }: { params: Promise<{ classI
   members.sort((a, b) => Number(b.id === user.id) - Number(a.id === user.id))
 
   return (
-    <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
-      <div className="flex w-full max-w-md flex-col gap-5">
+    <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-5 md:max-w-xl">
         <Link
           href={`/classes/${classId}/project`}
-          className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-accent-text"
+          className="-ml-2 inline-flex min-h-11 items-center self-start rounded-full px-2 text-sm font-semibold text-ink hover:bg-surface-container"
         >
           {t('back')}
         </Link>
-        <p className="font-meta text-[13px] text-muted [overflow-wrap:anywhere]">{project.title}</p>
-        <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink">{t('newTask.pageTitle')}</h1>
+        <div className="px-0.5">
+          <p className="font-meta text-[13px] leading-7 text-muted [overflow-wrap:anywhere]">{project.title}</p>
+          <h1 className="font-heading text-[28px] leading-tight font-bold text-ink lg:text-[36px]">{t('newTask.pageTitle')}</h1>
+        </div>
         <TaskForm classId={classId} projectId={project.id} members={members} defaultOwnerId={user.id} />
       </div>
     </div>

@@ -111,14 +111,14 @@ export function LinkForm({
 
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-5">
-      {current?.state === 'lost_access' && <p className="text-sm leading-7 text-accent-text">{t('lostExplain')}</p>}
+      {current?.state === 'lost_access' && <p role="status" className="rule-card tint-hudson px-5 py-4 text-sm leading-7 text-ink">{t('lostExplain')}</p>}
       <fieldset className="flex flex-col gap-3.5">
         <legend className="sr-only">{t('linkLegend')}</legend>
         {options.map((option) => (
           <label
             key={option}
-            className={`flex cursor-pointer gap-3 rounded-lg bg-surface p-3.5 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent ${
-              choice === option ? 'shadow-[inset_0_0_0_2px_var(--color-ink)]' : 'shadow-[inset_0_0_0_1px_var(--outline)]'
+            className={`flex cursor-pointer gap-3 rounded-[20px] px-4 py-4 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
+              choice === option ? 'bg-tint-penna' : 'bg-surface shadow-[inset_0_0_0_1px_var(--border)]'
             }`}
           >
             <input
@@ -134,7 +134,7 @@ export function LinkForm({
             />
             <span className="flex flex-col">
               <span className="text-[15px] leading-7 font-semibold text-ink">{t(`options.${option}.title`)}</span>
-              <span className="text-[13px] leading-7 text-muted">{t(`options.${option}.hint`)}</span>
+              <span className={`text-[13px] leading-6 ${choice === option ? 'text-ink' : 'text-muted'}`}>{t(`options.${option}.hint`)}</span>
             </span>
           </label>
         ))}
@@ -163,7 +163,7 @@ export function LinkForm({
         </div>
       )}
 
-      <button type="submit" disabled={isPending} className={`${primaryButtonClass} h-[52px] w-full`}>
+      <button type="submit" disabled={isPending} className={`${primaryButtonClass} w-full`}>
         {isPending ? tCommon('working') : choice === 'section' || choice === 'manual' ? t('save') : t('pickAndLink')}
       </button>
       {current && choice !== 'manual' && (
