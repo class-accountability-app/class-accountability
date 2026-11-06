@@ -451,7 +451,10 @@
       "iosTitle": "iPhone の場合は、先にホーム画面に追加してください",
       "iosLink": "ホーム画面に追加する方法",
       "footnote": "「設定」でいつでもオフにできます。"
-    }
+    },
+    "kicker": "チームからの",
+    "receivedHeading": "届いた声かけ（{count}）",
+    "from": "{name}さんから"
   },
   "push": {
     "title": "Study Pods",

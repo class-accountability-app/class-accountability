@@ -55,13 +55,13 @@ export function NudgeList({ names, unknownName }: { names: Record<string, string
   }
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col gap-3">
       {nudges.map((n) => (
         <li
           key={n.id}
-          className="flex flex-col gap-1 rounded-lg border border-border bg-surface px-4 py-3"
+          className="rule-card flex flex-col gap-1 px-5 py-4"
         >
-          <span className="text-xs text-ink">
+          <span className="text-sm leading-6 text-ink">
             {t.rich('line', {
               from: nameOf(n.from_user_id),
               to: nameOf(n.to_user_id),
@@ -70,7 +70,7 @@ export function NudgeList({ names, unknownName }: { names: Record<string, string
               recipient: (chunks) => <span className="font-medium">{chunks}</span>,
             })}
           </span>
-          <span className="font-meta text-[10px] text-muted">
+          <span className="font-meta text-xs text-muted">
             {formatTimeAgo(n.created_at, locale, now)}
           </span>
         </li>

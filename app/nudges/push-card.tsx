@@ -66,7 +66,7 @@ export function PushCard() {
   // lines (the iPhone note is 76px, so it adds up the same); RuleSnap only
   // steps in if something wraps unexpectedly.
   return (
-    <section aria-labelledby="push-card-title" className="rule-card px-[18px] py-3.5">
+    <section aria-labelledby="push-card-title" className="rule-card tint-penna px-5 py-5">
       <RuleSnap>
         <div className="flex flex-col gap-[11px]">
           <h2 id="push-card-title" className="font-heading text-xl leading-7 font-bold text-ink">
@@ -75,7 +75,7 @@ export function PushCard() {
           <p className="text-sm leading-7 text-ink">{t('body')}</p>
 
           {device.state === 'ios-install-first' && (
-            <div className="rounded-lg bg-surface px-4 py-2.5 text-sm leading-7 shadow-[inset_0_0_0_1px_var(--border)]">
+            <div className="rounded-2xl bg-surface px-4 py-3 text-sm leading-7">
               <p className="font-semibold text-ink">{t('iosTitle')}</p>
               <Link
                 href={`/settings#${INSTALL_ROW_ID}`}
@@ -94,7 +94,7 @@ export function PushCard() {
           <button
             type="button"
             onClick={later}
-            className="flex min-h-12 w-full items-center justify-center rounded-lg border border-border bg-surface text-[15px] font-semibold text-ink"
+            className="flex min-h-12 w-full items-center justify-center rounded-full bg-surface text-[15px] font-semibold text-ink shadow-[inset_0_0_0_2px_var(--ink)]"
           >
             {t('later')}
           </button>
