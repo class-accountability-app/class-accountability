@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { secondaryButtonClass } from '@/components/buttons'
 import { redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
@@ -116,49 +117,55 @@ export default async function Home({
     }))
   const step = nextStep({ classes })
 
+  // Soft pastel (2026-11-06): the date as a small line above a big
+  // greeting, the next step on Penna, then my classes as cards.
   return (
-    <div className="flex flex-1 flex-col px-4 py-7 sm:px-6 sm:pl-16 lg:px-16 lg:pb-14">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-7 md:max-w-xl">
-        <div className="flex items-start justify-between gap-3 px-0.5">
-          <h1 className="font-heading text-[22px] leading-7 font-bold text-ink lg:text-[26px]">
-            {profile?.display_name ? t('greeting', { name: profile.display_name }) : t('greetingNoName')}
-          </h1>
-          <time dateTime={now.toISOString()} className="relative top-1 shrink-0 font-meta text-[13px] leading-7 text-muted">
+    <div className="flex flex-1 flex-col px-4 py-7 sm:px-6 lg:pb-14">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-7 md:max-w-xl lg:max-w-4xl">
+        <div className="px-0.5">
+          <time dateTime={now.toISOString()} className="font-meta text-[13px] leading-7 text-muted">
             {formatDateWithWeekday(now, locale)}
           </time>
+          <h1 className="font-heading text-[28px] leading-tight font-bold text-ink [overflow-wrap:anywhere] lg:text-[36px]">
+            {profile?.display_name ? t('greeting', { name: profile.display_name }) : t('greetingNoName')}
+          </h1>
         </div>
 
         <NextStepCard step={step} />
 
         {classes.length > 0 && (
-          <section aria-labelledby="classes-heading" className="flex flex-col">
-            <h2 id="classes-heading" className="px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
+          <section aria-labelledby="classes-heading" className="flex flex-col gap-3.5">
+            <h2 id="classes-heading" className="px-0.5 font-heading text-lg leading-7 font-bold text-ink">
               {t('classesHeading')}
             </h2>
-            {/* Rows of links one line apart, so their 44px tap areas never
-                overlap. Their negative margins (-5 / -11px) keep each to
-                one 28px line and drop the text onto the ruled line. */}
-            <ul className="flex flex-wrap gap-x-4 gap-y-7 px-0.5">
+            <ul className="grid gap-4 md:grid-cols-2">
               {classes.map((c) => (
                 <li key={c.id}>
                   <Link
                     href={`/classes/${c.id}`}
-                    className="-mt-[5px] -mb-[11px] inline-flex min-h-11 items-center gap-1.5 text-sm leading-7 font-semibold text-accent-text underline-offset-4 hover:underline"
+                    className="rule-card flex min-h-[88px] items-center justify-between gap-4 px-5 py-4 hover:bg-surface-container"
                   >
-                    {c.name}
-                    {c.organizer && <span className="font-meta text-xs font-normal text-muted">{t('organizerMark')}</span>}
+                    <span className="flex min-w-0 flex-col">
+                      <span className="text-base leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{c.name}</span>
+                      <span className="font-meta text-[13px] leading-6 text-muted">
+                        {c.term}
+                        {c.organizer && ` · ${t('organizerMark')}`}
+                      </span>
+                    </span>
+                    <span aria-hidden className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-surface-container text-ink">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M7 17L17 7M9 7h8v8" />
+                      </svg>
+                    </span>
                   </Link>
                 </li>
               ))}
-              <li>
-                <Link
-                  href="/classes"
-                  className="-mt-[5px] -mb-[11px] inline-flex min-h-11 items-center text-sm leading-7 font-semibold text-accent-text underline underline-offset-4"
-                >
-                  {t('joinAnotherClass')}
-                </Link>
-              </li>
             </ul>
+            <div className="px-0.5">
+              <Link href="/classes" className={secondaryButtonClass}>
+                {t('joinAnotherClass')}
+              </Link>
+            </div>
           </section>
         )}
       </div>
