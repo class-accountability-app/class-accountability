@@ -7,6 +7,7 @@ import {
   isFileId,
   isHeadingId,
   safeReturnPath,
+  sourceFileUrl,
   sourceLabel,
 } from './google-links'
 
@@ -102,5 +103,15 @@ describe('googleErrorReason', () => {
     for (const body of [null, 'oops', {}, { error: {} }, { error: { errors: [{ reason: 'x@andrew.ac.jp' }] } }, { error: { status: 'a b' } }, { error: { status: 'a'.repeat(65) } }]) {
       expect(googleErrorReason(body)).toBeNull()
     }
+  })
+})
+
+describe('sourceFileUrl', () => {
+  it('opens each kind in the right Google app', () => {
+    expect(sourceFileUrl('doc', 'abc123def45')).toBe('https://docs.google.com/document/d/abc123def45/edit')
+    expect(sourceFileUrl('doc_section', 'abc123def45')).toBe('https://docs.google.com/document/d/abc123def45/edit')
+    expect(sourceFileUrl('doc_words', 'abc123def45')).toBe('https://docs.google.com/document/d/abc123def45/edit')
+    expect(sourceFileUrl('slides', 'abc123def45')).toBe('https://docs.google.com/presentation/d/abc123def45/edit')
+    expect(sourceFileUrl('sheet', 'abc123def45')).toBe('https://docs.google.com/spreadsheets/d/abc123def45/edit')
   })
 })

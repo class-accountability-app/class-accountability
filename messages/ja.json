@@ -1318,7 +1318,15 @@
     "connectedTitle": "Google とつながっています",
     "noCountedTask": "進み具合を「数える」か「文字数」ではかるタスクを追加すると、Google のファイルで自動で記録できます。",
     "noCharactersTask": "グループのドキュメントは「文字数」のタスクのためのものです。「数える」のタスクは、それぞれのタスクから Google スライドとつなげます。",
-    "addCountedTask": "タスクを追加"
+    "addCountedTask": "タスクを追加",
+    "open": {
+      "doc": "ドキュメントを開く",
+      "doc_section": "グループのドキュメントを開く",
+      "doc_words": "ドキュメントを開く",
+      "slides": "スライドを開く",
+      "sheet": "スプレッドシートを開く"
+    },
+    "opensNewTab": "（新しいタブで開きます）"
   },
   "teacher": {
     "title": "チームの進み具合",

@@ -1318,7 +1318,15 @@
     "connectedTitle": "Google is connected",
     "noCountedTask": "Add a task measured by count or characters, and it can be logged automatically from a Google file.",
     "noCharactersTask": "The group Doc is for tasks counted in characters. A count task can be linked to Google Slides from the task itself.",
-    "addCountedTask": "Add a task"
+    "addCountedTask": "Add a task",
+    "open": {
+      "doc": "Open the Doc",
+      "doc_section": "Open the group Doc",
+      "doc_words": "Open the Doc",
+      "slides": "Open the slides",
+      "sheet": "Open the sheet"
+    },
+    "opensNewTab": "(opens in a new tab)"
   },
   "teacher": {
     "title": "How the teams are doing",

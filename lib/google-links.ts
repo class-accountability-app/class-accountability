@@ -33,6 +33,19 @@ export function slidesUrl(fileId: string): string {
   return `https://docs.google.com/presentation/d/${encodeURIComponent(fileId)}/edit`
 }
 
+export function sheetUrl(fileId: string): string {
+  return `https://docs.google.com/spreadsheets/d/${encodeURIComponent(fileId)}/edit`
+}
+
+// The file a task is counted from, opened in Google (2026-11-06): Docs for
+// the doc kinds, Slides, or Sheets. Google itself decides who may open it.
+export type SourceKind = 'doc' | 'doc_section' | 'slides' | 'doc_words' | 'sheet'
+export function sourceFileUrl(kind: SourceKind, fileId: string): string {
+  if (kind === 'slides') return slidesUrl(fileId)
+  if (kind === 'sheet') return sheetUrl(fileId)
+  return docUrl(fileId)
+}
+
 // 0023's label: 1–60 characters, no control characters.
 export function sourceLabel(title: string): string {
   const clean = title.replace(/[\u0000-\u001f\u007f]/g, ' ').trim()

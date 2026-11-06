@@ -12,6 +12,10 @@ import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { STATUS_PILL_CLASS, loadLiveTotals, loadMyPodProject, taskValueText, type TaskRow } from '@/app/classes/[classId]/project/load'
 import { chosenStart, formatMeeting, isUpcoming, loadPolls } from '@/app/classes/[classId]/project/meetings/load'
 import { WriteInAppButton } from '@/app/classes/[classId]/project/task-controls'
+import { OpenSourceButton } from '@/components/project/open-source-button'
+import type { SourceKind } from '@/lib/google-links'
+
+type SourceRow = { task_id: string; kind: SourceKind; file_id: string; state: 'ok' | 'lost_access' }
 
 // Home for a student whose team has a project (2026-11-06, replacing the
 // redirect to the board): what is mine to do, at a glance, with the board one
@@ -62,10 +66,11 @@ export async function ProjectHome({
     loadLiveTotals(supabase, project.id, tasks, userId),
     // Which of my tasks count from Google (no numbers here, 0023).
     tasks.length > 0
-      ? supabase.from('task_sources').select('task_id').in('task_id', tasks.map((x) => x.id))
-      : Promise.resolve({ data: [] as { task_id: string }[] }),
+      ? supabase.from('task_sources').select('task_id, kind, file_id, state').in('task_id', tasks.map((x) => x.id))
+      : Promise.resolve({ data: [] as SourceRow[] }),
   ])
-  const linked = new Set(((sourceRows as { task_id: string }[] | null) ?? []).map((r) => r.task_id))
+  const sourceOf = new Map(((sourceRows as SourceRow[] | null) ?? []).map((r) => [r.task_id, r]))
+  const linked = new Set(sourceOf.keys())
   const latest = latestCheckins(
     (checkinRows ?? []).map(
       (r): CheckinRow => ({ userId: r.user_id, roundStart: r.round_start, createdAt: r.created_at, snapshot: r.snapshot })
@@ -159,6 +164,11 @@ export async function ProjectHome({
                       {task.inputMode === 'manual' && task.metric === 'characters' && (task.shownTotal ?? 0) === 0 && !linked.has(task.id) && task.status !== 'done' && (
                         <div className="mt-1">
                           <WriteInAppButton classId={classId} taskId={task.id} />
+                        </div>
+                      )}
+                      {sourceOf.get(task.id)?.state === 'ok' && (
+                        <div className="mt-1">
+                          <OpenSourceButton kind={sourceOf.get(task.id)!.kind} fileId={sourceOf.get(task.id)!.file_id} small />
                         </div>
                       )}
                       {(value || task.due) && (
