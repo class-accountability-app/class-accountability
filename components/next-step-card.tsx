@@ -112,10 +112,8 @@ export async function NextStepCard({ step, podPrimary = true }: { step: NextStep
   return (
     <section
       aria-labelledby="next-step-heading"
-      className="rule-card grid gap-x-6 py-3.5 pr-3.5 pl-[18px] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"
-      // Inline, not a utility: .rule-card's own edge (globals.css) is
-      // unlayered CSS and would win over a Tailwind shadow class.
-      style={{ boxShadow: 'inset 0 0 0 1px var(--border), inset 4px 0 0 var(--accent)' }}
+      // Penna: the one thing that is yours to do next.
+      className="rule-card tint-penna grid gap-x-6 px-5 py-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center"
     >
       <div className="min-w-0">
         <p className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">{t('label')}</p>

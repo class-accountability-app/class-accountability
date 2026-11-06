@@ -67,7 +67,7 @@ export function TeamInviteCard({
   }
 
   return (
-    <section aria-labelledby={`${id}-heading`} className="rule-card flex flex-col px-3.5 py-3.5">
+    <section aria-labelledby={`${id}-heading`} className="rule-card flex flex-col px-5 py-5">
       <h2 id={`${id}-heading`} className="font-heading text-[17px] leading-7 font-bold text-ink">
         {t('heading')}
       </h2>

@@ -25,7 +25,7 @@ export async function TaskTimeline({
   const [t, locale] = await Promise.all([getTranslations('timeline'), getLocale() as Promise<Locale>])
 
   return (
-    <details className="rule-card px-3.5 py-3.5">
+    <details className="rule-card px-5 py-5">
       <summary className="flex min-h-11 cursor-pointer items-center justify-between font-heading text-[17px] font-bold text-ink">
         {t('heading')}
         <span className="text-[13px] font-normal text-muted">{t('count', { count: rows.length })}</span>

@@ -77,7 +77,7 @@ export async function TeamSummary({ classId }: { classId: string }) {
       {rows.length === 0 ? (
         <p className="text-sm leading-7 text-muted">{t('noTeams')}</p>
       ) : (
-        <ul className="rule-card flex flex-col px-3.5 py-3.5">
+        <ul className="rule-card flex flex-col px-5 py-5">
           {rows.map((r) => {
             const pace = teamPace(
               { hasProject: r.has_project, percent: r.percent, startDate: r.start_date, deadline: r.deadline },

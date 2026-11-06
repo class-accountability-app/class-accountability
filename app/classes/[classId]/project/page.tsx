@@ -88,9 +88,9 @@ export default async function ProjectPage({
       <p className="text-sm leading-7 text-muted">{cls.name}</p>
     </div>
   )
-  const wrap = (children: React.ReactNode) => (
-    <div className="flex flex-1 flex-col px-4 py-7 sm:px-6 sm:pl-16">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-7 md:max-w-xl">{children}</div>
+  const wrap = (children: React.ReactNode, wide = false) => (
+    <div className="flex flex-1 flex-col px-4 py-7 sm:px-6">
+      <div className={`mx-auto flex w-full max-w-md flex-col gap-7 md:max-w-xl ${wide ? 'lg:max-w-6xl' : ''}`}>{children}</div>
     </div>
   )
 
@@ -110,7 +110,7 @@ export default async function ProjectPage({
             </Link>
           }
         />
-        <div className="rule-card px-3.5 py-3.5">
+        <div className="rule-card px-5 py-5">
           <TeamCodeForm />
         </div>
       </>
@@ -172,7 +172,7 @@ export default async function ProjectPage({
             <h2 id="history-heading" className="px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
               {t('history.heading')}
             </h2>
-            <ul className="rule-card flex flex-col px-3.5 py-3.5">
+            <ul className="rule-card flex flex-col px-5 py-5">
               {past.map((p) => (
                 <li key={p.id}>
                   <Link
@@ -312,13 +312,79 @@ export default async function ProjectPage({
     return { id: m.id, name: m.name, total: theirs.length, done: theirs.filter((x) => x.status === 'done').length }
   })
 
+  const planCards = (where: string) => (
+    <>
+        <section aria-labelledby={`checkin-heading-${where}`} className="rule-card flex flex-col px-5 py-5">
+          <p className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">{t('checkin.kicker')}</p>
+          <h2 id={`checkin-heading-${where}`} className="font-heading text-[17px] leading-7 font-bold text-ink">
+            {formatDateWithWeekday(round.dueOn, locale)}
+          </h2>
+          <p className="text-[13px] leading-7 text-muted">
+            {round.submitted
+              ? t('checkin.done', { date: formatDate(round.nextRoundStart, locale) })
+              : round.daysUntilDue > 0
+                ? t('checkin.left', { count: round.daysUntilDue })
+                : t('checkin.today')}
+          </p>
+          <div className="flex flex-wrap gap-2.5 pt-3.5">
+            {!round.submitted && (
+              <Link href={`/classes/${classId}/project/checkin`} className={`${primaryButtonClass} flex-1`}>
+                {t('checkin.submit')}
+              </Link>
+            )}
+            <Link href={`/classes/${classId}/project/checkins`} className={`${secondaryButtonClass} flex-1`}>
+              {t('checkin.feed')}
+            </Link>
+          </div>
+        </section>
+
+        <section aria-labelledby={`meeting-heading-${where}`} className="rule-card flex flex-col px-5 py-5">
+          <p className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">{t('meetingCard.kicker')}</p>
+          <h2 id={`meeting-heading-${where}`} className="font-heading text-[17px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">
+            {nextMeeting
+              ? nextMeeting.title
+              : openPoll
+                ? t('meetingCard.voting', { title: openPoll.title })
+                : t('meetingCard.none')}
+          </h2>
+          {nextMeeting && (
+            <p className="text-[13px] leading-7 text-muted">
+              {formatMeeting(chosenStart(nextMeeting)!, nextMeeting.durationMinutes, locale)}
+            </p>
+          )}
+          <div className="pt-3.5">
+            <Link
+              href={nextMeeting ? `${meetingsHref}/${nextMeeting.id}` : openPoll ? `${meetingsHref}/${openPoll.id}` : `${meetingsHref}/new`}
+              className={`${secondaryButtonClass} w-full`}
+            >
+              {nextMeeting ? t('meetingCard.open') : openPoll ? t('meetingCard.vote') : t('meetingCard.pick')}
+            </Link>
+          </div>
+        </section>
+    </>
+  )
+
   return wrap(
     <NudgeListProvider nudges={(nudgeRows as NudgeItem[] | null) ?? []}>
       <div className="px-0.5">
         <p className="font-meta text-[13px] leading-7 text-muted">{cls.name}</p>
         {teamName}
-        <h1 className="font-heading text-[26px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">{project.title}</h1>
-        <p className="font-meta text-xs leading-7 text-muted">{dueLine}</p>
+        <h1 className="font-heading text-[28px] leading-tight font-light text-ink [overflow-wrap:anywhere] lg:text-[36px]">
+          {t('boardKicker')}
+          <br />
+          <span className="font-bold">{project.title}</span>
+        </h1>
+        <p className="pt-1 font-meta text-[13px] leading-7 text-muted">{dueLine}</p>
+      </div>
+
+      <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+      <div className="flex min-w-0 flex-col gap-7">
+      <section aria-label={t('overall', { percent })} className="rule-card flex items-center gap-6 px-5 py-5">
+        <p aria-hidden className="font-heading text-[52px] leading-none font-light text-ink">
+          {percent}
+          <span className="text-2xl">%</span>
+        </p>
+        <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex h-7 items-center">
           <ProgressBar value={percent} max={100} valueText={t('overall', { percent })} />
         </div>
@@ -333,59 +399,13 @@ export default async function ProjectPage({
             · {milestone.reached ? tPlanning('boardMilestoneReached') : tPlanning('boardMilestoneGap', { gap: milestone.gap })}
           </p>
         )}
-      </div>
+        </div>
+      </section>
 
       <ClassAnnouncements classId={classId} />
       {inviteOnTop && inviteCard}
 
-      <section aria-labelledby="checkin-heading" className="rule-card relative flex flex-col px-3.5 py-3.5 pl-[18px]">
-        <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-accent" />
-        <p className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">{t('checkin.kicker')}</p>
-        <h2 id="checkin-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
-          {formatDateWithWeekday(round.dueOn, locale)}
-        </h2>
-        <p className="text-[13px] leading-7 text-muted">
-          {round.submitted
-            ? t('checkin.done', { date: formatDate(round.nextRoundStart, locale) })
-            : round.daysUntilDue > 0
-              ? t('checkin.left', { count: round.daysUntilDue })
-              : t('checkin.today')}
-        </p>
-        <div className="flex flex-wrap gap-2.5 pt-3.5">
-          {!round.submitted && (
-            <Link href={`/classes/${classId}/project/checkin`} className={`${primaryButtonClass} flex-1`}>
-              {t('checkin.submit')}
-            </Link>
-          )}
-          <Link href={`/classes/${classId}/project/checkins`} className={`${secondaryButtonClass} flex-1`}>
-            {t('checkin.feed')}
-          </Link>
-        </div>
-      </section>
-
-      <section aria-labelledby="meeting-heading" className="rule-card flex flex-col px-3.5 py-3.5">
-        <p className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">{t('meetingCard.kicker')}</p>
-        <h2 id="meeting-heading" className="font-heading text-[17px] leading-7 font-bold text-ink [overflow-wrap:anywhere]">
-          {nextMeeting
-            ? nextMeeting.title
-            : openPoll
-              ? t('meetingCard.voting', { title: openPoll.title })
-              : t('meetingCard.none')}
-        </h2>
-        {nextMeeting && (
-          <p className="text-[13px] leading-7 text-muted">
-            {formatMeeting(chosenStart(nextMeeting)!, nextMeeting.durationMinutes, locale)}
-          </p>
-        )}
-        <div className="pt-3.5">
-          <Link
-            href={nextMeeting ? `${meetingsHref}/${nextMeeting.id}` : openPoll ? `${meetingsHref}/${openPoll.id}` : `${meetingsHref}/new`}
-            className={`${secondaryButtonClass} w-full`}
-          >
-            {nextMeeting ? t('meetingCard.open') : openPoll ? t('meetingCard.vote') : t('meetingCard.pick')}
-          </Link>
-        </div>
-      </section>
+      <div className="flex flex-col gap-7 lg:hidden">{planCards('top')}</div>
 
       {sources.size > 0 && <GoogleSyncOnOpen />}
       {googleResult && (
@@ -393,62 +413,6 @@ export default async function ProjectPage({
           {tGoogle(`result.${googleResult}`)}
         </p>
       )}
-      {(
-        <section aria-labelledby="google-heading" className="rule-card flex flex-col px-3.5 py-3.5">
-          <p className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">{tGoogle('kicker')}</p>
-          {groupDocId ? (
-            <>
-              <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('groupDocTitle')}</h2>
-              <p className="text-[13px] leading-7 text-muted">{tGoogle('groupDocWhy')}</p>
-              <div className="pt-3.5">
-                <a href={docUrl(groupDocId)} target="_blank" rel="noopener noreferrer" className={`${secondaryButtonClass} w-full`}>
-                  {tGoogle('groupDocOpen')}
-                </a>
-              </div>
-            </>
-          ) : hasGoogle && hasCharactersTask ? (
-            <>
-              <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('groupDocCreateTitle')}</h2>
-              <p className="text-[13px] leading-7 text-muted">{tGoogle('groupDocCreateWhy')}</p>
-              <div className="pt-3.5">
-                <CreateGroupDocButton classId={classId} projectId={project.id} />
-              </div>
-            </>
-          ) : hasGoogle ? (
-            <>
-              <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('connectedTitle')}</h2>
-              <p className="text-[13px] leading-7 text-muted">{hasCountedTask ? tGoogle('noCharactersTask') : tGoogle('noCountedTask')}</p>
-              <Link href={`${boardPath}/tasks/new`} className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-accent-text underline underline-offset-4">
-                ＋ {tGoogle('addCountedTask')}
-              </Link>
-            </>
-          ) : (
-            <>
-              <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('connectTitle')}</h2>
-              <p className="text-[13px] leading-7 text-muted">{tGoogle('connectWhy')}</p>
-              <div className="pt-3.5">
-                <a href={`/api/google/connect?return=${encodeURIComponent(boardPath)}`} className={`${secondaryButtonClass} w-full`}>
-                  {tGoogle('connect')}
-                </a>
-              </div>
-              <p className="text-[13px] leading-7 text-muted">{tGoogle('connectFine')}</p>
-              {!hasCountedTask && (
-                <>
-                  <p className="text-[13px] leading-7 text-muted">{tGoogle('noCountedTask')}</p>
-                  <Link href={`${boardPath}/tasks/new`} className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-accent-text underline underline-offset-4">
-                    ＋ {tGoogle('addCountedTask')}
-                  </Link>
-                </>
-              )}
-            </>
-          )}
-        </section>
-      )}
-
-      {presenceRows && (
-        <TeamTable podId={pod.podId} me={user.id} members={teamRows} initial={presenceRows as PresenceRow[]} />
-      )}
-
       {balance && (
         <p className="rounded-2xl bg-primary-container px-4 py-3 text-[13px] leading-6 text-on-primary-container">
           {t('balanceHint', {
@@ -458,18 +422,6 @@ export default async function ProjectPage({
             lightCount: balance.light.open,
           })}
         </p>
-      )}
-
-      <TaskTimeline
-        tasks={tasks.map((x) => ({ id: x.id, title: x.title, due: x.due, status: x.status }))}
-        start={project.start_date}
-        deadline={project.deadline}
-        today={tokyoToday()}
-        boardUrl={`${await appOrigin()}/classes/${classId}/project`}
-      />
-
-      {deps && tasks.length >= 2 && (
-        <TaskOrder classId={classId} tasks={tasks.map((x) => ({ id: x.id, title: x.title }))} deps={deps} />
       )}
 
       <section aria-labelledby="members-heading" className="flex flex-col gap-7">
@@ -484,6 +436,7 @@ export default async function ProjectPage({
 
         {tasks.length === 0 && <TemplateTasksForm classId={classId} projectId={project.id} />}
 
+        <div className="grid gap-7 lg:grid-cols-2 lg:items-start">
         {groups.map((group) => {
           const mine = group.ownerId === user.id
           const name =
@@ -493,18 +446,19 @@ export default async function ProjectPage({
                 ? t('you', { name: nameOf.get(user.id) ?? '' })
                 : (nameOf.get(group.ownerId) ?? tCommon('unknownPerson'))
           const checkin = group.ownerId && !mine ? latest.get(group.ownerId) : undefined
+          // Colour = meaning (2026-11-06): Penna is your own work, Hudson a
+          // teammate with something past its due day. Words say it too.
+          const late = !mine && group.ownerId !== null && group.tasks.some((task) => isOverdue(task, now))
           return (
             <div
               key={group.ownerId ?? 'unassigned'}
-              className="rule-card relative flex flex-col px-3.5 py-3.5"
+              className={`rule-card flex flex-col px-5 py-5 ${mine ? 'tint-penna' : late ? 'tint-hudson' : ''}`}
             >
-              {/* My own group gets the mockup's green edge (.mine). */}
-              {mine && <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-status-active" />}
               <div className="flex min-h-7 items-center gap-2.5">
                 {group.ownerId !== null && <StatusStamp status={group.tasks.length > 0 ? 'active' : 'stale'} />}
                 <h3 className="flex-1 text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{name}</h3>
                 {(mine || (teamLive && group.ownerId !== null)) && (
-                  <span className="font-meta text-xs leading-7 font-bold text-status-active">{t('live')}</span>
+                  <span className="rounded-full bg-ink px-2.5 font-meta text-xs leading-6 font-bold text-white">{t('live')}</span>
                 )}
               </div>
               {group.ownerId !== null && !mine && (
@@ -543,7 +497,7 @@ export default async function ProjectPage({
                           </div>
                         )}
                         {task.due && (
-                          <p className={`font-meta text-xs leading-7 ${overdue ? 'text-accent-text' : 'text-muted'}`}>
+                          <p className={`font-meta text-xs leading-7 ${overdue ? 'font-bold text-ink' : 'text-muted'}`}>
                             {overdue ? t('overdueTask') : t('dueTask', { date: formatDate(task.due, locale) })}
                           </p>
                         )}
@@ -606,6 +560,7 @@ export default async function ProjectPage({
             </div>
           )
         })}
+        </div>
 
         <div className="px-0.5">
           <Link
@@ -622,12 +577,87 @@ export default async function ProjectPage({
         </div>
       </section>
 
+      <TaskTimeline
+        tasks={tasks.map((x) => ({ id: x.id, title: x.title, due: x.due, status: x.status }))}
+        start={project.start_date}
+        deadline={project.deadline}
+        today={tokyoToday()}
+        boardUrl={`${await appOrigin()}/classes/${classId}/project`}
+      />
+
+      {deps && tasks.length >= 2 && (
+        <TaskOrder classId={classId} tasks={tasks.map((x) => ({ id: x.id, title: x.title }))} deps={deps} />
+      )}
+
       <section aria-labelledby="nudges-heading" className="flex flex-col gap-3.5">
         <h2 id="nudges-heading" className="px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
           {tNudges('heading')}
         </h2>
         <NudgeList names={Object.fromEntries(nameOf)} unknownName={tCommon('unknownPerson')} />
       </section>
-    </NudgeListProvider>
+      </div>
+
+      <aside aria-label={t('sideColumn')} className="flex min-w-0 flex-col gap-7">
+        <div className="hidden lg:flex lg:flex-col lg:gap-7">{planCards('side')}</div>
+      {(
+        <section aria-labelledby="google-heading" className="rule-card flex flex-col px-5 py-5">
+          <p className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">{tGoogle('kicker')}</p>
+          {groupDocId ? (
+            <>
+              <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('groupDocTitle')}</h2>
+              <p className="text-[13px] leading-7 text-muted">{tGoogle('groupDocWhy')}</p>
+              <div className="pt-3.5">
+                <a href={docUrl(groupDocId)} target="_blank" rel="noopener noreferrer" className={`${secondaryButtonClass} w-full`}>
+                  {tGoogle('groupDocOpen')}
+                </a>
+              </div>
+            </>
+          ) : hasGoogle && hasCharactersTask ? (
+            <>
+              <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('groupDocCreateTitle')}</h2>
+              <p className="text-[13px] leading-7 text-muted">{tGoogle('groupDocCreateWhy')}</p>
+              <div className="pt-3.5">
+                <CreateGroupDocButton classId={classId} projectId={project.id} />
+              </div>
+            </>
+          ) : hasGoogle ? (
+            <>
+              <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('connectedTitle')}</h2>
+              <p className="text-[13px] leading-7 text-muted">{hasCountedTask ? tGoogle('noCharactersTask') : tGoogle('noCountedTask')}</p>
+              <Link href={`${boardPath}/tasks/new`} className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-accent-text underline underline-offset-4">
+                ＋ {tGoogle('addCountedTask')}
+              </Link>
+            </>
+          ) : (
+            <>
+              <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('connectTitle')}</h2>
+              <p className="text-[13px] leading-7 text-muted">{tGoogle('connectWhy')}</p>
+              <div className="pt-3.5">
+                <a href={`/api/google/connect?return=${encodeURIComponent(boardPath)}`} className={`${secondaryButtonClass} w-full`}>
+                  {tGoogle('connect')}
+                </a>
+              </div>
+              <p className="text-[13px] leading-7 text-muted">{tGoogle('connectFine')}</p>
+              {!hasCountedTask && (
+                <>
+                  <p className="text-[13px] leading-7 text-muted">{tGoogle('noCountedTask')}</p>
+                  <Link href={`${boardPath}/tasks/new`} className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-accent-text underline underline-offset-4">
+                    ＋ {tGoogle('addCountedTask')}
+                  </Link>
+                </>
+              )}
+            </>
+          )}
+        </section>
+      )}
+
+      {presenceRows && (
+        <TeamTable podId={pod.podId} me={user.id} members={teamRows} initial={presenceRows as PresenceRow[]} />
+      )}
+
+      </aside>
+      </div>
+    </NudgeListProvider>,
+    true
   )
 }

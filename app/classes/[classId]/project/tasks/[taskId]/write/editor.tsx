@@ -232,7 +232,7 @@ export function Editor({
         </div>
 
         <Toolbar editor={editor} />
-        <div className="rule-card px-3.5 py-3.5 sm:px-5">
+        <div className="rule-card px-5 py-5 sm:px-5">
           <EditorContent editor={editor} className="doc-body" />
         </div>
 

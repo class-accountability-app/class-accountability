@@ -89,7 +89,7 @@ export default async function ProjectWrapUp({ params }: { params: Promise<{ clas
           <p className="text-[13px] leading-7 text-muted">{t('percent', { percent })}</p>
         </div>
 
-        <section aria-labelledby="wrap-tasks" className="rule-card flex flex-col px-3.5 py-3.5">
+        <section aria-labelledby="wrap-tasks" className="rule-card flex flex-col px-5 py-5">
           <h2 id="wrap-tasks" className="font-heading text-[17px] leading-7 font-bold text-ink">
             {t('tasks')}
           </h2>
@@ -111,7 +111,7 @@ export default async function ProjectWrapUp({ params }: { params: Promise<{ clas
           </ul>
         </section>
 
-        <section aria-labelledby="wrap-members" className="rule-card flex flex-col px-3.5 py-3.5">
+        <section aria-labelledby="wrap-members" className="rule-card flex flex-col px-5 py-5">
           <h2 id="wrap-members" className="font-heading text-[17px] leading-7 font-bold text-ink">
             {t('members')}
           </h2>

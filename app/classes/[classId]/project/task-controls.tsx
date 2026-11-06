@@ -144,7 +144,7 @@ export function FinishProjectButton({ classId, projectId }: { classId: string; p
   }
 
   return (
-    <div role="group" aria-labelledby={`finish-${projectId}`} className="rule-card flex flex-col px-3.5 py-3.5">
+    <div role="group" aria-labelledby={`finish-${projectId}`} className="rule-card flex flex-col px-5 py-5">
       <p id={`finish-${projectId}`} className="font-heading text-[17px] leading-7 font-bold text-ink">
         {t('confirmTitle')}
       </p>
@@ -189,7 +189,7 @@ export function TemplateTasksForm({ classId, projectId }: { classId: string; pro
   const [error, setError] = useState<ErrorKey | null>(null)
 
   return (
-    <div className="rule-card flex flex-col px-3.5 py-3.5">
+    <div className="rule-card flex flex-col px-5 py-5">
       <label htmlFor={`template-${projectId}`} className="text-[15px] leading-7 font-semibold text-ink">
         {t('templateAddLabel')}
       </label>

@@ -14,9 +14,9 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: '/',
     display: 'standalone',
     // The header's surface colour, so the status bar and title bar match it.
-    theme_color: '#f8fafd',
+    theme_color: '#f5f4f7',
     // The page colour: the splash screen while the app starts.
-    background_color: '#f8fafd',
+    background_color: '#f5f4f7',
     // Feature batch 1: long-press the app icon to jump straight to the team
     // board (Home redirects there), the fastest way to ＋記録.
     shortcuts: [{ name: 'チームのボード', short_name: 'ボード', url: '/?from=shortcut' }],

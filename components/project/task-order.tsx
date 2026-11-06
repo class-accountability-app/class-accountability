@@ -56,7 +56,7 @@ export function TaskOrder({ classId, tasks, deps }: { classId: string; tasks: Ta
   )
 
   return (
-    <details className="rule-card px-3.5 py-3.5">
+    <details className="rule-card px-5 py-5">
       <summary className="flex min-h-11 cursor-pointer items-center justify-between font-heading text-[17px] font-bold text-ink">
         {t('orderHeading')}
         <span className="text-[13px] font-normal text-muted">{t('orderCount', { count: deps.length })}</span>
