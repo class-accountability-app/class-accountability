@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import type { JSONContent } from '@tiptap/core'
+import { secondaryButtonClass } from '@/components/buttons'
 
 // 書き出す (Prompt 12): Word (.docx), built here in the browser from the text
 // on screen (lib/docx-export.ts; the docx package loads only when used), or
@@ -79,7 +80,7 @@ export function ExportMenu({
         aria-expanded={open}
         aria-controls={`${id}-menu`}
         onClick={() => setOpen((o) => !o)}
-        className="inline-flex min-h-11 items-center gap-1 px-1 text-sm font-semibold text-accent-text underline underline-offset-4"
+        className={`${secondaryButtonClass} h-11 gap-1 px-4 text-sm`}
       >
         {t('open')}
         <svg aria-hidden width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -89,7 +90,7 @@ export function ExportMenu({
       <div
         id={`${id}-menu`}
         hidden={!open}
-        className="absolute right-0 z-20 mt-1 w-64 rounded-lg bg-surface py-1 shadow-[inset_0_0_0_1px_var(--border),0_6px_18px_rgba(58,47,34,0.18)]"
+        className="absolute right-0 z-20 mt-1 w-64 rounded-[20px] bg-surface py-2 shadow-[inset_0_0_0_1px_var(--border),0_6px_18px_rgba(31,31,31,0.12)]"
       >
         <button type="button" disabled={working} onClick={word} className={item}>
           {working ? t('working') : t('word')}

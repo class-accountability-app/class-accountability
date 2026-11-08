@@ -207,10 +207,10 @@ export function Toolbar({ editor }: { editor: Editor | null }) {
       role="toolbar"
       aria-label={t('label')}
       aria-controls="document-editor"
-      className="sticky top-0 z-10 -mx-5 flex gap-0.5 overflow-x-auto border-y border-border bg-surface px-5 py-1 sm:mx-0 sm:rounded-lg sm:border-x"
+      className="sticky top-2 z-10 flex gap-0.5 overflow-x-auto rounded-full bg-surface px-2 py-1 shadow-[inset_0_0_0_1px_var(--border),0_4px_14px_rgba(31,31,31,0.08)]"
     >
       {ITEMS.map((item, i) => {
-        if (item === 'sep') return <span key={`sep-${i}`} aria-hidden className="mx-1 my-2 w-px shrink-0 bg-border" />
+        if (item === 'sep') return <span key={`sep-${i}`} aria-hidden className="mx-1 my-2.5 w-px shrink-0 bg-border" />
         const s = state?.[item.key]
         const label = t(item.label)
         return (
@@ -224,7 +224,7 @@ export function Toolbar({ editor }: { editor: Editor | null }) {
             // Keep the selection in the text when a button is clicked.
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => editor && item.run(editor)}
-            className="inline-flex h-11 min-w-11 shrink-0 items-center justify-center rounded-lg px-2 text-ink aria-pressed:bg-ink aria-pressed:text-surface disabled:opacity-40"
+            className="inline-flex h-11 min-w-11 shrink-0 items-center justify-center rounded-full px-2 hover:bg-surface-container text-ink aria-pressed:bg-ink aria-pressed:text-surface disabled:opacity-40"
           >
             {item.icon}
           </button>

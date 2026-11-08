@@ -193,22 +193,24 @@ export function Editor({
 
   return (
     <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-3.5">
-        <div className="flex flex-wrap items-center justify-between gap-x-4">
-          <p className="font-meta text-[13px] leading-7 text-muted">{className}</p>
-          <Link
-            href={`/classes/${classId}/project`}
-            className="print-hidden inline-flex min-h-11 items-center rounded-full bg-surface px-4 text-sm font-semibold text-ink shadow-[inset_0_0_0_1.5px_var(--ink)] hover:bg-surface-container"
-          >
-            {t('back')}
-          </Link>
+      {/* Soft pastel (2026-11-08): back to the board, the class and title,
+          my count on Penna (my own work), then the toolbar and the page. */}
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+        <Link
+          href={`/classes/${classId}/project`}
+          className="print-hidden -ml-2 inline-flex min-h-11 items-center self-start rounded-full px-2 text-sm font-semibold text-ink hover:bg-surface-container"
+        >
+          {t('back')}
+        </Link>
+        <div className="min-w-0 px-0.5">
+          <p className="font-meta text-[13px] leading-7 text-muted [overflow-wrap:anywhere]">{className}</p>
+          <h1 className="font-heading text-[28px] leading-tight font-bold text-ink [overflow-wrap:anywhere] lg:text-[36px]">{title}</h1>
         </div>
-        <h1 className="font-heading text-[28px] leading-tight font-bold text-ink [overflow-wrap:anywhere] lg:text-[36px]">{title}</h1>
 
-        <div className="flex flex-col gap-1">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-            <p className={`font-meta text-[15px] leading-7 font-semibold ${tooLong ? 'text-error' : 'text-ink'}`}>{countLine}</p>
-            <div className="flex items-center gap-3">
+        <section aria-label={t('countLabel')} className="rule-card tint-penna flex flex-col gap-2 px-5 py-5">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <p className={`font-heading text-2xl leading-tight font-bold ${tooLong ? 'text-error' : 'text-ink'}`}>{countLine}</p>
+            <div className="flex flex-wrap items-center gap-2">
               <HistoryPanel taskId={taskId} canRestore={state.status === 'saved'} onRestore={onRestore} />
               <ExportMenu
                 title={title}
@@ -220,7 +222,11 @@ export function Editor({
               />
             </div>
           </div>
-          {targetAmount !== null && <ProgressBar value={count} max={targetAmount} valueText={countLine} />}
+          {targetAmount !== null && (
+            <div className="flex h-7 items-center">
+              <ProgressBar value={count} max={targetAmount} valueText={countLine} />
+            </div>
+          )}
           {/* Over 100,000 characters the server refuses the save, and the
               status line says so (errors.documentTooLong). */}
           <SaveStatus state={state} onSaveNow={flush} />
@@ -229,14 +235,14 @@ export function Editor({
               {notice}
             </p>
           )}
-        </div>
+        </section>
 
         <Toolbar editor={editor} />
-        <div className="rule-card px-5 py-6 sm:px-8">
+        <div className="rule-card min-h-[60dvh] px-5 py-7 sm:px-10 sm:py-10">
           <EditorContent editor={editor} className="doc-body" />
         </div>
 
-        <p id="document-count-hint" className="text-[13px] leading-7 text-muted">
+        <p id="document-count-hint" className="px-0.5 text-[13px] leading-7 text-muted">
           {t('countHint')} {t('privacyNote')}
         </p>
       </div>
