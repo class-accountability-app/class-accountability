@@ -1,7 +1,6 @@
 // Google auto-logging, the app side: pure helpers for the connect flow, the
 // link page and the group Doc (docs/plans/automation-plan.md, section 1).
 
-import { UNIVERSITY_EMAIL_DOMAIN } from './errors'
 
 // The cookie that ties Google's answer to the browser that asked (connect →
 // callback, 10 minutes, httpOnly, path /api/google).
@@ -53,27 +52,7 @@ export function sourceLabel(title: string): string {
   return (chars.length > 60 ? chars.slice(0, 60).join('') : clean) || 'Google'
 }
 
-export type GroupDocTask = { id: string; title: string; ownerName: string | null }
-
-export type OutlineLine = { text: string; style: 'TITLE' | 'HEADING_1' | 'HEADING_2' | 'NORMAL_TEXT'; taskId?: string }
-
-// The group Doc's text: the project title, then one heading per task ("Script
-// — Aki"), each followed by an empty line to write in, or, with a template
-// (lib/doc-templates.ts), by the template's sections as smaller headings, each
-// with its own empty line. Returns the text and, for each line, the paragraph
-// style to give it. Headings are never counted, so the outline adds nothing.
-export function groupDocOutline(projectTitle: string, tasks: readonly GroupDocTask[], sections: readonly string[] = []) {
-  const lines: OutlineLine[] = [{ text: projectTitle, style: 'TITLE' }]
-  for (const t of tasks) {
-    lines.push({ text: t.ownerName ? `${t.title} — ${t.ownerName}` : t.title, style: 'HEADING_1', taskId: t.id })
-    if (sections.length === 0) lines.push({ text: '', style: 'NORMAL_TEXT' })
-    for (const section of sections) {
-      lines.push({ text: section, style: 'HEADING_2' })
-      lines.push({ text: '', style: 'NORMAL_TEXT' })
-    }
-  }
-  return lines
-}
+export type OutlineLine = { text: string; style: 'TITLE' | 'HEADING_1' | 'HEADING_2' | 'NORMAL_TEXT' }
 
 // A new Doc for one task: the task's title, then the template's sections as
 // headings with an empty line under each (just one empty line without one).
@@ -88,7 +67,7 @@ export function taskDocOutline(taskTitle: string, sections: readonly string[]): 
 }
 
 // Docs API batchUpdate requests that write the outline into a new, empty
-// document. Indexes are UTF-16 code units from 1 (the body's start), as the
+// document (named groupDocRequests from the retired group Doc). Indexes are UTF-16 code units from 1 (the body's start), as the
 // API counts them; every line ends in "\n".
 export function groupDocRequests(lines: readonly OutlineLine[]): unknown[] {
   const text = lines.map((l) => `${l.text}\n`).join('')
@@ -108,16 +87,6 @@ export function groupDocRequests(lines: readonly OutlineLine[]): unknown[] {
     index = end
   }
   return requests
-}
-
-// Who the group Doc is shared with (a Drive API permission): "anyone with the
-// link can edit" first; when the student's Google account doesn't allow that
-// (a university Workspace often doesn't), anyone at the university with the
-// link. Every podmate signs in with a university address.
-export function groupDocPermission(audience: 'anyone' | 'university') {
-  return audience === 'anyone'
-    ? { type: 'anyone', role: 'writer', allowFileDiscovery: false }
-    : { type: 'domain', domain: UNIVERSITY_EMAIL_DOMAIN, role: 'writer', allowFileDiscovery: false }
 }
 
 // Google's short reason for a refused call ("invalidSharingRequest"), for the

@@ -6,9 +6,21 @@ import { secondaryButtonClass } from '@/components/buttons'
 // in a new tab. Shown to the task's owner, and to the whole team for the
 // group Doc (shared with the team by design, 0023); Google's own sharing
 // decides who can open it, the app adds no access.
-export async function OpenSourceButton({ kind, fileId, small = false }: { kind: SourceKind; fileId: string; small?: boolean }) {
+// With a label (2026-11-08), the file's kind and name sit above the button,
+// so it's clear which Google file the task is counted from.
+export async function OpenSourceButton({
+  kind,
+  fileId,
+  label,
+  small = false,
+}: {
+  kind: SourceKind
+  fileId: string
+  label?: string | null
+  small?: boolean
+}) {
   const t = await getTranslations('google')
-  return (
+  const button = (
     <a
       href={sourceFileUrl(kind, fileId)}
       target="_blank"
@@ -23,5 +35,40 @@ export async function OpenSourceButton({ kind, fileId, small = false }: { kind: 
       {t(`open.${kind}`)}
       <span className="sr-only">{t('opensNewTab')}</span>
     </a>
+  )
+  if (!label) return button
+  return (
+    <div className="flex min-w-0 flex-col gap-1">
+      <p className="flex min-w-0 items-center gap-1.5 text-[13px] leading-6 text-ink">
+        <FileIcon kind={kind} />
+        <span className="font-meta text-xs text-muted">{t(`kind.${kind}`)}</span>
+        <span className="min-w-0 font-semibold [overflow-wrap:anywhere]">{t('fileName', { name: label })}</span>
+      </p>
+      {button}
+    </div>
+  )
+}
+
+// A plain outline: a page for Docs, a screen for Slides, a grid for Sheets.
+function FileIcon({ kind }: { kind: SourceKind }) {
+  return (
+    <svg aria-hidden width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+      {kind === 'slides' ? (
+        <>
+          <rect x="3" y="5" width="18" height="12" rx="1.5" />
+          <path d="M12 17v3M8 20h8" />
+        </>
+      ) : kind === 'sheet' ? (
+        <>
+          <rect x="4" y="4" width="16" height="16" rx="1.5" />
+          <path d="M4 10h16M4 15h16M10 4v16" />
+        </>
+      ) : (
+        <>
+          <path d="M6 3h8l4 4v14H6z" />
+          <path d="M14 3v4h4M9 12h6M9 16h6" />
+        </>
+      )}
+    </svg>
   )
 }

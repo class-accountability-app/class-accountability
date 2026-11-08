@@ -16,7 +16,7 @@ import { CreateProjectForm } from './create-project-form'
 import { STATUS_PILL_CLASS, loadLiveTotals, loadMyPodProject, taskValueText, type TaskRow } from './load'
 import { chosenStart, formatMeeting, isUpcoming, loadPolls } from './meetings/load'
 import { ClaimButton, FinishProjectButton, TaskStatusControl, TemplateTasksForm, WriteInAppButton } from './task-controls'
-import { CreateGroupDocButton, GoogleSyncOnOpen } from './google-controls'
+import { GoogleSyncOnOpen } from './google-controls'
 import { TaskLog } from './task-log'
 import { OpenSourceButton } from '@/components/project/open-source-button'
 import { loadTeamInvite } from '@/app/team/load'
@@ -45,6 +45,7 @@ type SourceRow = {
   task_id: string
   kind: 'doc' | 'doc_section' | 'slides' | 'doc_words' | 'sheet'
   file_id: string
+  label: string | null
   state: 'ok' | 'lost_access'
 }
 const GOOGLE_RESULTS = ['connected', 'denied', 'failed', 'unavailable'] as const
@@ -212,7 +213,7 @@ export default async function ProjectPage({
     loadLiveTotals(supabase, project.id, tasks, user.id),
     loadPolls(supabase, project.id),
     tasks.length > 0
-      ? supabase.from('task_sources').select('task_id, kind, file_id, state').in('task_id', tasks.map((x) => x.id))
+      ? supabase.from('task_sources').select('task_id, kind, file_id, label, state').in('task_id', tasks.map((x) => x.id))
       : Promise.resolve({ data: [] as SourceRow[] }),
     supabase.rpc('has_google_connection'),
   ])
@@ -231,7 +232,6 @@ export default async function ProjectPage({
   // The 自動で記録 card shows on every started project; with nothing to count
   // yet it says so and points to adding a counted task.
   const hasCountedTask = tasks.some((x) => x.metric !== 'status')
-  const hasCharactersTask = tasks.some((x) => x.metric === 'characters')
 
   const latest = latestCheckins(
     (checkinRows ?? []).map(
@@ -513,12 +513,10 @@ export default async function ProjectPage({
                           <div className="flex flex-wrap items-center gap-x-3">
                             <p className={`font-meta text-xs leading-7 ${sources.get(task.id)!.state === 'ok' ? 'text-status-active' : 'text-accent-text'}`}>
                               {sources.get(task.id)!.state === 'ok'
-                                ? `${tGoogle(`kind.${sources.get(task.id)!.kind}`)} · ${
-                                    lastChecked.get(task.id)
-                                      ? tGoogle('updated', { when: formatTimeAgo(lastChecked.get(task.id)!, locale, now) })
-                                      : tGoogle('notYet')
-                                  }`
-                                : tGoogle('lost')}
+                                ? lastChecked.get(task.id)
+                                  ? tGoogle('updated', { when: formatTimeAgo(lastChecked.get(task.id)!, locale, now) })
+                                  : tGoogle('notYet')
+                                : `${tGoogle('fileName', { name: sources.get(task.id)!.label ?? tGoogle(`kind.${sources.get(task.id)!.kind}`) })} · ${tGoogle('lost')}`}
                             </p>
                             <Link href={linkHref(task.id)} className="inline-flex min-h-11 items-center text-[13px] font-semibold text-accent-text underline underline-offset-4">
                               {sources.get(task.id)!.state === 'ok' ? tGoogle('change') : tGoogle('relink')}
@@ -527,14 +525,14 @@ export default async function ProjectPage({
                         )}
                         {mine && sources.get(task.id)?.state === 'ok' && (
                           <div className="pb-2">
-                            <OpenSourceButton kind={sources.get(task.id)!.kind} fileId={sources.get(task.id)!.file_id} small />
+                            <OpenSourceButton kind={sources.get(task.id)!.kind} fileId={sources.get(task.id)!.file_id} label={sources.get(task.id)!.label} small />
                           </div>
                         )}
                         {!mine && sources.get(task.id)?.kind === 'doc_section' && (
                           <>
                             <p className="font-meta text-xs leading-7 text-muted">{tGoogle('teammateLinked')}</p>
                             <div className="pb-2">
-                              <OpenSourceButton kind="doc_section" fileId={sources.get(task.id)!.file_id} small />
+                              <OpenSourceButton kind="doc_section" fileId={sources.get(task.id)!.file_id} label={sources.get(task.id)!.label} small />
                             </div>
                           </>
                         )}
@@ -556,7 +554,7 @@ export default async function ProjectPage({
                             )}
                             <TaskLog classId={classId} taskId={task.id} userId={user.id} title={task.title} metric={task.metric} unit={task.unit} />
                             <Link href={linkHref(task.id)} className="-mt-2 inline-flex min-h-11 items-center self-start pb-1 text-[13px] font-semibold text-accent-text underline underline-offset-4">
-                              {tGoogle('linkTask')}
+                              {tGoogle(task.metric === 'characters' ? 'makeOrLinkDoc' : 'makeOrLinkFile')}
                             </Link>
                           </>
                         )}
@@ -632,21 +630,15 @@ export default async function ProjectPage({
                 </a>
               </div>
             </>
-          ) : hasGoogle && hasCharactersTask ? (
-            <>
-              <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('groupDocCreateTitle')}</h2>
-              <p className="text-[13px] leading-7 text-muted">{tGoogle('groupDocCreateWhy')}</p>
-              <div className="pt-3.5">
-                <CreateGroupDocButton classId={classId} projectId={project.id} />
-              </div>
-            </>
           ) : hasGoogle ? (
             <>
               <h2 id="google-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">{tGoogle('connectedTitle')}</h2>
-              <p className="text-[13px] leading-7 text-muted">{hasCountedTask ? tGoogle('noCharactersTask') : tGoogle('noCountedTask')}</p>
-              <Link href={`${boardPath}/tasks/new`} className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-accent-text underline underline-offset-4">
-                ＋ {tGoogle('addCountedTask')}
-              </Link>
+              <p className="text-[13px] leading-7 text-muted">{hasCountedTask ? tGoogle('perTaskWhy') : tGoogle('noCountedTask')}</p>
+              {!hasCountedTask && (
+                <Link href={`${boardPath}/tasks/new`} className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-accent-text underline underline-offset-4">
+                  ＋ {tGoogle('addCountedTask')}
+                </Link>
+              )}
             </>
           ) : (
             <>

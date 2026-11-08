@@ -15,7 +15,7 @@ import { WriteInAppButton } from '@/app/classes/[classId]/project/task-controls'
 import { OpenSourceButton } from '@/components/project/open-source-button'
 import type { SourceKind } from '@/lib/google-links'
 
-type SourceRow = { task_id: string; kind: SourceKind; file_id: string; state: 'ok' | 'lost_access' }
+type SourceRow = { task_id: string; kind: SourceKind; file_id: string; label: string | null; state: 'ok' | 'lost_access' }
 
 // Home for a student whose team has a project (2026-11-06, replacing the
 // redirect to the board): what is mine to do, at a glance, with the board one
@@ -66,7 +66,7 @@ export async function ProjectHome({
     loadLiveTotals(supabase, project.id, tasks, userId),
     // Which of my tasks count from Google (no numbers here, 0023).
     tasks.length > 0
-      ? supabase.from('task_sources').select('task_id, kind, file_id, state').in('task_id', tasks.map((x) => x.id))
+      ? supabase.from('task_sources').select('task_id, kind, file_id, label, state').in('task_id', tasks.map((x) => x.id))
       : Promise.resolve({ data: [] as SourceRow[] }),
   ])
   const sourceOf = new Map(((sourceRows as SourceRow[] | null) ?? []).map((r) => [r.task_id, r]))
@@ -168,7 +168,7 @@ export async function ProjectHome({
                       )}
                       {sourceOf.get(task.id)?.state === 'ok' && (
                         <div className="mt-1">
-                          <OpenSourceButton kind={sourceOf.get(task.id)!.kind} fileId={sourceOf.get(task.id)!.file_id} small />
+                          <OpenSourceButton kind={sourceOf.get(task.id)!.kind} fileId={sourceOf.get(task.id)!.file_id} label={sourceOf.get(task.id)!.label} small />
                         </div>
                       )}
                       {(value || task.due) && (

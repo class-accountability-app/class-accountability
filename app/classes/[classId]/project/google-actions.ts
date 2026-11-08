@@ -5,8 +5,6 @@ import { createClient } from '@/lib/supabase/server'
 import { DB_CODES, logServerError, toErrorKey, type ActionResult, type ErrorKey } from '@/lib/errors'
 import {
   googleErrorReason,
-  groupDocOutline,
-  groupDocPermission,
   groupDocRequests,
   isFileId,
   taskDocOutline,
@@ -106,6 +104,16 @@ export async function unlinkTaskSource(classId: string, taskId: string): Promise
   return { error: null }
 }
 
+// A new file's name in Drive and on the board (2026-11-08): the task's title
+// and its owner's display name, e.g. 「台本（あき）」, so everyone can tell whose
+// file it is and which task it belongs to.
+async function myFileName(supabase: Supabase, userId: string, taskTitle: string): Promise<string> {
+  const { data } = await supabase.from('profiles').select('display_name').eq('id', userId).maybeSingle()
+  const name = data?.display_name?.trim()
+  if (!name) return sourceLabel(taskTitle)
+  return sourceLabel((await getLocale()) === 'en' ? `${taskTitle} (${name})` : `${taskTitle}（${name}）`)
+}
+
 type GoogleAuth = { Authorization: string; 'Content-Type': string }
 
 // A refused Google call as "400:invalidSharingRequest" (or just the status),
@@ -115,22 +123,6 @@ async function googleFailure(res: Response): Promise<string> {
   return reason ? `${res.status}:${reason}` : String(res.status)
 }
 
-// "Anyone with the link can edit" (the author's choice of 2026-10-26), or,
-// when the student's Google account refuses that, anyone at the university
-// with the link (2026-10-27). False when neither is allowed.
-async function shareGroupDoc(auth: GoogleAuth, fileId: string): Promise<boolean> {
-  for (const audience of ['anyone', 'university'] as const) {
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions`, {
-      method: 'POST',
-      headers: auth,
-      body: JSON.stringify(groupDocPermission(audience)),
-    })
-    if (res.ok) return true
-    logServerError(`createGroupDoc.share.${audience}`, { code: await googleFailure(res) })
-  }
-  return false
-}
-
 // Best effort; drive.file lets the app trash only files it created.
 async function trashFile(auth: GoogleAuth, fileId: string): Promise<void> {
   const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, {
@@ -138,96 +130,7 @@ async function trashFile(auth: GoogleAuth, fileId: string): Promise<void> {
     headers: auth,
     body: JSON.stringify({ trashed: true }),
   }).catch(() => null)
-  if (!res?.ok) logServerError('createGroupDoc.trash', { code: res ? await googleFailure(res) : 'network' })
-}
-
-// グループのドキュメントをつくる: a Google Doc in this student's Drive with the
-// project title and one heading per characters task, link sharing (see
-// shareGroupDoc; the link is shown only on the pod's board), and every such
-// task linked to its heading. With a template (lib/doc-templates.ts) each
-// task's heading gets the template's sections as smaller headings; headings
-// aren't counted, so each task still starts at 0.
-export async function createGroupDoc(classId: string, projectId: string, template?: string): Promise<ActionResult> {
-  const me = await signedIn()
-  if (!me) return { error: 'signedOut' }
-  const token = await myAccessToken(me.supabase)
-  if (!token.ok) return { error: TOKEN_ERRORS[token.reason] }
-
-  const [{ data: project }, { data: tasks }] = await Promise.all([
-    me.supabase.from('projects').select('id, title, pairing_id').eq('id', projectId).maybeSingle(),
-    me.supabase
-      .from('project_tasks')
-      .select('id, title, owner_id, metric, input_mode, profiles(display_name)')
-      .eq('project_id', projectId)
-      .eq('metric', 'characters')
-      .eq('input_mode', 'manual')
-      .order('position')
-      .order('created_at'),
-  ])
-  if (!project) return { error: 'notAllowed' }
-  const writable = (tasks ?? []).map((t) => ({
-    id: t.id,
-    title: t.title,
-    ownerName: (t.profiles as unknown as { display_name: string } | null)?.display_name ?? null,
-  }))
-  if (writable.length === 0) return { error: 'groupDocNoTasks' }
-
-  const auth: GoogleAuth = { Authorization: `Bearer ${token.accessToken}`, 'Content-Type': 'application/json' }
-  const created = await fetch('https://docs.googleapis.com/v1/documents', {
-    method: 'POST',
-    headers: auth,
-    body: JSON.stringify({ title: project.title }),
-  })
-  if (!created.ok) {
-    logServerError('createGroupDoc.create', { code: await googleFailure(created) })
-    return { error: 'googleFailed' }
-  }
-  const { documentId } = (await created.json()) as { documentId?: string }
-  if (!documentId || !isFileId(documentId)) return { error: 'googleFailed' }
-
-  // Until the first task is linked, a failure trashes the half-made Doc so it
-  // doesn't pile up in the student's Drive.
-  const fail = async (error: ErrorKey): Promise<ActionResult> => {
-    await trashFile(auth, documentId)
-    return { error }
-  }
-
-  const sections = docTemplateSections(parseDocTemplate(template), await getLocale())
-  const lines = groupDocOutline(project.title, writable, sections)
-  const [written, shared] = await Promise.all([
-    fetch(`https://docs.googleapis.com/v1/documents/${documentId}:batchUpdate`, {
-      method: 'POST',
-      headers: auth,
-      body: JSON.stringify({ requests: groupDocRequests(lines) }),
-    }),
-    shareGroupDoc(auth, documentId),
-  ])
-  if (!written.ok) {
-    logServerError('createGroupDoc.write', { code: await googleFailure(written) })
-    return fail('googleFailed')
-  }
-  if (!shared) return fail('groupDocShareBlocked')
-
-  // The headings now have ids; the tasks' are the level-1 ones, in order.
-  const doc = await fetchDoc(token.accessToken, documentId)
-  if (!doc.ok) return fail('googleFailed')
-  const headings = docHeadings(doc.value).filter((h) => h.level === 1)
-  if (headings.length !== writable.length) return fail('googleFailed')
-
-  for (let i = 0; i < writable.length; i++) {
-    const { error } = await me.supabase.rpc('link_task_source', {
-      p_task: writable[i].id,
-      p_kind: 'doc_section',
-      p_file_id: documentId,
-      p_label: sourceLabel(writable[i].title),
-      p_heading_id: headings[i].headingId,
-    })
-    if (error) return { error: toErrorKey('createGroupDoc.link', error, { [DB_CODES.taskSourceMismatch]: 'googleFileMismatch' }) }
-  }
-
-  await me.supabase.rpc('request_google_sync')
-  refresh(classId)
-  return { error: null }
+  if (!res?.ok) logServerError('google.trash', { code: res ? await googleFailure(res) : 'network' })
 }
 
 // テンプレートから新しいドキュメントを作る (2026-11-08): a Google Doc in my own
@@ -247,6 +150,7 @@ export async function createTaskDoc(classId: string, taskId: string, template?: 
     return { error: 'notAllowed' }
   }
   if ((task.projects as unknown as { status: string }).status !== 'active') return { error: 'projectFinished' }
+  const fileName = await myFileName(me.supabase, me.userId, task.title)
 
   const token = await myAccessToken(me.supabase)
   if (!token.ok) return { error: TOKEN_ERRORS[token.reason] }
@@ -255,7 +159,7 @@ export async function createTaskDoc(classId: string, taskId: string, template?: 
   const created = await fetch('https://docs.googleapis.com/v1/documents', {
     method: 'POST',
     headers: auth,
-    body: JSON.stringify({ title: task.title }),
+    body: JSON.stringify({ title: fileName }),
   })
   if (!created.ok) {
     logServerError('createTaskDoc.create', { code: await googleFailure(created) })
@@ -280,7 +184,7 @@ export async function createTaskDoc(classId: string, taskId: string, template?: 
     p_task: taskId,
     p_kind: 'doc',
     p_file_id: documentId,
-    p_label: sourceLabel(task.title),
+    p_label: fileName,
     p_heading_id: null,
   })
   if (error) {
@@ -317,6 +221,7 @@ export async function createTaskSheet(classId: string, taskId: string, template?
     return { error: 'notAllowed' }
   }
   if ((task.projects as unknown as { status: string }).status !== 'active') return { error: 'projectFinished' }
+  const fileName = await myFileName(me.supabase, me.userId, task.title)
 
   const token = await myAccessToken(me.supabase)
   if (!token.ok) return { error: TOKEN_ERRORS[token.reason] }
@@ -325,7 +230,7 @@ export async function createTaskSheet(classId: string, taskId: string, template?
   const created = await fetch('https://sheets.googleapis.com/v4/spreadsheets', {
     method: 'POST',
     headers: auth,
-    body: JSON.stringify(sheetCreateBody(task.title, sheetTemplateColumns(key, await getLocale()))),
+    body: JSON.stringify(sheetCreateBody(fileName, sheetTemplateColumns(key, await getLocale()))),
   })
   if (!created.ok) {
     logServerError('createTaskSheet.create', { code: await googleFailure(created) })
@@ -338,7 +243,7 @@ export async function createTaskSheet(classId: string, taskId: string, template?
     p_task: taskId,
     p_kind: 'sheet',
     p_file_id: fileId,
-    p_label: sourceLabel(task.title),
+    p_label: fileName,
     p_heading_id: null,
   })
   if (error) {
@@ -373,6 +278,7 @@ export async function createTaskSlides(classId: string, taskId: string, template
     return { error: 'notAllowed' }
   }
   if ((task.projects as unknown as { status: string }).status !== 'active') return { error: 'projectFinished' }
+  const fileName = await myFileName(me.supabase, me.userId, task.title)
 
   const token = await myAccessToken(me.supabase)
   if (!token.ok) return { error: TOKEN_ERRORS[token.reason] }
@@ -381,7 +287,7 @@ export async function createTaskSlides(classId: string, taskId: string, template
   const created = await fetch('https://slides.googleapis.com/v1/presentations', {
     method: 'POST',
     headers: auth,
-    body: JSON.stringify({ title: task.title }),
+    body: JSON.stringify({ title: fileName }),
   })
   if (!created.ok) {
     logServerError('createTaskSlides.create', { code: await googleFailure(created) })
@@ -407,7 +313,7 @@ export async function createTaskSlides(classId: string, taskId: string, template
     p_task: taskId,
     p_kind: 'slides',
     p_file_id: fileId,
-    p_label: sourceLabel(task.title),
+    p_label: fileName,
     p_heading_id: null,
   })
   if (error) {
