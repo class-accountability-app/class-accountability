@@ -1340,7 +1340,6 @@
     "taskDocTitle": "テンプレートから新しいドキュメントを作る",
     "taskDocWhy": "あなたの Google ドライブにこのタスク用のドキュメントをつくり、そのままつなぎます。だれとも共有されません。",
     "taskDocCreate": "つくってつなぐ",
-    "slideTemplateLabel": "スライドのテンプレート",
     "slideTemplateHint": "テンプレートのスライドは、タイトル以外に何か入れるまで枚数に入りません。",
     "slideTemplates": {
       "presentation": "発表（目次・背景・内容・まとめ）",
@@ -1348,8 +1347,18 @@
       "proposal": "企画提案（課題・提案・スケジュール）",
       "caseStudy": "ケーススタディ（概要・分析・提案）"
     },
-    "taskSlidesTitle": "テンプレートから新しいスライドを作る",
-    "taskSlidesWhy": "あなたの Google ドライブにこのタスク用のスライドをつくり、そのままつなぎます。だれとも共有されません。"
+    "fileTemplateLabel": "テンプレート",
+    "fileTemplateSlides": "Google スライド（枚数）",
+    "fileTemplateSheets": "Google スプレッドシート（行数）",
+    "sheetTemplateHint": "1行目は見出しです。2行目から、何か入っている行の数を数えます。",
+    "sheetTemplates": {
+      "survey": "アンケートの回答（回答日・回答者・質問）",
+      "interviews": "インタビュー記録（日付・相手・わかったこと）",
+      "references": "参考文献リスト（著者・年・タイトル）",
+      "data": "データ記録（日付・場所・値）"
+    },
+    "taskFileTitle": "テンプレートから新しいファイルを作る",
+    "taskFileWhy": "あなたの Google ドライブに、このタスク用のスライドかスプレッドシートをつくり、そのままつなぎます。だれとも共有されません。"
   },
   "teacher": {
     "title": "チームの進み具合",
