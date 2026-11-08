@@ -1,6 +1,6 @@
 // Google Doc templates (2026-11-08): section headings to start writing from,
-// in the app's two languages. Used two ways: under each task's heading in the
-// group Doc, and as the outline of a new Doc made for one task. Headings are
+// in the app's two languages: the outline of a new Doc made for one task by
+// its owner. Headings are
 // never counted (_shared/google-count.ts), so a template adds 0 characters:
 // only what the students write under it counts.
 

@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
   googleErrorReason,
-  groupDocOutline,
-  groupDocPermission,
   groupDocRequests,
   taskDocOutline,
   isFileId,
@@ -50,45 +48,8 @@ describe('ids and labels', () => {
   })
 })
 
-describe('group Doc', () => {
-  const lines = groupDocOutline('グループ発表', [
-    { id: 't1', title: '台本', ownerName: 'あき' },
-    { id: 't2', title: 'Data', ownerName: null },
-  ])
-
-  it('outlines a title, then a heading and an empty line per task', () => {
-    expect(lines).toEqual([
-      { text: 'グループ発表', style: 'TITLE' },
-      { text: '台本 — あき', style: 'HEADING_1', taskId: 't1' },
-      { text: '', style: 'NORMAL_TEXT' },
-      { text: 'Data', style: 'HEADING_1', taskId: 't2' },
-      { text: '', style: 'NORMAL_TEXT' },
-    ])
-  })
-
-  it('inserts the text once and styles each heading over its exact range', () => {
-    const requests = groupDocRequests(lines) as [unknown, ...StyleRequest[]]
-    expect(requests[0]).toEqual({ insertText: { location: { index: 1 }, text: 'グループ発表\n台本 — あき\n\nData\n\n' } })
-    const ranges = (requests.slice(1) as StyleRequest[]).map((r) => [r.updateParagraphStyle.range, r.updateParagraphStyle.paragraphStyle.namedStyleType])
-    expect(ranges).toEqual([
-      [{ startIndex: 1, endIndex: 8 }, 'TITLE'], // グループ発表 = 6 + \n
-      [{ startIndex: 8, endIndex: 16 }, 'HEADING_1'], // 台本 — あき = 7 + \n
-      [{ startIndex: 17, endIndex: 22 }, 'HEADING_1'], // after the empty line: Data = 4 + \n
-    ])
-  })
-
-  it('puts a template\'s sections under each task as smaller headings', () => {
-    expect(groupDocOutline('P', [{ id: 't1', title: '台本', ownerName: null }], ['導入', 'まとめ'])).toEqual([
-      { text: 'P', style: 'TITLE' },
-      { text: '台本', style: 'HEADING_1', taskId: 't1' },
-      { text: '導入', style: 'HEADING_2' },
-      { text: '', style: 'NORMAL_TEXT' },
-      { text: 'まとめ', style: 'HEADING_2' },
-      { text: '', style: 'NORMAL_TEXT' },
-    ])
-  })
-
-  it('outlines a task\'s own Doc from a template, or with one empty line', () => {
+describe('a task\'s own Doc', () => {
+  it('outlines the title, then each template section as a heading with an empty line, or one empty line', () => {
     expect(taskDocOutline('レポート', ['はじめに'])).toEqual([
       { text: 'レポート', style: 'TITLE' },
       { text: 'はじめに', style: 'HEADING_1' },
@@ -100,19 +61,20 @@ describe('group Doc', () => {
     ])
   })
 
-  it('counts an emoji as two index units, as Google does', () => {
-    const requests = groupDocRequests(groupDocOutline('😀', [])) as [unknown, StyleRequest]
-    expect(requests[1].updateParagraphStyle.range).toEqual({ startIndex: 1, endIndex: 4 })
+  it('inserts the text once and styles each heading over its exact range', () => {
+    const requests = groupDocRequests(taskDocOutline('台本 — あき', ['Data', '結果'])) as [unknown, ...StyleRequest[]]
+    expect(requests[0]).toEqual({ insertText: { location: { index: 1 }, text: '台本 — あき\nData\n\n結果\n\n' } })
+    const ranges = (requests.slice(1) as StyleRequest[]).map((r) => [r.updateParagraphStyle.range, r.updateParagraphStyle.paragraphStyle.namedStyleType])
+    expect(ranges).toEqual([
+      [{ startIndex: 1, endIndex: 9 }, 'TITLE'], // 台本 — あき = 7 + \n
+      [{ startIndex: 9, endIndex: 14 }, 'HEADING_1'], // Data = 4 + \n
+      [{ startIndex: 15, endIndex: 18 }, 'HEADING_1'], // after the empty line: 結果 = 2 + \n
+    ])
   })
 
-  it('shares with anyone with the link, or else the university, always as unlisted editors', () => {
-    expect(groupDocPermission('anyone')).toEqual({ type: 'anyone', role: 'writer', allowFileDiscovery: false })
-    expect(groupDocPermission('university')).toEqual({
-      type: 'domain',
-      domain: 'andrew.ac.jp',
-      role: 'writer',
-      allowFileDiscovery: false,
-    })
+  it('counts an emoji as two index units, as Google does', () => {
+    const requests = groupDocRequests(taskDocOutline('😀', [])) as [unknown, StyleRequest]
+    expect(requests[1].updateParagraphStyle.range).toEqual({ startIndex: 1, endIndex: 4 })
   })
 })
 

@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
 import { FormError } from '@/components/form-errors'
-import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
+import { primaryButtonClass } from '@/components/buttons'
 import { DOC_TEMPLATE_KEYS } from '@/lib/doc-templates'
 import { SLIDE_TEMPLATE_KEYS } from '@/lib/slide-templates'
 import { SHEET_TEMPLATE_KEYS } from '@/lib/sheet-templates'
-import { createGroupDoc, createTaskDoc, createTaskSheet, createTaskSlides, requestGoogleSync } from './google-actions'
+import { createTaskDoc, createTaskSheet, createTaskSlides, requestGoogleSync } from './google-actions'
 
 // Opening the board asks for a re-count of the pod's linked files (the
 // database allows one per student per 2 minutes). When one was asked for, the
@@ -88,40 +88,6 @@ function DocTemplateSelect({
       <p id={`${id}-hint`} className="text-[13px] leading-6 text-muted">
         {t(files ? (value.startsWith('sheet:') ? 'sheetTemplateHint' : 'slideTemplateHint') : 'templateHint')}
       </p>
-    </div>
-  )
-}
-
-export function CreateGroupDocButton({ classId, projectId }: { classId: string; projectId: string }) {
-  const t = useTranslations('google')
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
-  const [error, setError] = useState<ErrorKey | null>(null)
-  const [template, setTemplate] = useState('')
-  return (
-    <div className="flex flex-col gap-3.5">
-      <DocTemplateSelect value={template} onChange={setTemplate} />
-      <div className="flex flex-col">
-        <button
-          type="button"
-          disabled={isPending}
-          className={`${secondaryButtonClass} w-full`}
-          onClick={() =>
-            startTransition(async () => {
-              setError(null)
-              const result = await createGroupDoc(classId, projectId, template)
-              if (result.error) {
-                setError(result.error)
-                return
-              }
-              router.refresh()
-            })
-          }
-        >
-          {isPending ? t('creating') : t('groupDocCreate')}
-        </button>
-        <FormError error={error} />
-      </div>
     </div>
   )
 }
