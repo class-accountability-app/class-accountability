@@ -19,8 +19,9 @@ const FIELD_FOR_ERROR: Partial<Record<ErrorKey, Field>> = {
   targetAmountPositive: 'target_amount',
 }
 
-// The mockup's 進み具合のはかり方 as native radios drawn as segments (as in
-// the target form): status only, a count with a unit, or characters.
+// 新しいタスク in three steps: what and who (the owner as pills), how it's
+// measured (status only, a count with a unit, or characters, as option cards),
+// then the goal and due day.
 export function TaskForm({
   classId,
   projectId,
@@ -40,6 +41,7 @@ export function TaskForm({
   const [metric, setMetric] = useState<TaskMetric>('count')
   // Characters tasks: written in Study Pods (counted by itself) unless the team writes elsewhere.
   const [writeHere, setWriteHere] = useState(true)
+  const [owner, setOwner] = useState(defaultOwnerId)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<ErrorKey | null>(null)
   useFocusFirstInvalid(formRef, error)
@@ -65,9 +67,26 @@ export function TaskForm({
     })
   }
 
+  // One option card: a native radio drawn as a card (selected on Penna, as
+  // in どこで書きますか), with its title and a line saying what it means.
+  const optionClass = (selected: boolean) =>
+    `flex min-h-12 cursor-pointer items-start gap-3 rounded-2xl px-4 py-3 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
+      selected ? 'bg-tint-penna' : 'bg-surface shadow-[inset_0_0_0_1px_var(--border)] hover:bg-surface-container'
+    }`
+  const step = (n: number, label: string, headingId: string) => (
+    <h2 id={headingId} className="flex items-center gap-2.5 font-heading text-[17px] leading-7 font-bold text-ink">
+      <span aria-hidden className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-ink font-meta text-[13px] text-page-bg">
+        {n}
+      </span>
+      {label}
+    </h2>
+  )
+
   return (
     <form ref={formRef} onSubmit={handleSubmit} noValidate className="flex w-full flex-col gap-5">
-      <div className="rule-card flex flex-col gap-5 px-5 py-5">
+      {/* Soft pastel (2026-11-08): three steps, each its own card. */}
+      <section aria-labelledby={`${id}-step1`} className="rule-card flex flex-col gap-5 px-5 py-5">
+        {step(1, t('newTask.stepWhat'), `${id}-step1`)}
         <div className="flex flex-col gap-1.5">
           <label htmlFor={`${id}-title`} className="text-sm font-semibold text-ink">
             {t('newTask.name')}
@@ -84,48 +103,54 @@ export function TaskForm({
           <FieldError id={`${id}-title-error`} error={fieldError('title')} />
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor={`${id}-owner`} className="text-sm font-semibold text-ink">
-            {t('newTask.owner')}
-          </label>
-          <select id={`${id}-owner`} name="owner_id" defaultValue={defaultOwnerId} className={controlClass}>
-            {members.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.name}
-              </option>
-            ))}
-            <option value="">{t('newTask.ownerNone')}</option>
-          </select>
-        </div>
-
-        <fieldset className="flex flex-col gap-1.5" aria-describedby={`${id}-how-hint`}>
-          <legend className="mb-1.5 text-sm font-semibold text-ink">{t('newTask.how')}</legend>
-          <div className="flex gap-1 rounded-full bg-surface-container p-1">
-            {TASK_METRICS.map((m) => (
+        <fieldset className="flex flex-col gap-1.5">
+          <legend className="mb-1.5 text-sm font-semibold text-ink">{t('newTask.owner')}</legend>
+          <div className="flex flex-wrap gap-2">
+            {[...members, { id: '', name: t('newTask.ownerNone') }].map((m) => (
               <label
-                key={m}
-                className={`flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-full px-1.5 py-1.5 text-center text-sm leading-[1.4] font-semibold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
-                  metric === m ? 'bg-ink text-surface' : 'text-ink hover:bg-surface'
+                key={m.id || 'none'}
+                className={`inline-flex min-h-11 cursor-pointer items-center rounded-full px-4 text-sm font-semibold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink [overflow-wrap:anywhere] ${
+                  owner === m.id ? 'bg-ink text-surface' : 'bg-surface text-ink shadow-[inset_0_0_0_1.5px_var(--ink)] hover:bg-surface-container'
                 }`}
               >
                 <input
                   type="radio"
-                  name="metric"
-                  value={m}
-                  checked={metric === m}
-                  onChange={() => {
-                    setMetric(m)
-                    setError(null)
-                  }}
+                  name="owner_id"
+                  value={m.id}
+                  checked={owner === m.id}
+                  onChange={() => setOwner(m.id)}
                   className="sr-only"
                 />
-                {t(`newTask.hows.${m}`)}
+                {m.name}
               </label>
             ))}
           </div>
-          <p id={`${id}-how-hint`} className="text-[13px] leading-[1.7] text-muted">
-            {t(`newTask.howHint.${metric}`)}
-          </p>
+        </fieldset>
+      </section>
+
+      <section aria-labelledby={`${id}-step2`} className="rule-card flex flex-col gap-5 px-5 py-5">
+        {step(2, t('newTask.how'), `${id}-step2`)}
+        <fieldset className="flex flex-col gap-2">
+          <legend className="sr-only">{t('newTask.how')}</legend>
+          {TASK_METRICS.map((m) => (
+            <label key={m} className={optionClass(metric === m)}>
+              <input
+                type="radio"
+                name="metric"
+                value={m}
+                checked={metric === m}
+                onChange={() => {
+                  setMetric(m)
+                  setError(null)
+                }}
+                className="mt-1 h-5 w-5 shrink-0 accent-[var(--ink)]"
+              />
+              <span className="flex flex-col">
+                <span className="text-[15px] leading-6 font-semibold text-ink">{t(`newTask.hows.${m}`)}</span>
+                <span className="text-[13px] leading-6 text-ink">{t(`newTask.howHint.${m}`)}</span>
+              </span>
+            </label>
+          ))}
         </fieldset>
 
         {metric === 'characters' && (
@@ -133,12 +158,7 @@ export function TaskForm({
             <legend className="mb-1.5 text-sm font-semibold text-ink">{t('newTask.where')}</legend>
             <input type="hidden" name="input_mode" value={writeHere ? 'document' : 'manual'} />
             {([true, false] as const).map((here) => (
-              <label
-                key={String(here)}
-                className={`flex min-h-12 cursor-pointer items-start gap-3 rounded-2xl px-4 py-3 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
-                  writeHere === here ? 'bg-tint-penna' : 'bg-surface shadow-[inset_0_0_0_1px_var(--border)]'
-                }`}
-              >
+              <label key={String(here)} className={optionClass(writeHere === here)}>
                 <input
                   type="radio"
                   name="write_where"
@@ -172,7 +192,10 @@ export function TaskForm({
             <FieldError id={`${id}-unit-error`} error={fieldError('unit')} />
           </div>
         )}
+      </section>
 
+      <section aria-labelledby={`${id}-step3`} className="rule-card flex flex-col gap-5 px-5 py-5">
+        {step(3, t('newTask.stepGoal'), `${id}-step3`)}
         {metric !== 'status' && (
           <div className="flex flex-col gap-1.5">
             <label htmlFor={`${id}-goal`} className="text-sm font-semibold text-ink">
@@ -200,7 +223,7 @@ export function TaskForm({
           </label>
           <input id={`${id}-due`} name="due" type="date" className={controlClass} />
         </div>
-      </div>
+      </section>
 
       <button type="submit" disabled={isPending} className={`${primaryButtonClass} w-full`}>
         {isPending ? tCommon('creating') : t('newTask.submit')}

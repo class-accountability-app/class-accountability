@@ -1102,7 +1102,9 @@
       "whereHere": "Write in Study Pods (recommended)",
       "whereHereHint": "Write right in the app. The character count is logged by itself, and you can export .docx or PDF.",
       "whereElsewhere": "Write somewhere else",
-      "whereElsewhereHint": "Write in Google Docs or elsewhere. Link it to count automatically, or log with ＋記録."
+      "whereElsewhereHint": "Write in Google Docs or elsewhere. Link it to count automatically, or log with ＋記録.",
+      "stepWhat": "What is it?",
+      "stepGoal": "Goal and due date"
     },
     "checkin": {
       "kicker": "NEXT CHECK-IN",
