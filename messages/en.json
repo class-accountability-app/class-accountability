@@ -1356,7 +1356,12 @@
     "fileName": "“{name}”",
     "makeOrLinkDoc": "Create or link a Google Doc",
     "makeOrLinkFile": "Create or link a Google file",
-    "perTaskWhy": "Each task gets its own file, made by the person who owns it. Start from “Create or link a Google Doc” on your task. Each task shows which file it’s counted from."
+    "perTaskWhy": "Each task gets its own file, made by the person who owns it. Start from “Create or link a Google Doc” on your task. Each task shows which file it’s counted from.",
+    "currentTitle": "The file in use",
+    "pathNew": "Make a new one",
+    "pathExisting": "Or",
+    "linkExistingTitle": "Link a file you already have",
+    "linkExistingWhy": "Pick a file in your Google Drive to link. You can also go back to logging by hand."
   },
   "teacher": {
     "title": "How the teams are doing",
