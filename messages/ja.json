@@ -1268,7 +1268,6 @@
     "updated": "{when}に確認",
     "notYet": "まもなく数えます",
     "lost": "ファイルが読めなくなりました",
-    "change": "つなぎかたを変える",
     "relink": "つなぎ直す",
     "teammateLinked": "グループのドキュメントで記録中",
     "back": "← 戻る",
@@ -1364,7 +1363,12 @@
     "pathNew": "新しくつくる",
     "pathExisting": "または",
     "linkExistingTitle": "すでにあるファイルとつなぐ",
-    "linkExistingWhy": "Google ドライブにあるファイルを選んでつなぎます。「手で記録する」に戻すこともできます。"
+    "linkExistingWhy": "Google ドライブにあるファイルを選んでつなぎます。「手で記録する」に戻すこともできます。",
+    "changeFile": "ファイルを変える",
+    "changeHint": "別のファイルに変えるときは、下で新しくつくるか、ほかのファイルを選んでください。変えたあとは、タスクの数が新しいファイルの数になります（二重には数えません）。",
+    "changeExistingTitle": "ほかのファイルに変える",
+    "pickAndChange": "ファイルを選んで変える",
+    "taskDocReplace": "つくって、このファイルに変える"
   },
   "teacher": {
     "title": "チームの進み具合",

@@ -1268,7 +1268,6 @@
     "updated": "checked {when}",
     "notYet": "counting soon",
     "lost": "Can’t read this file anymore",
-    "change": "Change how it’s counted",
     "relink": "Relink",
     "teammateLinked": "Counted from the group Doc",
     "back": "← Back",
@@ -1364,7 +1363,12 @@
     "pathNew": "Make a new one",
     "pathExisting": "Or",
     "linkExistingTitle": "Link a file you already have",
-    "linkExistingWhy": "Pick a file in your Google Drive to link. You can also go back to logging by hand."
+    "linkExistingWhy": "Pick a file in your Google Drive to link. You can also go back to logging by hand.",
+    "changeFile": "Change file",
+    "changeHint": "To switch to another file, make a new one or pick a different file below. After the switch, the task's number becomes the new file's count (nothing is counted twice).",
+    "changeExistingTitle": "Switch to another file",
+    "pickAndChange": "Pick a file and switch",
+    "taskDocReplace": "Create and switch to it"
   },
   "teacher": {
     "title": "How the teams are doing",

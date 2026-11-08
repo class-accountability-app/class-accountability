@@ -73,7 +73,10 @@ export default async function LinkTaskPage({ params }: { params: Promise<{ class
               {t('currentTitle')}
             </h2>
             {current.state === 'ok' ? (
-              <OpenSourceButton kind={current.kind as SourceKind} fileId={current.file_id} label={current.label} small />
+              <>
+                <OpenSourceButton kind={current.kind as SourceKind} fileId={current.file_id} label={current.label} small />
+                <p className="text-[13px] leading-7 text-muted">{t('changeHint')}</p>
+              </>
             ) : (
               <p className="text-sm leading-7 text-ink">
                 {t('fileName', { name: current.label ?? t(`kind.${current.kind as SourceKind}`) })} · {t('lostExplain')}
@@ -103,7 +106,7 @@ export default async function LinkTaskPage({ params }: { params: Promise<{ class
                   </h2>
                   <p className="text-[13px] leading-7 text-muted">{t(task.metric === 'count' ? 'taskFileWhy' : 'taskDocWhy')}</p>
                 </div>
-                <CreateTaskDocForm classId={classId} taskId={task.id} files={task.metric === 'count'} />
+                <CreateTaskDocForm classId={classId} taskId={task.id} files={task.metric === 'count'} replacing={current !== null} />
               </section>
             )}
             <LinkForm

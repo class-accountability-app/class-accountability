@@ -116,7 +116,7 @@ export function LinkForm({
       <div>
         {pathLabel && <p className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">{t('pathExisting')}</p>}
         <h2 id={`${id}-title`} className="font-heading text-[17px] leading-7 font-bold text-ink">
-          {t('linkExistingTitle')}
+          {t(current ? 'changeExistingTitle' : 'linkExistingTitle')}
         </h2>
         <p className="text-[13px] leading-7 text-muted">{t('linkExistingWhy')}</p>
       </div>
@@ -172,7 +172,11 @@ export function LinkForm({
       )}
 
       <button type="submit" disabled={isPending} className={`${primaryButtonClass} w-full`}>
-        {isPending ? tCommon('working') : choice === 'section' || choice === 'manual' ? t('save') : t('pickAndLink')}
+        {isPending
+          ? tCommon('working')
+          : choice === 'section' || choice === 'manual'
+            ? t('save')
+            : t(current ? 'pickAndChange' : 'pickAndLink')}
       </button>
       {current && choice !== 'manual' && (
         <p className="text-[13px] leading-7 text-muted">{t('relinkNote')}</p>

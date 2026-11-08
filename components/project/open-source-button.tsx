@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { sourceFileUrl, type SourceKind } from '@/lib/google-links'
 import { secondaryButtonClass } from '@/components/buttons'
@@ -12,11 +13,15 @@ export async function OpenSourceButton({
   kind,
   fileId,
   label,
+  changeHref,
   small = false,
 }: {
   kind: SourceKind
   fileId: string
   label?: string | null
+  // The task's link page, to swap this file for another (2026-11-08); only
+  // passed where the student may change it (their own task).
+  changeHref?: string
   small?: boolean
 }) {
   const t = await getTranslations('google')
@@ -36,7 +41,17 @@ export async function OpenSourceButton({
       <span className="sr-only">{t('opensNewTab')}</span>
     </a>
   )
-  if (!label) return button
+  const buttons = changeHref ? (
+    <div className="flex flex-wrap items-center gap-2">
+      {button}
+      <Link href={changeHref} className={`${secondaryButtonClass} ${small ? 'h-11 px-4 text-sm' : ''}`}>
+        {t('changeFile')}
+      </Link>
+    </div>
+  ) : (
+    button
+  )
+  if (!label) return buttons
   return (
     <div className="flex min-w-0 flex-col gap-1">
       <p className="flex min-w-0 items-center gap-1.5 text-[13px] leading-6 text-ink">
@@ -44,7 +59,7 @@ export async function OpenSourceButton({
         <span className="font-meta text-xs text-muted">{t(`kind.${kind}`)}</span>
         <span className="min-w-0 font-semibold [overflow-wrap:anywhere]">{t('fileName', { name: label })}</span>
       </p>
-      {button}
+      {buttons}
     </div>
   )
 }
