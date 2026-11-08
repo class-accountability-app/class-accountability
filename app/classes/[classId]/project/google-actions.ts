@@ -9,10 +9,13 @@ import {
   groupDocPermission,
   groupDocRequests,
   isFileId,
+  taskDocOutline,
   isHeadingId,
   sourceLabel,
 } from '@/lib/google-links'
 import { myAccessToken, type MyToken } from '@/lib/google-server'
+import { getLocale } from 'next-intl/server'
+import { docTemplateSections, parseDocTemplate } from '@/lib/doc-templates'
 import { fetchDoc, revokeToken } from '@/supabase/functions/_shared/google-api'
 import { docHeadings } from '@/supabase/functions/_shared/google-count'
 
@@ -139,8 +142,10 @@ async function trashFile(auth: GoogleAuth, fileId: string): Promise<void> {
 // グループのドキュメントをつくる: a Google Doc in this student's Drive with the
 // project title and one heading per characters task, link sharing (see
 // shareGroupDoc; the link is shown only on the pod's board), and every such
-// task linked to its heading.
-export async function createGroupDoc(classId: string, projectId: string): Promise<ActionResult> {
+// task linked to its heading. With a template (lib/doc-templates.ts) each
+// task's heading gets the template's sections as smaller headings; headings
+// aren't counted, so each task still starts at 0.
+export async function createGroupDoc(classId: string, projectId: string, template?: string): Promise<ActionResult> {
   const me = await signedIn()
   if (!me) return { error: 'signedOut' }
   const token = await myAccessToken(me.supabase)
@@ -185,7 +190,8 @@ export async function createGroupDoc(classId: string, projectId: string): Promis
     return { error }
   }
 
-  const lines = groupDocOutline(project.title, writable)
+  const sections = docTemplateSections(parseDocTemplate(template), await getLocale())
+  const lines = groupDocOutline(project.title, writable, sections)
   const [written, shared] = await Promise.all([
     fetch(`https://docs.googleapis.com/v1/documents/${documentId}:batchUpdate`, {
       method: 'POST',
@@ -200,10 +206,10 @@ export async function createGroupDoc(classId: string, projectId: string): Promis
   }
   if (!shared) return fail('groupDocShareBlocked')
 
-  // The headings now have ids, in the same order as the tasks.
+  // The headings now have ids; the tasks' are the level-1 ones, in order.
   const doc = await fetchDoc(token.accessToken, documentId)
   if (!doc.ok) return fail('googleFailed')
-  const headings = docHeadings(doc.value)
+  const headings = docHeadings(doc.value).filter((h) => h.level === 1)
   if (headings.length !== writable.length) return fail('googleFailed')
 
   for (let i = 0; i < writable.length; i++) {
@@ -215,6 +221,74 @@ export async function createGroupDoc(classId: string, projectId: string): Promis
       p_heading_id: headings[i].headingId,
     })
     if (error) return { error: toErrorKey('createGroupDoc.link', error, { [DB_CODES.taskSourceMismatch]: 'googleFileMismatch' }) }
+  }
+
+  await me.supabase.rpc('request_google_sync')
+  refresh(classId)
+  return { error: null }
+}
+
+// テンプレートから新しいドキュメントを作る (2026-11-08): a Google Doc in my own
+// Drive for my characters task, titled like the task, with a template's
+// sections as headings (or none), linked to the task as a whole Doc. It is not
+// shared: the owner writes in it. Headings aren't counted, so it starts at 0.
+export async function createTaskDoc(classId: string, taskId: string, template?: string): Promise<ActionResult> {
+  const me = await signedIn()
+  if (!me) return { error: 'signedOut' }
+
+  const { data: task } = await me.supabase
+    .from('project_tasks')
+    .select('id, title, owner_id, metric, input_mode, projects!inner(status)')
+    .eq('id', taskId)
+    .maybeSingle()
+  if (!task || task.owner_id !== me.userId || task.metric !== 'characters' || task.input_mode !== 'manual') {
+    return { error: 'notAllowed' }
+  }
+  if ((task.projects as unknown as { status: string }).status !== 'active') return { error: 'projectFinished' }
+
+  const token = await myAccessToken(me.supabase)
+  if (!token.ok) return { error: TOKEN_ERRORS[token.reason] }
+  const auth: GoogleAuth = { Authorization: `Bearer ${token.accessToken}`, 'Content-Type': 'application/json' }
+
+  const created = await fetch('https://docs.googleapis.com/v1/documents', {
+    method: 'POST',
+    headers: auth,
+    body: JSON.stringify({ title: task.title }),
+  })
+  if (!created.ok) {
+    logServerError('createTaskDoc.create', { code: await googleFailure(created) })
+    return { error: 'googleFailed' }
+  }
+  const { documentId } = (await created.json()) as { documentId?: string }
+  if (!documentId || !isFileId(documentId)) return { error: 'googleFailed' }
+
+  const sections = docTemplateSections(parseDocTemplate(template), await getLocale())
+  const written = await fetch(`https://docs.googleapis.com/v1/documents/${documentId}:batchUpdate`, {
+    method: 'POST',
+    headers: auth,
+    body: JSON.stringify({ requests: groupDocRequests(taskDocOutline(task.title, sections)) }),
+  })
+  if (!written.ok) {
+    logServerError('createTaskDoc.write', { code: await googleFailure(written) })
+    await trashFile(auth, documentId)
+    return { error: 'googleFailed' }
+  }
+
+  const { error } = await me.supabase.rpc('link_task_source', {
+    p_task: taskId,
+    p_kind: 'doc',
+    p_file_id: documentId,
+    p_label: sourceLabel(task.title),
+    p_heading_id: null,
+  })
+  if (error) {
+    await trashFile(auth, documentId)
+    return {
+      error: toErrorKey('createTaskDoc.link', error, {
+        [DB_CODES.googleNotConnected]: 'googleNotConnected',
+        [DB_CODES.taskSourceMismatch]: 'googleFileMismatch',
+      }),
+    }
   }
 
   await me.supabase.rpc('request_google_sync')

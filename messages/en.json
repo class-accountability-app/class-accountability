@@ -1326,7 +1326,20 @@
       "slides": "Open the slides",
       "sheet": "Open the sheet"
     },
-    "opensNewTab": "(opens in a new tab)"
+    "opensNewTab": "(opens in a new tab)",
+    "templateLabel": "Heading template",
+    "templateNone": "None",
+    "templateHint": "Headings aren't counted. Only what you write under them is.",
+    "docTemplates": {
+      "report": "Report (introduction, method, results, discussion)",
+      "script": "Talk script (opening, main points, wrap-up)",
+      "proposal": "Proposal (background, aims, schedule)",
+      "literatureReview": "Literature review (earlier studies, open questions)",
+      "caseStudy": "Case study (the case, analysis, recommendations)"
+    },
+    "taskDocTitle": "Start a new Doc from a template",
+    "taskDocWhy": "Makes a Doc for this task in your Google Drive and links it. It isn't shared with anyone.",
+    "taskDocCreate": "Create and link"
   },
   "teacher": {
     "title": "How the teams are doing",

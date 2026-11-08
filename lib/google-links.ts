@@ -55,15 +55,33 @@ export function sourceLabel(title: string): string {
 
 export type GroupDocTask = { id: string; title: string; ownerName: string | null }
 
+export type OutlineLine = { text: string; style: 'TITLE' | 'HEADING_1' | 'HEADING_2' | 'NORMAL_TEXT'; taskId?: string }
+
 // The group Doc's text: the project title, then one heading per task ("Script
-// — Aki"), each followed by an empty line to write in. Returns the text and,
-// for each line, the paragraph style to give it.
-export function groupDocOutline(projectTitle: string, tasks: readonly GroupDocTask[]) {
-  const lines: { text: string; style: 'TITLE' | 'HEADING_1' | 'NORMAL_TEXT'; taskId?: string }[] = [
-    { text: projectTitle, style: 'TITLE' },
-  ]
+// — Aki"), each followed by an empty line to write in, or, with a template
+// (lib/doc-templates.ts), by the template's sections as smaller headings, each
+// with its own empty line. Returns the text and, for each line, the paragraph
+// style to give it. Headings are never counted, so the outline adds nothing.
+export function groupDocOutline(projectTitle: string, tasks: readonly GroupDocTask[], sections: readonly string[] = []) {
+  const lines: OutlineLine[] = [{ text: projectTitle, style: 'TITLE' }]
   for (const t of tasks) {
     lines.push({ text: t.ownerName ? `${t.title} — ${t.ownerName}` : t.title, style: 'HEADING_1', taskId: t.id })
+    if (sections.length === 0) lines.push({ text: '', style: 'NORMAL_TEXT' })
+    for (const section of sections) {
+      lines.push({ text: section, style: 'HEADING_2' })
+      lines.push({ text: '', style: 'NORMAL_TEXT' })
+    }
+  }
+  return lines
+}
+
+// A new Doc for one task: the task's title, then the template's sections as
+// headings with an empty line under each (just one empty line without one).
+export function taskDocOutline(taskTitle: string, sections: readonly string[]): OutlineLine[] {
+  const lines: OutlineLine[] = [{ text: taskTitle, style: 'TITLE' }]
+  if (sections.length === 0) lines.push({ text: '', style: 'NORMAL_TEXT' })
+  for (const section of sections) {
+    lines.push({ text: section, style: 'HEADING_1' })
     lines.push({ text: '', style: 'NORMAL_TEXT' })
   }
   return lines
@@ -72,7 +90,7 @@ export function groupDocOutline(projectTitle: string, tasks: readonly GroupDocTa
 // Docs API batchUpdate requests that write the outline into a new, empty
 // document. Indexes are UTF-16 code units from 1 (the body's start), as the
 // API counts them; every line ends in "\n".
-export function groupDocRequests(lines: ReturnType<typeof groupDocOutline>): unknown[] {
+export function groupDocRequests(lines: readonly OutlineLine[]): unknown[] {
   const text = lines.map((l) => `${l.text}\n`).join('')
   const requests: unknown[] = [{ insertText: { location: { index: 1 }, text } }]
   let index = 1

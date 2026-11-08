@@ -4,6 +4,7 @@ import {
   groupDocOutline,
   groupDocPermission,
   groupDocRequests,
+  taskDocOutline,
   isFileId,
   isHeadingId,
   safeReturnPath,
@@ -73,6 +74,29 @@ describe('group Doc', () => {
       [{ startIndex: 1, endIndex: 8 }, 'TITLE'], // グループ発表 = 6 + \n
       [{ startIndex: 8, endIndex: 16 }, 'HEADING_1'], // 台本 — あき = 7 + \n
       [{ startIndex: 17, endIndex: 22 }, 'HEADING_1'], // after the empty line: Data = 4 + \n
+    ])
+  })
+
+  it('puts a template\'s sections under each task as smaller headings', () => {
+    expect(groupDocOutline('P', [{ id: 't1', title: '台本', ownerName: null }], ['導入', 'まとめ'])).toEqual([
+      { text: 'P', style: 'TITLE' },
+      { text: '台本', style: 'HEADING_1', taskId: 't1' },
+      { text: '導入', style: 'HEADING_2' },
+      { text: '', style: 'NORMAL_TEXT' },
+      { text: 'まとめ', style: 'HEADING_2' },
+      { text: '', style: 'NORMAL_TEXT' },
+    ])
+  })
+
+  it('outlines a task\'s own Doc from a template, or with one empty line', () => {
+    expect(taskDocOutline('レポート', ['はじめに'])).toEqual([
+      { text: 'レポート', style: 'TITLE' },
+      { text: 'はじめに', style: 'HEADING_1' },
+      { text: '', style: 'NORMAL_TEXT' },
+    ])
+    expect(taskDocOutline('レポート', [])).toEqual([
+      { text: 'レポート', style: 'TITLE' },
+      { text: '', style: 'NORMAL_TEXT' },
     ])
   })
 

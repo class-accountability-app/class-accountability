@@ -34,8 +34,11 @@ function paragraphText(p: DocsParagraph | undefined): string {
   return (p?.elements ?? []).map((e) => e.textRun?.content ?? '').join('')
 }
 
+// Headings (the title and HEADING_1–6) are never counted: they are the
+// outline, often a template's, not what the student wrote. Only body text
+// and tables count.
 function elementText(el: DocsElement): string {
-  if (el.paragraph) return paragraphText(el.paragraph)
+  if (el.paragraph) return headingLevel(el.paragraph) === null ? paragraphText(el.paragraph) : ''
   let text = ''
   for (const row of el.table?.tableRows ?? []) {
     for (const cell of row.tableCells ?? []) {
@@ -60,7 +63,8 @@ export function docHeadings(doc: DocsDocument): DocHeading[] {
 
 // Characters in the whole document, or under one heading: from the paragraph
 // after it up to the next heading of the same or a higher level (or the end).
-// The heading's own line is not counted. Null when the heading is gone.
+// No heading line is counted, the section's own or a sub-heading. Null when
+// the heading is gone.
 export function countDoc(doc: DocsDocument, headingId: string | null): number | null {
   const content = doc.body?.content ?? []
   if (headingId === null) return countText(content.map(elementText).join(''))
@@ -77,7 +81,7 @@ export function countDoc(doc: DocsDocument, headingId: string | null): number | 
   return countText(text)
 }
 
-// Words in the whole document (0040), counted like Word does for English:
+// Words in the whole document (0040), headings left out, counted like Word for English:
 // whitespace-separated pieces that contain a letter or a digit, so "well-known"
 // is one word and a lone "—" is none.
 export function countDocWords(doc: DocsDocument): number {
