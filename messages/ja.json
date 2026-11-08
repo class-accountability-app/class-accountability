@@ -1181,7 +1181,8 @@
       "slotDate": "候補{n}の日付",
       "slotTime": "候補{n}の時刻",
       "removeSlot": "候補{n}を消す",
-      "addSlot": "候補を追加"
+      "addSlot": "候補を追加",
+      "stepWhat": "どんな打ち合わせですか"
     },
     "vote": {
       "legend": "○ 行ける　△ なんとか　✕ 行けない",

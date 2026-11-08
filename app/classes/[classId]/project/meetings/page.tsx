@@ -56,11 +56,11 @@ export default async function MeetingsPage({ params }: { params: Promise<{ class
         </div>
 
         <section aria-labelledby="upcoming-heading" className="flex flex-col gap-7">
-          <h2 id="upcoming-heading" className="-mb-3.5 px-0.5 font-heading text-lg leading-7 font-bold text-ink">
+          <h2 id="upcoming-heading" className="-mb-3.5 px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
             {t('meetings.upcoming')}
           </h2>
           {upcoming.length === 0 ? (
-            <p className="px-0.5 text-sm leading-7 text-muted">{t('meetings.noUpcoming')}</p>
+            <p className="rule-card px-5 py-5 text-sm leading-7 text-muted">{t('meetings.noUpcoming')}</p>
           ) : (
             upcoming.map((p) => (
               <PodProgressLink
@@ -74,11 +74,11 @@ export default async function MeetingsPage({ params }: { params: Promise<{ class
         </section>
 
         <section aria-labelledby="open-heading" className="flex flex-col gap-7">
-          <h2 id="open-heading" className="-mb-3.5 px-0.5 font-heading text-lg leading-7 font-bold text-ink">
+          <h2 id="open-heading" className="-mb-3.5 px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
             {t('meetings.open')}
           </h2>
           {open.length === 0 ? (
-            <p className="px-0.5 text-sm leading-7 text-muted">{t('meetings.noOpen')}</p>
+            <p className="rule-card px-5 py-5 text-sm leading-7 text-muted">{t('meetings.noOpen')}</p>
           ) : (
             open.map((p) => {
               const answered = new Set(p.votes.map((v) => v.userId)).size
