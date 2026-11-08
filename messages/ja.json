@@ -1339,7 +1339,17 @@
     },
     "taskDocTitle": "テンプレートから新しいドキュメントを作る",
     "taskDocWhy": "あなたの Google ドライブにこのタスク用のドキュメントをつくり、そのままつなぎます。だれとも共有されません。",
-    "taskDocCreate": "つくってつなぐ"
+    "taskDocCreate": "つくってつなぐ",
+    "slideTemplateLabel": "スライドのテンプレート",
+    "slideTemplateHint": "テンプレートのスライドは、タイトル以外に何か入れるまで枚数に入りません。",
+    "slideTemplates": {
+      "presentation": "発表（目次・背景・内容・まとめ）",
+      "research": "研究発表（背景・方法・結果・考察）",
+      "proposal": "企画提案（課題・提案・スケジュール）",
+      "caseStudy": "ケーススタディ（概要・分析・提案）"
+    },
+    "taskSlidesTitle": "テンプレートから新しいスライドを作る",
+    "taskSlidesWhy": "あなたの Google ドライブにこのタスク用のスライドをつくり、そのままつなぎます。だれとも共有されません。"
   },
   "teacher": {
     "title": "チームの進み具合",

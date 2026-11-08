@@ -7,7 +7,8 @@ import type { ErrorKey } from '@/lib/errors'
 import { FormError } from '@/components/form-errors'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { DOC_TEMPLATE_KEYS } from '@/lib/doc-templates'
-import { createGroupDoc, createTaskDoc, requestGoogleSync } from './google-actions'
+import { SLIDE_TEMPLATE_KEYS } from '@/lib/slide-templates'
+import { createGroupDoc, createTaskDoc, createTaskSlides, requestGoogleSync } from './google-actions'
 
 // Opening the board asks for a re-count of the pod's linked files (the
 // database allows one per student per 2 minutes). When one was asked for, the
@@ -29,14 +30,23 @@ export function GoogleSyncOnOpen() {
   return null
 }
 
-// 見出しのテンプレート (2026-11-08): none, or one of lib/doc-templates.ts.
-function DocTemplateSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+// 見出しのテンプレート (2026-11-08): none, or one of lib/doc-templates.ts
+// (or, for a deck, lib/slide-templates.ts).
+function DocTemplateSelect({
+  value,
+  onChange,
+  slides = false,
+}: {
+  value: string
+  onChange: (v: string) => void
+  slides?: boolean
+}) {
   const t = useTranslations('google')
   const id = useId()
   return (
     <div className="flex flex-col gap-1">
       <label htmlFor={id} className="text-sm font-semibold text-ink">
-        {t('templateLabel')}
+        {t(slides ? 'slideTemplateLabel' : 'templateLabel')}
       </label>
       <select
         id={id}
@@ -46,14 +56,20 @@ function DocTemplateSelect({ value, onChange }: { value: string; onChange: (v: s
         className="h-11 rounded-lg border border-outline bg-surface px-3 text-base text-ink"
       >
         <option value="">{t('templateNone')}</option>
-        {DOC_TEMPLATE_KEYS.map((key) => (
-          <option key={key} value={key}>
-            {t(`docTemplates.${key}`)}
-          </option>
-        ))}
+        {slides
+          ? SLIDE_TEMPLATE_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {t(`slideTemplates.${key}`)}
+              </option>
+            ))
+          : DOC_TEMPLATE_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {t(`docTemplates.${key}`)}
+              </option>
+            ))}
       </select>
       <p id={`${id}-hint`} className="text-[13px] leading-6 text-muted">
-        {t('templateHint')}
+        {t(slides ? 'slideTemplateHint' : 'templateHint')}
       </p>
     </div>
   )
@@ -95,15 +111,16 @@ export function CreateGroupDocButton({ classId, projectId }: { classId: string; 
 
 // テンプレートから新しいドキュメントを作る, on my characters task's link page:
 // the Doc is made in my Drive and linked; then back to the board.
-export function CreateTaskDocForm({ classId, taskId }: { classId: string; taskId: string }) {
+// The same for a counted task's deck (slides).
+export function CreateTaskDocForm({ classId, taskId, slides = false }: { classId: string; taskId: string; slides?: boolean }) {
   const t = useTranslations('google')
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<ErrorKey | null>(null)
-  const [template, setTemplate] = useState('report')
+  const [template, setTemplate] = useState(slides ? 'presentation' : 'report')
   return (
     <div className="flex flex-col gap-3.5">
-      <DocTemplateSelect value={template} onChange={setTemplate} />
+      <DocTemplateSelect value={template} onChange={setTemplate} slides={slides} />
       <div className="flex flex-col">
         <button
           type="button"
@@ -112,7 +129,7 @@ export function CreateTaskDocForm({ classId, taskId }: { classId: string; taskId
           onClick={() =>
             startTransition(async () => {
               setError(null)
-              const result = await createTaskDoc(classId, taskId, template)
+              const result = await (slides ? createTaskSlides : createTaskDoc)(classId, taskId, template)
               if (result.error) {
                 setError(result.error)
                 return

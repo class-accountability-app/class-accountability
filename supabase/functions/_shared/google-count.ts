@@ -19,7 +19,9 @@ export type DocsDocument = { body?: { content?: DocsElement[] } }
 export const DOC_FIELDS =
   'body(content(paragraph(elements(textRun(content)),paragraphStyle(namedStyleType,headingId)),' +
   'table(tableRows(tableCells(content(paragraph(elements(textRun(content)))))))))'
-export const SLIDES_FIELDS = 'slides(objectId)'
+// Each slide's id and, for its shapes, the placeholder type and text: enough
+// to tell an untouched template slide from one with something on it.
+export const SLIDES_FIELDS = 'slides(objectId,pageElements(objectId,shape(placeholder(type),text(textElements(textRun(content))))))'
 export const SHEET_FIELDS = 'values'
 
 // TITLE is above HEADING_1; ordinary paragraphs have no level.
@@ -104,6 +106,36 @@ export function countSheetRows(sheet: { values?: unknown[][] }): number {
   return Math.max(0, filled - 1)
 }
 
-export function countSlides(presentation: { slides?: unknown[] }): number {
-  return presentation.slides?.length ?? 0
+// Slides the app adds from a template (2026-11-08) have object ids starting
+// with this. Every other slide counts as before.
+export const TEMPLATE_SLIDE_PREFIX = 'sptpl_'
+
+export type SlidesPageElement = {
+  objectId?: string
+  shape?: { placeholder?: { type?: string }; text?: { textElements?: DocsTextRun[] } }
+}
+export type SlidesPresentation = { slides?: { objectId?: string; pageElements?: SlidesPageElement[] }[] }
+
+const TITLE_PLACEHOLDERS = new Set(['TITLE', 'CENTERED_TITLE'])
+
+// Something a student put on a template slide: any element that isn't a
+// placeholder (an image, table, chart, video, their own shape or text box),
+// or a placeholder other than the title with text in it.
+function hasContent(el: SlidesPageElement): boolean {
+  const type = el.shape?.placeholder?.type
+  if (!type) return true
+  if (TITLE_PLACEHOLDERS.has(type)) return false
+  const text = (el.shape?.text?.textElements ?? []).map((t) => t.textRun?.content ?? '').join('')
+  return text.trim() !== ''
+}
+
+// The number of slides. A template slide counts only once something is on it
+// besides its title, so a deck made from a template starts at 0, like a Doc's
+// headings.
+export function countSlides(presentation: SlidesPresentation): number {
+  let n = 0
+  for (const slide of presentation.slides ?? []) {
+    if (!slide.objectId?.startsWith(TEMPLATE_SLIDE_PREFIX) || (slide.pageElements ?? []).some(hasContent)) n++
+  }
+  return n
 }

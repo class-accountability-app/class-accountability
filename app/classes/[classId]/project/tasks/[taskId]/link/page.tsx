@@ -68,15 +68,15 @@ export default async function LinkTaskPage({ params }: { params: Promise<{ class
           </div>
         ) : (
           <>
-            {task.metric === 'characters' && task.owner_id === user.id && (
+            {task.owner_id === user.id && (
               <section aria-labelledby="task-doc-heading" className="rule-card tint-penna flex flex-col gap-3.5 px-5 py-5">
                 <div>
                   <h2 id="task-doc-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
-                    {t('taskDocTitle')}
+                    {t(task.metric === 'count' ? 'taskSlidesTitle' : 'taskDocTitle')}
                   </h2>
-                  <p className="text-[13px] leading-7 text-ink">{t('taskDocWhy')}</p>
+                  <p className="text-[13px] leading-7 text-ink">{t(task.metric === 'count' ? 'taskSlidesWhy' : 'taskDocWhy')}</p>
                 </div>
-                <CreateTaskDocForm classId={classId} taskId={task.id} />
+                <CreateTaskDocForm classId={classId} taskId={task.id} slides={task.metric === 'count'} />
               </section>
             )}
             <LinkForm
