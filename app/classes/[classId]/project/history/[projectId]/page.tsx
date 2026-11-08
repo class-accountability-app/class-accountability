@@ -7,7 +7,7 @@ import { formatDate } from '@/lib/date'
 import { projectPercent, type TaskLike } from '@/lib/project-stats'
 import { tidyTotal } from '@/lib/project-board'
 import { ProgressBar } from '@/components/progress-bar'
-import { taskValueText, type TaskRow } from '../../load'
+import { STATUS_PILL_CLASS, taskValueText, type TaskRow } from '../../load'
 import { CopyProjectButton } from './copy-button'
 
 // まとめ (feature batch 1): a finished project as the team left it: who owned
@@ -76,13 +76,13 @@ export default async function ProjectWrapUp({ params }: { params: Promise<{ clas
     // sits on Farmer's Market (olive); tasks and members side by side from 1024px.
     <div className="flex flex-1 flex-col px-4 py-7 sm:px-6">
       <div className="mx-auto flex w-full max-w-md flex-col gap-7 md:max-w-xl lg:max-w-5xl">
+        <Link
+          href={`/classes/${classId}/project`}
+          className="-mb-2 -ml-2 inline-flex min-h-11 items-center self-start rounded-full px-2 text-sm font-semibold text-ink hover:bg-surface-container"
+        >
+          {t('back')}
+        </Link>
         <div className="px-0.5">
-          <Link
-            href={`/classes/${classId}/project`}
-            className="-ml-2 inline-flex min-h-11 items-center rounded-full px-2 text-sm font-semibold text-ink hover:bg-surface-container"
-          >
-            {t('back')}
-          </Link>
           <p className="font-meta text-[13px] leading-7 text-muted">{t('kicker')}</p>
           <h1 className="font-heading text-[28px] leading-tight font-bold text-ink [overflow-wrap:anywhere] lg:text-[36px]">{project.title}</h1>
           <p className="pt-1 font-meta text-[13px] leading-7 text-muted">
@@ -106,21 +106,29 @@ export default async function ProjectWrapUp({ params }: { params: Promise<{ clas
         <div className="grid gap-7 lg:grid-cols-2 lg:items-start">
 
         <section aria-labelledby="wrap-tasks" className="rule-card flex flex-col px-5 py-5">
-          <h2 id="wrap-tasks" className="font-heading text-lg leading-7 font-bold text-ink">
+          <h2 id="wrap-tasks" className="font-heading text-[17px] leading-7 font-bold text-ink">
             {t('tasks')}
           </h2>
           <ul className="flex flex-col">
             {tasks.map((x, i) => {
               const value = taskValueText(tProject, number, { metric: x.metric, unit: x.unit, targetAmount: like[i].targetAmount }, like[i].total)
               return (
-                <li key={x.id} className="flex flex-col border-b border-ink/10 py-2 last:border-b-0">
-                  <span className="text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{x.title}</span>
-                  <span className="text-[13px] leading-6 text-muted">
+                <li key={x.id} className="flex flex-col border-b border-dashed border-ink/15 py-2 last:border-b-0">
+                  <div className="flex min-h-7 items-center justify-between gap-2.5">
+                    <span className="text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{x.title}</span>
+                    <span className={`shrink-0 rounded-lg px-2 font-meta text-xs leading-5 font-bold ${STATUS_PILL_CLASS[x.status]}`}>
+                      {tProject(`status.${x.status}`)}
+                    </span>
+                  </div>
+                  <span className="font-meta text-[13px] leading-6 text-muted">
                     {x.owner_id ? names.get(x.owner_id) ?? t('formerMember') : t('noOwner')}
-                    {' · '}
-                    {tProject(`status.${x.status}`)}
                     {value && ` · ${value}`}
                   </span>
+                  {value && like[i].targetAmount !== null && (
+                    <div className="flex h-7 items-center">
+                      <ProgressBar value={like[i].total} max={like[i].targetAmount!} valueText={value} />
+                    </div>
+                  )}
                 </li>
               )
             })}
@@ -128,16 +136,19 @@ export default async function ProjectWrapUp({ params }: { params: Promise<{ clas
         </section>
 
         <section aria-labelledby="wrap-members" className="rule-card flex flex-col px-5 py-5">
-          <h2 id="wrap-members" className="font-heading text-lg leading-7 font-bold text-ink">
+          <h2 id="wrap-members" className="font-heading text-[17px] leading-7 font-bold text-ink">
             {t('members')}
           </h2>
           <ul className="flex flex-col">
             {[...names.entries()].map(([id, name]) => {
               const owned = tasks.filter((x) => x.owner_id === id)
               return (
-                <li key={id} className="flex items-center justify-between gap-2 border-b border-ink/10 py-2 last:border-b-0">
-                  <span className="text-[15px] leading-7 text-ink [overflow-wrap:anywhere]">{name}</span>
-                  <span className="shrink-0 font-meta text-xs text-muted">
+                <li key={id} className="flex items-center gap-3 border-b border-dashed border-ink/15 py-2.5 last:border-b-0">
+                  <span aria-hidden className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink font-heading text-sm font-bold text-page-bg">
+                    {[...name][0] ?? '?'}
+                  </span>
+                  <span className="min-w-0 flex-1 text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{name}</span>
+                  <span className="shrink-0 rounded-full bg-surface-container px-3 py-1 font-meta text-xs leading-5 text-ink">
                     {t('memberLine', {
                       done: owned.filter((x) => x.status === 'done').length,
                       total: owned.length,
@@ -151,7 +162,9 @@ export default async function ProjectWrapUp({ params }: { params: Promise<{ clas
         </section>
         </div>
 
-        <CopyProjectButton classId={classId} projectId={project.id} />
+        <div className="rule-card px-5 py-5">
+          <CopyProjectButton classId={classId} projectId={project.id} />
+        </div>
       </div>
     </div>
   )

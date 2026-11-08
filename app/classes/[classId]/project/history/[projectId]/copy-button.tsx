@@ -17,12 +17,12 @@ export function CopyProjectButton({ classId, projectId }: { classId: string; pro
   const [error, setError] = useState<ErrorKey | null>(null)
 
   return (
-    <div className="flex flex-col gap-1.5 px-0.5">
+    <div className="flex flex-col gap-2">
       <p className="text-[13px] leading-6 text-muted">{t('copyHint')}</p>
       <button
         type="button"
         disabled={isPending}
-        className={`${secondaryButtonClass} self-start`}
+        className={`${secondaryButtonClass} w-full`}
         onClick={() =>
           startTransition(async () => {
             setError(null)
