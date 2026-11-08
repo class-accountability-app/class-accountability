@@ -1339,7 +1339,17 @@
     },
     "taskDocTitle": "Start a new Doc from a template",
     "taskDocWhy": "Makes a Doc for this task in your Google Drive and links it. It isn't shared with anyone.",
-    "taskDocCreate": "Create and link"
+    "taskDocCreate": "Create and link",
+    "slideTemplateLabel": "Slide template",
+    "slideTemplateHint": "A template slide counts once you add something besides its title.",
+    "slideTemplates": {
+      "presentation": "Presentation (contents, background, points, summary)",
+      "research": "Research talk (background, method, results, discussion)",
+      "proposal": "Proposal (problem, proposal, schedule)",
+      "caseStudy": "Case study (the case, analysis, recommendations)"
+    },
+    "taskSlidesTitle": "Start a new deck from a template",
+    "taskSlidesWhy": "Makes a Slides deck for this task in your Google Drive and links it. It isn't shared with anyone."
   },
   "teacher": {
     "title": "How the teams are doing",

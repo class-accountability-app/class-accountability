@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { DOC_FIELDS, countDoc, countDocWords, countSheetRows, countSlides, countWords, docHeadings, type DocsDocument, type DocsElement } from './google-count'
+import { DOC_FIELDS, SLIDES_FIELDS, countDoc, countDocWords, countSheetRows, countSlides, countWords, docHeadings, type DocsDocument, type DocsElement } from './google-count'
 
 const para = (text: string, style?: string, headingId?: string): DocsElement => ({
   paragraph: {
@@ -64,12 +64,29 @@ describe('countSlides', () => {
     expect(countSlides({ slides: [{}, {}, {}] })).toBe(3)
     expect(countSlides({})).toBe(0)
   })
+
+  it('counts a template slide only once something besides its title is on it', () => {
+    const title = { objectId: 'x_t', shape: { placeholder: { type: 'TITLE' }, text: { textElements: [{ textRun: { content: '背景\n' } }] } } }
+    const emptyBody = { objectId: 'x_b', shape: { placeholder: { type: 'BODY' }, text: { textElements: [{ textRun: { content: ' \n' } }] } } }
+    const filledBody = { objectId: 'x_b', shape: { placeholder: { type: 'BODY' }, text: { textElements: [{ textRun: { content: '調べたこと\n' } }] } } }
+    expect(
+      countSlides({
+        slides: [
+          { objectId: 'sptpl_cover', pageElements: [{ objectId: 'c', shape: { placeholder: { type: 'CENTERED_TITLE' } } }] },
+          { objectId: 'sptpl_s1', pageElements: [title, emptyBody] },
+          { objectId: 'sptpl_s2', pageElements: [title, filledBody] },
+          { objectId: 'sptpl_s3', pageElements: [title, { objectId: 'img' }] }, // an image
+          { objectId: 'g123', pageElements: [] }, // a slide the student added: always counts
+        ],
+      })
+    ).toBe(3)
+  })
 })
 
-describe('DOC_FIELDS', () => {
-  it('has balanced parentheses (Google rejects the request otherwise)', () => {
+describe('DOC_FIELDS / SLIDES_FIELDS', () => {
+  it.each([DOC_FIELDS, SLIDES_FIELDS])('has balanced parentheses (Google rejects the request otherwise)', (fields) => {
     let depth = 0
-    for (const c of DOC_FIELDS) {
+    for (const c of fields) {
       if (c === '(') depth++
       if (c === ')') depth--
       expect(depth).toBeGreaterThanOrEqual(0)
