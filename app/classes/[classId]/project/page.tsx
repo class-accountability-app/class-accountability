@@ -518,14 +518,22 @@ export default async function ProjectPage({
                                   : tGoogle('notYet')
                                 : `${tGoogle('fileName', { name: sources.get(task.id)!.label ?? tGoogle(`kind.${sources.get(task.id)!.kind}`) })} · ${tGoogle('lost')}`}
                             </p>
-                            <Link href={linkHref(task.id)} className="inline-flex min-h-11 items-center text-[13px] font-semibold text-accent-text underline underline-offset-4">
-                              {sources.get(task.id)!.state === 'ok' ? tGoogle('change') : tGoogle('relink')}
-                            </Link>
+                            {sources.get(task.id)!.state !== 'ok' && (
+                              <Link href={linkHref(task.id)} className="inline-flex min-h-11 items-center text-[13px] font-semibold text-accent-text underline underline-offset-4">
+                                {tGoogle('relink')}
+                              </Link>
+                            )}
                           </div>
                         )}
                         {mine && sources.get(task.id)?.state === 'ok' && (
                           <div className="pb-2">
-                            <OpenSourceButton kind={sources.get(task.id)!.kind} fileId={sources.get(task.id)!.file_id} label={sources.get(task.id)!.label} small />
+                            <OpenSourceButton
+                              kind={sources.get(task.id)!.kind}
+                              fileId={sources.get(task.id)!.file_id}
+                              label={sources.get(task.id)!.label}
+                              changeHref={linkHref(task.id)}
+                              small
+                            />
                           </div>
                         )}
                         {!mine && sources.get(task.id)?.kind === 'doc_section' && (

@@ -95,7 +95,18 @@ function DocTemplateSelect({
 // テンプレートから新しいドキュメントを作る, on my characters task's link page:
 // the Doc is made in my Drive and linked; then back to the board.
 // The same for a counted task (`files`): a Slides deck or a Sheet.
-export function CreateTaskDocForm({ classId, taskId, files = false }: { classId: string; taskId: string; files?: boolean }) {
+export function CreateTaskDocForm({
+  classId,
+  taskId,
+  files = false,
+  replacing = false,
+}: {
+  classId: string
+  taskId: string
+  files?: boolean
+  // The task already has a file: the new one takes its place.
+  replacing?: boolean
+}) {
   const t = useTranslations('google')
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -127,7 +138,7 @@ export function CreateTaskDocForm({ classId, taskId, files = false }: { classId:
             })
           }
         >
-          {isPending ? t('creating') : t('taskDocCreate')}
+          {isPending ? t('creating') : t(replacing ? 'taskDocReplace' : 'taskDocCreate')}
         </button>
         <FormError error={error} />
       </div>

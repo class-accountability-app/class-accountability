@@ -168,7 +168,13 @@ export async function ProjectHome({
                       )}
                       {sourceOf.get(task.id)?.state === 'ok' && (
                         <div className="mt-1">
-                          <OpenSourceButton kind={sourceOf.get(task.id)!.kind} fileId={sourceOf.get(task.id)!.file_id} label={sourceOf.get(task.id)!.label} small />
+                          <OpenSourceButton
+                            kind={sourceOf.get(task.id)!.kind}
+                            fileId={sourceOf.get(task.id)!.file_id}
+                            label={sourceOf.get(task.id)!.label}
+                            changeHref={`/classes/${classId}/project/tasks/${task.id}/link`}
+                            small
+                          />
                         </div>
                       )}
                       {(value || task.due) && (
