@@ -1340,7 +1340,6 @@
     "taskDocTitle": "Start a new Doc from a template",
     "taskDocWhy": "Makes a Doc for this task in your Google Drive and links it. It isn't shared with anyone.",
     "taskDocCreate": "Create and link",
-    "slideTemplateLabel": "Slide template",
     "slideTemplateHint": "A template slide counts once you add something besides its title.",
     "slideTemplates": {
       "presentation": "Presentation (contents, background, points, summary)",
@@ -1348,8 +1347,18 @@
       "proposal": "Proposal (problem, proposal, schedule)",
       "caseStudy": "Case study (the case, analysis, recommendations)"
     },
-    "taskSlidesTitle": "Start a new deck from a template",
-    "taskSlidesWhy": "Makes a Slides deck for this task in your Google Drive and links it. It isn't shared with anyone."
+    "fileTemplateLabel": "Template",
+    "fileTemplateSlides": "Google Slides (slides)",
+    "fileTemplateSheets": "Google Sheets (rows)",
+    "sheetTemplateHint": "Row 1 is the header. Every filled row below it counts.",
+    "sheetTemplates": {
+      "survey": "Survey answers (date, respondent, questions)",
+      "interviews": "Interview log (date, who, what we learned)",
+      "references": "Reference list (author, year, title)",
+      "data": "Data log (date, place, value)"
+    },
+    "taskFileTitle": "Start a new file from a template",
+    "taskFileWhy": "Makes a Slides deck or a Sheet for this task in your Google Drive and links it. It isn't shared with anyone."
   },
   "teacher": {
     "title": "How the teams are doing",

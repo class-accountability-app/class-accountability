@@ -17,6 +17,7 @@ import { myAccessToken, type MyToken } from '@/lib/google-server'
 import { getLocale } from 'next-intl/server'
 import { docTemplateSections, parseDocTemplate } from '@/lib/doc-templates'
 import { parseSlideTemplate, slideTemplateRequests, slideTemplateSections } from '@/lib/slide-templates'
+import { parseSheetTemplate, sheetCreateBody, sheetTemplateColumns } from '@/lib/sheet-templates'
 import { fetchDoc, revokeToken } from '@/supabase/functions/_shared/google-api'
 import { docHeadings } from '@/supabase/functions/_shared/google-count'
 
@@ -286,6 +287,64 @@ export async function createTaskDoc(classId: string, taskId: string, template?: 
     await trashFile(auth, documentId)
     return {
       error: toErrorKey('createTaskDoc.link', error, {
+        [DB_CODES.googleNotConnected]: 'googleNotConnected',
+        [DB_CODES.taskSourceMismatch]: 'googleFileMismatch',
+      }),
+    }
+  }
+
+  await me.supabase.rpc('request_google_sync')
+  refresh(classId)
+  return { error: null }
+}
+
+// テンプレートから新しいスプレッドシートを作る (2026-11-08): a Google Sheet in
+// my own Drive for my counted task, its first row the template's columns,
+// linked as 'sheet' (filled rows less the header, so it starts at 0). Not
+// shared.
+export async function createTaskSheet(classId: string, taskId: string, template?: string): Promise<ActionResult> {
+  const me = await signedIn()
+  if (!me) return { error: 'signedOut' }
+  const key = parseSheetTemplate(template)
+  if (!key) return { error: 'googleFailed' }
+
+  const { data: task } = await me.supabase
+    .from('project_tasks')
+    .select('id, title, owner_id, metric, input_mode, projects!inner(status)')
+    .eq('id', taskId)
+    .maybeSingle()
+  if (!task || task.owner_id !== me.userId || task.metric !== 'count' || task.input_mode !== 'manual') {
+    return { error: 'notAllowed' }
+  }
+  if ((task.projects as unknown as { status: string }).status !== 'active') return { error: 'projectFinished' }
+
+  const token = await myAccessToken(me.supabase)
+  if (!token.ok) return { error: TOKEN_ERRORS[token.reason] }
+  const auth: GoogleAuth = { Authorization: `Bearer ${token.accessToken}`, 'Content-Type': 'application/json' }
+
+  const created = await fetch('https://sheets.googleapis.com/v4/spreadsheets', {
+    method: 'POST',
+    headers: auth,
+    body: JSON.stringify(sheetCreateBody(task.title, sheetTemplateColumns(key, await getLocale()))),
+  })
+  if (!created.ok) {
+    logServerError('createTaskSheet.create', { code: await googleFailure(created) })
+    return { error: 'googleFailed' }
+  }
+  const { spreadsheetId: fileId } = (await created.json()) as { spreadsheetId?: string }
+  if (!fileId || !isFileId(fileId)) return { error: 'googleFailed' }
+
+  const { error } = await me.supabase.rpc('link_task_source', {
+    p_task: taskId,
+    p_kind: 'sheet',
+    p_file_id: fileId,
+    p_label: sourceLabel(task.title),
+    p_heading_id: null,
+  })
+  if (error) {
+    await trashFile(auth, fileId)
+    return {
+      error: toErrorKey('createTaskSheet.link', error, {
         [DB_CODES.googleNotConnected]: 'googleNotConnected',
         [DB_CODES.taskSourceMismatch]: 'googleFileMismatch',
       }),
