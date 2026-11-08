@@ -29,13 +29,13 @@ const doc: DocsDocument = {
 }
 
 describe('countDoc', () => {
-  it('counts the whole document without whitespace, tables included', () => {
-    // グループ発表(6) はじめに—あき(7) 統計は面白い。(7) 小見出し(4) ABC(3) 表の中(3) 😀👍🏽(2) データと分析—佐藤さん(11) 12345(5)
-    expect(countDoc(doc, null)).toBe(6 + 7 + 7 + 4 + 3 + 3 + 2 + 11 + 5)
+  it('counts the whole document without whitespace or headings, tables included', () => {
+    // 統計は面白い。(7) ABC(3) 表の中(3) 😀👍🏽(2) 12345(5); the title and headings count 0
+    expect(countDoc(doc, null)).toBe(7 + 3 + 3 + 2 + 5)
   })
 
-  it('counts a section up to the next heading of the same level, sub-headings included', () => {
-    expect(countDoc(doc, 'h.intro')).toBe(7 + 4 + 3 + 3 + 2)
+  it('counts a section up to the next heading of the same level, sub-sections included, headings left out', () => {
+    expect(countDoc(doc, 'h.intro')).toBe(7 + 3 + 3 + 2)
     expect(countDoc(doc, 'h.sub')).toBe(3 + 3 + 2)
     expect(countDoc(doc, 'h.data')).toBe(5)
   })
@@ -86,7 +86,7 @@ describe('countWords / countDocWords (0040)', () => {
     expect(countWords(' — ... ')).toBe(0)
     expect(countWords('')).toBe(0)
   })
-  it('counts the whole document, tables included', () => {
+  it('counts the whole document without headings, tables included', () => {
     const d: DocsDocument = {
       body: {
         content: [
@@ -97,7 +97,8 @@ describe('countWords / countDocWords (0040)', () => {
         ],
       },
     }
-    expect(countDocWords(d)).toBe(8)
+    // One two three. (3) cell words (2); the title and heading are left out
+    expect(countDocWords(d)).toBe(5)
   })
 })
 

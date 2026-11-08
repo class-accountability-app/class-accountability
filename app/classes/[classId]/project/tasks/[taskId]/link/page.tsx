@@ -5,6 +5,7 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { loadMyPodProject } from '../../../load'
 import { LinkForm } from './link-form'
+import { CreateTaskDocForm } from '../../../google-controls'
 
 // 「台本」のはかり方 (automation mockup, view "link"): count a task from a heading
 // of the group Doc, from my own Doc (characters), from a Slides file (a
@@ -25,7 +26,7 @@ export default async function LinkTaskPage({ params }: { params: Promise<{ class
 
   const { data: task } = await supabase
     .from('project_tasks')
-    .select('id, title, metric, input_mode, project_id')
+    .select('id, title, metric, input_mode, project_id, owner_id')
     .eq('id', taskId)
     .eq('project_id', pod.project.id)
     .maybeSingle()
@@ -66,15 +67,28 @@ export default async function LinkTaskPage({ params }: { params: Promise<{ class
             <p className="text-[13px] leading-7 text-ink">{t('connectFine')}</p>
           </div>
         ) : (
-          <LinkForm
-            classId={classId}
-            taskId={task.id}
-            title={task.title}
-            metric={task.metric}
-            groupDocId={(groupSource as { file_id: string } | null)?.file_id ?? null}
-            current={current ? { kind: current.kind, fileId: current.file_id, headingId: current.heading_id, state: current.state } : null}
-            locale={locale}
-          />
+          <>
+            {task.metric === 'characters' && task.owner_id === user.id && (
+              <section aria-labelledby="task-doc-heading" className="rule-card tint-penna flex flex-col gap-3.5 px-5 py-5">
+                <div>
+                  <h2 id="task-doc-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
+                    {t('taskDocTitle')}
+                  </h2>
+                  <p className="text-[13px] leading-7 text-ink">{t('taskDocWhy')}</p>
+                </div>
+                <CreateTaskDocForm classId={classId} taskId={task.id} />
+              </section>
+            )}
+            <LinkForm
+              classId={classId}
+              taskId={task.id}
+              title={task.title}
+              metric={task.metric}
+              groupDocId={(groupSource as { file_id: string } | null)?.file_id ?? null}
+              current={current ? { kind: current.kind, fileId: current.file_id, headingId: current.heading_id, state: current.state } : null}
+              locale={locale}
+            />
+          </>
         )}
       </div>
     </div>

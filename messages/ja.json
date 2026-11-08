@@ -1326,7 +1326,20 @@
       "slides": "スライドを開く",
       "sheet": "スプレッドシートを開く"
     },
-    "opensNewTab": "（新しいタブで開きます）"
+    "opensNewTab": "（新しいタブで開きます）",
+    "templateLabel": "見出しのテンプレート",
+    "templateNone": "使わない",
+    "templateHint": "見出しは文字数に入りません。数えるのは、見出しの下に書いた本文だけです。",
+    "docTemplates": {
+      "report": "レポート（はじめに・方法・結果・考察）",
+      "script": "発表原稿（導入・本論・まとめ）",
+      "proposal": "企画書（背景・目的・スケジュール）",
+      "literatureReview": "文献レビュー（先行研究・論点）",
+      "caseStudy": "ケーススタディ（概要・分析・提案）"
+    },
+    "taskDocTitle": "テンプレートから新しいドキュメントを作る",
+    "taskDocWhy": "あなたの Google ドライブにこのタスク用のドキュメントをつくり、そのままつなぎます。だれとも共有されません。",
+    "taskDocCreate": "つくってつなぐ"
   },
   "teacher": {
     "title": "チームの進み具合",
