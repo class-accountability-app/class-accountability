@@ -35,6 +35,7 @@ export function LinkForm({
   groupDocId,
   current,
   locale,
+  pathLabel = false,
 }: {
   classId: string
   taskId: string
@@ -43,6 +44,7 @@ export function LinkForm({
   groupDocId: string | null
   current: Current
   locale: string
+  pathLabel?: boolean
 }) {
   const t = useTranslations('google')
   const tCommon = useTranslations('common')
@@ -110,15 +112,21 @@ export function LinkForm({
   }
 
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col gap-5">
-      {current?.state === 'lost_access' && <p role="status" className="rule-card tint-hudson px-5 py-4 text-sm leading-7 text-ink">{t('lostExplain')}</p>}
-      <fieldset className="flex flex-col gap-3.5">
+    <form onSubmit={submit} noValidate aria-labelledby={`${id}-title`} className="rule-card flex flex-col gap-5 px-5 py-5">
+      <div>
+        {pathLabel && <p className="font-meta text-xs leading-7 font-bold tracking-[0.04em] text-accent-text">{t('pathExisting')}</p>}
+        <h2 id={`${id}-title`} className="font-heading text-[17px] leading-7 font-bold text-ink">
+          {t('linkExistingTitle')}
+        </h2>
+        <p className="text-[13px] leading-7 text-muted">{t('linkExistingWhy')}</p>
+      </div>
+      <fieldset className="flex flex-col gap-2">
         <legend className="sr-only">{t('linkLegend')}</legend>
         {options.map((option) => (
           <label
             key={option}
-            className={`flex cursor-pointer gap-3 rounded-[20px] px-4 py-4 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
-              choice === option ? 'bg-tint-penna' : 'bg-surface shadow-[inset_0_0_0_1px_var(--border)]'
+            className={`flex min-h-12 cursor-pointer items-start gap-3 rounded-2xl px-4 py-3 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
+              choice === option ? 'bg-tint-penna' : 'bg-surface shadow-[inset_0_0_0_1px_var(--border)] hover:bg-surface-container'
             }`}
           >
             <input
@@ -130,11 +138,11 @@ export function LinkForm({
                 setChoice(option)
                 setError(null)
               }}
-              className="mt-1.5 h-5 w-5 shrink-0 accent-[var(--color-ink)]"
+              className="mt-1 h-5 w-5 shrink-0 accent-[var(--ink)]"
             />
             <span className="flex flex-col">
-              <span className="text-[15px] leading-7 font-semibold text-ink">{t(`options.${option}.title`)}</span>
-              <span className={`text-[13px] leading-6 ${choice === option ? 'text-ink' : 'text-muted'}`}>{t(`options.${option}.hint`)}</span>
+              <span className="text-[15px] leading-6 font-semibold text-ink">{t(`options.${option}.title`)}</span>
+              <span className="text-[13px] leading-6 text-ink">{t(`options.${option}.hint`)}</span>
             </span>
           </label>
         ))}
@@ -170,7 +178,7 @@ export function LinkForm({
         <p className="text-[13px] leading-7 text-muted">{t('relinkNote')}</p>
       )}
       <FormError error={error} />
-      <button type="button" onClick={() => router.back()} className={`${secondaryButtonClass} self-start`}>
+      <button type="button" onClick={() => router.back()} className={`${secondaryButtonClass} w-full`}>
         {tCommon('cancel')}
       </button>
     </form>
