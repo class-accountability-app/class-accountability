@@ -928,7 +928,7 @@
   },
   "editor": {
     "metaTitle": "Write: {title}",
-    "back": "Back to class",
+    "back": "← Back to the board",
     "label": "Text",
     "countHint": "Characters are counted without spaces or line breaks, like Word’s “Characters (no spaces)”.",
     "privacyNote": "Only you can read this text. Your teammates see only the count.",
@@ -1005,7 +1005,8 @@
       "print": "Print / Save as PDF",
       "hint": "In the print dialog, choose “Save as PDF” as the destination to get a PDF.",
       "back": "Back to the document"
-    }
+    },
+    "countLabel": "Characters so far"
   },
   "firstRun": {
     "step": "{n} of 3",
