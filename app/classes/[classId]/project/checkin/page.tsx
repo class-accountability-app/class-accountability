@@ -82,7 +82,10 @@ export default async function CheckinPage({ params }: { params: Promise<{ classI
         ) : (
           <>
             <section aria-labelledby="preview-heading" className="rule-card tint-penna flex flex-col gap-1 px-5 py-5">
-              <h2 id="preview-heading" className="font-heading text-lg leading-7 font-bold text-ink">
+              <h2 id="preview-heading" className="flex items-center gap-2.5 font-heading text-[17px] leading-7 font-bold text-ink">
+                <span aria-hidden className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-ink font-meta text-[13px] text-page-bg">
+                  1
+                </span>
                 {t('checkin.preview')}
               </h2>
               {tasks.length === 0 ? (
@@ -94,7 +97,7 @@ export default async function CheckinPage({ params }: { params: Promise<{ classI
                     const total = x.metric === 'status' ? null : (totals.get(x.id) ?? 0)
                     const value = taskValueText(t, number, task, total)
                     return (
-                      <li key={x.id} className="flex flex-col border-b border-ink/10 py-2 last:border-b-0">
+                      <li key={x.id} className="flex flex-col border-b border-dashed border-ink/15 py-2 last:border-b-0">
                         <div className="flex min-h-7 items-center justify-between gap-2.5">
                           <span className="text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{x.title}</span>
                           <span className={`shrink-0 rounded-lg px-2 font-meta text-xs leading-5 font-bold ${STATUS_PILL_CLASS[x.status]}`}>
