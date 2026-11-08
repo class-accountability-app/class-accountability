@@ -1103,7 +1103,9 @@
       "whereHere": "Study Pods で書く（おすすめ）",
       "whereHereHint": "アプリの中で書けます。文字数は自動で記録されます。.docx や PDF にも書き出せます。",
       "whereElsewhere": "ほかで書く",
-      "whereElsewhereHint": "Google ドキュメントなどで書きます。つなぐと自動で、つながないときは ＋記録 で記録します。"
+      "whereElsewhereHint": "Google ドキュメントなどで書きます。つなぐと自動で、つながないときは ＋記録 で記録します。",
+      "stepWhat": "何をしますか",
+      "stepGoal": "目標と期限"
     },
     "checkin": {
       "kicker": "次のチェックイン",
