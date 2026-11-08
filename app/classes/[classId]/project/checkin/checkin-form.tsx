@@ -35,7 +35,10 @@ export function CheckinForm({ classId, projectId }: { classId: string; projectId
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-3.5">
       <div className="flex flex-col gap-1.5">
-        <label htmlFor={`${id}-note`} className="text-[15px] font-semibold text-ink">
+        <label htmlFor={`${id}-note`} className="flex items-center gap-2.5 font-heading text-[17px] leading-7 font-bold text-ink">
+          <span aria-hidden className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-ink font-meta text-[13px] text-page-bg">
+            2
+          </span>
           {t('checkin.noteLabel')}
         </label>
         <textarea
@@ -45,7 +48,7 @@ export function CheckinForm({ classId, projectId }: { classId: string; projectId
           maxLength={280}
           rows={4}
           placeholder={t('checkin.notePlaceholder')}
-          className="w-full rounded-xl border-2 border-ink bg-surface px-3.5 py-2.5 text-base leading-7 text-ink placeholder:text-muted"
+          className="w-full rounded-lg border border-outline bg-surface px-3.5 py-2.5 text-base leading-7 text-ink placeholder:text-muted"
           {...describedField(noteError, `${id}-note-error`, `${id}-fine`)}
         />
         <FieldError id={`${id}-note-error`} error={noteError} />
