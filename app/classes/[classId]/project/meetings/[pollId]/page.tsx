@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { secondaryButtonClass } from '@/components/buttons'
+import { primaryButtonClass } from '@/components/buttons'
 import { notFound, redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
@@ -9,7 +9,7 @@ import { bestOption, tallyOptions, type PollAnswer } from '@/lib/meeting-poll'
 import { latestCheckins, type CheckinRow } from '@/lib/project-board'
 import { missingCheckins, roundStartFor } from '@/lib/checkin'
 import { StatusStamp } from '@/components/status-stamp'
-import { loadMyPodProject, taskValueText } from '../../load'
+import { STATUS_PILL_CLASS, loadMyPodProject, taskValueText } from '../../load'
 import { chosenStart, formatMeeting, formatSlot, loadPolls } from '../load'
 import { googleCalendarUrl } from '@/lib/calendar'
 import { appOrigin } from '@/lib/app-origin'
@@ -66,7 +66,7 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
     return wrap(
       <>
         {header(t('poll.minutes', { count: poll.durationMinutes }))}
-        <p className="px-0.5 text-sm leading-7 text-muted">{t('vote.cancelled')}</p>
+        <p className="rule-card px-5 py-5 text-sm leading-7 text-muted">{t('vote.cancelled')}</p>
       </>
     )
   }
@@ -120,14 +120,14 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
           </a>
         </div>
         <section aria-labelledby="agenda-heading" className="rule-card flex flex-col gap-1 px-5 py-5">
-          <h2 id="agenda-heading" className="font-heading text-lg leading-7 font-bold text-ink">
+          <h2 id="agenda-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
             {t('meeting.agenda')}
           </h2>
           {members.map((m) => {
             const checkin = latest.get(m.id)
             const items = checkin ? [...checkin.items.values()] : []
             return (
-              <div key={m.id} className="flex flex-col border-b border-ink/10 py-2 last:border-b-0">
+              <div key={m.id} className="flex flex-col border-b border-dashed border-ink/15 py-2 last:border-b-0">
                 <div className="flex min-h-7 items-center gap-2.5">
                   <StatusStamp status={checkin ? 'active' : 'stale'} />
                   <h3 className="text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{displayName(m.id)}</h3>
@@ -137,10 +137,18 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
                 ) : items.length === 0 ? (
                   <p className="text-[13px] leading-7 text-muted">{t('feed.noItems')}</p>
                 ) : (
-                  <ul>
+                  <ul className="flex flex-col">
                     {items.map((item) => (
-                      <li key={item.taskId} className="text-[13px] leading-7 text-muted [overflow-wrap:anywhere]">
-                        • {item.title}　{taskValueText(t, number, item, item.total) ?? t(`status.${item.status}`)}
+                      <li key={item.taskId} className="flex min-h-9 items-center justify-between gap-2.5 py-0.5">
+                        <span className="min-w-0 text-[13px] leading-6 text-ink [overflow-wrap:anywhere]">
+                          {item.title}
+                          {taskValueText(t, number, item, item.total) && (
+                            <span className="font-meta text-muted"> · {taskValueText(t, number, item, item.total)}</span>
+                          )}
+                        </span>
+                        <span className={`shrink-0 rounded-lg px-2 font-meta text-xs leading-5 font-bold ${STATUS_PILL_CLASS[item.status]}`}>
+                          {t(`status.${item.status}`)}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -148,19 +156,18 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
               </div>
             )
           })}
-          {waiting.length > 0 && (
-            <p className="text-[13px] leading-7 text-muted">
+        </section>
+        {waiting.length > 0 && (
+          <div className="rule-card tint-hudson flex flex-col gap-3.5 px-5 py-5">
+            <p className="text-sm leading-7 text-ink">
               {t('meeting.waiting', { names: waiting.map(displayName).join(tCommon('listSeparator')) })}
             </p>
-          )}
-        </section>
-        {waiting.includes(user.id) && (
-          <Link
-            href={`/classes/${classId}/project/checkin`}
-            className={`${secondaryButtonClass} self-start`}
-          >
-            {t('meeting.checkinFirst')}
-          </Link>
+            {waiting.includes(user.id) && (
+              <Link href={`/classes/${classId}/project/checkin`} className={`${primaryButtonClass} self-start`}>
+                {t('meeting.checkinFirst')}
+              </Link>
+            )}
+          </div>
         )}
         {!noteError && (
           <MeetingNotes
@@ -207,7 +214,7 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
       <p className="-mb-3.5 px-0.5 text-[13px] leading-7 text-muted">{t('vote.legend')}</p>
       <VoteGrid classId={classId} pollId={poll.id} rows={rows} mine={mine} />
       {notYet.length > 0 && (
-        <p className="px-0.5 text-[13px] leading-7 text-muted">
+        <p className="rule-card tint-hudson px-5 py-4 text-sm leading-7 text-ink">
           {t('vote.notYet', { names: notYet.map(displayName).join(tCommon('listSeparator')) })}
         </p>
       )}

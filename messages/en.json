@@ -1181,7 +1181,8 @@
       "slotDate": "Option {n} date",
       "slotTime": "Option {n} time",
       "removeSlot": "Remove option {n}",
-      "addSlot": "Add an option"
+      "addSlot": "Add an option",
+      "stepWhat": "What's the meeting?"
     },
     "vote": {
       "legend": "○ Yes  △ If needed  ✕ No",

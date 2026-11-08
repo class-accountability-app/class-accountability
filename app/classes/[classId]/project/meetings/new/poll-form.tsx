@@ -111,9 +111,20 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
     })
   }
 
+  const stepHeading = (n: number, label: string, headingId: string) => (
+    <h2 id={headingId} className="flex items-center gap-2.5 font-heading text-[17px] leading-7 font-bold text-ink">
+      <span aria-hidden className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-ink font-meta text-[13px] text-page-bg">
+        {n}
+      </span>
+      {label}
+    </h2>
+  )
+
   return (
     <form ref={formRef} onSubmit={submit} noValidate className="flex w-full flex-col gap-5">
-      <div className="rule-card flex flex-col gap-4 px-5 py-5">
+      {/* Soft pastel (2026-11-08): three steps, each its own card. */}
+      <section aria-labelledby={`${id}-step1`} className="rule-card flex flex-col gap-5 px-5 py-5">
+        {stepHeading(1, t('poll.stepWhat'), `${id}-step1`)}
         <div className="flex flex-col gap-1.5">
           <label htmlFor={`${id}-title`} className="text-sm font-semibold text-ink">
             {t('poll.titleLabel')}
@@ -137,8 +148,8 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
             {POLL_DURATIONS.map((d) => (
               <label
                 key={d}
-                className={`inline-flex h-11 min-w-14 cursor-pointer items-center justify-center rounded-lg px-3.5 text-[15px] font-semibold has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent ${
-                  duration === d ? 'bg-ink text-surface' : 'bg-surface text-ink shadow-[inset_0_0_0_1px_var(--outline)]'
+                className={`inline-flex h-11 min-w-14 cursor-pointer items-center justify-center rounded-full px-4 text-[15px] font-semibold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
+                  duration === d ? 'bg-ink text-surface' : 'bg-surface text-ink shadow-[inset_0_0_0_1.5px_var(--ink)] hover:bg-surface-container'
                 }`}
               >
                 <input type="radio" name="duration" value={d} checked={duration === d} onChange={() => setDuration(d)} className="sr-only" />
@@ -147,9 +158,12 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
             ))}
           </div>
         </fieldset>
+      </section>
 
+      <section aria-labelledby={`${id}-step2`} className="rule-card flex flex-col gap-3.5 px-5 py-5">
+        {stepHeading(2, t('poll.slotsLabel'), `${id}-step2`)}
         <fieldset className="flex flex-col gap-2" {...describedField(fieldError('slots'), `${id}-slots-error`, `${id}-slots-hint`)}>
-          <legend className="mb-1.5 text-sm font-semibold text-ink">{t('poll.slotsLabel')}</legend>
+          <legend className="sr-only">{t('poll.slotsLabel')}</legend>
           <p id={`${id}-slots-hint`} className="-mt-1 text-[13px] leading-[1.7] text-muted">
             {t('poll.gridHint')}
           </p>
@@ -183,7 +197,7 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
             {t('poll.halfHours')}
           </label>
 
-          <div className="max-h-[420px] overflow-y-auto rounded-lg border border-border">
+          <div className="max-h-[420px] overflow-y-auto rounded-2xl bg-surface p-1 shadow-[inset_0_0_0_1px_var(--border)]">
             <table className="w-full table-fixed border-collapse text-center">
               <caption className="sr-only">{t('poll.gridCaption')}</caption>
               <thead className="sticky top-0 z-10 bg-surface">
@@ -247,7 +261,7 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
                   <button
                     type="button"
                     onClick={() => toggle(key)}
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-surface px-3 text-sm text-ink shadow-[inset_0_0_0_1px_var(--outline)]"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-tint-penna px-4 text-sm font-semibold text-ink"
                     aria-label={t('poll.removeTime', { when: slotLabel(key) })}
                   >
                     {slotLabel(key)} <span aria-hidden>✕</span>
@@ -258,7 +272,7 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
           )}
 
           <details className="pt-1">
-            <summary className="inline-flex min-h-11 cursor-pointer items-center text-sm font-semibold text-accent-text underline underline-offset-4">
+            <summary className={`${secondaryButtonClass} h-11 cursor-pointer px-4 text-sm`}>
               {t('poll.otherTime')}
             </summary>
             <div className="flex items-end gap-2 pt-2">
@@ -282,14 +296,18 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
           <FieldError id={`${id}-slots-error`} error={fieldError('slots')} />
         </fieldset>
 
+      </section>
+
+      <section aria-labelledby={`${id}-step3`} className="rule-card flex flex-col gap-3.5 px-5 py-5">
+        {stepHeading(3, t('poll.voteByLabel'), `${id}-step3`)}
         <fieldset className="flex flex-col gap-1.5">
-          <legend className="mb-1.5 text-sm font-semibold text-ink">{t('poll.voteByLabel')}</legend>
+          <legend className="sr-only">{t('poll.voteByLabel')}</legend>
           <div className="flex flex-wrap gap-2">
             {(['none', ...VOTE_BY_DAYS.map(String), 'custom'] as VoteByChoice[]).map((choice) => (
               <label
                 key={choice}
-                className={`inline-flex h-11 cursor-pointer items-center justify-center rounded-lg px-3.5 text-[15px] font-semibold has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent ${
-                  voteByChoice === choice ? 'bg-ink text-surface' : 'bg-surface text-ink shadow-[inset_0_0_0_1px_var(--outline)]'
+                className={`inline-flex h-11 cursor-pointer items-center justify-center rounded-full px-4 text-[15px] font-semibold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
+                  voteByChoice === choice ? 'bg-ink text-surface' : 'bg-surface text-ink shadow-[inset_0_0_0_1.5px_var(--ink)] hover:bg-surface-container'
                 }`}
               >
                 <input
@@ -326,9 +344,9 @@ export function PollForm({ classId, projectId }: { classId: string; projectId: s
           <p className="text-[13px] leading-[1.7] text-muted">{t('poll.voteByHint')}</p>
           <FieldError id={`${id}-by-error`} error={fieldError('vote_by')} />
         </fieldset>
-      </div>
+      </section>
 
-      <button type="submit" disabled={isPending} className={`${primaryButtonClass} h-[52px] w-full`}>
+      <button type="submit" disabled={isPending} className={`${primaryButtonClass} w-full`}>
         {isPending ? tCommon('creating') : t('poll.submit')}
       </button>
       <FormError error={errorField ? null : error} />
