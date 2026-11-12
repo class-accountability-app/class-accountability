@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useId, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
 import { TASK_STATUSES, type TaskStatus } from '@/lib/tasks'
 import { FormError } from '@/components/form-errors'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
-import { addTemplateTasks, claimTask, finishProject, setTaskStatus, writeInApp } from './actions'
+import { addTemplateTasks, claimTask, finishProject, handOverTask, setTaskStatus, shareOutTasks, writeInApp } from './actions'
 import { PROJECT_TEMPLATE_KEYS, type ProjectTemplateKey } from '@/lib/project-templates'
 
 // The status of one of my tasks: a native select, so it's one tap on a phone
@@ -225,6 +225,119 @@ export function TemplateTasksForm({ classId, projectId }: { classId: string; pro
           }
         >
           {isPending ? tCommon('working') : t('templateAdd')}
+        </button>
+      </div>
+      <FormError error={error} />
+    </div>
+  )
+}
+
+// 担当を変える on one of my tasks: folded away until wanted, then a teammate
+// (or nobody) and one button. Not offered on a task written in Study Pods.
+export function HandOverControl({
+  classId,
+  taskId,
+  teammates,
+}: {
+  classId: string
+  taskId: string
+  teammates: { id: string; name: string }[]
+}) {
+  const t = useTranslations('project')
+  const tCommon = useTranslations('common')
+  const router = useRouter()
+  const id = useId()
+  const [to, setTo] = useState(teammates[0]?.id ?? '')
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<ErrorKey | null>(null)
+
+  return (
+    <details className="pb-1">
+      <summary className="inline-flex min-h-11 cursor-pointer items-center text-[13px] font-semibold text-accent-text underline underline-offset-4">
+        {t('handOver.open')}
+      </summary>
+      <div className="flex flex-col gap-2 pb-2">
+        <label htmlFor={id} className="text-sm font-semibold text-ink">
+          {t('handOver.to')}
+        </label>
+        <div className="flex flex-wrap gap-2">
+          <select
+            id={id}
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            className="h-11 min-w-0 flex-1 rounded-lg border border-outline bg-surface px-3 text-base text-ink"
+          >
+            {teammates.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
+            ))}
+            <option value="">{t('handOver.nobody')}</option>
+          </select>
+          <button
+            type="button"
+            disabled={isPending}
+            className={`${secondaryButtonClass} h-11 px-4 text-sm`}
+            onClick={() =>
+              startTransition(async () => {
+                setError(null)
+                const result = await handOverTask(classId, taskId, to || null)
+                if (result.error) setError(result.error)
+                router.refresh()
+              })
+            }
+          >
+            {isPending ? tCommon('working') : t('handOver.submit')}
+          </button>
+        </div>
+        <p className="text-[13px] leading-6 text-muted">{t('handOver.hint')}</p>
+        <FormError error={error} />
+      </div>
+    </details>
+  )
+}
+
+// みんなに割りふる: on the card of tasks nobody has taken, when the team has
+// more than one member. One tap, then a confirm, since it moves several tasks.
+export function ShareOutButton({ classId, projectId, count }: { classId: string; projectId: string; count: number }) {
+  const t = useTranslations('project')
+  const tCommon = useTranslations('common')
+  const router = useRouter()
+  const [confirming, setConfirming] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<ErrorKey | null>(null)
+
+  if (!confirming) {
+    return (
+      <div className="pt-2">
+        <button type="button" className={`${secondaryButtonClass} w-full`} onClick={() => setConfirming(true)}>
+          {t('shareOut.open')}
+        </button>
+      </div>
+    )
+  }
+  return (
+    <div role="group" aria-label={t('shareOut.open')} className="flex flex-col gap-2 pt-2">
+      <p className="text-sm leading-7 text-ink">{t('shareOut.confirm', { count })}</p>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          disabled={isPending}
+          className={primaryButtonClass}
+          onClick={() =>
+            startTransition(async () => {
+              setError(null)
+              const result = await shareOutTasks(classId, projectId)
+              if (result.error) setError(result.error)
+              else setConfirming(false)
+              router.refresh()
+            })
+          }
+        >
+          {isPending ? tCommon('working') : t('shareOut.submit')}
+        </button>
+        <button type="button" disabled={isPending} className={secondaryButtonClass} onClick={() => setConfirming(false)}>
+          {tCommon('cancel')}
         </button>
       </div>
       <FormError error={error} />

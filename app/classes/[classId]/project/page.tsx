@@ -14,7 +14,7 @@ import { secondaryButtonClass } from '@/components/buttons'
 import { CreateProjectForm } from './create-project-form'
 import { loadLiveTotals, loadMyPodProject, taskValueText, type TaskRow } from './load'
 import { chosenStart, formatMeeting, isUpcoming, loadPolls } from './meetings/load'
-import { FinishProjectButton, TemplateTasksForm } from './task-controls'
+import { FinishProjectButton, ShareOutButton, TemplateTasksForm } from './task-controls'
 import { GoogleSyncOnOpen } from './google-controls'
 import { BoardTaskRow } from './board/task-row'
 import { PlanCards } from './board/plan-cards'
@@ -245,6 +245,7 @@ export default async function ProjectPage({
   })
 
   const nameOf = new Map(members.map((m) => [m.id, m.name]))
+  const teammates = members.filter((m) => m.id !== user.id)
   const groups = groupTasksByOwner(boardTasks, members.map((m) => m.id), user.id)
   const now = new Date()
   const percent = projectPercent(boardTasks)
@@ -442,6 +443,7 @@ export default async function ProjectPage({
                       source={sources.get(task.id)}
                       lastChecked={mine ? lastChecked.get(task.id) : undefined}
                       waitingTitles={deps && task.status !== 'done' ? waitingOn(task.id, deps, tasks).map((w) => w.title) : []}
+                      teammates={teammates}
                       locale={locale}
                       now={now}
                     />
@@ -449,6 +451,9 @@ export default async function ProjectPage({
                 </ul>
               )}
 
+              {group.ownerId === null && members.length > 1 && group.tasks.length > 0 && (
+                <ShareOutButton classId={classId} projectId={project.id} count={group.tasks.length} />
+              )}
               {group.ownerId !== null && !mine && !teamLive && (
                 <p className="font-meta text-xs leading-7 text-muted">
                   {checkin ? t('asOf', { date: formatDate(checkin.roundStart, locale) }) : t('noCheckin')}

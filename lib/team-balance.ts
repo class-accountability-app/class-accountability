@@ -22,3 +22,18 @@ export function imbalance(loads: readonly OpenLoad[]): { heavy: OpenLoad; light:
   const light = sorted[sorted.length - 1]
   return heavy.open - light.open >= IMBALANCE_GAP ? { heavy, light } : null
 }
+
+// みんなに割りふる: hand the tasks nobody has taken to the team, one at a time,
+// each to whoever has the fewest open tasks at that moment (ties go to the
+// earlier member in the list), so the loads end up as even as they can be.
+// Tasks keep their order; nothing already owned is touched.
+export function shareOut(unownedTaskIds: readonly string[], loads: readonly OpenLoad[]): { taskId: string; ownerId: string }[] {
+  if (loads.length === 0) return []
+  const open = loads.map((l) => ({ ...l }))
+  return unownedTaskIds.map((taskId) => {
+    let pick = open[0]
+    for (const l of open) if (l.open < pick.open) pick = l
+    pick.open++
+    return { taskId, ownerId: pick.id }
+  })
+}
