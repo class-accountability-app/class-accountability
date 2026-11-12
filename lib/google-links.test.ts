@@ -3,6 +3,7 @@ import {
   googleErrorReason,
   groupDocRequests,
   taskDocOutline,
+  fileNameFor,
   isFileId,
   isHeadingId,
   safeReturnPath,
@@ -99,5 +100,21 @@ describe('sourceFileUrl', () => {
     expect(sourceFileUrl('doc_words', 'abc123def45')).toBe('https://docs.google.com/document/d/abc123def45/edit')
     expect(sourceFileUrl('slides', 'abc123def45')).toBe('https://docs.google.com/presentation/d/abc123def45/edit')
     expect(sourceFileUrl('sheet', 'abc123def45')).toBe('https://docs.google.com/spreadsheets/d/abc123def45/edit')
+  })
+})
+
+describe('fileNameFor', () => {
+  it('adds the owner in the locale\'s brackets', () => {
+    expect(fileNameFor('台本', 'あき', false)).toBe('台本（あき）')
+    expect(fileNameFor('Script', 'Aki', true)).toBe('Script (Aki)')
+  })
+  it('is just the title without a name', () => {
+    expect(fileNameFor('台本', null, false)).toBe('台本')
+    expect(fileNameFor('台本', '  ', false)).toBe('台本')
+  })
+  it('cuts a long title, never the name, and stays within 60 characters', () => {
+    const name = fileNameFor('あ'.repeat(120), 'さとうさん', false)
+    expect([...name].length).toBe(60)
+    expect(name.endsWith('（さとうさん）')).toBe(true)
   })
 })

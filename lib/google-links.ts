@@ -52,6 +52,19 @@ export function sourceLabel(title: string): string {
   return (chars.length > 60 ? chars.slice(0, 60).join('') : clean) || 'Google'
 }
 
+// A new file's name: the task's title and its owner's display name, e.g.
+// 「台本（あき）」, within the label's 60 characters. A long title is cut, never
+// the name: the name is what tells two teammates' files apart.
+export function fileNameFor(taskTitle: string, ownerName: string | null, english: boolean): string {
+  const name = ownerName ? sourceLabel(ownerName) : ''
+  if (!ownerName?.trim()) return sourceLabel(taskTitle)
+  const suffix = english ? ` (${name})` : `（${name}）`
+  const room = 60 - [...suffix].length
+  if (room < 1) return sourceLabel(taskTitle)
+  const title = [...sourceLabel(taskTitle)].slice(0, room).join('').trimEnd()
+  return `${title}${suffix}`
+}
+
 export type OutlineLine = { text: string; style: 'TITLE' | 'HEADING_1' | 'HEADING_2' | 'NORMAL_TEXT' }
 
 // A new Doc for one task: the task's title, then the template's sections as
