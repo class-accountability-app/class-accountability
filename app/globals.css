@@ -406,6 +406,32 @@ html:lang(ja) body {
   box-shadow: none;
 }
 
+/* A card that is a link answers the tap: it dips a little while pressed. */
+a.rule-card {
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+a.rule-card:active {
+  transform: scale(0.985);
+}
+@media (prefers-reduced-motion: reduce) {
+  a.rule-card:active {
+    transform: none;
+  }
+}
+
+/* Focus Not Obscured (WCAG 2.2, 2.4.11): when the keyboard or a link jumps to
+   something, the browser scrolls it clear of the floating tab bar on phones
+   and of the editor's sticky toolbar, instead of leaving it underneath. */
+html {
+  scroll-padding-top: 4.5rem;
+  scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom));
+}
+@media (min-width: 768px) {
+  html {
+    scroll-padding-bottom: 1.75rem;
+  }
+}
+
 /*
  * Landing page (docs/mockups/phase1/16-landing-*): the design's keyframes,
  * prefixed lp-. The demo is one 17.5s loop of five 3.5s scenes, all CSS.

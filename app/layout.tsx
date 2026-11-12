@@ -65,7 +65,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const locale = await getLocale()
+  const [locale, tNav] = await Promise.all([getLocale(), getTranslations('nav')])
 
   // UI-chrome-only reads: whether the nav shows the app links and sign-out,
   // and the classes the クラス tab needs (one class opens it directly). No
@@ -87,12 +87,19 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={`${fontVariables} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-body">
+        {/* Keyboard users skip the header and menu in one step (WCAG 2.4.1). */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-[15px] focus:font-semibold focus:text-page-bg"
+        >
+          {tNav('skipToContent')}
+        </a>
         <NextIntlClientProvider>
           <Nav signedIn={!!user} />
           <div className="flex flex-1">
             {user && <SideMenu classIds={classIds} />}
             <div className="ruled relative flex min-w-0 flex-1 flex-col">
-              <main className="flex flex-1 flex-col">{children}</main>
+              <main id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">{children}</main>
             </div>
           </div>
           <PublicFooter signedIn={!!user} />
