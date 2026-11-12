@@ -14,7 +14,8 @@
     "working": "処理中…",
     "creating": "作成中…",
     "sending": "送信中…",
-    "classMeta": "{university} · {term}"
+    "classMeta": "{university} · {term}",
+    "loading": "読み込み中…"
   },
   "nav": {
     "brand": "Study Pods",
@@ -30,7 +31,8 @@
       "nudges": "声かけ",
       "settings": "設定"
     },
-    "logIn": "ログイン"
+    "logIn": "ログイン",
+    "skipToContent": "本文へ移動"
   },
   "home": {
     "greeting": "こんにちは、{name}さん",
@@ -1604,5 +1606,11 @@
     "title": "クラスに参加",
     "why": "先生から伝えられたクラスのコードを入れてください。",
     "close": "閉じる"
+  },
+  "errorPage": {
+    "title": "うまく表示できませんでした",
+    "body": "一時的な問題かもしれません。通信の状態を確認して、もう一度お試しください。",
+    "retry": "もう一度試す",
+    "home": "ホームへ"
   }
 }
