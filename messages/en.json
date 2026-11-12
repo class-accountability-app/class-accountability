@@ -14,7 +14,8 @@
     "working": "Working…",
     "creating": "Creating…",
     "sending": "Sending…",
-    "classMeta": "{university} · {term}"
+    "classMeta": "{university} · {term}",
+    "loading": "Loading…"
   },
   "nav": {
     "brand": "Study Pods",
@@ -30,7 +31,8 @@
       "nudges": "Nudges",
       "settings": "Settings"
     },
-    "logIn": "Log in"
+    "logIn": "Log in",
+    "skipToContent": "Skip to content"
   },
   "home": {
     "greeting": "Hi, {name}",
@@ -1616,5 +1618,11 @@
     "title": "Join a class",
     "why": "Enter the class code your teacher gave you.",
     "close": "Close"
+  },
+  "errorPage": {
+    "title": "This page didn't load",
+    "body": "It may be a temporary problem. Check your connection and try again.",
+    "retry": "Try again",
+    "home": "Go to Home"
   }
 }
