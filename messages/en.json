@@ -1598,7 +1598,14 @@
     "milestoneAdd": "Add milestone",
     "boardMilestone": "Teacher's milestone \"{title}\": {percent}% by {date}",
     "boardMilestoneReached": "reached",
-    "boardMilestoneGap": "{gap} points to go"
+    "boardMilestoneGap": "{gap} points to go",
+    "quickTaskHeading": "Turn a decision into a task",
+    "quickTaskWhy": "Add what you agreed to do next as a task, right here. It goes on the board.",
+    "quickTaskTitle": "Task name",
+    "quickTaskOwner": "Owner",
+    "quickTaskNobody": "Not decided yet",
+    "quickTaskAdd": "Add task",
+    "quickTaskAdded": "Added “{title}”"
   },
   "joinClass": {
     "button": "Join a class",

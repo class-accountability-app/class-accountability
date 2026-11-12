@@ -15,6 +15,7 @@ import { googleCalendarUrl } from '@/lib/calendar'
 import { appOrigin } from '@/lib/app-origin'
 import { CancelPoll, ConfirmPoll, VoteGrid } from './poll-controls'
 import { MeetingNotes } from '@/components/project/meeting-notes'
+import { QuickTaskForm } from '@/components/project/quick-task-form'
 
 // One poll. Open: the vote grid (mockup "vote") and 〜にきめる. Confirmed: the
 // meeting (mockup "meeting") with each member's latest check-in as the agenda.
@@ -184,6 +185,7 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
             }
           />
         )}
+        <QuickTaskForm classId={classId} projectId={project.id} members={members.map((m) => ({ id: m.id, name: displayName(m.id) }))} />
         <CancelPoll classId={classId} pollId={poll.id} label={t('meeting.cancel')} />
       </>
     )
