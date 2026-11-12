@@ -133,7 +133,7 @@ export default async function ClassesPage() {
 
         {rows.length === 0 && (
           <section aria-labelledby="join-by-code" className="rule-card flex flex-col gap-3 px-5 py-5">
-            <h2 id="join-by-code" className="font-heading text-lg font-bold text-ink">
+            <h2 id="join-by-code" className="font-heading text-[17px] leading-7 font-bold text-ink">
               {t('joinByCodeHeading')}
             </h2>
             <p className="text-sm leading-7 text-muted">{t('noClasses')}</p>
@@ -143,7 +143,7 @@ export default async function ClassesPage() {
 
         {teaching.length > 0 && (
           <section aria-labelledby="teaching-heading" className="flex flex-col gap-3.5">
-            <h2 id="teaching-heading" className="px-0.5 font-heading text-lg leading-7 font-bold text-ink">
+            <h2 id="teaching-heading" className="px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
               {t('teachingHeading', { count: teaching.length })}
             </h2>
             <ul className="grid gap-4 md:grid-cols-2">{teaching.map(card)}</ul>
@@ -152,7 +152,7 @@ export default async function ClassesPage() {
 
         {studying.length > 0 && (
           <section aria-labelledby="studying-heading" className="flex flex-col gap-3.5">
-            <h2 id="studying-heading" className="px-0.5 font-heading text-lg leading-7 font-bold text-ink">
+            <h2 id="studying-heading" className="px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
               {t('studyingHeading', { count: studying.length })}
             </h2>
             <ul className="grid gap-4 md:grid-cols-2">{studying.map(card)}</ul>
@@ -161,7 +161,7 @@ export default async function ClassesPage() {
 
         {canCreate && (
           <section id="create-class" aria-labelledby="create-class-heading" className="rule-card flex scroll-mt-4 flex-col gap-3 px-5 py-5">
-            <h2 id="create-class-heading" className="font-heading text-lg font-bold text-ink">
+            <h2 id="create-class-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
               {t('createHeading')}
             </h2>
             <CreateClassForm />

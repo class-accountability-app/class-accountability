@@ -103,7 +103,7 @@ export function EmptyState({
         <div className="flex h-[84px] items-center">
           <Drawing name={illustration} />
         </div>
-        {title && <Heading className="font-heading text-lg leading-7 font-bold text-ink">{title}</Heading>}
+        {title && <Heading className="font-heading text-[17px] leading-7 font-bold text-ink">{title}</Heading>}
         <p className="text-sm leading-7 text-ink/85">{body}</p>
         {action && <div className="flex h-14 w-full items-center">{action}</div>}
       </div>
@@ -112,7 +112,7 @@ export function EmptyState({
   return (
     <div className="flex w-full flex-col items-center gap-3 rounded-lg border border-border bg-surface px-5 py-6 text-center">
       <Drawing name={illustration} />
-      {title && <Heading className="font-heading text-lg font-bold text-ink">{title}</Heading>}
+      {title && <Heading className="font-heading text-[17px] leading-7 font-bold text-ink">{title}</Heading>}
       <p className="text-sm text-ink/85">{body}</p>
       {action && <div className="mt-1 w-full">{action}</div>}
     </div>

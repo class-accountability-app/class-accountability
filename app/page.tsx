@@ -148,7 +148,7 @@ export default async function Home({
 
         {classes.length > 0 && (
           <section aria-labelledby="classes-heading" className="flex flex-col gap-3.5">
-            <h2 id="classes-heading" className="px-0.5 font-heading text-lg leading-7 font-bold text-ink">
+            <h2 id="classes-heading" className="px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
               {t('classesHeading')}
             </h2>
             <ul className="grid gap-4 md:grid-cols-2">

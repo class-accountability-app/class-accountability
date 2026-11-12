@@ -61,9 +61,9 @@ export default async function DeleteAccountPage() {
   ]
 
   return (
-    <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
-      <div className="flex w-full max-w-md flex-col gap-5">
-        <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink">{t('title')}</h1>
+    <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-5">
+        <h1 className="font-heading text-[28px] leading-tight font-bold text-ink lg:text-[36px]">{t('title')}</h1>
 
         {blocked ? (
           <section className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-[18px]">

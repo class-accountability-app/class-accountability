@@ -44,8 +44,8 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
 
   if (!cls) {
     return (
-      <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
-        <div className="flex w-full max-w-md flex-col gap-5">
+      <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
+        <div className="mx-auto flex w-full max-w-md flex-col gap-5">
           <p className="font-meta text-[13px] text-muted">{t('eyebrow')}</p>
           <EmptyState
             illustration="notFound"
@@ -68,20 +68,20 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
   }
 
   return (
-    <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
+    <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
       {startsFirstRun(facts) && (
-        <div className="w-full max-w-md">
+        <div className="mx-auto w-full max-w-md">
           <StepHead step={1} />
         </div>
       )}
-      <div className="relative mt-12 flex w-full max-w-md flex-col gap-3.5 rounded-lg border border-border bg-surface px-[22px] py-7">
+      <div className="rule-card relative mx-auto mt-12 flex w-full max-w-md flex-col gap-3.5 px-[22px] py-7">
         {/* Masking tape, as in the mockup. */}
         <div
           aria-hidden
           className="absolute -top-[13px] left-1/2 -ml-[52px] h-[26px] w-[104px] -rotate-3 bg-[rgba(201,164,104,0.5)] bg-[repeating-linear-gradient(90deg,rgba(255,255,255,0.18)_0,rgba(255,255,255,0.18)_6px,transparent_6px,transparent_12px)]"
         />
         <p className="font-meta text-[13px] text-muted">{t('eyebrow')}</p>
-        <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink">{cls.name}</h1>
+        <h1 className="font-heading text-[28px] leading-tight font-bold text-ink lg:text-[36px]">{cls.name}</h1>
         <p className="-mt-1.5 font-meta text-[13px] text-muted">
           {t('meta', { term: cls.term, count: Number(cls.member_count) })}
         </p>

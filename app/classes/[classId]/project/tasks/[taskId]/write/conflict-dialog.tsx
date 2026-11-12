@@ -33,7 +33,7 @@ export function ConflictDialog({
     <ChoiceDialog open={theirs !== null} labelledBy="conflict-title">
       {theirs && (
         <div className="flex flex-col gap-3">
-          <h2 id="conflict-title" className="font-heading text-lg leading-7 font-bold">
+          <h2 id="conflict-title" className="font-heading text-[17px] leading-7 font-bold">
             {t('title')}
           </h2>
           <p className="text-[15px] leading-7">{t('body')}</p>
@@ -95,7 +95,7 @@ export function DraftDialog({
     <ChoiceDialog open={editedAt !== null} labelledBy="draft-title">
       {editedAt !== null && (
         <div className="flex flex-col gap-3">
-          <h2 id="draft-title" className="font-heading text-lg leading-7 font-bold">
+          <h2 id="draft-title" className="font-heading text-[17px] leading-7 font-bold">
             {t('title')}
           </h2>
           <p className="text-[15px] leading-7">{t('body', { time: formatDateTime(new Date(editedAt), locale), count })}</p>

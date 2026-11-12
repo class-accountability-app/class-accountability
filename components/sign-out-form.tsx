@@ -61,7 +61,7 @@ export function SignOutForm({
       </button>
       <ChoiceDialog open={warning} labelledBy="sign-out-warning-title" onCancel={() => setWarning(false)}>
         <div className="flex flex-col gap-3 text-left">
-          <h2 id="sign-out-warning-title" className="font-heading text-lg leading-7 font-bold">
+          <h2 id="sign-out-warning-title" className="font-heading text-[17px] leading-7 font-bold">
             {t('unsavedTitle')}
           </h2>
           <p className="text-[15px] leading-7 font-normal">{t('unsavedBody')}</p>

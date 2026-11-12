@@ -133,7 +133,7 @@ export function CodeStep({
   return (
     <>
       <p className="font-meta text-sm text-muted">{t('eyebrow')}</p>
-      <h1 className="font-heading text-[27px] leading-snug font-bold text-ink">{t('codeTitle')}</h1>
+      <h1 className="font-heading text-[28px] leading-tight font-bold text-ink lg:text-[36px]">{t('codeTitle')}</h1>
       <p className="text-[15px] text-ink/85">
         {t.rich('codeBody', {
           email: attempt.email,
