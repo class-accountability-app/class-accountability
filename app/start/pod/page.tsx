@@ -50,11 +50,11 @@ export default async function StartPodPage({
 
   const toProject = projectStepHref(classId)
   return (
-    <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
-      <div className="flex w-full max-w-md flex-col gap-7">
+    <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-7">
         <StepHead step={2} />
         <div>
-          <h1 className="font-heading text-[27px] leading-7 font-bold text-ink">{t('pod.title')}</h1>
+          <h1 className="font-heading text-[28px] leading-tight font-bold text-ink lg:text-[36px]">{t('pod.title')}</h1>
           <p className="text-[15px] leading-7 text-ink/85">{t('pod.lead')}</p>
         </div>
         <div className="flex flex-col gap-3.5">

@@ -161,7 +161,7 @@ export default async function ProjectPage({
         {header}
         {teamName && <div className="-mt-7 px-0.5">{teamName}</div>}
         <div className="px-0.5">
-          <h1 className="font-heading text-[26px] leading-7 font-bold text-ink">
+          <h1 className="font-heading text-[28px] leading-tight font-bold text-ink lg:text-[36px]">
             {past.length > 0 ? t('nextTitle') : t('startTitle')}
           </h1>
           <p className="text-[13px] leading-7 text-muted">{past.length > 0 ? t('nextWhy') : t('startWhy')}</p>

@@ -57,7 +57,7 @@ export function EmailStep({
   return (
     <>
       <p className="font-meta text-sm text-muted">{t('eyebrow')}</p>
-      <h1 className="font-heading text-[27px] leading-snug font-bold text-ink">{t('title')}</h1>
+      <h1 className="font-heading text-[28px] leading-tight font-bold text-ink lg:text-[36px]">{t('title')}</h1>
       <p className="text-[15px] text-ink/85">{t('intro')}</p>
 
       {authFailed && <FormError error={authFailed} />}

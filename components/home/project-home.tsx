@@ -128,7 +128,7 @@ export async function ProjectHome({
       <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
         <div className="flex min-w-0 flex-col gap-7">
           <section aria-labelledby="home-my-tasks" className="rule-card tint-penna flex flex-col gap-3 px-5 py-5">
-            <h3 id="home-my-tasks" className="font-heading text-lg leading-7 font-bold text-ink">
+            <h3 id="home-my-tasks" className="font-heading text-[17px] leading-7 font-bold text-ink">
               {t('myTasks')}
             </h3>
             {mine.length === 0 ? (
@@ -141,7 +141,7 @@ export async function ProjectHome({
                   const value = taskValueText(tProject, number, task, task.shownTotal)
                   const overdue = isOverdue(task, now)
                   return (
-                    <li key={task.id} className="flex flex-col gap-1 border-b border-ink/10 py-3 first:pt-0 last:border-b-0 last:pb-0">
+                    <li key={task.id} className="flex flex-col gap-1 border-b border-dashed border-ink/15 py-3 first:pt-0 last:border-b-0 last:pb-0">
                       <div className="flex min-h-7 items-center justify-between gap-2.5">
                         <span className="text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{task.title}</span>
                         <span className={`shrink-0 rounded-lg px-2 font-meta text-xs leading-5 font-bold ${STATUS_PILL_CLASS[task.status]}`}>

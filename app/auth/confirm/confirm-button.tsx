@@ -100,7 +100,7 @@ export function ConfirmButton() {
           <h1
             ref={expiredHeadingRef}
             tabIndex={-1}
-            className="font-heading text-[27px] leading-snug font-bold text-ink outline-none"
+            className="font-heading text-[28px] leading-tight font-bold text-ink lg:text-[36px] outline-none"
           >
             {t('expiredTitle')}
           </h1>
@@ -127,7 +127,7 @@ export function ConfirmButton() {
           <Stamp tone="ready" />
           <p className="font-meta text-sm text-muted">{t('eyebrow')}</p>
         </div>
-        <h1 className="font-heading text-[27px] leading-snug font-bold text-ink">{t('title')}</h1>
+        <h1 className="font-heading text-[28px] leading-tight font-bold text-ink lg:text-[36px]">{t('title')}</h1>
         <p className="text-[15px] text-ink/85">{t('body')}</p>
         <button
           type="button"

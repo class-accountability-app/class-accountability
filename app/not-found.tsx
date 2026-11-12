@@ -9,8 +9,8 @@ export default async function NotFound() {
   const t = await getTranslations('notFound')
 
   return (
-    <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
-      <div className="flex w-full max-w-md flex-col gap-5">
+    <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-5">
         <p className="font-meta text-[13px] text-muted">{t('eyebrow')}</p>
         <EmptyState
           illustration="notFound"

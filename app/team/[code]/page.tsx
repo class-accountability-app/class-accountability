@@ -35,8 +35,8 @@ export default async function TeamJoinPage({ params }: { params: Promise<{ code:
 
   if (!team) {
     return (
-      <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
-        <div className="flex w-full max-w-md flex-col gap-5">
+      <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
+        <div className="mx-auto flex w-full max-w-md flex-col gap-5">
           <p className="font-meta text-[13px] text-muted">{t('eyebrow')}</p>
           <EmptyState
             illustration="notFound"
@@ -58,10 +58,10 @@ export default async function TeamJoinPage({ params }: { params: Promise<{ code:
 
   const full = Number(team.member_count) >= TEAM_CAP
   return (
-    <div className="flex flex-1 flex-col px-5 pt-7 pb-8 sm:pl-16">
-      <div className="mt-7 flex w-full max-w-md flex-col gap-3.5 rule-card px-[22px] py-7">
+    <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
+      <div className="mx-auto mt-7 flex w-full max-w-md flex-col gap-3.5 rule-card px-[22px] py-7">
         <p className="font-meta text-[13px] text-muted">{t('eyebrow')}</p>
-        <h1 className="font-heading text-[27px] leading-[1.45] font-bold text-ink">
+        <h1 className="font-heading text-[28px] leading-tight font-bold text-ink lg:text-[36px]">
           {t('title', { className: team.class_name })}
         </h1>
         <p className="-mt-1.5 font-meta text-[13px] text-muted">{t('meta', { count: Number(team.member_count) })}</p>

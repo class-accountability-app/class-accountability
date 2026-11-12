@@ -82,7 +82,7 @@ export default async function NudgesPage() {
           />
         ) : (
           <section aria-labelledby="received-heading" className="flex flex-col gap-3.5">
-            <h2 id="received-heading" className="px-0.5 font-heading text-lg leading-7 font-bold text-ink">
+            <h2 id="received-heading" className="px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
               {t('receivedHeading', { count: list.length })}
             </h2>
             <ul className="flex flex-col gap-4">

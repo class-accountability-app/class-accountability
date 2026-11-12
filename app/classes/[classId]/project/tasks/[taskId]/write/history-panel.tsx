@@ -96,7 +96,7 @@ export function HistoryPanel({
         className="m-auto flex max-h-[min(90dvh,760px)] w-[calc(100%-2rem)] max-w-2xl flex-col rounded-[20px] bg-surface p-0 text-ink shadow-[inset_0_0_0_1px_var(--border)] backdrop:bg-ink/40 [&:not([open])]:hidden"
       >
         <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-2">
-          <h2 id="history-title" className="font-heading text-lg leading-7 font-bold">
+          <h2 id="history-title" className="font-heading text-[17px] leading-7 font-bold">
             {preview ? t('previewTitle', { when: when(preview.item) }) : t('title')}
           </h2>
           <button
