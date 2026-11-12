@@ -6,6 +6,7 @@ import { DB_CODES, logServerError, toErrorKey, type ActionResult, type ErrorKey 
 import {
   googleErrorReason,
   groupDocRequests,
+  fileNameFor,
   isFileId,
   taskDocOutline,
   isHeadingId,
@@ -109,9 +110,8 @@ export async function unlinkTaskSource(classId: string, taskId: string): Promise
 // file it is and which task it belongs to.
 async function myFileName(supabase: Supabase, userId: string, taskTitle: string): Promise<string> {
   const { data } = await supabase.from('profiles').select('display_name').eq('id', userId).maybeSingle()
-  const name = data?.display_name?.trim()
-  if (!name) return sourceLabel(taskTitle)
-  return sourceLabel((await getLocale()) === 'en' ? `${taskTitle} (${name})` : `${taskTitle}（${name}）`)
+  const en = (await getLocale()) === 'en'
+  return fileNameFor(taskTitle, data?.display_name ?? null, en)
 }
 
 type GoogleAuth = { Authorization: string; 'Content-Type': string }

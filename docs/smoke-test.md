@@ -75,16 +75,21 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
   two sentences, wait for 「保存しました」. **Expect:** the count on the board
   matches the editor's; teammates see the count, never the text.
 
-## 5. Google (0023, 0026, 0040)
+## 5. Google (0023, 0026, 0040; templates and one file per task, 2026-11-08)
+
+Headings never count: only body text and tables do. So compare with Google
+Docs' count of the body, not of the whole Doc when it has headings.
 
 - [ ] 5.1 `A`: board → 「Google とつなぐ」 → consent (drive.file only).
-  **Expect:** back on the board, 「Google とつなぎました。」.
-- [ ] 5.2 Link a characters task to `A`'s Doc (自分のドキュメント). **Expect:**
+  **Expect:** back on the board, 「Google とつなぎました。」; the Google card says
+  each owner makes their own file (no 「グループのドキュメントをつくる」).
+- [ ] 5.2 On `A`'s unlinked characters task: 「Google ドキュメントをつくる・つなぐ」
+  → 「すでにあるファイルとつなぐ」 → 自分のドキュメント → pick `A`'s Doc. **Expect:**
   within ~5 min (or on reopening the board) the count appears and matches
-  Google Docs' character count without spaces.
+  Google Docs' character count without spaces, less any heading lines.
 - [ ] 5.3 Link the "words" task → 「ドキュメントの英単語数」 → an English Doc.
   **Expect:** the number matches Google Docs' word count (Tools → Word count)
-  within a word or two.
+  within a word or two, less any heading lines.
 - [ ] 5.4 Link the "answers" task → 「Google スプレッドシートの行数」 → the
   Form's responses Sheet. **Expect:** number of responses (header not counted).
   Submit one more Form response, reopen the board: +1.
@@ -93,11 +98,33 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
 - [ ] 5.6 Push the Sheet's count to the goal (5). **Expect:** the task turns
   完了 by itself (auto-done).
 - [ ] 5.7 Link a count task to Slides. **Expect:** the slide count.
-- [ ] 5.8 Google card → 「グループのドキュメントをつくる」 → 「つくってつなぐ」. **Expect:** a Doc
-  with one heading per characters task; the board shows its link; linking a
-  task to a heading counts only that section.
-- [ ] 5.9 Settings → 「Google との連携を解除する」. **Expect:** linked tasks show
-  「ファイルが読めなくなりました」 at the next count, numbers so far kept.
+- [ ] 5.8 **Doc from a template.** A new characters task (ほかで書く) of `A`'s →
+  「Google ドキュメントをつくる・つなぐ」 → 「テンプレートから新しいドキュメントを作る」 →
+  レポート → 「つくってつなぐ」. **Expect:** back on the board; the task shows
+  Google ドキュメント「<task>（<A's name>）」 and 0 字; 「ドキュメントを開く」 opens a
+  Doc with that name in `A`'s Drive, the task as its title and はじめに … おわりに
+  as headings; it is shared with nobody. Type 10 characters under a heading
+  and 5 into a heading line: the task shows 10.
+- [ ] 5.9 **Slides from a template.** A count task of `A`'s (unit 枚) → 「Google
+  のファイルをつくる・つなぐ」 → テンプレート: 研究発表 → 「つくってつなぐ」. **Expect:**
+  0 枚; the deck has a cover with the task's title and 背景 / 目的 / 方法 / 結果 /
+  考察 / まとめ / 参考文献, and no blank first slide. Type into one slide's
+  body: 1 枚. Add an image to another: 2 枚. Add a new slide of your own: 3 枚.
+  If 「つくってつなぐ」 shows an error instead, note the time: the server log has
+  `createTaskSlides.write` with Google's reason.
+- [ ] 5.10 **Sheet from a template.** Another count task of `A`'s → same card →
+  アンケートの回答. **Expect:** 0; the Sheet's first row is 回答日 / 回答者 / 学年 /
+  質問1–3 / 自由回答, bold and frozen. Fill two rows: 2.
+- [ ] 5.11 **Change the file.** On the task from 5.8, 「ファイルを変える」 →
+  「ほかのファイルに変える」 → pick the Doc from 5.2. **Expect:** the board shows
+  the other Doc's name, and after the next count the task's number is that
+  Doc's count (not the two added together).
+- [ ] 5.12 `B` (a teammate) opens the board. **Expect:** `A`'s tasks show
+  their numbers but no open or change buttons; the link page of `A`'s task
+  has no 「新しくつくる」 card for `B`.
+- [ ] 5.13 Settings → 「Google との連携を解除する」. **Expect:** linked tasks show
+  「ファイルが読めなくなりました」 with the file's name at the next count, numbers so
+  far kept.
 
 ## 6. Check-ins, timeline, order
 
