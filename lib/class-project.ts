@@ -2,12 +2,14 @@ import type { ErrorKey } from './errors'
 import { tokyoToday } from './date'
 import { TITLE_MAX, checkTask, isTaskMetric, parseWholeAmount, type TaskMetric, type TaskProblem } from './tasks'
 
-// The class project (0029): what the organizer's form sends and what
-// set_class_project() stores. Pure, so the form and the server action apply
+// A class project (0029, a list per class since 0045): what the organizer's
+// form sends and what add_class_project() / update_class_project() store. Pure, so the form and the server action apply
 // the same rules as project_tasks' own checks: a task the database would
 // refuse is caught here, not silently skipped when a team starts.
 
 export const CLASS_PROJECT_MAX_TASKS = 30
+// add_class_project() refuses an 11th (SP020).
+export const CLASS_PROJECTS_MAX = 10
 const DAYS_BEFORE_MAX = 365
 
 export type ClassProjectTaskRow = {
@@ -25,7 +27,7 @@ export type ClassProjectInput = {
   tasks: ClassProjectTaskRow[]
 }
 
-// What set_class_project() takes (p_tasks is this JSON).
+// What add_class_project() takes (p_tasks is this JSON).
 export type ClassProjectTask = {
   title: string
   metric: TaskMetric

@@ -6,7 +6,8 @@ import { tokyoToday } from '@/lib/date'
 
 // The organizer's team summary as CSV (feature batch 1). class_team_summary()
 // returns rows only to this class's organizer (0027), so anyone else gets an
-// empty file; no names or per-person numbers are in it.
+// empty file; no names or per-person numbers are in it. One row per team and
+// active project (0045).
 export async function GET(_req: Request, { params }: { params: Promise<{ classId: string }> }) {
   const { classId } = await params
   const supabase = await createClient()
@@ -25,11 +26,13 @@ export async function GET(_req: Request, { params }: { params: Promise<{ classId
     percent: number
     last_activity: string | null
     checkins_this_round: number
+    project_title?: string | null
   }
   const rows = ((data as Row[] | null) ?? []).map((r) => [
     r.team_no,
     r.members,
     r.has_project ? t('yes') : t('no'),
+    r.project_title ?? null,
     r.start_date,
     r.deadline,
     r.task_count,
@@ -38,7 +41,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ classId
     r.last_activity ? tokyoToday(new Date(r.last_activity)) : null,
     r.checkins_this_round,
   ])
-  const header = (['team', 'members', 'hasProject', 'start', 'deadline', 'tasks', 'percent', 'lastActivity', 'checkins'] as const).map((k) => t(k))
+  const header = (['team', 'members', 'hasProject', 'projectTitle', 'start', 'deadline', 'tasks', 'percent', 'lastActivity', 'checkins'] as const).map((k) => t(k))
   return new NextResponse(toCsv([header, ...rows]), {
     headers: {
       'Content-Type': 'text/csv; charset=utf-8',

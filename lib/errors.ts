@@ -62,6 +62,9 @@ const PLANNING_INVALID = 'SP018'
 // Raised by check_project_link_limit (0043_team_links.sql): a project has at
 // most 10 pinned links.
 const TEAM_LINKS_FULL = 'SP019'
+// Raised by add_class_project (0045_class_project_list.sql): a class lists at
+// most 10 projects.
+const CLASS_PROJECTS_FULL = 'SP020'
 
 export const DB_CODES = {
   uniqueViolation: PG_UNIQUE_VIOLATION,
@@ -87,6 +90,7 @@ export const DB_CODES = {
   teamSetupInvalid: TEAM_SETUP_INVALID,
   planningInvalid: PLANNING_INVALID,
   teamLinksFull: TEAM_LINKS_FULL,
+  classProjectsFull: CLASS_PROJECTS_FULL,
 } as const
 
 const EMAIL_PATTERN = /[^\s"'<>(),;:]+@[^\s"'<>(),;:]+/g

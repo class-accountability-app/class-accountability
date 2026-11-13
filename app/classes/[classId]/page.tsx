@@ -5,11 +5,13 @@ import { AnnouncementManager, type Announcement } from '@/components/teacher/ann
 import { MilestoneManager, type MilestoneStatus } from '@/components/teacher/milestone-manager'
 import { ClassAnnouncements } from '@/components/class-announcements'
 import type { RosterRow } from '@/lib/organizer'
-import { ClassProjectForm } from '@/components/teacher/class-project-form'
+import { ClassProjectList } from '@/components/teacher/class-project-list'
 import { rowsFromTasks } from '@/lib/class-project'
 import { redirect } from 'next/navigation'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
+import type { Locale } from '@/i18n/config'
+import { formatDate } from '@/lib/date'
 import { createClient } from '@/lib/supabase/server'
 import { RequestJoinButton } from './request-join-button'
 import { InviteForm } from './invite-form'
@@ -28,6 +30,7 @@ import { InviteDisclosure } from './invite-disclosure'
 
 const POD_SOFT_CAP = 6
 
+type ClassProjectRow = { id: string; title: string; deadline: string | null; checkin_every_days: number; tasks: unknown }
 type PodMember = { pairing_id: string; user_id: string; profiles: { display_name: string } | null }
 type Invitation = {
   id: string
@@ -104,18 +107,20 @@ export default async function ClassPodsPage({
   if (membership.role === 'organizer') {
     const [
       { data: byCode },
-      { data: classProject },
+      { data: classProjects },
       { data: rosterRows, error: rosterError },
       { data: announcementRows },
       { data: milestoneRows, error: milestoneError },
       { data: creator },
     ] = await Promise.all([
       supabase.rpc('class_by_join_code', { code: cls.join_code }).maybeSingle<{ member_count: number }>(),
+      // 0045: the class's list of projects, oldest first.
       supabase
         .from('class_projects')
-        .select('title, deadline, checkin_every_days, tasks')
+        .select('id, title, deadline, checkin_every_days, tasks')
         .eq('class_id', classId)
-        .maybeSingle<{ title: string; deadline: string | null; checkin_every_days: number; tasks: unknown }>(),
+        .order('created_at')
+        .order('id'),
       // 0036: names and teams for the organizer (errors before that migration).
       supabase.rpc('class_roster', { p_class: classId }),
       supabase
@@ -130,6 +135,7 @@ export default async function ClassPodsPage({
       supabase.from('profiles').select('can_create_classes').eq('id', user.id).maybeSingle(),
     ])
     const tTeacher = await getTranslations('teacher')
+    const locale = (await getLocale()) as Locale
     const hasTools = !rosterError && !!rosterRows
     // Screen D of the 2026-11-06 design: the class name big, then the team
     // summary with the class project on the left and the tools on the right
@@ -173,18 +179,16 @@ export default async function ClassPodsPage({
           <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
             <div className="flex min-w-0 flex-col gap-7">
               <TeamSummary classId={classId} />
-              <ClassProjectForm
+              <ClassProjectList
                 classId={classId}
-                initial={
-                  classProject
-                    ? {
-                        title: classProject.title,
-                        deadline: classProject.deadline ?? '',
-                        every: String(classProject.checkin_every_days),
-                        tasks: rowsFromTasks(classProject.tasks),
-                      }
-                    : null
-                }
+                projects={((classProjects as ClassProjectRow[] | null) ?? []).map((p) => ({
+                  id: p.id,
+                  title: p.title,
+                  deadline: p.deadline ?? '',
+                  deadlineLabel: p.deadline ? formatDate(p.deadline, locale) : null,
+                  every: String(p.checkin_every_days),
+                  tasks: rowsFromTasks(p.tasks),
+                }))}
               />
             </div>
             <aside aria-label={tTeacher('manageLabel')} className="flex min-w-0 flex-col gap-7">
