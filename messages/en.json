@@ -1651,5 +1651,31 @@
     "opensNewTab": " (opens in a new tab)",
     "full": "A team can pin up to {max} links. Remove one to add another.",
     "who": "Only your team sees these. Your teacher and other teams don't."
+  },
+  "whatChanged": {
+    "kicker": "Team activity",
+    "title": "Since you last looked",
+    "titleFirst": "Recently",
+    "more": "and {count} more",
+    "taskDone": {
+      "by": "{name} finished “{title}”",
+      "plain": "“{title}” was finished"
+    },
+    "taskAdded": {
+      "by": "{name} added the task “{title}”",
+      "plain": "The task “{title}” was added"
+    },
+    "checkin": {
+      "by": "{name} checked in",
+      "plain": "Someone checked in"
+    },
+    "pollOpened": {
+      "by": "{name} started a meeting poll, “{title}”",
+      "plain": "A meeting poll, “{title}”, was started"
+    },
+    "linkAdded": {
+      "by": "{name} added the link “{title}”",
+      "plain": "The link “{title}” was added"
+    }
   }
 }

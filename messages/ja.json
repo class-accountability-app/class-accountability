@@ -1651,5 +1651,31 @@
     "opensNewTab": "（新しいタブで開きます）",
     "full": "リンクは{max}件までです。追加するには、どれかを外してください。",
     "who": "チームのメンバーだけが見られます。先生やほかのチームには表示されません。"
+  },
+  "whatChanged": {
+    "kicker": "チームの動き",
+    "title": "前回から変わったこと",
+    "titleFirst": "最近あったこと",
+    "more": "ほか{count}件",
+    "taskDone": {
+      "by": "{name}さんが「{title}」を完了しました",
+      "plain": "「{title}」が完了になりました"
+    },
+    "taskAdded": {
+      "by": "{name}さんがタスク「{title}」を追加しました",
+      "plain": "タスク「{title}」が追加されました"
+    },
+    "checkin": {
+      "by": "{name}さんがチェックインしました",
+      "plain": "チェックインがありました"
+    },
+    "pollOpened": {
+      "by": "{name}さんが打ち合わせの日程調整「{title}」を始めました",
+      "plain": "打ち合わせの日程調整「{title}」が始まりました"
+    },
+    "linkAdded": {
+      "by": "{name}さんがリンク「{title}」を追加しました",
+      "plain": "リンク「{title}」が追加されました"
+    }
   }
 }

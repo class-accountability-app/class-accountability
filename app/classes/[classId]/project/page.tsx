@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
 import { createClient } from '@/lib/supabase/server'
-import { formatDate, tokyoDaysUntil } from '@/lib/date'
+import { formatDate, formatTimeAgo, tokyoDaysUntil } from '@/lib/date'
 import { groupTasksByOwner, isOverdue, projectPercent } from '@/lib/project-stats'
 import { latestCheckins, visibleTotal, type CheckinRow } from '@/lib/project-board'
 import { checkinStatus } from '@/lib/checkin'
@@ -20,6 +20,8 @@ import { BoardTaskRow } from './board/task-row'
 import { PlanCards } from './board/plan-cards'
 import { GoogleCard } from './board/google-card'
 import { TeamLinks, type TeamLink } from '@/components/project/team-links'
+import { WhatChanged, type ChangeItem } from '@/components/project/what-changed'
+import { boardActivity } from '@/lib/board-activity'
 import type { BoardTask, SourceRow } from './board/types'
 import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
@@ -274,7 +276,7 @@ export default async function ProjectPage({
   const boardPath = `/classes/${classId}/project`
 
   // 声かけ in this team that I sent or received (RLS shows nothing else).
-  const [{ data: nudgeRows }, tNudges, { data: presenceRows }, { data: depRows }, { data: milestoneRows }, tPlanning, { data: linkRows }] = await Promise.all([
+  const [{ data: nudgeRows }, tNudges, { data: presenceRows }, { data: depRows }, { data: milestoneRows }, tPlanning, { data: linkRows }, { data: activityTasks }, { data: projectMeta }] = await Promise.all([
     supabase
       .from('nudges')
       .select('id, from_user_id, to_user_id, content, created_at')
@@ -292,7 +294,10 @@ export default async function ProjectPage({
     supabase.from('class_milestones').select('id, title, due, target_percent').eq('class_id', classId),
     getTranslations('planning'),
     // 0043: チームのリンク (errors before that migration: the card is hidden).
-    supabase.from('project_links').select('id, title, url').eq('project_id', project.id).order('created_at'),
+    supabase.from('project_links').select('id, title, url, added_by, created_at').eq('project_id', project.id).order('created_at'),
+    // 0044: 前回から変わったこと needs when tasks were made and finished.
+    supabase.from('project_tasks').select('id, title, owner_id, created_at, done_at').eq('project_id', project.id),
+    supabase.from('projects').select('created_at').eq('id', project.id).maybeSingle(),
   ])
   const deps = (depRows as Dependency[] | null) ?? null
   const milestone = nextMilestone((milestoneRows as Milestone[] | null) ?? [], percent, tokyoToday())
@@ -302,6 +307,31 @@ export default async function ProjectPage({
     const theirs = tasks.filter((x) => x.owner_id === m.id)
     return { id: m.id, name: m.name, total: theirs.length, done: theirs.filter((x) => x.status === 'done').length }
   })
+
+  // 前回から変わったこと: teammates' recent events, as sentences. The browser
+  // keeps only the ones newer than this device's last visit.
+  const tChanged = await getTranslations('whatChanged')
+  const changes: ChangeItem[] = activityTasks
+    ? boardActivity(
+        {
+          me: user.id,
+          projectCreatedAt: projectMeta?.created_at ?? null,
+          tasks: activityTasks,
+          checkins: (checkinRows ?? []).map((c) => ({ user_id: c.user_id, created_at: c.created_at })),
+          polls,
+          links: (linkRows as { id: string; title: string; added_by: string | null; created_at: string }[] | null) ?? [],
+        },
+        now
+      ).map((e) => {
+        const name = e.actorId ? (nameOf.get(e.actorId) ?? tCommon('unknownPerson')) : null
+        return {
+          id: e.id,
+          at: e.at,
+          text: name ? tChanged(`${e.kind}.by`, { name, title: e.subject }) : tChanged(`${e.kind}.plain`, { title: e.subject }),
+          when: formatTimeAgo(e.at, locale, now),
+        }
+      })
+    : []
 
   const planCards = (where: 'top' | 'side') => (
     <PlanCards
@@ -366,6 +396,8 @@ export default async function ProjectPage({
         )}
         </div>
       </section>
+
+      <WhatChanged projectId={project.id} items={changes} />
 
       <ClassAnnouncements classId={classId} />
       {inviteOnTop && inviteCard}
