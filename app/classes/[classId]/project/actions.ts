@@ -8,6 +8,7 @@ import { checkTask, isTaskMetric, isTaskStatus, parseWholeAmount, type TaskProbl
 import type { ErrorKey } from '@/lib/errors'
 import { getLocale } from 'next-intl/server'
 import { isProjectTemplateKey, templateTasks } from '@/lib/project-templates'
+import { openLoads, shareOut } from '@/lib/team-balance'
 
 // Group projects (0022). The database decides who may do what: any pod member
 // starts the project and edits its tasks, only a task's owner logs on it. The
@@ -239,6 +240,74 @@ export async function claimTask(classId: string, taskId: string): Promise<Action
     .select('id')
   if (error) return { error: toErrorKey('claimTask', error, { [DB_CODES.taskOwnerNotInPod]: 'taskOwnerNotInPod' }) }
   if (!data || data.length === 0) return { error: 'taskTaken' }
+
+  refresh(classId)
+  return { error: null }
+}
+
+// 担当を変える (2026-11-12): hand one of my tasks to a teammate, or back to
+// nobody. Only the current owner hands a task over; the database checks the
+// new owner is in the team (SP009). A task written in Study Pods stays with
+// its writer: the text is theirs alone (0030), so a new owner couldn't open it.
+export async function handOverTask(classId: string, taskId: string, toUserId: string | null): Promise<ActionResult> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'signedOut' }
+
+  const { data, error } = await supabase
+    .from('project_tasks')
+    .update({ owner_id: toUserId })
+    .eq('id', taskId)
+    .eq('owner_id', user.id)
+    .eq('input_mode', 'manual')
+    .select('id')
+  if (error) {
+    return {
+      error: toErrorKey('handOverTask', error, {
+        [DB_CODES.taskOwnerNotInPod]: 'taskOwnerNotInPod',
+        [DB_CODES.insufficientPrivilege]: 'notAllowed',
+      }),
+    }
+  }
+  if (!data || data.length === 0) return { error: 'notAllowed' }
+
+  refresh(classId)
+  return { error: null }
+}
+
+// みんなに割りふる (2026-11-12): give every task nobody has taken to the team,
+// evenly (shareOut in lib/team-balance.ts). A task someone claims in the
+// meantime is left with them (the update only touches unowned tasks).
+export async function shareOutTasks(classId: string, projectId: string): Promise<ActionResult> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'signedOut' }
+
+  const { data: project } = await supabase.from('projects').select('id, pairing_id').eq('id', projectId).eq('status', 'active').maybeSingle()
+  if (!project) return { error: 'notAllowed' }
+  const [{ data: members }, { data: tasks }] = await Promise.all([
+    supabase.from('pairing_members').select('user_id, joined_at').eq('pairing_id', project.pairing_id).order('joined_at'),
+    supabase.from('project_tasks').select('id, owner_id, status').eq('project_id', projectId).order('position').order('created_at'),
+  ])
+  const memberIds = (members ?? []).map((m) => m.user_id)
+  if (!memberIds.includes(user.id)) return { error: 'notAllowed' }
+
+  const all = tasks ?? []
+  const plan = shareOut(
+    all.filter((x) => x.owner_id === null).map((x) => x.id),
+    openLoads(memberIds, all)
+  )
+  for (const { taskId, ownerId } of plan) {
+    const { error } = await supabase.from('project_tasks').update({ owner_id: ownerId }).eq('id', taskId).is('owner_id', null)
+    if (error) {
+      refresh(classId)
+      return { error: toErrorKey('shareOutTasks', error, { [DB_CODES.taskOwnerNotInPod]: 'taskOwnerNotInPod' }) }
+    }
+  }
 
   refresh(classId)
   return { error: null }

@@ -1242,7 +1242,19 @@
     "templateAdd": "Add",
     "balanceHint": "{heavy} has {heavyCount} open tasks and {light} has {lightCount}. Want to rebalance?",
     "boardKicker": "Team project",
-    "sideColumn": "Team schedule and records"
+    "sideColumn": "Team schedule and records",
+    "handOver": {
+      "open": "Change owner",
+      "to": "Who takes it?",
+      "nobody": "Nobody for now",
+      "submit": "Hand over",
+      "hint": "What has been logged stays on the task."
+    },
+    "shareOut": {
+      "open": "Share out to the team",
+      "confirm": "Tasks nobody has taken ({count}) go to the team, starting with whoever has the fewest. Anyone can change theirs later with “Change owner”.",
+      "submit": "Share out"
+    }
   },
   "google": {
     "kicker": "AUTOMATIC LOGGING",

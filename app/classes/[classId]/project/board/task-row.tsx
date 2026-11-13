@@ -7,7 +7,7 @@ import { ProgressBar } from '@/components/progress-bar'
 import { primaryButtonClass } from '@/components/buttons'
 import { OpenSourceButton } from '@/components/project/open-source-button'
 import { STATUS_PILL_CLASS } from '../load'
-import { ClaimButton, TaskStatusControl, WriteInAppButton } from '../task-controls'
+import { ClaimButton, HandOverControl, TaskStatusControl, WriteInAppButton } from '../task-controls'
 import { TaskLog } from '../task-log'
 import type { BoardTask, SourceRow } from './types'
 
@@ -25,6 +25,7 @@ export async function BoardTaskRow({
   source,
   lastChecked,
   waitingTitles,
+  teammates,
   locale,
   now,
 }: {
@@ -40,6 +41,8 @@ export async function BoardTaskRow({
   lastChecked: string | null | undefined
   // Titles of the unfinished tasks this one waits for (0038).
   waitingTitles: string[]
+  // The rest of the team, for 担当を変える on my own tasks.
+  teammates: { id: string; name: string }[]
   locale: Locale
   now: Date
 }) {
@@ -134,6 +137,9 @@ export async function BoardTaskRow({
             {tGoogle(task.metric === 'characters' ? 'makeOrLinkDoc' : 'makeOrLinkFile')}
           </Link>
         </>
+      )}
+      {mine && task.inputMode === 'manual' && task.status !== 'done' && (
+        <HandOverControl classId={classId} taskId={task.id} teammates={teammates} />
       )}
       {unassigned && (
         <div className="pb-3.5">

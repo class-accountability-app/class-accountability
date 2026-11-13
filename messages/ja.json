@@ -1242,7 +1242,19 @@
     "templateAdd": "追加する",
     "balanceHint": "{heavy}さんの未完了タスクが{heavyCount}件、{light}さんは{lightCount}件です。分担を見直してみませんか？",
     "boardKicker": "チームのプロジェクト",
-    "sideColumn": "チームの予定と記録"
+    "sideColumn": "チームの予定と記録",
+    "handOver": {
+      "open": "担当を変える",
+      "to": "だれに渡しますか",
+      "nobody": "担当なしにする",
+      "submit": "渡す",
+      "hint": "これまでの記録はタスクに残ります。"
+    },
+    "shareOut": {
+      "open": "みんなに割りふる",
+      "confirm": "担当が決まっていない{count}件のタスクを、タスクの少ない人から順にチームに割りふります。あとから「担当を変える」で変えられます。",
+      "submit": "割りふる"
+    }
   },
   "google": {
     "kicker": "自動で記録",
