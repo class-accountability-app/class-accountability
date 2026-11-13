@@ -82,19 +82,22 @@ begin
 end $$;
 
 -- =============================================================================
--- As A: log, then a second active project is refused; finish P1
+-- As A: log, a second active project is allowed since 0045; finish P1
 -- =============================================================================
 do $$
 begin
   insert into public.task_progress (task_id, user_id, progress_value)
   values ('00000000-0000-4000-8000-000000330101', '00000000-0000-4000-8000-0000000033a1', 4);
 
-  begin
-    insert into public.projects (pairing_id, title, created_by)
-    values ('00000000-0000-4000-8000-0000000033f1', 'P2 too early', '00000000-0000-4000-8000-0000000033a1');
-    raise exception 'FAIL: a team must not have two active projects';
-  exception when unique_violation then null;
-  end;
+  -- 0045: a team may run several projects at once.
+  insert into public.projects (pairing_id, title, created_by)
+  values ('00000000-0000-4000-8000-0000000033f1', 'P2 alongside', '00000000-0000-4000-8000-0000000033a1');
+  if (select count(*) from public.projects
+      where pairing_id = '00000000-0000-4000-8000-0000000033f1' and status = 'active') <> 2 then
+    raise exception 'FAIL: a team should be able to have two active projects (0045)';
+  end if;
+  delete from public.projects
+  where pairing_id = '00000000-0000-4000-8000-0000000033f1' and title = 'P2 alongside';
 
   perform public.finish_project('00000000-0000-4000-8000-000000330001');
   if not exists (select 1 from public.projects

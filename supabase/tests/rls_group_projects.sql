@@ -100,11 +100,12 @@ begin
 
   insert into public.projects (id, pairing_id, title, created_by) values (p, f1, 'Group talk', a);
 
-  begin
-    insert into public.projects (pairing_id, title, created_by) values (f1, 'second', a);
-    raise exception 'FAIL: a pod got two projects';
-  exception when unique_violation then null;
-  end;
+  -- 0045: a pod may have several active projects.
+  insert into public.projects (pairing_id, title, created_by) values (f1, 'second', a);
+  delete from public.projects where pairing_id = f1 and title = 'second';
+  if (select count(*) from public.projects where pairing_id = f1) <> 1 then
+    raise exception 'FAIL: the creator should be able to add and delete a second project';
+  end if;
 
   begin
     update public.projects set start_date = start_date + 1 where id = p;

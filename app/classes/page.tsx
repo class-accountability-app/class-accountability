@@ -61,7 +61,7 @@ export default async function ClassesPage() {
   const podOf = new Map(((podRows as unknown as PodRow[] | null) ?? []).map((p) => [p.pairings.class_id, p.pairings]))
   const projectOf = new Map(((projectRows as unknown as ProjectRow[] | null) ?? []).map((p) => [p.pairings.class_id, p]))
 
-  // Classes I run: students (the join page's count) and teams (the summary's rows).
+  // Classes I run: students (the join page's count) and teams (the summary has a row per team and active project, 0045).
   const teaching = await Promise.all(
     rows
       .filter((m) => m.role === 'organizer')
@@ -72,7 +72,7 @@ export default async function ClassesPage() {
         ])
         return {
           ...m.classes!,
-          lines: [t('metaStudents', { students: Number(byCode?.member_count ?? 0), teams: ((summary as unknown[] | null) ?? []).length })],
+          lines: [t('metaStudents', { students: Number(byCode?.member_count ?? 0), teams: new Set(((summary as { team_no: number }[] | null) ?? []).map((r) => r.team_no)).size })],
         }
       })
   )

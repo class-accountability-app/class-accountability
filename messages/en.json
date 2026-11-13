@@ -389,7 +389,8 @@
     "linkTitleTooLong": "Please keep the link's name to 60 characters or fewer.",
     "linkUrlRequired": "Please enter a URL.",
     "linkUrlInvalid": "Please enter a valid URL that starts with https://",
-    "linksFull": "A team can pin up to 10 links. Remove one before adding another."
+    "linksFull": "A team can pin up to 10 links. Remove one before adding another.",
+    "classProjectsFull": "A class can list up to 10 projects. Remove one before adding another."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -1396,7 +1397,7 @@
   },
   "teacher": {
     "title": "How the teams are doing",
-    "why": "One summary line per team.",
+    "why": "One summary line per team and project.",
     "noTeams": "No teams yet.",
     "team": "Team {number}",
     "members": "{count, plural, one {# person} other {# people}}",
@@ -1424,7 +1425,8 @@
       "lastActivity": "Last activity",
       "checkins": "Check-ins this round",
       "yes": "yes",
-      "no": "no"
+      "no": "no",
+      "projectTitle": "Project name"
     },
     "googleLost": "{count} of {links} Google links can’t be read (the file was deleted or unshared, or Google was disconnected). Students see it on their board; ask them to link the file again.",
     "googleStuck": "{count} of {links} Google links haven’t been counted for over a day. Automatic counting may have stopped; please tell the developer.",
@@ -1435,7 +1437,7 @@
     "manageLabel": "Manage the class",
     "stats": {
       "onTrack": "Teams on track",
-      "average": "Class average",
+      "average": "Project average",
       "checkins": "Check-ins this round"
     },
     "newClass": "Create another class"
@@ -1480,7 +1482,7 @@
   },
   "classProject": {
     "title": "Class project",
-    "why": "Every new team in this class starts with this project and its tasks.",
+    "why": "Every team in the class gets each project listed here. Several can run at once (up to 10).",
     "nameLabel": "Project name",
     "namePlaceholder": "e.g. Final presentation",
     "deadlineLabel": "Deadline",
@@ -1501,11 +1503,24 @@
     "daysLabel": "Days before the deadline",
     "removeTask": "Remove this task",
     "addTask": "Add a task",
-    "appliesToNew": "Changes apply to teams started from now on. Existing teams keep their project.",
     "save": "Save",
     "saving": "Saving…",
     "saved": "Saved.",
-    "taskProblemAt": "Check task {n}."
+    "taskProblemAt": "Check task {n}.",
+    "addNote": "Adding gives this project to every team now, and to teams started later.",
+    "editNote": "Changes apply to teams that get it from now on. Teams that already have it keep their copy.",
+    "add": "Add a project",
+    "addSave": "Add and give to teams",
+    "added": "Added. Every team now has it.",
+    "none": "No projects yet.",
+    "due": "Due {date}",
+    "noDeadline": "No deadline",
+    "taskCount": "{count} tasks",
+    "remove": "Remove from the list",
+    "removeConfirm": "Remove it from the list? Teams that already have it keep their copy.",
+    "removeYes": "Remove",
+    "cancel": "Cancel",
+    "full": "A class can list up to 10 projects."
   },
   "templates": {
     "presentation": "Presentation",

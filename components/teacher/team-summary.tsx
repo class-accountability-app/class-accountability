@@ -17,6 +17,7 @@ type SummaryRow = {
   percent: number
   last_activity: string | null
   checkins_this_round: number
+  project_title: string | null // 0045; missing before it
 }
 
 // Colour = meaning (2026-11-06): olive on track, Hudson with an outline for
@@ -27,8 +28,9 @@ const PACE_PILL: Record<TeamPace, string> = {
   notStarted: 'bg-surface text-status-stale shadow-[inset_0_0_0_1px_var(--color-border)]',
 }
 
-// The organizer's view of the class (0027, project first): one line per team,
-// from class_team_summary(), which returns no ids or per-person numbers.
+// The organizer's view of the class (0027, project first): one block per team
+// with a line per active project (0045: a team can run several), from
+// class_team_summary(), which returns no ids or per-person numbers.
 // Since 0036 the organizer also sees who is in each team: names come from
 // class_roster(), matched by team number (both count active teams in creation
 // order). Before 0036 the names are simply left out.
@@ -53,16 +55,20 @@ export async function TeamSummary({ classId }: { classId: string }) {
   }
   const separator = locale === 'ja' ? '、' : ', '
   const now = new Date()
-  // The numbers at a glance (screen D): whole-class counts only.
+  const paceOf = (r: SummaryRow) =>
+    teamPace({ hasProject: r.has_project, percent: r.percent, startDate: r.start_date, deadline: r.deadline }, now)
+  // One block per team; its rows are its active projects (or one empty row).
+  const teams = new Map<number, SummaryRow[]>()
+  for (const r of rows) teams.set(r.team_no, [...(teams.get(r.team_no) ?? []), r])
+  // The numbers at a glance (screen D): whole-class counts only. A team is on
+  // track when every project it runs is.
   const withProject = rows.filter((r) => r.has_project)
-  const onTrack = rows.filter(
-    (r) => teamPace({ hasProject: r.has_project, percent: r.percent, startDate: r.start_date, deadline: r.deadline }, now) === 'onTrack'
-  ).length
+  const onTrack = [...teams.values()].filter((list) => list.every((r) => paceOf(r) === 'onTrack')).length
   const average = withProject.length > 0 ? Math.round(withProject.reduce((a, r) => a + r.percent, 0) / withProject.length) : null
   const checkedIn = withProject.reduce((a, r) => a + r.checkins_this_round, 0)
   const inProjects = withProject.reduce((a, r) => a + r.members, 0)
   const stats = [
-    { label: t('stats.onTrack'), value: `${onTrack} / ${rows.length}` },
+    { label: t('stats.onTrack'), value: `${onTrack} / ${teams.size}` },
     { label: t('stats.average'), value: average === null ? '—' : `${average}%` },
     { label: t('stats.checkins'), value: `${checkedIn} / ${inProjects}` },
   ]
@@ -103,46 +109,56 @@ export async function TeamSummary({ classId }: { classId: string }) {
         <p className="text-sm leading-7 text-muted">{t('noTeams')}</p>
       ) : (
         <ul className="rule-card flex flex-col px-5 py-5">
-          {rows.map((r) => {
-            const pace = teamPace(
-              { hasProject: r.has_project, percent: r.percent, startDate: r.start_date, deadline: r.deadline },
-              now
-            )
-            const expected = r.start_date ? expectedPercent(r.start_date, r.deadline, now) : null
-            const label = t('progress', { percent: r.percent })
+          {[...teams.entries()].map(([teamNo, list]) => {
+            const first = list[0]
             return (
-              <li key={r.team_no} className="flex flex-col border-b border-dashed border-border py-1.5 last:border-b-0">
+              <li key={teamNo} className="flex flex-col border-b border-dashed border-border py-1.5 last:border-b-0">
                 <div className="flex min-h-7 items-center justify-between gap-2.5">
                   <span className="text-[15px] leading-7 font-semibold text-ink">
-                    {teamName.get(r.team_no) ?? t('team', { number: r.team_no })}
-                    <span className="font-meta text-xs font-normal text-muted"> · {t('members', { count: r.members })}</span>
+                    {teamName.get(teamNo) ?? t('team', { number: teamNo })}
+                    <span className="font-meta text-xs font-normal text-muted"> · {t('members', { count: first.members })}</span>
                   </span>
-                  <span className={`shrink-0 rounded-lg px-2 font-meta text-xs leading-5 font-bold ${PACE_PILL[pace]}`}>
-                    {t(`pace.${pace}`)}
-                  </span>
+                  {!first.has_project && (
+                    <span className={`shrink-0 rounded-lg px-2 font-meta text-xs leading-5 font-bold ${PACE_PILL.notStarted}`}>
+                      {t('pace.notStarted')}
+                    </span>
+                  )}
                 </div>
-                {namesByTeam.has(r.team_no) && (
+                {namesByTeam.has(teamNo) && (
                   <p className="text-[13px] leading-6 text-ink [overflow-wrap:anywhere]">
-                    {namesByTeam.get(r.team_no)!.join(separator)}
+                    {namesByTeam.get(teamNo)!.join(separator)}
                   </p>
                 )}
-                {r.has_project ? (
-                  <>
-                    <div className="flex h-7 items-center">
-                      <ProgressBar value={r.percent} max={100} valueText={label} />
-                    </div>
-                    <p className="font-meta text-xs leading-7 text-muted">
-                      {label}
-                      {expected !== null && ` · ${t('expected', { percent: expected })}`}
-                      {' · '}
-                      {r.last_activity ? t('lastActivity', { when: formatDayAgo(r.last_activity, locale, now) }) : t('noActivity')}
-                      {' · '}
-                      {t('checkins', { count: r.checkins_this_round, members: r.members })}
-                    </p>
-                  </>
-                ) : (
-                  <p className="font-meta text-xs leading-7 text-muted">{t('noProject')}</p>
-                )}
+                {!first.has_project && <p className="font-meta text-xs leading-7 text-muted">{t('noProject')}</p>}
+                {first.has_project &&
+                  list.map((r, i) => {
+                    const pace = paceOf(r)
+                    const expected = r.start_date ? expectedPercent(r.start_date, r.deadline, now) : null
+                    const label = t('progress', { percent: r.percent })
+                    return (
+                      <div key={i} className="flex flex-col pt-1">
+                        <div className="flex min-h-7 items-center justify-between gap-2.5">
+                          <span className="min-w-0 text-sm leading-7 text-ink [overflow-wrap:anywhere]">
+                            {r.project_title ?? ''}
+                          </span>
+                          <span className={`shrink-0 rounded-lg px-2 font-meta text-xs leading-5 font-bold ${PACE_PILL[pace]}`}>
+                            {t(`pace.${pace}`)}
+                          </span>
+                        </div>
+                        <div className="flex h-7 items-center">
+                          <ProgressBar value={r.percent} max={100} valueText={label} />
+                        </div>
+                        <p className="font-meta text-xs leading-7 text-muted">
+                          {label}
+                          {expected !== null && ` · ${t('expected', { percent: expected })}`}
+                          {' · '}
+                          {r.last_activity ? t('lastActivity', { when: formatDayAgo(r.last_activity, locale, now) }) : t('noActivity')}
+                          {' · '}
+                          {t('checkins', { count: r.checkins_this_round, members: r.members })}
+                        </p>
+                      </div>
+                    )
+                  })}
               </li>
             )
           })}

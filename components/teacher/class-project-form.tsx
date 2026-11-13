@@ -15,15 +15,18 @@ const control =
 
 const emptyRow = (): ClassProjectTaskRow => ({ title: '', metric: 'status', unit: '', target: '', daysBefore: '' })
 
-// クラスのプロジェクト (0029): the project every new team in the class starts
-// with. Title, deadline, check-in interval and the task list (each task's
-// measure, goal and how many days before the deadline it is due). Presets
-// fill the rows; changes apply to teams started from now on.
+// One class project (0029; a list since 0045): title, deadline, check-in
+// interval and the task list (each task's measure, goal and how many days
+// before the deadline it is due). Presets fill the rows. Without a projectId
+// the form adds a new project, which every team gets at once; with one it
+// edits what teams get from now on.
 export function ClassProjectForm({
   classId,
+  projectId,
   initial,
 }: {
   classId: string
+  projectId: string | null
   initial: { title: string; deadline: string; every: string; tasks: ClassProjectTaskRow[] } | null
 }) {
   const t = useTranslations('classProject')
@@ -55,22 +58,23 @@ export function ClassProjectForm({
     formData.set('every', every)
     formData.set('tasks', JSON.stringify(rows))
     startTransition(async () => {
-      const result = await saveClassProject(classId, formData)
+      const result = await saveClassProject(classId, projectId, formData)
       setError(result.error)
       setTaskIndex(result.taskIndex)
-      if (!result.error) setSaved(true)
+      if (result.error) return
+      setSaved(true)
+      if (projectId === null) {
+        // Added: the new project now has its own row in the list above.
+        setTitle('')
+        setDeadline('')
+        setEvery('4')
+        setRows([])
+      }
     })
   }
 
   return (
-    <section aria-labelledby={`${id}-heading`} className="flex w-full flex-col gap-3.5">
-      <div>
-        <h2 id={`${id}-heading`} className="font-heading text-[17px] leading-7 font-bold text-ink">
-          {t('title')}
-        </h2>
-        <p className="text-[13px] leading-7 text-muted">{t('why')}</p>
-      </div>
-      <form onSubmit={handleSubmit} noValidate className="rule-card flex flex-col gap-4 px-5 py-5">
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <label htmlFor={`${id}-title`} className="text-sm font-semibold text-ink">{t('nameLabel')}</label>
           <input id={`${id}-title`} value={title} maxLength={120} placeholder={t('namePlaceholder')}
@@ -147,14 +151,13 @@ export function ClassProjectForm({
           )}
         </fieldset>
 
-        <p className="text-[13px] leading-7 text-muted">{t('appliesToNew')}</p>
+        <p className="text-[13px] leading-7 text-muted">{t(projectId === null ? 'addNote' : 'editNote')}</p>
         <button type="submit" disabled={isPending} className={`${primaryButtonClass} h-[52px] w-full`}>
-          {isPending ? t('saving') : t('save')}
+          {isPending ? t('saving') : t(projectId === null ? 'addSave' : 'save')}
         </button>
         {taskIndex !== null && error && <p className="text-sm text-accent-text">{t('taskProblemAt', { n: taskIndex + 1 })}</p>}
         <FormError error={error} />
-        <p aria-live="polite" className="min-h-7 text-sm leading-7 text-status-active">{saved ? t('saved') : ''}</p>
-      </form>
-    </section>
+        <p aria-live="polite" className="min-h-7 text-sm leading-7 text-status-active">{saved ? t(projectId === null ? 'added' : 'saved') : ''}</p>
+    </form>
   )
 }

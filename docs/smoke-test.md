@@ -35,7 +35,11 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
 ## 2. Organizer: class, teams, names, swap (0036, 0039)
 
 - [ ] 2.1 `O` opens the class page. **Expect:** join link + QR, student count,
-  チームの管理, お知らせ, 目安, the class project form, the team summary.
+  チームの管理, お知らせ, 目安, the class project list (add, edit, remove; several at once), the team summary.
+- [ ] 2.1b (0045) `O` opens 「＋ プロジェクトを追加」, adds a second project with
+  two tasks. **Expect:** it appears in the list; every existing team's board
+  and Home show a switcher with both projects; the team summary has a line per
+  project. 「リストから外す」 removes it from the list only: teams keep it.
 - [ ] 2.2 `A`, `B`, `C` join the class with the code or QR. **Expect:** `O`'s
   student count goes to 3; チームの管理 lists all three without a team.
 - [ ] 2.3 `O` ticks `A` and `B`, names the team, 「チームを作る」. **Expect:**
