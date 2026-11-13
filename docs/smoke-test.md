@@ -40,6 +40,12 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
   two tasks. **Expect:** it appears in the list; every existing team's board
   and Home show a switcher with both projects; the team summary has a line per
   project. 「リストから外す」 removes it from the list only: teams keep it.
+- [ ] 2.1c (0046) `O` taps 「このチームのボードを見る」 on a project line of the
+  team summary. **Expect:** that team's tasks with owners and numbers,
+  check-ins made after 2026-11-14 12:00 JST with their notes, meetings and
+  team links; no button or field anywhere; pills to the other teams on the same
+  project and to the team's other projects. `A` opening the same URL gets 404.
+  `A`'s Home shows 「先生に見えるものが変わりました」 once, until わかりました.
 - [ ] 2.2 `A`, `B`, `C` join the class with the code or QR. **Expect:** `O`'s
   student count goes to 3; チームの管理 lists all three without a team.
 - [ ] 2.3 `O` ticks `A` and `B`, names the team, 「チームを作る」. **Expect:**
