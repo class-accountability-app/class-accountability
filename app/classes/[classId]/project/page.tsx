@@ -22,6 +22,7 @@ import { GoogleCard } from './board/google-card'
 import { TeamLinks, type TeamLink } from '@/components/project/team-links'
 import { WhatChanged, type ChangeItem } from '@/components/project/what-changed'
 import { boardActivity } from '@/lib/board-activity'
+import { ProjectSwitcher } from '@/components/project/project-switcher'
 import type { BoardTask, SourceRow } from './board/types'
 import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
@@ -371,6 +372,12 @@ export default async function ProjectPage({
           ＋ {t('addTask')}
         </Link>
       </div>
+
+      <ProjectSwitcher
+        classId={classId}
+        currentId={project.id}
+        projects={pod.projects.map((p) => ({ id: p.id, title: p.title, due: p.deadline ? t('due', { date: formatDate(p.deadline, locale) }) : null }))}
+      />
 
       <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
       <div className="flex min-w-0 flex-col gap-7">

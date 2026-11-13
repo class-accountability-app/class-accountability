@@ -22,9 +22,12 @@ export default async function LinkTaskPage({ params }: { params: Promise<{ class
   if (!user) redirect('/login')
 
   const [t, tCommon, locale] = await Promise.all([getTranslations('google'), getTranslations('common'), getLocale()])
-  const pod = await loadMyPodProject(supabase, classId, user.id, tCommon('unknownPerson'))
-  if (!pod?.project) redirect(`/classes/${classId}/project`)
   if (!/^[0-9a-f-]{36}$/i.test(taskId)) notFound()
+  // The page is about one task, so it shows that task's project, whichever
+  // project the board is on (a team can have several; RLS: my team's only).
+  const { data: taskProject } = await supabase.from('project_tasks').select('project_id').eq('id', taskId).maybeSingle()
+  const pod = await loadMyPodProject(supabase, classId, user.id, tCommon('unknownPerson'), taskProject?.project_id)
+  if (!pod?.project) redirect(`/classes/${classId}/project`)
 
   const { data: task } = await supabase
     .from('project_tasks')

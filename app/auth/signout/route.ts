@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { CURRENT_PROJECT_COOKIE } from '@/lib/current-project'
 
 const MAX_ENDPOINT_LENGTH = 1024
 
@@ -20,5 +21,8 @@ export async function POST(request: NextRequest) {
   // also log the student out on every other device, e.g. their phone when
   // they log out of a shared lab PC.
   await supabase.auth.signOut({ scope: 'local' })
-  return NextResponse.redirect(new URL('/login', request.url))
+  const response = NextResponse.redirect(new URL('/login', request.url))
+  // Which project each board was on: nothing of the student's stays behind.
+  response.cookies.delete(CURRENT_PROJECT_COOKIE)
+  return response
 }

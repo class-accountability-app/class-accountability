@@ -32,12 +32,15 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
     getTranslations('common'),
     getLocale() as Promise<Locale>,
   ])
-  const pod = await loadMyPodProject(supabase, classId, user.id, tCommon('unknownPerson'))
+  // Not a uuid, or not one of my pod's polls (RLS returns nothing): 404.
+  if (!/^[0-9a-f-]{36}$/i.test(pollId)) notFound()
+  // The page is about one poll, so it shows that poll's project, whichever
+  // project the board is on (a team can have several).
+  const { data: pollProject } = await supabase.from('meeting_polls').select('project_id').eq('id', pollId).maybeSingle()
+  const pod = await loadMyPodProject(supabase, classId, user.id, tCommon('unknownPerson'), pollProject?.project_id)
   if (!pod?.project) redirect(`/classes/${classId}/project`)
   const { project, members } = pod
 
-  // Not a uuid, or not one of my pod's polls (RLS returns nothing): 404.
-  if (!/^[0-9a-f-]{36}$/i.test(pollId)) notFound()
   const [poll] = await loadPolls(supabase, project.id, pollId)
   if (!poll) notFound()
 

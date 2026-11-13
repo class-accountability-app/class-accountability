@@ -1260,6 +1260,10 @@
       "open": "Share out to the team",
       "confirm": "Tasks nobody has taken ({count}) go to the team, starting with whoever has the fewest. Anyone can change theirs later with “Change owner”.",
       "submit": "Share out"
+    },
+    "switcher": {
+      "label": "Switch project",
+      "current": " (showing)"
     }
   },
   "google": {

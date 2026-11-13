@@ -1,6 +1,7 @@
 'use server'
 
 import { cookies } from 'next/headers'
+import { CURRENT_PROJECT_COOKIE } from '@/lib/current-project'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { NAME_OK_COOKIE } from '@/lib/supabase/middleware'
@@ -51,6 +52,7 @@ export async function deleteAccount(formData: FormData): Promise<ActionResult> {
   // はじめの3ステップ's cookie: retired in Prompt 11b (nothing sets it any
   // more), still cleared for browsers that kept one from before.
   jar.delete('setup_done_seen')
+  jar.delete(CURRENT_PROJECT_COOKIE)
 
   redirect(ACCOUNT_DELETED_PATH)
 }
