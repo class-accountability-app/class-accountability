@@ -1,8 +1,8 @@
 // The words of a push notification. Lock screens are visible to others, so a
 // nudge says only who nudged (or how many nudges came overnight), never the
 // memo, a class or progress numbers. A meeting reminder says when, not what;
-// a stalled-task push names the task (it goes to its owner only) but never a
-// number; the check-in-day, poll and announcement pushes name nothing (not
+// a stalled-task or due-tomorrow push names the task (it goes to its owner
+// only) but never a number; the check-in-day, poll and announcement pushes name nothing (not
 // the poll's title, nor the announcement's words).
 //
 // The Edge Function can't read messages/*.json once deployed, so these are a
@@ -24,6 +24,7 @@ export const PUSH_TEXT = {
     announcement: '先生からお知らせが届きました',
     weeklyDigest: '新しい週です。チームのボードで今週の予定を確認しましょう',
     teamInactive: '1週間動きのないチームがあります。クラスのページで確認できます',
+    dueSoon: '「{task}」の締切は明日です',
   },
   en: {
     title: 'Study Pods',
@@ -38,6 +39,7 @@ export const PUSH_TEXT = {
     announcement: 'Your teacher posted an announcement',
     weeklyDigest: 'A new week: check this week’s plan on your team board',
     teamInactive: 'A team has been quiet for a week. See your class page',
+    dueSoon: '“{task}” is due tomorrow',
   },
 } as const
 
@@ -126,4 +128,10 @@ export function weeklyDigestText(locale: string): { title: string; body: string 
 export function teamInactiveText(locale: string): { title: string; body: string } {
   const t = textFor(locale)
   return { title: t.title, body: t.teamInactive }
+}
+
+// 0048: to the task's owner only, the day before it is due.
+export function dueSoonText(locale: string, task: string): { title: string; body: string } {
+  const t = textFor(locale)
+  return { title: t.title, body: fill(t.dueSoon, 'task', task) }
 }

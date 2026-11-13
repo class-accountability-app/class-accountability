@@ -165,6 +165,9 @@ Docs' count of the body, not of the whole Doc when it has headings.
   minute (unless 23:00–07:00 JST: then at 07:00).
 - [ ] 8.3 Tap the push. **Expect:** it opens the app at 声かけ (or the board for
   board pushes), never anywhere else.
+- [ ] 8.x (0048) Give `A` a task due tomorrow, with push on. **Expect:** at
+  09:25 JST the next morning `A`'s phone shows 「「…」の締切は明日です」 once;
+  `B` gets nothing; a done task or a task with no owner sends nothing.
 
 ## 9. Teacher milestones and team view
 
