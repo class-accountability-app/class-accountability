@@ -292,7 +292,7 @@ export default async function ClassPodsPage({
   const myPodId = myPods[0] ?? null
   // Project first: whether my team here has started its project.
   const { data: myProject } = myPodId
-    ? await supabase.from('projects').select('id').eq('pairing_id', myPodId).eq('status', 'active').maybeSingle()
+    ? await supabase.from('projects').select('id').eq('pairing_id', myPodId).eq('status', 'active').limit(1).maybeSingle()
     : { data: null }
   const step = nextStep({
     classes: [

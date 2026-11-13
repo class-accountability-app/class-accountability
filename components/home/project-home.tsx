@@ -13,6 +13,7 @@ import { STATUS_PILL_CLASS, loadLiveTotals, loadMyPodProject, taskValueText, typ
 import { chosenStart, formatMeeting, isUpcoming, loadPolls } from '@/app/classes/[classId]/project/meetings/load'
 import { WriteInAppButton } from '@/app/classes/[classId]/project/task-controls'
 import { OpenSourceButton } from '@/components/project/open-source-button'
+import { ProjectSwitcher } from '@/components/project/project-switcher'
 import type { SourceKind } from '@/lib/google-links'
 
 type SourceRow = { task_id: string; kind: SourceKind; file_id: string; label: string | null; state: 'ok' | 'lost_access' }
@@ -124,6 +125,16 @@ export async function ProjectHome({
           {t('openBoard')}
         </Link>
       </div>
+
+      <ProjectSwitcher
+        classId={classId}
+        currentId={project.id}
+        projects={pod.projects.map((p) => ({
+          id: p.id,
+          title: p.title,
+          due: p.deadline ? tProject('due', { date: formatDate(p.deadline, locale) }) : null,
+        }))}
+      />
 
       <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
         <div className="flex min-w-0 flex-col gap-7">

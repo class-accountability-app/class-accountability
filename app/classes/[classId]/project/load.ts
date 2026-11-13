@@ -1,5 +1,7 @@
 import type { getTranslations } from 'next-intl/server'
 import type { createClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
+import { CURRENT_PROJECT_COOKIE, parseCurrentProjects, pickCurrentProject, sortProjects } from '@/lib/current-project'
 import { tidyTotal } from '@/lib/project-board'
 import type { TaskMetric, TaskStatus } from '@/lib/tasks'
 
@@ -26,9 +28,19 @@ export type TaskRow = {
   input_mode: 'manual' | 'document'
 }
 
-// My active pod in this class, its project (if started) and its members, in
-// join order. RLS lets pod members read all of it.
-export async function loadMyPodProject(supabase: Supabase, classId: string, userId: string, unknownName: string) {
+// My active pod in this class, its active projects and its members, in join
+// order. RLS lets pod members read all of it. A team can have several active
+// projects (2026-11-13); `project` is the one this page shows: `wantProjectId`
+// when a page is about one project's task or poll, otherwise the one chosen
+// with the board's switcher (a cookie, lib/current-project.ts), otherwise the
+// one due soonest. `projects` is all of them, in that order.
+export async function loadMyPodProject(
+  supabase: Supabase,
+  classId: string,
+  userId: string,
+  unknownName: string,
+  wantProjectId?: string | null
+) {
   const { data: myPod } = await supabase
     .from('pairing_members')
     .select('pairing_id, pairings!inner(class_id, status)')
@@ -39,25 +51,28 @@ export async function loadMyPodProject(supabase: Supabase, classId: string, user
     .maybeSingle()
   if (!myPod) return null
 
-  const [{ data: project }, { data: memberRows }] = await Promise.all([
+  const [{ data: projectRows }, { data: memberRows }, jar] = await Promise.all([
     supabase
       .from('projects')
-      .select('id, title, start_date, deadline, checkin_every_days')
+      .select('id, title, start_date, deadline, checkin_every_days, created_at')
       .eq('pairing_id', myPod.pairing_id)
-      .eq('status', 'active')
-      .maybeSingle(),
+      .eq('status', 'active'),
     supabase
       .from('pairing_members')
       .select('user_id, joined_at, profiles(display_name)')
       .eq('pairing_id', myPod.pairing_id)
       .order('joined_at'),
+    cookies(),
   ])
+  const projects = sortProjects((projectRows as (ProjectRow & { created_at: string })[] | null) ?? [])
+  const chosen = wantProjectId ?? parseCurrentProjects(jar.get(CURRENT_PROJECT_COOKIE)?.value).get(classId)
+  const project: ProjectRow | null = pickCurrentProject(projects, chosen)
 
   const members = (memberRows ?? []).map((m) => ({
     id: m.user_id,
     name: (m.profiles as unknown as { display_name: string } | null)?.display_name ?? unknownName,
   }))
-  return { podId: myPod.pairing_id, project: (project as ProjectRow | null) ?? null, members }
+  return { podId: myPod.pairing_id, project, projects: projects as ProjectRow[], members }
 }
 
 // Live totals for the whole pod (0027, project first): project_task_totals()

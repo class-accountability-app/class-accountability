@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
+import { loadMyPodProject } from '../../load'
 import { TaskForm } from './task-form'
 
 // 新しいタスク (mockup view "newtask"). Any pod member adds a task and may give
@@ -27,7 +28,8 @@ export default async function NewTaskPage({ params }: { params: Promise<{ classI
   if (!myPod) redirect(`/classes/${classId}/project`)
 
   const [{ data: project }, { data: memberRows }] = await Promise.all([
-    supabase.from('projects').select('id, title').eq('pairing_id', myPod.pairing_id).eq('status', 'active').maybeSingle(),
+    // The project the board is on (a team can have several).
+    loadMyPodProject(supabase, classId, user.id, tCommon('unknownPerson')).then((pod) => ({ data: pod?.project ?? null })),
     supabase
       .from('pairing_members')
       .select('user_id, joined_at, profiles(display_name)')
