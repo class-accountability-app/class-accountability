@@ -29,7 +29,8 @@
       "home": "Home",
       "classes": "Classes",
       "nudges": "Nudges",
-      "settings": "Settings"
+      "settings": "Settings",
+      "announcements": "Notices"
     },
     "logIn": "Log in",
     "skipToContent": "Skip to content"
@@ -1681,5 +1682,11 @@
       "by": "{name} added the link “{title}”",
       "plain": "The link “{title}” was added"
     }
+  },
+  "teacherAnnouncements": {
+    "kicker": "To your classes",
+    "title": "Announcements",
+    "why": "What you post here shows on every student's board and class page, and they get a notification.",
+    "openClass": "Open the class page"
   }
 }

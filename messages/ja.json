@@ -29,7 +29,8 @@
       "home": "ホーム",
       "classes": "クラス",
       "nudges": "声かけ",
-      "settings": "設定"
+      "settings": "設定",
+      "announcements": "お知らせ"
     },
     "logIn": "ログイン",
     "skipToContent": "本文へ移動"
@@ -1681,5 +1682,11 @@
       "by": "{name}さんがリンク「{title}」を追加しました",
       "plain": "リンク「{title}」が追加されました"
     }
+  },
+  "teacherAnnouncements": {
+    "kicker": "クラスへの",
+    "title": "お知らせ",
+    "why": "ここで書いたお知らせは、クラスの学生全員のボードとクラスのページに表示され、通知も届きます。",
+    "openClass": "クラスのページを開く"
   }
 }

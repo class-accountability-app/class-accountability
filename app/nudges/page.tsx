@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/server'
 import { formatTimeAgo } from '@/lib/date'
 import { EmptyState, emptyActionClass } from '@/components/empty-state'
 import { PushCard } from './push-card'
+import { isTeacherOnly } from '@/lib/nav'
+import { AnnouncementManager, type Announcement } from '@/components/teacher/announcement-manager'
 
 const NUDGES_SHOWN = 50
 
@@ -27,8 +29,56 @@ export default async function NudgesPage() {
       .eq('to_user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(NUDGES_SHOWN),
-    supabase.from('class_memberships').select('class_id').eq('user_id', user.id),
+    supabase.from('class_memberships').select('class_id, role, classes(name)').eq('user_id', user.id).order('joined_at'),
   ])
+
+  // A teacher-only account never receives 声かけ (organizers aren't in teams),
+  // so this tab is their お知らせ: what they've told each class, and a place
+  // to write the next one.
+  if (isTeacherOnly((memberships ?? []).map((m) => m.role))) {
+    const teaching = (memberships ?? []).filter((m) => m.role === 'organizer')
+    const [tTeacher, ...lists] = await Promise.all([
+      getTranslations('teacherAnnouncements'),
+      ...teaching.map((m) =>
+        supabase
+          .from('class_announcements')
+          .select('id, body, created_at')
+          .eq('class_id', m.class_id)
+          .order('created_at', { ascending: false })
+          .limit(20)
+      ),
+    ])
+    return (
+      <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
+        <div className="mx-auto flex w-full max-w-md flex-col gap-7 md:max-w-xl">
+          <header className="px-0.5">
+            <h1 className="font-heading text-[28px] leading-tight font-light text-ink lg:text-[36px]">
+              {tTeacher('kicker')}
+              <br />
+              <span className="font-bold">{tTeacher('title')}</span>
+            </h1>
+            <p className="pt-1 text-sm leading-7 text-muted">{tTeacher('why')}</p>
+          </header>
+          {teaching.map((m, i) => (
+            <section key={m.class_id} aria-label={(m.classes as unknown as { name: string } | null)?.name ?? ''} className="flex flex-col gap-3.5">
+              <div className="flex flex-wrap items-center justify-between gap-x-4 px-0.5">
+                <p className="text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">
+                  {(m.classes as unknown as { name: string } | null)?.name ?? ''}
+                </p>
+                <Link
+                  href={`/classes/${m.class_id}`}
+                  className="inline-flex min-h-11 items-center text-sm font-semibold text-accent-text underline underline-offset-4"
+                >
+                  {tTeacher('openClass')}
+                </Link>
+              </div>
+              <AnnouncementManager classId={m.class_id} announcements={(lists[i].data as Announcement[] | null) ?? []} />
+            </section>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   // Senders are podmates, so classmates, so RLS lets us read their names.
   // Someone who has since left the class falls back to "Unknown".
