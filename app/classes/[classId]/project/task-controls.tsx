@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
 import { TASK_STATUSES, type TaskStatus } from '@/lib/tasks'
+import { STUCK_NOTE_MAX } from '@/lib/stuck'
 import { FormError } from '@/components/form-errors'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
-import { addTemplateTasks, claimTask, finishProject, handOverTask, setTaskStatus, shareOutTasks, writeInApp } from './actions'
+import { addTemplateTasks, claimTask, finishProject, handOverTask, setTaskStatus, setTaskStuck, shareOutTasks, writeInApp } from './actions'
 import { PROJECT_TEMPLATE_KEYS, type ProjectTemplateKey } from '@/lib/project-templates'
 
 // The status of one of my tasks: a native select, so it's one tap on a phone
@@ -342,5 +343,66 @@ export function ShareOutButton({ classId, projectId, count }: { classId: string;
       </div>
       <FormError error={error} />
     </div>
+  )
+}
+
+// 「困っています」 on one of my open tasks (0047): one line the team can read.
+// While it is up, the note shows with 解決した; otherwise the form is folded away.
+export function StuckControl({ classId, taskId, note }: { classId: string; taskId: string; note: string | null }) {
+  const t = useTranslations('project.stuck')
+  const router = useRouter()
+  const id = useId()
+  const [text, setText] = useState('')
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<ErrorKey | null>(null)
+
+  const send = (value: string | null) =>
+    startTransition(async () => {
+      setError(null)
+      const result = await setTaskStuck(classId, taskId, value)
+      if (result.error) setError(result.error)
+      else setText('')
+      router.refresh()
+    })
+
+  if (note !== null) {
+    return (
+      <div className="flex flex-col gap-1 pb-2">
+        <button type="button" disabled={isPending} className={`${secondaryButtonClass} h-11 self-start px-4 text-sm`} onClick={() => send(null)}>
+          {t('resolve')}
+        </button>
+        <FormError error={error} />
+      </div>
+    )
+  }
+  return (
+    <details className="pb-1">
+      <summary className="inline-flex min-h-11 cursor-pointer items-center text-[13px] font-semibold text-accent-text underline underline-offset-4">
+        {t('open')}
+      </summary>
+      <div className="flex flex-col gap-2 pb-2">
+        <label htmlFor={id} className="text-sm font-semibold text-ink">
+          {t('label')}
+        </label>
+        <div className="flex flex-wrap gap-2">
+          <input
+            id={id}
+            value={text}
+            maxLength={STUCK_NOTE_MAX}
+            placeholder={t('placeholder')}
+            onChange={(e) => setText(e.target.value)}
+            aria-describedby={`${id}-hint`}
+            className="h-11 min-w-0 flex-1 rounded-lg border border-outline bg-surface px-3 text-base text-ink placeholder:text-muted"
+          />
+          <button type="button" disabled={isPending} className={`${secondaryButtonClass} h-11 px-4 text-sm`} onClick={() => send(text)}>
+            {t('submit')}
+          </button>
+        </div>
+        <p id={`${id}-hint`} className="text-[13px] leading-6 text-muted">
+          {t('hint')}
+        </p>
+        <FormError error={error} />
+      </div>
+    </details>
   )
 }

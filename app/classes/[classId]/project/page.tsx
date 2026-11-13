@@ -277,7 +277,7 @@ export default async function ProjectPage({
   const boardPath = `/classes/${classId}/project`
 
   // 声かけ in this team that I sent or received (RLS shows nothing else).
-  const [{ data: nudgeRows }, tNudges, { data: presenceRows }, { data: depRows }, { data: milestoneRows }, tPlanning, { data: linkRows }, { data: activityTasks }, { data: projectMeta }] = await Promise.all([
+  const [{ data: nudgeRows }, tNudges, { data: presenceRows }, { data: depRows }, { data: milestoneRows }, tPlanning, { data: linkRows }, { data: activityTasks }, { data: projectMeta }, { data: stuckRows }] = await Promise.all([
     supabase
       .from('nudges')
       .select('id, from_user_id, to_user_id, content, created_at')
@@ -299,7 +299,10 @@ export default async function ProjectPage({
     // 0044: 前回から変わったこと needs when tasks were made and finished.
     supabase.from('project_tasks').select('id, title, owner_id, created_at, done_at').eq('project_id', project.id),
     supabase.from('projects').select('created_at').eq('id', project.id).maybeSingle(),
+    // 0047: 「困っています」 (errors before that migration: no flags then).
+    supabase.from('project_tasks').select('id, stuck_note').eq('project_id', project.id).not('stuck_note', 'is', null),
   ])
+  const stuckNotes = new Map(((stuckRows ?? []) as { id: string; stuck_note: string }[]).map((r) => [r.id, r.stuck_note]))
   const deps = (depRows as Dependency[] | null) ?? null
   const milestone = nextMilestone((milestoneRows as Milestone[] | null) ?? [], percent, tokyoToday())
   // Feature batch 1: a gentle hint when open tasks are very unevenly shared.
@@ -486,6 +489,7 @@ export default async function ProjectPage({
                       lastChecked={mine ? lastChecked.get(task.id) : undefined}
                       waitingTitles={deps && task.status !== 'done' ? waitingOn(task.id, deps, tasks).map((w) => w.title) : []}
                       teammates={teammates}
+                      stuckNote={stuckNotes.get(task.id) ?? null}
                       locale={locale}
                       now={now}
                     />

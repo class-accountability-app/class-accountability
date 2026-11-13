@@ -72,6 +72,10 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
   "answers", goal 5. **Expect:** both appear under 「担当が決まっていません」 until claimed.
 - [ ] 3.4 Team name: a student renames the team on the board. **Expect:** `O`
   sees the new name in チームの管理 and the summary.
+- [ ] 3.x (0047) `A` opens 「困っていると伝える」 on their own open task, types
+  one line, 「伝える」. **Expect:** `B` sees 「困っています：…」 on that task;
+  `B` has no way to clear it; `O`'s team board does not show it. `A` taps
+  「解決した」, or finishes or hands over the task: the line is gone.
 
 ## 4. Logging
 

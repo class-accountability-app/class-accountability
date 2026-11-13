@@ -390,7 +390,9 @@
     "linkUrlRequired": "Please enter a URL.",
     "linkUrlInvalid": "Please enter a valid URL that starts with https://",
     "linksFull": "A team can pin up to 10 links. Remove one before adding another.",
-    "classProjectsFull": "A class can list up to 10 projects. Remove one before adding another."
+    "classProjectsFull": "A class can list up to 10 projects. Remove one before adding another.",
+    "stuckNoteRequired": "Write one line about what you're stuck on.",
+    "stuckNoteTooLong": "Keep it to 80 characters or fewer."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -774,7 +776,7 @@
     "limitedUse": "Study Pods’ use and transfer of information received from Google APIs to any other app will adhere to the <link>Google API Services User Data Policy</link>, including the Limited Use requirements.",
     "whoHeading": "4. Who can see what",
     "podLabel": "Members of your team:",
-    "podText": "your display name, the tasks you own and their numbers (visible as soon as you log), your check-ins, your answers to meeting polls, and your nudges. Not the memos on your logs, and not the text you write.",
+    "podText": "your display name, the tasks you own and their numbers (visible as soon as you log), your check-ins, the one-line note when you mark a task as stuck (your teacher doesn’t see it), your answers to meeting polls, and your nudges. Not the memos on your logs, and not the text you write.",
     "classLabel": "People in the same class:",
     "classText": "your display name, so they can invite you to a team. Not your progress.",
     "devLabel": "The developer:",
@@ -1265,6 +1267,15 @@
     "switcher": {
       "label": "Switch project",
       "current": " (showing)"
+    },
+    "stuck": {
+      "flag": "Stuck:",
+      "open": "Say you're stuck",
+      "label": "What are you stuck on? (one line)",
+      "placeholder": "e.g. I can't find sources",
+      "submit": "Tell the team",
+      "resolve": "Solved",
+      "hint": "Your teammates see this. Your teacher doesn't. Up to 80 characters."
     }
   },
   "google": {

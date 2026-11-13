@@ -7,7 +7,7 @@ import { ProgressBar } from '@/components/progress-bar'
 import { primaryButtonClass } from '@/components/buttons'
 import { OpenSourceButton } from '@/components/project/open-source-button'
 import { STATUS_PILL_CLASS } from '../load'
-import { ClaimButton, HandOverControl, TaskStatusControl, WriteInAppButton } from '../task-controls'
+import { ClaimButton, HandOverControl, StuckControl, TaskStatusControl, WriteInAppButton } from '../task-controls'
 import { TaskLog } from '../task-log'
 import type { BoardTask, SourceRow } from './types'
 
@@ -26,6 +26,7 @@ export async function BoardTaskRow({
   lastChecked,
   waitingTitles,
   teammates,
+  stuckNote,
   locale,
   now,
 }: {
@@ -43,6 +44,8 @@ export async function BoardTaskRow({
   waitingTitles: string[]
   // The rest of the team, for 担当を変える on my own tasks.
   teammates: { id: string; name: string }[]
+  // 「困っています」 (0047): the owner's note, null when the task isn't flagged.
+  stuckNote: string | null
   locale: Locale
   now: Date
 }) {
@@ -68,6 +71,11 @@ export async function BoardTaskRow({
           </span>
         )}
       </div>
+      {stuckNote !== null && (
+        <p className="my-1 rounded-lg bg-tint-hudson px-3 py-1 text-sm leading-7 text-ink [overflow-wrap:anywhere]">
+          <span className="font-bold">{t('stuck.flag')}</span> {stuckNote}
+        </p>
+      )}
       {value && <p className="text-[13px] leading-7 text-muted">{value}</p>}
       {waitingTitles.length > 0 && (
         <p className="text-[13px] leading-7 text-muted [overflow-wrap:anywhere]">
@@ -138,6 +146,7 @@ export async function BoardTaskRow({
           </Link>
         </>
       )}
+      {mine && task.status !== 'done' && <StuckControl classId={classId} taskId={task.id} note={stuckNote} />}
       {mine && task.inputMode === 'manual' && task.status !== 'done' && (
         <HandOverControl classId={classId} taskId={task.id} teammates={teammates} />
       )}
