@@ -1610,7 +1610,14 @@
     "milestoneAdd": "目安を追加する",
     "boardMilestone": "先生の目安「{title}」：{date}までに{percent}%",
     "boardMilestoneReached": "達成しています",
-    "boardMilestoneGap": "あと{gap}ポイント"
+    "boardMilestoneGap": "あと{gap}ポイント",
+    "quickTaskHeading": "決まったことをタスクにする",
+    "quickTaskWhy": "打ち合わせで決まった「次にやること」を、その場でタスクにできます。ボードに追加されます。",
+    "quickTaskTitle": "タスク名",
+    "quickTaskOwner": "担当",
+    "quickTaskNobody": "まだ決めない",
+    "quickTaskAdd": "タスクを追加",
+    "quickTaskAdded": "「{title}」を追加しました"
   },
   "joinClass": {
     "button": "クラスに参加",
