@@ -7,6 +7,7 @@ import {
   isOutsideApp,
   showsHeaderSignOutOnPhones,
   tabHref,
+  isTeacherOnly,
 } from './nav'
 
 describe('classesHref', () => {
@@ -86,5 +87,15 @@ describe('tabTransitionTypes', () => {
   it('fades for the current tab and for pages outside the tabs', () => {
     expect(tabTransitionTypes('classes', 'classes')).toBeUndefined()
     expect(tabTransitionTypes(null, 'home')).toBeUndefined()
+  })
+})
+
+describe('isTeacherOnly', () => {
+  it('is an organizer who studies in no class', () => {
+    expect(isTeacherOnly(['organizer'])).toBe(true)
+    expect(isTeacherOnly(['organizer', 'organizer'])).toBe(true)
+    expect(isTeacherOnly(['organizer', 'student'])).toBe(false)
+    expect(isTeacherOnly(['student'])).toBe(false)
+    expect(isTeacherOnly([])).toBe(false)
   })
 })
