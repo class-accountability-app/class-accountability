@@ -11,6 +11,7 @@ type RawError = { code?: string; message?: string; status?: number } | null | un
 const PG_UNIQUE_VIOLATION = '23505'
 const PG_FOREIGN_KEY_VIOLATION = '23503'
 const PG_INSUFFICIENT_PRIVILEGE = '42501'
+const PG_CHECK_VIOLATION = '23514'
 // Raised by the enforce_nudge_limit trigger (0011_display_name_and_nudge_limit.sql).
 const NUDGE_LIMIT = 'SP001'
 // Raised by the one_pod_per_class trigger (0012_class_links_and_one_pod.sql).
@@ -58,11 +59,15 @@ const TEAM_SETUP_INVALID = 'SP017'
 // project or on one that (through others) waits on it; a class has at most 20
 // milestones. Call sites give it the right key for their context.
 const PLANNING_INVALID = 'SP018'
+// Raised by check_project_link_limit (0043_team_links.sql): a project has at
+// most 10 pinned links.
+const TEAM_LINKS_FULL = 'SP019'
 
 export const DB_CODES = {
   uniqueViolation: PG_UNIQUE_VIOLATION,
   foreignKeyViolation: PG_FOREIGN_KEY_VIOLATION,
   insufficientPrivilege: PG_INSUFFICIENT_PRIVILEGE,
+  checkViolation: PG_CHECK_VIOLATION,
   nudgeLimit: NUDGE_LIMIT,
   onePodPerClass: ONE_POD_PER_CLASS,
   organizerNoPod: ORGANIZER_NO_POD,
@@ -81,6 +86,7 @@ export const DB_CODES = {
   projectFinished: PROJECT_FINISHED,
   teamSetupInvalid: TEAM_SETUP_INVALID,
   planningInvalid: PLANNING_INVALID,
+  teamLinksFull: TEAM_LINKS_FULL,
 } as const
 
 const EMAIL_PATTERN = /[^\s"'<>(),;:]+@[^\s"'<>(),;:]+/g

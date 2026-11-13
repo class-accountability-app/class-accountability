@@ -383,7 +383,12 @@
     "meetingNoteTooLong": "Notes can be up to 2,000 characters.",
     "milestoneInvalid": "Enter a name (up to 60 characters), a date and a percentage from 1 to 100.",
     "milestoneLimit": "A class can have up to 20 milestones.",
-    "offlineNotSaved": "You're offline and this couldn't be kept on this device. Try again where you have a signal."
+    "offlineNotSaved": "You're offline and this couldn't be kept on this device. Try again where you have a signal.",
+    "linkTitleRequired": "Please enter a name for the link.",
+    "linkTitleTooLong": "Please keep the link's name to 60 characters or fewer.",
+    "linkUrlRequired": "Please enter a URL.",
+    "linkUrlInvalid": "Please enter a valid URL that starts with https://",
+    "linksFull": "A team can pin up to 10 links. Remove one before adding another."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -1631,5 +1636,20 @@
     "body": "It may be a temporary problem. Check your connection and try again.",
     "retry": "Try again",
     "home": "Go to Home"
+  },
+  "teamLinks": {
+    "kicker": "Shared by the team",
+    "title": "Team links",
+    "empty": "Pin the links everyone needs: the assignment brief, the deck you're putting together, a shared folder.",
+    "add": "Add a link",
+    "nameLabel": "Link name",
+    "namePlaceholder": "e.g. Final slides (all)",
+    "urlLabel": "URL",
+    "urlHint": "Paste a link that starts with https://",
+    "submit": "Add",
+    "removeLabel": "Remove “{title}”",
+    "opensNewTab": " (opens in a new tab)",
+    "full": "A team can pin up to {max} links. Remove one to add another.",
+    "who": "Only your team sees these. Your teacher and other teams don't."
   }
 }
