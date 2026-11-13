@@ -158,7 +158,7 @@
     "inviting": "Inviting…",
     "noOneToInvite": "No classmates left to invite.",
     "notInPodTitle": "You're not in a team yet",
-    "organizerNote": "You organize this class. You see one summary per team and each team’s members by display name, never an individual student’s progress.",
+    "organizerNote": "You run this class. You see a summary per team and each team's board (tasks, owners, progress, check-ins), view only. Students' writing and memos on progress entries are never shown.",
     "studentCount": "{count, plural, one {# student has joined} other {# students have joined}}",
     "leavePod": "Leave team",
     "leaveConfirm": "If you leave, your teammates can no longer see your progress. Your targets and logs stay.",
@@ -727,7 +727,7 @@
       "freeQ": "Is it free?",
       "freeA": "Yes, it’s currently free.",
       "teacherQ": "What can my teacher see?",
-      "teacherA": "Students’ display names and teams, plus a summary per team (overall progress, the last day of activity and so on). Never anyone’s individual numbers, memos or writing.",
+      "teacherA": "Students’ display names and teams, a summary per team, and each team's project (tasks and who owns them, progress numbers, check-ins). View only: a teacher can't change anything. Never anyone’s writing, memos on progress entries, or nudges.",
       "passwordQ": "Do I need a password?",
       "passwordA": "No. You log in with a 6-digit code (or the button) sent to your university email.",
       "podSizeQ": "How many people can be in a team?",
@@ -746,7 +746,7 @@
   },
   "privacy": {
     "effective": "Effective 31 October 2026",
-    "updated": "Last updated 31 October 2026",
+    "updated": "Last updated 14 November 2026",
     "title": "Privacy policy",
     "intro": "Study Pods (“the service”) is a study app built and run by a student. This page explains what the service collects, how it’s used, and who can see it.",
     "collectHeading": "1. What we collect",
@@ -762,7 +762,7 @@
     "notifyText": "your device’s push address (an address and encryption keys issued by your browser), your display language and the kind of device (e.g. Safari on iPhone), so we can deliver them. Notifications are off until you turn them on, and you can turn them off in 設定 at any time. Turning them off or logging out deletes that device’s address.",
     "cookieLabel": "Cookies:",
     "cookieText": "only to keep you logged in, remember your language, and remember two small display settings (whether you’ve chosen a display name, and whether you’ve seen the setup-complete message). No advertising or analytics cookies. Whether you’ve closed the notification suggestion is saved only in this device’s browser, not in a cookie.",
-    "noText": "With Write in Study Pods, we store the text you write and its history (up to the latest 50 versions). Only you can read it. Teammates see only its character count, never the text. Teachers see neither the text nor your own character count. Otherwise we never store the text of your reports or assignments. Text that hasn’t been saved yet is kept for a short time in this device’s browser so a lost connection doesn’t lose it. It is deleted when you log out, when the login page is next opened on this device, or after 7 days.",
+    "noText": "With Write in Study Pods, we store the text you write and its history (up to the latest 50 versions). Only you can read it. Teammates see only its character count, never the text. Teachers never see the text (they do see the character count). Otherwise we never store the text of your reports or assignments. Text that hasn’t been saved yet is kept for a short time in this device’s browser so a lost connection doesn’t lose it. It is deleted when you log out, when the login page is next opened on this device, or after 7 days.",
     "useHeading": "2. How we use it",
     "useText": "Only to run the service (sharing progress with your team, nudges and similar features) and for the research use in section 6. We don’t use your data for advertising, and we don’t sell it.",
     "googleHeading": "3. Google user data",
@@ -797,7 +797,7 @@
     "priceText": "Study Pods is currently free. If paid features are ever introduced, we’ll tell you in advance.",
     "back": "← Back to the home page",
     "organizerLabel": "Whoever created the class (e.g. a teacher):",
-    "organizerText": "How many students have joined and the join link, the class project, a summary for each team (team size, overall project progress in %, whether it is on track, the day of the last activity, and how many checked in this round), and, to organize the teams, students’ display names and which team each is in. The teacher can make and name teams, move a student to another team or out of one, and post announcements to the whole class. They can’t see anyone’s individual numbers, memos, writing or email address.",
+    "organizerText": "How many students have joined and the join link, the class's projects, and students’ display names and which team each is in. The teacher can also view each team's project (view only, nothing can be changed): tasks and who owns them, each task's progress numbers, check-ins including their notes (check-ins made before noon on 14 November 2026 are not shown), meeting times and team links. The teacher can make and name teams, move a student to another team or out of one, and post announcements to the whole class. They can’t see text written in Study Pods, the contents of Google Docs or other files, memos on progress entries, nudges or email addresses.",
     "teamCodeLabel": "Team codes:",
     "teamCodeText": "a team’s code and QR code are shown only to that team’s members. Anyone who has the code can join that team (and, if they aren’t in the class yet, the class as a student). Any member can make a new code at any time, and the old one stops working.",
     "presenceLabel": "When you open the app, and the online dot:",
@@ -1226,7 +1226,7 @@
       "open": "See the meeting"
     },
     "membersWhyLive": "Who is doing what. Teammates’ numbers are live. The text itself and the memos on your logs stay yours.",
-    "teacherSees": "Your teacher sees how the team as a whole is doing and who is in it (display names), never individual numbers or notes.",
+    "teacherSees": "Your teacher sees who is in the team (display names) and this project's tasks, owners, progress numbers and check-ins, view only. Never your writing, memos on progress entries, or nudges.",
     "writeInApp": "Write in Study Pods (counts characters for you)",
     "keepWriting": "Write",
     "finish": {
@@ -1407,7 +1407,7 @@
     "noActivity": "nothing logged yet",
     "checkins": "check-ins {count}/{members}",
     "noProject": "No project yet",
-    "privacy": "You see each team's members by display name. Individual numbers, notes, text and email addresses are never shown.",
+    "privacy": "You see each team's members by display name and each team's board (tasks, owners, progress numbers, check-ins). Writing, memos on progress entries and email addresses are never shown.",
     "pace": {
       "onTrack": "On track",
       "behind": "Behind",
@@ -1440,7 +1440,8 @@
       "average": "Project average",
       "checkins": "Check-ins this round"
     },
-    "newClass": "Create another class"
+    "newClass": "Create another class",
+    "openBoard": "View this team's board"
   },
   "teamJoin": {
     "eyebrow": "Team invitation",
@@ -1670,7 +1671,7 @@
     "removeLabel": "Remove “{title}”",
     "opensNewTab": " (opens in a new tab)",
     "full": "A team can pin up to {max} links. Remove one to add another.",
-    "who": "Only your team sees these. Your teacher and other teams don't."
+    "who": "Your team and your teacher see these. Other teams don't."
   },
   "whatChanged": {
     "kicker": "Team activity",
@@ -1703,5 +1704,38 @@
     "title": "Announcements",
     "why": "What you post here shows on every student's board and class page, and they get a notification.",
     "openClass": "Open the class page"
+  },
+  "teacherBoard": {
+    "back": "← Back to the class",
+    "readOnly": "View only (nothing can be changed here)",
+    "team": "Team {number}",
+    "due": "Due {date}",
+    "noDeadline": "No deadline",
+    "finished": "Finished project",
+    "sameProject": "Other teams on the same project",
+    "sameTeam": "This team's projects",
+    "percent": "Overall progress {percent}%",
+    "tasks": "Tasks",
+    "noTasks": "No tasks yet.",
+    "noOwner": "No owner",
+    "lastLogged": "Last logged {when}",
+    "nothingLogged": "Nothing logged yet",
+    "writtenInApp": "Written in Study Pods",
+    "googleLinked": "Linked to a Google file",
+    "checkins": "Check-ins",
+    "noCheckins": "No check-ins yet.",
+    "formerMember": "Someone who left the team",
+    "checkinsSince": "Check-ins from before {date} are not shown.",
+    "meetings": "Meetings",
+    "meetingOpen": "Time not decided yet",
+    "links": "Team links",
+    "notShown": "Not shown: text written in Study Pods, the contents of Google files, memos on progress entries, nudges and email addresses."
+  },
+  "teacherViewNotice": {
+    "title": "What your teacher can see has changed",
+    "body": "Your teacher can now view each team's project (view only): tasks and who owns them, each task's progress numbers, check-ins from now on (including notes), meeting times and team links.",
+    "notSeen": "Your teacher cannot see earlier check-ins, text written in Study Pods, the contents of Google files, or nudges.",
+    "ok": "Got it",
+    "policy": "Read the privacy policy"
   }
 }

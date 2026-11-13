@@ -5,6 +5,7 @@ import type { Locale } from '@/i18n/config'
 import { createClient } from '@/lib/supabase/server'
 import { pickHomeProject } from '@/lib/home-project'
 import { ProjectHome } from '@/components/home/project-home'
+import { TeacherViewNotice } from '@/components/home/teacher-view-notice'
 import { nextStep } from '@/lib/next-step'
 import { formatDateWithWeekday } from '@/lib/date'
 import { NextStepCard } from '@/components/next-step-card'
@@ -134,6 +135,9 @@ export default async function Home({
           </div>
           <JoinClassButton canCreate={profile?.can_create_classes === true} />
         </div>
+
+        {/* 0046: students are told once that the teacher can now see team boards. */}
+        {classes.some((c) => !c.organizer) && <TeacherViewNotice />}
 
         {homeProject ? (
           <ProjectHome

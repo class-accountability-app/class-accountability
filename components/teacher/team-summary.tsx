@@ -2,7 +2,9 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
 import { createClient } from '@/lib/supabase/server'
 import { formatDayAgo } from '@/lib/date'
+import Link from 'next/link'
 import { expectedPercent, teamPace, type TeamPace } from '@/lib/team-summary'
+import { projectIdAt, type TeamProjectRow } from '@/lib/teacher-board'
 import { ProgressBar } from '@/components/progress-bar'
 
 type RosterName = { display_name: string; team_no: number | null; team_name: string | null }
@@ -36,14 +38,18 @@ const PACE_PILL: Record<TeamPace, string> = {
 // order). Before 0036 the names are simply left out.
 export async function TeamSummary({ classId }: { classId: string }) {
   const supabase = await createClient()
-  const [{ data, error }, { data: rosterRows }, { data: health }, t, locale] = await Promise.all([
+  const [{ data, error }, { data: rosterRows }, { data: health }, { data: boardRows }, t, locale] = await Promise.all([
     supabase.rpc('class_team_summary', { p_class: classId }),
     supabase.rpc('class_roster', { p_class: classId }),
     // 0042: Google links that can't be read or haven't been counted for a day.
     supabase.rpc('class_google_health', { p_class: classId }).maybeSingle<{ links: number; lost: number; stuck: number }>(),
+    // 0046: which project each line is, for the link to its read-only board
+    // (errors before that migration: then there are simply no links).
+    supabase.rpc('organizer_class_teams', { p_class: classId }),
     getTranslations('teacher'),
     getLocale() as Promise<Locale>,
   ])
+  const boards = (boardRows as TeamProjectRow[] | null) ?? []
   if (error) return null
   const rows = (data as SummaryRow[] | null) ?? []
   const namesByTeam = new Map<number, string[]>()
@@ -135,6 +141,7 @@ export async function TeamSummary({ classId }: { classId: string }) {
                     const pace = paceOf(r)
                     const expected = r.start_date ? expectedPercent(r.start_date, r.deadline, now) : null
                     const label = t('progress', { percent: r.percent })
+                    const boardId = projectIdAt(boards, teamNo, i)
                     return (
                       <div key={i} className="flex flex-col pt-1">
                         <div className="flex min-h-7 items-center justify-between gap-2.5">
@@ -156,6 +163,14 @@ export async function TeamSummary({ classId }: { classId: string }) {
                           {' · '}
                           {t('checkins', { count: r.checkins_this_round, members: r.members })}
                         </p>
+                        {boardId && (
+                          <Link
+                            href={`/classes/${classId}/teams/${boardId}`}
+                            className="inline-flex min-h-11 items-center self-start text-[13px] font-semibold text-accent-text underline underline-offset-4"
+                          >
+                            {t('openBoard')}
+                          </Link>
+                        )}
                       </div>
                     )
                   })}
