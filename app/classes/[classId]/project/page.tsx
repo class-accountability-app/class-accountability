@@ -19,6 +19,7 @@ import { GoogleSyncOnOpen } from './google-controls'
 import { BoardTaskRow } from './board/task-row'
 import { PlanCards } from './board/plan-cards'
 import { GoogleCard } from './board/google-card'
+import { TeamLinks, type TeamLink } from '@/components/project/team-links'
 import type { BoardTask, SourceRow } from './board/types'
 import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
@@ -273,7 +274,7 @@ export default async function ProjectPage({
   const boardPath = `/classes/${classId}/project`
 
   // 声かけ in this team that I sent or received (RLS shows nothing else).
-  const [{ data: nudgeRows }, tNudges, { data: presenceRows }, { data: depRows }, { data: milestoneRows }, tPlanning] = await Promise.all([
+  const [{ data: nudgeRows }, tNudges, { data: presenceRows }, { data: depRows }, { data: milestoneRows }, tPlanning, { data: linkRows }] = await Promise.all([
     supabase
       .from('nudges')
       .select('id, from_user_id, to_user_id, content, created_at')
@@ -290,6 +291,8 @@ export default async function ProjectPage({
       : Promise.resolve({ data: [] as Dependency[] }),
     supabase.from('class_milestones').select('id, title, due, target_percent').eq('class_id', classId),
     getTranslations('planning'),
+    // 0043: チームのリンク (errors before that migration: the card is hidden).
+    supabase.from('project_links').select('id, title, url').eq('project_id', project.id).order('created_at'),
   ])
   const deps = (depRows as Dependency[] | null) ?? null
   const milestone = nextMilestone((milestoneRows as Milestone[] | null) ?? [], percent, tokyoToday())
@@ -502,6 +505,8 @@ export default async function ProjectPage({
 
       <aside aria-label={t('sideColumn')} className="flex min-w-0 flex-col gap-7">
         <div className="hidden lg:flex lg:flex-col lg:gap-7">{planCards('side')}</div>
+        {linkRows && <TeamLinks classId={classId} projectId={project.id} links={linkRows as TeamLink[]} />}
+
         <GoogleCard boardPath={boardPath} groupDocId={groupDocId} hasGoogle={hasGoogle === true} hasCountedTask={hasCountedTask} />
 
       {presenceRows && (

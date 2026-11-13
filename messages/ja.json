@@ -383,7 +383,12 @@
     "meetingNoteTooLong": "メモは2,000文字までです。",
     "milestoneInvalid": "目安の名前（60文字まで）、日付、1〜100の％を入力してください。",
     "milestoneLimit": "目安は1クラス20件までです。",
-    "offlineNotSaved": "つながっていないため保存できませんでした。電波のある場所でもう一度お試しください。"
+    "offlineNotSaved": "つながっていないため保存できませんでした。電波のある場所でもう一度お試しください。",
+    "linkTitleRequired": "リンクの名前を入力してください。",
+    "linkTitleTooLong": "リンクの名前は60文字以内で入力してください。",
+    "linkUrlRequired": "URLを入力してください。",
+    "linkUrlInvalid": "https:// で始まる正しいURLを入力してください。",
+    "linksFull": "リンクは10件までです。どれかを外してから追加してください。"
   },
   "welcome": {
     "eyebrow": "ようこそ",
@@ -1631,5 +1636,20 @@
     "body": "一時的な問題かもしれません。通信の状態を確認して、もう一度お試しください。",
     "retry": "もう一度試す",
     "home": "ホームへ"
+  },
+  "teamLinks": {
+    "kicker": "みんなで使う",
+    "title": "チームのリンク",
+    "empty": "課題の説明や、みんなでまとめるスライド、共有フォルダなどのリンクを置けます。",
+    "add": "リンクを追加",
+    "nameLabel": "リンクの名前",
+    "namePlaceholder": "例：発表スライド（全体）",
+    "urlLabel": "URL",
+    "urlHint": "https:// で始まるリンクを貼ってください。",
+    "submit": "追加する",
+    "removeLabel": "「{title}」を外す",
+    "opensNewTab": "（新しいタブで開きます）",
+    "full": "リンクは{max}件までです。追加するには、どれかを外してください。",
+    "who": "チームのメンバーだけが見られます。先生やほかのチームには表示されません。"
   }
 }
