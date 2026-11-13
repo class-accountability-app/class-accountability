@@ -62,7 +62,7 @@ function TabIcon({ tab }: { tab: TabId }) {
 // Phones (under 768px): a floating Umbra bar above the home indicator, the
 // current tab on a porcelain pill. The spacer sits in the page flow with the
 // bar's height, so the last thing on a page can always scroll clear of it.
-export function TabBar({ classIds }: { classIds: string[] }) {
+export function TabBar({ classIds, teacherOnly = false }: { classIds: string[]; teacherOnly?: boolean }) {
   const t = useTranslations('nav')
   const pathname = usePathname()
   if (hidesTabBar(pathname)) return null
@@ -96,7 +96,7 @@ export function TabBar({ classIds }: { classIds: string[] }) {
                   >
                     <TabIcon tab={tab} />
                   </span>
-                  {t(`tabs.${tab}`)}
+                  {t(tab === 'nudges' && teacherOnly ? 'tabs.announcements' : `tabs.${tab}`)}
                 </Link>
               </li>
             )
@@ -109,7 +109,7 @@ export function TabBar({ classIds }: { classIds: string[] }) {
 
 // 768px and up: the same four destinations as a dark side menu on the left
 // (screen A of the 2026-11-06 design). A spacer keeps the page clear of it.
-export function SideMenu({ classIds }: { classIds: string[] }) {
+export function SideMenu({ classIds, teacherOnly = false }: { classIds: string[]; teacherOnly?: boolean }) {
   const t = useTranslations('nav')
   const pathname = usePathname()
   if (isOutsideApp(pathname)) return null
@@ -142,7 +142,7 @@ export function SideMenu({ classIds }: { classIds: string[] }) {
                   >
                     <TabIcon tab={tab} />
                   </span>
-                  {t(`tabs.${tab}`)}
+                  {t(tab === 'nudges' && teacherOnly ? 'tabs.announcements' : `tabs.${tab}`)}
                 </Link>
               </li>
             )

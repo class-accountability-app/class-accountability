@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { appOrigin } from '@/lib/app-origin'
 import { Nav } from '@/components/nav'
 import { SideMenu, TabBar } from '@/components/app-nav'
+import { isTeacherOnly } from '@/lib/nav'
 import { PublicFooter } from '@/components/public-footer'
 import { PwaSupport } from '@/components/pwa'
 import { PushSync } from '@/components/push'
@@ -76,9 +77,12 @@ export default async function RootLayout({
   } = await supabase.auth.getUser()
 
   const { data: memberships } = user
-    ? await supabase.from('class_memberships').select('class_id').eq('user_id', user.id)
+    ? await supabase.from('class_memberships').select('class_id, role').eq('user_id', user.id)
     : { data: null }
   const classIds = (memberships ?? []).map((m) => m.class_id)
+  // A teacher-only account (0015: organizers are never in a team) gets お知らせ
+  // where students have 声かけ, which could never show a teacher anything.
+  const teacherOnly = isTeacherOnly((memberships ?? []).map((m) => m.role))
 
   const fontVariables = [outfit]
     .map((font) => font.variable)
@@ -97,13 +101,13 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <Nav signedIn={!!user} />
           <div className="flex flex-1">
-            {user && <SideMenu classIds={classIds} />}
+            {user && <SideMenu classIds={classIds} teacherOnly={teacherOnly} />}
             <div className="ruled relative flex min-w-0 flex-1 flex-col">
               <main id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">{children}</main>
             </div>
           </div>
           <PublicFooter signedIn={!!user} />
-          {user && <TabBar classIds={classIds} />}
+          {user && <TabBar classIds={classIds} teacherOnly={teacherOnly} />}
           <PwaSupport />
           {user && <PushSync />}
           {user && <PresencePing />}

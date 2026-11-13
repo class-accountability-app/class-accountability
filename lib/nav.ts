@@ -72,3 +72,10 @@ export function tabTransitionTypes(from: TabId | null, to: TabId): string[] | un
   if (from === null || from === to) return undefined
   return [TAB_IDS.indexOf(to) > TAB_IDS.indexOf(from) ? 'tab-forward' : 'tab-back']
 }
+
+// A teacher-only account: an organizer of at least one class and a student
+// of none. Organizers can't be in a team (0015), so 声かけ never has anything
+// for them; their third tab is お知らせ instead (2026-11-13).
+export function isTeacherOnly(roles: readonly string[]): boolean {
+  return roles.includes('organizer') && !roles.includes('student')
+}
