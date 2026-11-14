@@ -9,6 +9,7 @@ import type { ErrorKey } from '@/lib/errors'
 import { getLocale } from 'next-intl/server'
 import { isProjectTemplateKey, templateTasks } from '@/lib/project-templates'
 import { openLoads, shareOut } from '@/lib/team-balance'
+import { checkStuckNote } from '@/lib/stuck'
 
 // Group projects (0022). The database decides who may do what: any pod member
 // starts the project and edits its tasks, only a task's owner logs on it. The
@@ -268,6 +269,44 @@ export async function handOverTask(classId: string, taskId: string, toUserId: st
       error: toErrorKey('handOverTask', error, {
         [DB_CODES.taskOwnerNotInPod]: 'taskOwnerNotInPod',
         [DB_CODES.insufficientPrivilege]: 'notAllowed',
+      }),
+    }
+  }
+  if (!data || data.length === 0) return { error: 'notAllowed' }
+
+  refresh(classId)
+  return { error: null }
+}
+
+// 「困っています」 (0047): the owner of an open task says in one line what they
+// are stuck on, or clears it (note null). The database refuses anyone else and
+// stamps the time; a finished or handed-over task loses the flag by itself.
+export async function setTaskStuck(classId: string, taskId: string, note: string | null): Promise<ActionResult> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'signedOut' }
+
+  let value: string | null = null
+  if (note !== null) {
+    const checked = checkStuckNote(note)
+    if (!checked.ok) return { error: checked.problem }
+    value = checked.value
+  }
+
+  const { data, error } = await supabase
+    .from('project_tasks')
+    .update({ stuck_note: value })
+    .eq('id', taskId)
+    .eq('owner_id', user.id)
+    .neq('status', 'done')
+    .select('id')
+  if (error) {
+    return {
+      error: toErrorKey('setTaskStuck', error, {
+        [DB_CODES.insufficientPrivilege]: 'notAllowed',
+        [DB_CODES.checkViolation]: 'stuckNoteTooLong',
       }),
     }
   }
