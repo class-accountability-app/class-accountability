@@ -4,9 +4,12 @@ import { useEffect, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import type { Locale } from '@/i18n/config'
 import { createClient } from '@/lib/supabase/client'
-import { formatDayAgo } from '@/lib/date'
+import { formatDate, formatDayAgo } from '@/lib/date'
+import { isAway } from '@/lib/away'
 
 export type PresenceRow = { user_id: string; last_seen_day: string | null; online: boolean }
+// お休み (0049): teammates who are away today, and until which day.
+export type AwayRow = { user_id: string; away_until: string }
 type Member = { id: string; name: string; done: number; total: number }
 
 const REFRESH_MS = 60_000
@@ -14,27 +17,35 @@ const REFRESH_MS = 60_000
 // チームのようす (item F): one row per teammate with the online dot, the day
 // they last opened the app and their tasks done. The dot and day come from
 // team_presence() (0035), refreshed every minute while the page is visible.
+// A teammate who set お休み (0049, team_away()) shows 「○日までお休み」.
 export function TeamTable({
   podId,
   me,
   members,
   initial,
+  initialAway,
 }: {
   podId: string
   me: string
   members: Member[]
   initial: PresenceRow[]
+  initialAway: AwayRow[]
 }) {
   const t = useTranslations('teamTable')
   const locale = useLocale() as Locale
   const [rows, setRows] = useState(initial)
+  const [away, setAway] = useState(initialAway)
 
   useEffect(() => {
     const supabase = createClient()
     const refresh = async () => {
       if (document.visibilityState !== 'visible') return
-      const { data } = await supabase.rpc('team_presence', { p_pod: podId })
+      const [{ data }, { data: awayData }] = await Promise.all([
+        supabase.rpc('team_presence', { p_pod: podId }),
+        supabase.rpc('team_away', { p_pod: podId }),
+      ])
       if (data) setRows(data as PresenceRow[])
+      if (awayData) setAway(awayData as AwayRow[])
     }
     const timer = window.setInterval(refresh, REFRESH_MS)
     document.addEventListener('visibilitychange', refresh)
@@ -45,6 +56,7 @@ export function TeamTable({
   }, [podId])
 
   const byId = new Map(rows.map((r) => [r.user_id, r]))
+  const awayUntil = new Map(away.filter((a) => isAway(a.away_until)).map((a) => [a.user_id, a.away_until]))
   const onlineCount = members.filter((m) => byId.get(m.id)?.online).length
 
   return (
@@ -78,6 +90,13 @@ export function TeamTable({
                     {m.id === me ? t('you', { name: m.name }) : m.name}
                     <span className="sr-only">{online ? t('online') : t('offline')}</span>
                   </span>
+                  {awayUntil.has(m.id) && (
+                    <span className="mt-0.5 block text-xs font-normal text-ink">
+                      <span className="rounded-lg bg-tint-hudson px-2 py-0.5">
+                        {t('away', { date: formatDate(awayUntil.get(m.id)!, locale) })}
+                      </span>
+                    </span>
+                  )}
                 </th>
                 <td className="py-2 pr-2 text-muted">
                   {online ? (
