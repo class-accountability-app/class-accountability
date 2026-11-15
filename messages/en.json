@@ -392,7 +392,8 @@
     "linksFull": "A team can pin up to 10 links. Remove one before adding another.",
     "classProjectsFull": "A class can list up to 10 projects. Remove one before adding another.",
     "stuckNoteRequired": "Write one line about what you're stuck on.",
-    "stuckNoteTooLong": "Keep it to 80 characters or fewer."
+    "stuckNoteTooLong": "Keep it to 80 characters or fewer.",
+    "awayDateInvalid": "Pick a day from today up to 30 days ahead."
   },
   "welcome": {
     "eyebrow": "Welcome",
@@ -444,7 +445,16 @@
       "failed": "Couldn’t change this. Please try again."
     },
     "feedback": "Give feedback",
-    "feedbackHint": "Tell us how it went (a Google Form, a few minutes)"
+    "feedbackHint": "Tell us how it went (a Google Form, a few minutes)",
+    "away": {
+      "label": "Tell your team you're away",
+      "hint": "Tells your teammates you're away until this day. No reason is asked. You can pick up to 30 days ahead, and it ends by itself after that day.",
+      "set": "Tell the team",
+      "clear": "Cancel it",
+      "current": "You've told your team you're away until {date}.",
+      "cleared": "Cancelled.",
+      "saved": "Your team can see it now."
+    }
   },
   "nudgesPage": {
     "title": "Nudges",
@@ -777,7 +787,7 @@
     "limitedUse": "Study Pods’ use and transfer of information received from Google APIs to any other app will adhere to the <link>Google API Services User Data Policy</link>, including the Limited Use requirements.",
     "whoHeading": "4. Who can see what",
     "podLabel": "Members of your team:",
-    "podText": "your display name, the tasks you own and their numbers (visible as soon as you log), your check-ins, the one-line note when you mark a task as stuck (your teacher doesn’t see it), your answers to meeting polls, and your nudges. Not the memos on your logs, and not the text you write.",
+    "podText": "your display name, the tasks you own and their numbers (visible as soon as you log), your check-ins, the one-line note when you mark a task as stuck (your teacher doesn’t see it), the day you say you’re away until (your teacher doesn’t see it), your answers to meeting polls, and your nudges. Not the memos on your logs, and not the text you write.",
     "classLabel": "People in the same class:",
     "classText": "your display name, so they can invite you to a team. Not your progress.",
     "devLabel": "The developer:",
@@ -1557,7 +1567,8 @@
     "never": "Not yet",
     "taskCount": "{done}/{total}",
     "note": "“Last seen” is the day someone last opened the app, never the time. You can turn off showing you online in Settings.",
-    "onlineNone": "Nobody is online right now"
+    "onlineNone": "Nobody is online right now",
+    "away": "Away until {date}"
   },
   "organizer": {
     "heading": "Manage teams",
