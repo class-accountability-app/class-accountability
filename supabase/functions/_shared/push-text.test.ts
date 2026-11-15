@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import ja from '@/messages/ja.json'
 import en from '@/messages/en.json'
-import { PUSH_TEXT, announcementText, checkinDueText, pollVoteText, meetingReminderText, pushText, stalledTaskText } from './push-text'
+import { PUSH_TEXT, announcementText, dueSoonText, checkinDueText, pollVoteText, meetingReminderText, pushText, stalledTaskText } from './push-text'
 
 describe('pushText', () => {
   it('names the sender in Japanese', () => {
@@ -63,6 +63,11 @@ describe('pushText', () => {
   it('names a stalled task literally, with no numbers of progress', () => {
     expect(stalledTaskText('ja', 'スライド', 3).body).toBe('「スライド」が3日止まっています。少しだけでも進めてみませんか')
     expect(stalledTaskText('en', '$& deck', 3).body).toBe('“$& deck” hasn’t moved for 3 days. Even a little progress helps')
+  })
+
+  it('names a task due tomorrow literally', () => {
+    expect(dueSoonText('ja', 'スライド').body).toBe('「スライド」の締切は明日です')
+    expect(dueSoonText('en', '$& deck').body).toBe('“$& deck” is due tomorrow')
   })
 
   it('matches the "push" keys in messages/*.json', () => {

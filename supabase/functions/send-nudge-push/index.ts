@@ -1,7 +1,8 @@
 // send-nudge-push: sends Web Pushes. A new nudge (0018), and the pushes the
 // database queues in push_events (0025: meeting reminders, stalled tasks;
 // 0033: check-in day; 0034: a meeting poll not yet answered; 0037: a
-// teacher's announcement; 0038: the weekly digest and the team-inactive alert).
+// teacher's announcement; 0038: the weekly digest and the team-inactive alert;
+// 0048: a task due tomorrow).
 //
 // Called only by our database (0018: the nudges trigger and pg_cron at
 // 07:00 JST; 0025: pg_cron with {"events": true}), never by a browser.
@@ -15,7 +16,7 @@
 import webpush from 'npm:web-push@3.6.7'
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.110.2'
 import { isQuietHours } from '../_shared/quiet-hours.ts'
-import { announcementText, checkinDueText, meetingReminderText, pollVoteText, pushText, stalledTaskText, teamInactiveText, weeklyDigestText } from '../_shared/push-text.ts'
+import { announcementText, checkinDueText, dueSoonText, meetingReminderText, pollVoteText, pushText, stalledTaskText, teamInactiveText, weeklyDigestText } from '../_shared/push-text.ts'
 import { classPath, meetingPath, projectPath } from '../_shared/push-path.ts'
 import { verifySignature } from '../_shared/signature.ts'
 
@@ -89,7 +90,7 @@ async function notify(db: SupabaseClient, toUserId: string, nudges: Sender[]) {
 type PushEvent = {
   id: string
   user_id: string
-  kind: 'meeting_reminder' | 'task_stalled' | 'checkin_due' | 'poll_vote_due' | 'announcement' | 'weekly_digest' | 'team_inactive'
+  kind: 'meeting_reminder' | 'task_stalled' | 'checkin_due' | 'poll_vote_due' | 'announcement' | 'weekly_digest' | 'team_inactive' | 'task_due_soon'
   poll_id: string | null
   task_id: string | null
   project_id: string | null
@@ -161,6 +162,25 @@ async function sendEvents(db: SupabaseClient) {
       await sendToUser(db, event.user_id, 'stalled', (locale) => ({
         ...stalledTaskText(locale, task.title, STALL_DAYS),
         kind: 'task_stalled',
+        path: projectPath(classId),
+      }))
+    } else if (event.kind === 'task_due_soon' && event.task_id) {
+      // 0048: still theirs, not done, still due tomorrow (or today, if this
+      // was held overnight), in a project that is still active.
+      const { data: task } = await db
+        .from('project_tasks')
+        .select('id, title, owner_id, status, due, project_id, projects(status)')
+        .eq('id', event.task_id)
+        .maybeSingle()
+      if (!task || task.owner_id !== event.user_id || task.status === 'done' || !task.due) continue
+      if ((task.projects as unknown as { status: string } | null)?.status !== 'active') continue
+      const daysLeft = Math.round((Date.parse(task.due) - Date.parse(tokyoToday())) / 86_400_000)
+      if (daysLeft < 0 || daysLeft > 1) continue
+      const classId = await classOfProject(db, task.project_id)
+      if (!classId) continue
+      await sendToUser(db, event.user_id, 'due', (locale) => ({
+        ...dueSoonText(locale, task.title),
+        kind: 'task_due_soon',
         path: projectPath(classId),
       }))
     } else if (event.kind === 'poll_vote_due' && event.poll_id) {
