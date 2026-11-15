@@ -1760,5 +1760,18 @@
     "notSeen": "Your teacher cannot see earlier check-ins, text written in Study Pods, the contents of Google files, or nudges.",
     "ok": "Got it",
     "policy": "Read the privacy policy"
+  },
+  "teamStatus": {
+    "heading": "Your team right now",
+    "count": "{online} of {total} online",
+    "none": "Nobody is online right now",
+    "you": "{name} (you)",
+    "openNow": "Online: has the app open now",
+    "lastDay": "Offline: last opened {when}",
+    "never": "Offline: not opened yet",
+    "awayUntil": "Away until {date}",
+    "sharingOn": "Your teammates see you as online.",
+    "sharingOff": "Showing you online is off. Teammates see you as offline even while the app is open.",
+    "settings": "Change in Settings"
   }
 }

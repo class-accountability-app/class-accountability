@@ -1,22 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import type { Locale } from '@/i18n/config'
-import { createClient } from '@/lib/supabase/client'
 import { formatDate, formatDayAgo } from '@/lib/date'
-import { isAway } from '@/lib/away'
+import { memberStatuses, type AwayRow, type PresenceRow } from '@/lib/team-status'
+import { StatusDot } from './status-dot'
+import { useTeamPresence } from './use-team-presence'
 
-export type PresenceRow = { user_id: string; last_seen_day: string | null; online: boolean }
-// お休み (0049): teammates who are away today, and until which day.
-export type AwayRow = { user_id: string; away_until: string }
+export type { AwayRow, PresenceRow }
 type Member = { id: string; name: string; done: number; total: number }
-
-const REFRESH_MS = 60_000
 
 // チームのようす (item F): one row per teammate with the online dot, the day
 // they last opened the app and their tasks done. The dot and day come from
-// team_presence() (0035), refreshed every minute while the page is visible.
+// team_presence() (0035), refreshed every 30 seconds while the page is visible
+// (use-team-presence.ts). Each state has its own shape and word (lib/team-status.ts).
 // A teammate who set お休み (0049, team_away()) shows 「○日までお休み」.
 export function TeamTable({
   podId,
@@ -33,31 +30,9 @@ export function TeamTable({
 }) {
   const t = useTranslations('teamTable')
   const locale = useLocale() as Locale
-  const [rows, setRows] = useState(initial)
-  const [away, setAway] = useState(initialAway)
-
-  useEffect(() => {
-    const supabase = createClient()
-    const refresh = async () => {
-      if (document.visibilityState !== 'visible') return
-      const [{ data }, { data: awayData }] = await Promise.all([
-        supabase.rpc('team_presence', { p_pod: podId }),
-        supabase.rpc('team_away', { p_pod: podId }),
-      ])
-      if (data) setRows(data as PresenceRow[])
-      if (awayData) setAway(awayData as AwayRow[])
-    }
-    const timer = window.setInterval(refresh, REFRESH_MS)
-    document.addEventListener('visibilitychange', refresh)
-    return () => {
-      window.clearInterval(timer)
-      document.removeEventListener('visibilitychange', refresh)
-    }
-  }, [podId])
-
-  const byId = new Map(rows.map((r) => [r.user_id, r]))
-  const awayUntil = new Map(away.filter((a) => isAway(a.away_until)).map((a) => [a.user_id, a.away_until]))
-  const onlineCount = members.filter((m) => byId.get(m.id)?.online).length
+  const { presence, away } = useTeamPresence(podId, initial, initialAway)
+  const statusOf = new Map(memberStatuses(members.map((m) => m.id), presence, away).map((x) => [x.id, x]))
+  const onlineCount = members.filter((m) => statusOf.get(m.id)?.state === 'online').length
 
   return (
     <section aria-labelledby="team-table-heading" className="rule-card flex flex-col px-5 py-5">
@@ -77,23 +52,20 @@ export function TeamTable({
         </thead>
         <tbody>
           {members.map((m) => {
-            const row = byId.get(m.id)
-            const online = row?.online ?? false
+            const status = statusOf.get(m.id)!
+            const online = status.state === 'online'
             return (
               <tr key={m.id} className="border-t border-dashed border-border">
                 <th scope="row" className="py-2 pr-2 font-semibold text-ink [overflow-wrap:anywhere]">
                   <span className="inline-flex items-center gap-2">
-                    <span
-                      aria-hidden
-                      className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${online ? 'bg-status-active' : 'bg-border'}`}
-                    />
+                    <StatusDot state={status.state} />
                     {m.id === me ? t('you', { name: m.name }) : m.name}
                     <span className="sr-only">{online ? t('online') : t('offline')}</span>
                   </span>
-                  {awayUntil.has(m.id) && (
+                  {status.awayUntil && (
                     <span className="mt-0.5 block text-xs font-normal text-ink">
                       <span className="rounded-lg bg-tint-hudson px-2 py-0.5">
-                        {t('away', { date: formatDate(awayUntil.get(m.id)!, locale) })}
+                        {t('away', { date: formatDate(status.awayUntil, locale) })}
                       </span>
                     </span>
                   )}
@@ -101,8 +73,8 @@ export function TeamTable({
                 <td className="py-2 pr-2 text-muted">
                   {online ? (
                     <span className="font-semibold text-status-active">{t('online')}</span>
-                  ) : row?.last_seen_day ? (
-                    formatDayAgo(row.last_seen_day, locale)
+                  ) : status.lastSeenDay ? (
+                    formatDayAgo(status.lastSeenDay, locale)
                   ) : (
                     t('never')
                   )}

@@ -14,6 +14,8 @@ import { chosenStart, formatMeeting, isUpcoming, loadPolls } from '@/app/classes
 import { WriteInAppButton } from '@/app/classes/[classId]/project/task-controls'
 import { OpenSourceButton } from '@/components/project/open-source-button'
 import { ProjectSwitcher } from '@/components/project/project-switcher'
+import { TeamStatus } from '@/components/team/team-status'
+import type { AwayRow, PresenceRow } from '@/lib/team-status'
 import type { SourceKind } from '@/lib/google-links'
 
 type SourceRow = { task_id: string; kind: SourceKind; file_id: string; label: string | null; state: 'ok' | 'lost_access' }
@@ -44,7 +46,7 @@ export async function ProjectHome({
   if (!pod?.project) return null
   const { project, members } = pod
 
-  const [{ data: taskRows }, { data: checkinRows }, polls, { data: nudgeRows }] = await Promise.all([
+  const [{ data: taskRows }, { data: checkinRows }, polls, { data: nudgeRows }, { data: presenceRows }, { data: awayRows }, { data: myPresence }] = await Promise.all([
     supabase
       .from('project_tasks')
       .select('id, title, owner_id, metric, unit, target_amount, status, due, input_mode')
@@ -61,6 +63,11 @@ export async function ProjectHome({
       .eq('to_user_id', userId)
       .order('created_at', { ascending: false })
       .limit(3),
+    // チームのいま: presence (0035), お休み (0049) and my own オンライン表示.
+    // Each errors before its migration; the strip is then left out or simpler.
+    supabase.rpc('team_presence', { p_pod: pod.podId }),
+    supabase.rpc('team_away', { p_pod: pod.podId }),
+    supabase.from('member_presence').select('share_online').eq('user_id', userId).maybeSingle(),
   ])
   const tasks = (taskRows as TaskRow[] | null) ?? []
   const [{ totals: liveTotals, teamLive }, { data: sourceRows }] = await Promise.all([
@@ -135,6 +142,17 @@ export async function ProjectHome({
           due: p.deadline ? tProject('due', { date: formatDate(p.deadline, locale) }) : null,
         }))}
       />
+
+      {presenceRows && (
+        <TeamStatus
+          podId={pod.podId}
+          me={userId}
+          members={members.map((m) => ({ id: m.id, name: m.name }))}
+          initial={presenceRows as PresenceRow[]}
+          initialAway={(awayRows as AwayRow[] | null) ?? []}
+          sharing={myPresence?.share_online ?? true}
+        />
+      )}
 
       <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
         <div className="flex min-w-0 flex-col gap-7">
