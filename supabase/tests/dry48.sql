@@ -6,7 +6,7 @@
 -- final row: result = 'dry run passed'. A failure shows 'FAIL: ...' instead.
 -- The cron.schedule line of 0048 is left out here on purpose (it only names
 -- the job); everything else is the migration as written, then
--- rls_task_due_push.sql. Like dry36_37.sql and the other dry*.sql files.
+-- rls_task_due_push.sql.
 -- =============================================================================
 
 begin;
