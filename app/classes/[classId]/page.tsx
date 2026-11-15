@@ -24,7 +24,6 @@ import { groupedCode, joinUrl, shortJoinUrl } from '@/lib/join-link'
 import { qrSvg } from '@/lib/qr'
 import { nextStep } from '@/lib/next-step'
 import { NextStepCard } from '@/components/next-step-card'
-import { PodProgressLink } from '@/components/pod-progress-link'
 import { RuleSnap } from '@/components/rule-snap'
 import { InviteDisclosure } from './invite-disclosure'
 
@@ -40,12 +39,13 @@ type Invitation = {
   kind: 'invite' | 'request'
 }
 
-// A class page (screen 06, reordered in Prompt 11b): for a student, in this
-// order, 次にやること for this class, あなたの目標 (with ＋記録), あなたのポッド
-// with a card link to the pod's progress, 仲間を招待する (link and QR behind
-// one button) and, while I have no pod, the other pods to ask to join. Each
-// heading has one line saying what the section is for. Two columns from
-// 1024px, like Home. The organizer sees only the student count and the link.
+// A class page (screen 06; labels made explicit 2026-11-15): for a student,
+// 「チームのボードを開く」 at the top (the one way to the board), 次にやること,
+// announcements, invitations to me, あなたのチーム (invite a classmate, answer
+// requests, leave: each button says what it does, with a line under it saying
+// what happens next), このクラスに人を招く (the CLASS link and QR, not the
+// team) and, while I have no team, the other teams to ask to join. Two
+// columns from 1024px. The organizer branch is above.
 export default async function ClassPodsPage({
   params,
 }: {
@@ -326,7 +326,7 @@ export default async function ClassPodsPage({
   // Soft pastel (2026-11-06): the class name big under a light クラス line,
   // the board one tap away, my team on Penna, an invitation to me on Hudson;
   // from 1024px my team on the left, inviting and other teams on the right.
-  const [tTeacher, tHome] = await Promise.all([getTranslations('teacher'), getTranslations('home')])
+  const tTeacher = await getTranslations('teacher')
   return (
       <div className="flex flex-1 flex-col px-4 py-7 sm:px-6 lg:pb-14">
         <div className="mx-auto grid w-full max-w-md gap-7 md:max-w-xl lg:max-w-6xl lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-x-8">
@@ -341,7 +341,7 @@ export default async function ClassPodsPage({
             </div>
             {myPods.length > 0 && (
               <Link href={`/classes/${classId}/project`} className={primaryButtonClass}>
-                {tHome('openBoard')}
+                {t('openTeamBoard')}
               </Link>
             )}
           </header>
@@ -372,7 +372,7 @@ export default async function ClassPodsPage({
                       </span>
                     </RuleSnap>
                     <RuleSnap>
-                      <InvitationActions invitationId={inv.id} />
+                      <InvitationActions invitationId={inv.id} kind="invite" />
                     </RuleSnap>
                   </li>
                 ))}
@@ -417,7 +417,7 @@ export default async function ClassPodsPage({
                               {incomingRequests.map((req) => (
                                 <div key={req.id} className="flex flex-wrap items-center justify-between gap-3">
                                   <span className="text-sm text-ink">{classmateNames.get(req.invitee_id) ?? unknown}</span>
-                                  <InvitationActions invitationId={req.id} />
+                                  <InvitationActions invitationId={req.id} kind="request" />
                                 </div>
                               ))}
                             </div>
@@ -435,11 +435,6 @@ export default async function ClassPodsPage({
                           </div>
                         </RuleSnap>
                       </div>
-                      <PodProgressLink
-                        href={`/classes/${classId}/project`}
-                        title={t('projectLink')}
-                        sub={t('projectLinkSub')}
-                      />
                     </div>
                   )
                 })
@@ -454,6 +449,7 @@ export default async function ClassPodsPage({
                   {t('inviteHeading')}
                 </h2>
                 <p className="text-[13px] leading-7 text-muted">{t('inviteWhy')}</p>
+                {myPods.length > 0 && <p className="text-[13px] leading-7 text-muted">{t('inviteNotTeam')}</p>}
               </div>
               <InviteDisclosure label={t('showLinkQr')}>{inviteCard}</InviteDisclosure>
             </section>
@@ -480,9 +476,9 @@ export default async function ClassPodsPage({
                             <span className="font-meta text-xs leading-7 text-muted">{memberCount(podId)}</span>
                           </div>
                           {isFull ? (
-                            <span className="text-xs leading-7 font-medium text-muted">{t('full')}</span>
+                            <span className="text-[13px] leading-7 font-semibold text-ink">{t('full')}</span>
                           ) : alreadyRequested ? (
-                            <span className="text-xs leading-7 font-medium text-muted">{t('requested')}</span>
+                            <span className="text-[13px] leading-7 font-semibold text-ink">{t('requested')}</span>
                           ) : (
                             <RequestJoinButton podId={podId} />
                           )}

@@ -16,11 +16,11 @@ export function JoinClassButton({ canCreate = false }: { canCreate?: boolean }) 
   return (
     <div className="flex flex-wrap gap-3">
       <button type="button" className={secondaryButtonClass} onClick={() => dialogRef.current?.showModal()}>
-        ＋ {t('button')}
+        ＋ {t('buttonCode')}
       </button>
       {canCreate && (
         <Link href="/classes#create-class" className={secondaryButtonClass}>
-          ＋ {t('create')}
+          ＋ {t('createNew')}
         </Link>
       )}
       <dialog

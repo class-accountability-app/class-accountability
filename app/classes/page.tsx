@@ -72,6 +72,7 @@ export default async function ClassesPage() {
         ])
         return {
           ...m.classes!,
+          action: t('actionManage'),
           lines: [t('metaStudents', { students: Number(byCode?.member_count ?? 0), teams: new Set(((summary as { team_no: number }[] | null) ?? []).map((r) => r.team_no)).size })],
         }
       })
@@ -93,14 +94,20 @@ export default async function ClassesPage() {
         : pod
           ? t('metaNoProject')
           : null
-      return { ...m.classes!, lines: [teamLine, projectLine].filter((l): l is string => !!l), needsTeam: !pod }
+      return {
+        ...m.classes!,
+        lines: [teamLine, projectLine].filter((l): l is string => !!l),
+        needsTeam: !pod,
+        action: pod ? t('actionOpen') : t('actionFindTeam'),
+      }
     })
 
-  const card = (c: { id: string; name: string; term: string; lines: string[]; needsTeam?: boolean }) => (
+  // Each card says what tapping it does (2026-11-15), instead of a bare arrow.
+  const card = (c: { id: string; name: string; term: string; lines: string[]; needsTeam?: boolean; action: string }) => (
     <li key={c.id}>
       <Link
         href={`/classes/${c.id}`}
-        className={`rule-card flex min-h-[96px] items-center justify-between gap-4 px-5 py-4 hover:bg-surface-container ${c.needsTeam ? 'tint-hudson' : ''}`}
+        className={`rule-card flex min-h-[96px] flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-4 hover:bg-surface-container ${c.needsTeam ? 'tint-hudson' : ''}`}
       >
         <span className="flex min-w-0 flex-col">
           <span className="font-meta text-xs leading-6 text-muted">{c.term}</span>
@@ -111,9 +118,10 @@ export default async function ClassesPage() {
             </span>
           ))}
         </span>
-        <span aria-hidden className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-surface-container text-ink">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M7 17L17 7M9 7h8v8" />
+        <span className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full bg-surface px-3.5 text-[13px] font-semibold text-ink shadow-[inset_0_0_0_1.5px_var(--ink)]">
+          {c.action}
+          <svg aria-hidden width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 6l6 6-6 6" />
           </svg>
         </span>
       </Link>

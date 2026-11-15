@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
 import { FormError } from '@/components/form-errors'
+import { secondaryButtonClass } from '@/components/buttons'
 import { requestToJoin } from './actions'
 
 export function RequestJoinButton({ podId }: { podId: string }) {
@@ -21,15 +22,16 @@ export function RequestJoinButton({ podId }: { podId: string }) {
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className="flex flex-col gap-1">
       <button
         type="button"
         onClick={handleRequest}
         disabled={isPending}
-        className="btn rounded-full border border-border bg-surface px-4 py-2.5 text-sm font-medium text-ink disabled:opacity-50"
+        className={`${secondaryButtonClass} h-11 self-start px-4 text-sm`}
       >
         {isPending ? tCommon('sending') : t('requestToJoin')}
       </button>
+      <p className="text-[13px] leading-6 text-muted">{t('requestHint')}</p>
       <FormError error={error} />
     </div>
   )
