@@ -96,10 +96,13 @@ insert into public.pairing_members (pairing_id, user_id) values
   ('00000000-0000-4000-8000-0000000048f1', '00000000-0000-4000-8000-0000000048b2');
 insert into public.projects (id, pairing_id, title, created_by) values
   ('00000000-0000-4000-8000-000000480001', '00000000-0000-4000-8000-0000000048f1', 'J',
+   '00000000-0000-4000-8000-0000000048a1'),
+  ('00000000-0000-4000-8000-000000480002', '00000000-0000-4000-8000-0000000048f1', 'J finished',
    '00000000-0000-4000-8000-0000000048a1');
 
 -- T1: A's, due tomorrow (the one that should be queued). T2: A's, due in two
--- days. T3: B's, due tomorrow but done. T4: nobody's, due tomorrow.
+-- days. T3: B's, due tomorrow but done. T4: nobody's, due tomorrow. T5: B's,
+-- due tomorrow, in a project that is finished.
 insert into public.project_tasks (id, project_id, title, owner_id, metric, status, due) values
   ('00000000-0000-4000-8000-000000480101', '00000000-0000-4000-8000-000000480001', 'T1',
    '00000000-0000-4000-8000-0000000048a1', 'status', 'doing', (now() at time zone 'Asia/Tokyo')::date + 1),
@@ -108,7 +111,10 @@ insert into public.project_tasks (id, project_id, title, owner_id, metric, statu
   ('00000000-0000-4000-8000-000000480103', '00000000-0000-4000-8000-000000480001', 'T3',
    '00000000-0000-4000-8000-0000000048b2', 'status', 'done', (now() at time zone 'Asia/Tokyo')::date + 1),
   ('00000000-0000-4000-8000-000000480104', '00000000-0000-4000-8000-000000480001', 'T4',
-   null, 'status', 'todo', (now() at time zone 'Asia/Tokyo')::date + 1);
+   null, 'status', 'todo', (now() at time zone 'Asia/Tokyo')::date + 1),
+  ('00000000-0000-4000-8000-000000480105', '00000000-0000-4000-8000-000000480002', 'T5',
+   '00000000-0000-4000-8000-0000000048b2', 'status', 'doing', (now() at time zone 'Asia/Tokyo')::date + 1);
+update public.projects set status = 'done', finished_at = now() where id = '00000000-0000-4000-8000-000000480002';
 
 do $$
 declare
@@ -117,7 +123,7 @@ begin
   perform private.queue_task_due_pushes();
   select count(*) into n from public.push_events
   where kind = 'task_due_soon' and task_id::text like '00000000-0000-4000-8000-0000004801%';
-  if n <> 1 then raise exception 'FAIL: expected exactly one due-tomorrow push (T1), got %', n; end if;
+  if n <> 1 then raise exception 'FAIL: expected exactly one due-tomorrow push (T1; not the done, unowned or finished-project ones), got %', n; end if;
   if not exists (select 1 from public.push_events
                  where kind = 'task_due_soon' and task_id = '00000000-0000-4000-8000-000000480101'
                    and user_id = '00000000-0000-4000-8000-0000000048a1') then
@@ -130,13 +136,6 @@ begin
   where kind = 'task_due_soon' and task_id::text like '00000000-0000-4000-8000-0000004801%';
   if n <> 1 then raise exception 'FAIL: the same task and due day must be queued once, got %', n; end if;
 
-  -- A finished project's tasks are left alone.
-  delete from public.push_events where task_id = '00000000-0000-4000-8000-000000480101';
-  update public.projects set status = 'done', finished_at = now() where id = '00000000-0000-4000-8000-000000480001';
-  perform private.queue_task_due_pushes();
-  if exists (select 1 from public.push_events where task_id = '00000000-0000-4000-8000-000000480101') then
-    raise exception 'FAIL: a finished project must not get due-tomorrow pushes';
-  end if;
 end $$;
 
 -- As A (a student): push_events stays unreadable and the queue can't be run.
