@@ -513,9 +513,6 @@ export default async function ProjectPage({
                 <h3 className="flex-1 text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{name}</h3>
                 {/* Is the person who has these tasks here right now? */}
                 {group.ownerId !== null && !mine && <OwnerPresence userId={group.ownerId} memberIds={memberIds} me={user.id} />}
-                {(mine || (teamLive && group.ownerId !== null)) && (
-                  <span className="rounded-full bg-ink px-2.5 font-meta text-xs leading-6 font-bold text-white">{t('live')}</span>
-                )}
               </div>
               {group.ownerId !== null && !mine && (
                 <NudgeForm podId={pod.podId} fromUserId={user.id} toUserId={group.ownerId} />
