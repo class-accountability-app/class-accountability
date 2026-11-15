@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bestOption, checkSlots, isPollAnswer, tallyOptions, tokyoSlotToIso, type PollOption, type PollVote } from './meeting-poll'
+import { availability, bestOption, checkSlots, pollSummary, rankOptions, isPollAnswer, tallyOptions, tokyoSlotToIso, type PollOption, type PollVote } from './meeting-poll'
 
 const options: PollOption[] = [
   { id: 'wed1230', startsAt: '2026-10-07T03:30:00.000Z' },
@@ -101,5 +101,49 @@ describe('isPollAnswer', () => {
   it('accepts only yes, maybe and no', () => {
     expect(['yes', 'maybe', 'no'].every(isPollAnswer)).toBe(true)
     expect(isPollAnswer('sure')).toBe(false)
+  })
+})
+
+describe('who can make each time', () => {
+  const members = ['a', 'b', 'c']
+  const v = (optionId: string, userId: string, answer: PollVote['answer']): PollVote => ({ optionId, userId, answer })
+  const votes = [
+    v('wed1230', 'a', 'yes'), v('wed1230', 'b', 'no'),
+    v('wed1800', 'a', 'yes'), v('wed1800', 'b', 'yes'), v('wed1800', 'c', 'maybe'),
+    v('thu1630', 'a', 'yes'), v('thu1630', 'b', 'yes'), v('thu1630', 'c', 'yes'),
+    v('thu1630', 'gone', 'no'), // someone who left the team doesn't count
+  ]
+
+  it('names who said what, in member order, and who has not answered', () => {
+    const [wed1230, , thu] = availability(options, votes, members)
+    expect(wed1230).toMatchObject({ yes: ['a'], maybe: [], no: ['b'], unanswered: ['c'], everyone: false })
+    expect(thu).toMatchObject({ yes: ['a', 'b', 'c'], no: [], unanswered: [], everyone: true })
+  })
+
+  it('ranks by yes, then maybe, then fewest no, then the earliest', () => {
+    expect(rankOptions(availability(options, votes, members)).map((o) => o.optionId)).toEqual(['thu1630', 'wed1800', 'wed1230'])
+    const tie = [v('wed1230', 'a', 'yes'), v('wed1800', 'a', 'yes'), v('wed1800', 'b', 'no')]
+    expect(rankOptions(availability(options, tie, members)).map((o) => o.optionId)).toEqual(['wed1230', 'wed1800', 'thu1630'])
+  })
+
+  it('opens with a time everyone can make, the earliest one', () => {
+    expect(pollSummary(availability(options, votes, members))).toEqual({ kind: 'everyone', optionId: 'thu1630', more: 0 })
+    const both = [...votes, v('wed1800', 'c', 'yes')].filter((x) => !(x.optionId === 'wed1800' && x.userId === 'c' && x.answer === 'maybe'))
+    expect(pollSummary(availability(options, both, members))).toEqual({ kind: 'everyone', optionId: 'wed1800', more: 1 })
+  })
+
+  it('otherwise gives the best time and who it leaves out', () => {
+    const some = votes.filter((x) => x.optionId !== 'thu1630')
+    expect(pollSummary(availability(options, some, members))).toEqual({
+      kind: 'best', optionId: 'wed1800', yes: 2, cannot: [], unanswered: [],
+    })
+    expect(pollSummary(availability(options, [v('wed1230', 'a', 'yes'), v('wed1230', 'b', 'no')], members))).toEqual({
+      kind: 'best', optionId: 'wed1230', yes: 1, cannot: ['b'], unanswered: ['c'],
+    })
+  })
+
+  it('says nothing while nobody can make any time, and with no members', () => {
+    expect(pollSummary(availability(options, [v('wed1230', 'a', 'no')], members))).toEqual({ kind: 'none' })
+    expect(availability(options, [], [])[0].everyone).toBe(false)
   })
 })
