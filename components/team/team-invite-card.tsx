@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { FormError } from '@/components/form-errors'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import type { ActionResult } from '@/lib/errors'
-import { lineShareUrl } from '@/lib/team-invite'
+import { TEAM_INVITE_ID, lineShareUrl } from '@/lib/team-invite'
 import { renewTeamCode } from '@/app/team/actions'
 
 // チームに招待する (0028): the team's code, its QR and the link. Teams form
@@ -67,7 +67,7 @@ export function TeamInviteCard({
   }
 
   return (
-    <section aria-labelledby={`${id}-heading`} className="rule-card flex flex-col px-5 py-5">
+    <section id={TEAM_INVITE_ID} aria-labelledby={`${id}-heading`} className="rule-card flex scroll-mt-4 flex-col px-5 py-5">
       <h2 id={`${id}-heading`} className="font-heading text-[17px] leading-7 font-bold text-ink">
         {t('heading')}
       </h2>

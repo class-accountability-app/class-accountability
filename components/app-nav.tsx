@@ -11,6 +11,7 @@ import {
   showsHeaderSignOutOnPhones,
   tabHref,
   tabTransitionTypes,
+  type NavClass,
   type TabId,
 } from '@/lib/nav'
 import { SignOutForm } from '@/components/sign-out-form'
@@ -62,7 +63,7 @@ function TabIcon({ tab }: { tab: TabId }) {
 // Phones (under 768px): a floating Umbra bar above the home indicator, the
 // current tab on a porcelain pill. The spacer sits in the page flow with the
 // bar's height, so the last thing on a page can always scroll clear of it.
-export function TabBar({ classIds, teacherOnly = false }: { classIds: string[]; teacherOnly?: boolean }) {
+export function TabBar({ classes, teacherOnly = false }: { classes: NavClass[]; teacherOnly?: boolean }) {
   const t = useTranslations('nav')
   const pathname = usePathname()
   if (hidesTabBar(pathname)) return null
@@ -81,7 +82,7 @@ export function TabBar({ classIds, teacherOnly = false }: { classIds: string[]; 
             return (
               <li key={tab} className="flex">
                 <Link
-                  href={tabHref(tab, classIds)}
+                  href={tabHref(tab, classes)}
                   transitionTypes={tabTransitionTypes(current, tab)}
                   aria-current={isCurrent ? 'page' : undefined}
                   className={`relative flex min-h-12 flex-1 flex-col items-center justify-center gap-[3px] rounded-[22px] text-[11px] text-page-bg focus-visible:outline-page-bg ${
@@ -109,7 +110,7 @@ export function TabBar({ classIds, teacherOnly = false }: { classIds: string[]; 
 
 // 768px and up: the same four destinations as a dark side menu on the left
 // (screen A of the 2026-11-06 design). A spacer keeps the page clear of it.
-export function SideMenu({ classIds, teacherOnly = false }: { classIds: string[]; teacherOnly?: boolean }) {
+export function SideMenu({ classes, teacherOnly = false }: { classes: NavClass[]; teacherOnly?: boolean }) {
   const t = useTranslations('nav')
   const pathname = usePathname()
   if (isOutsideApp(pathname)) return null
@@ -127,7 +128,7 @@ export function SideMenu({ classIds, teacherOnly = false }: { classIds: string[]
             return (
               <li key={tab}>
                 <Link
-                  href={tabHref(tab, classIds)}
+                  href={tabHref(tab, classes)}
                   transitionTypes={tabTransitionTypes(current, tab)}
                   aria-current={isCurrent ? 'page' : undefined}
                   className={`flex min-h-16 w-20 flex-col items-center justify-center gap-1 rounded-[20px] text-xs text-page-bg focus-visible:outline-page-bg ${

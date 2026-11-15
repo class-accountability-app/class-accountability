@@ -3,6 +3,7 @@ import {
   activeTab,
   tabTransitionTypes,
   classesHref,
+  classHref,
   hidesTabBar,
   isOutsideApp,
   showsHeaderSignOutOnPhones,
@@ -12,19 +13,30 @@ import {
 
 describe('classesHref', () => {
   it('opens the class directly when the student is in exactly one', () => {
-    expect(classesHref(['c1'])).toBe('/classes/c1')
+    expect(classesHref([{ id: 'c1', inTeam: false }])).toBe('/classes/c1')
+  })
+
+  it('opens the team board of that one class once the student is in a team', () => {
+    expect(classesHref([{ id: 'c1', inTeam: true }])).toBe('/classes/c1/project')
   })
 
   it('opens the class list for none or several', () => {
     expect(classesHref([])).toBe('/classes')
-    expect(classesHref(['c1', 'c2'])).toBe('/classes')
+    expect(classesHref([{ id: 'c1', inTeam: true }, { id: 'c2', inTeam: false }])).toBe('/classes')
+  })
+})
+
+describe('classHref', () => {
+  it('is the board for a class where I am in a team, else the class page', () => {
+    expect(classHref({ id: 'c1', inTeam: true })).toBe('/classes/c1/project')
+    expect(classHref({ id: 'c1', inTeam: false })).toBe('/classes/c1')
   })
 })
 
 describe('tabHref', () => {
   it('maps every tab to its page', () => {
     expect(tabHref('home', [])).toBe('/')
-    expect(tabHref('classes', ['c1'])).toBe('/classes/c1')
+    expect(tabHref('classes', [{ id: 'c1', inTeam: false }])).toBe('/classes/c1')
     expect(tabHref('nudges', [])).toBe('/nudges')
     expect(tabHref('settings', [])).toBe('/settings')
   })

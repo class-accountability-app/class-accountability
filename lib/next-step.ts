@@ -8,7 +8,8 @@
 //   invited to a team        → see the invitation
 //   a team without a project → start the project
 //   no team                  → start or join a team
-//   alone in a team          → invite classmates (the team QR is on the board)
+//   alone in a team          → invite classmates (the TEAM code and QR, on the
+//                              board and the class page; never the class link)
 //   otherwise                → open the project
 
 export type NextStepClass = {

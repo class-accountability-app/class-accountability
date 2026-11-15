@@ -14,3 +14,7 @@ export function inviteFirst(memberCount: number): boolean {
 export function lineShareUrl(text: string): string {
   return `https://line.me/R/share?text=${encodeURIComponent(text)}`
 }
+
+// The id of チームに招待する (the team's code and QR) on the board and the
+// class page: 次にやること's 「仲間を誘いましょう」 links to it.
+export const TEAM_INVITE_ID = 'team-invite'

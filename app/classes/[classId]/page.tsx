@@ -26,6 +26,9 @@ import { nextStep } from '@/lib/next-step'
 import { NextStepCard } from '@/components/next-step-card'
 import { RuleSnap } from '@/components/rule-snap'
 import { InviteDisclosure } from './invite-disclosure'
+import { loadTeamInvite } from '@/app/team/load'
+import { TeamInviteCard } from '@/components/team/team-invite-card'
+import { TEAM_INVITE_ID, inviteFirst } from '@/lib/team-invite'
 
 const POD_SOFT_CAP = 6
 
@@ -43,7 +46,8 @@ type Invitation = {
 // 「チームのボードを開く」 at the top (the one way to the board), 次にやること,
 // announcements, invitations to me, あなたのチーム (invite a classmate, answer
 // requests, leave: each button says what it does, with a line under it saying
-// what happens next), このクラスに人を招く (the CLASS link and QR, not the
+// what happens next; under it the team's own code and QR, as on the board),
+// このクラスに人を招く (the CLASS link and QR, not the
 // team) and, while I have no team, the other teams to ask to join. Two
 // columns from 1024px. The organizer branch is above.
 export default async function ClassPodsPage({
@@ -298,13 +302,17 @@ export default async function ClassPodsPage({
   const { data: myProject } = myPodId
     ? await supabase.from('projects').select('id').eq('pairing_id', myPodId).eq('status', 'active').limit(1).maybeSingle()
     : { data: null }
+  const myPodSize = myPodId ? (membersByPod.get(myPodId) ?? []).length : null
+  // チームに招待する (0028): my team's code and QR, here as well as on the
+  // board, while there is room. Null (card hidden) if the code can't be read.
+  const teamInvite = myPodId && myPodSize !== null && myPodSize < POD_SOFT_CAP ? await loadTeamInvite(supabase, myPodId) : null
   const step = nextStep({
     classes: [
       {
         id: cls.id,
         name: cls.name,
         organizer: false,
-        podSize: myPodId ? (membersByPod.get(myPodId) ?? []).length : null,
+        podSize: myPodSize,
         invited: invitesToMe.length > 0,
         project: myProject ? 'started' : 'none',
       },
@@ -347,7 +355,8 @@ export default async function ClassPodsPage({
           </header>
 
           <div className="min-w-0 lg:col-span-2">
-            <NextStepCard step={step} />
+            {/* The team's code and QR are on this page: no trip to the board. */}
+            <NextStepCard step={step} inviteHref={teamInvite ? `#${TEAM_INVITE_ID}` : undefined} />
           </div>
 
           <div className="min-w-0 lg:col-span-2 empty:hidden">
@@ -384,7 +393,7 @@ export default async function ClassPodsPage({
             <section aria-labelledby="pod-heading" className="flex flex-col gap-7">
               {sectionHead('pod-heading', t('yourPod'), t('yourPodWhy'))}
               {myPods.length === 0 ? (
-                // 次にやること above already offers ポッドを作る; no second one here.
+                // 次にやること above already offers チームを作る; no second one here.
                 <EmptyState illustration="pod" title={t('notInPodTitle')} headingLevel="h3" body={t('notInPod')} ruled />
               ) : (
                 myPods.map((podId) => {
@@ -435,6 +444,18 @@ export default async function ClassPodsPage({
                           </div>
                         </RuleSnap>
                       </div>
+                      {teamInvite && podId === myPodId && (
+                        <TeamInviteCard
+                          podId={podId}
+                          classId={classId}
+                          url={teamInvite.url}
+                          shortUrl={teamInvite.shortUrl}
+                          grouped={teamInvite.grouped}
+                          qrSvg={teamInvite.svg}
+                          className={cls.name}
+                          small={inviteFirst(podMembers.length)}
+                        />
+                      )}
                     </div>
                   )
                 })

@@ -7,6 +7,7 @@ import { formatDate } from '@/lib/date'
 import { CreateClassForm } from './create-class-form'
 import { CodeJoinForm } from '@/components/code-join-form'
 import { JoinClassButton } from '@/components/join-class-button'
+import { classHref } from '@/lib/nav'
 
 type MembershipRow = {
   class_id: string
@@ -98,15 +99,17 @@ export default async function ClassesPage() {
         ...m.classes!,
         lines: [teamLine, projectLine].filter((l): l is string => !!l),
         needsTeam: !pod,
+        inTeam: !!pod,
         action: pod ? t('actionOpen') : t('actionFindTeam'),
       }
     })
 
-  // Each card says what tapping it does (2026-11-15), instead of a bare arrow.
-  const card = (c: { id: string; name: string; term: string; lines: string[]; needsTeam?: boolean; action: string }) => (
+  // Each card says what tapping it does (2026-11-15), instead of a bare arrow,
+  // and goes there: the team's board once I'm in a team, else the class page.
+  const card = (c: { id: string; name: string; term: string; lines: string[]; needsTeam?: boolean; inTeam?: boolean; action: string }) => (
     <li key={c.id}>
       <Link
-        href={`/classes/${c.id}`}
+        href={classHref({ id: c.id, inTeam: c.inTeam === true })}
         className={`rule-card flex min-h-[96px] flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-4 hover:bg-surface-container ${c.needsTeam ? 'tint-hudson' : ''}`}
       >
         <span className="flex min-w-0 flex-col">

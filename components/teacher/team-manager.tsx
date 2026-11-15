@@ -62,6 +62,7 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
           <p className="text-[13px] text-muted">{t('unassignedNone')}</p>
         ) : (
           <>
+            <p className="text-[13px] leading-[1.7] text-muted">{t('unassignedHint')}</p>
             <fieldset className="flex flex-col gap-1">
               <legend className="sr-only">{t('pickLegend')}</legend>
               {unassigned.map((s) => (
@@ -164,7 +165,7 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
                   className={secondaryButtonClass}
                   onClick={() => run(() => autoSplit(classId, size))}
                 >
-                  {t('autoSplit')}
+                  {t('autoSplit', { count: unassigned.length })}
                 </button>
               </div>
               <p className="text-[13px] text-muted">{t('autoSplitPreview', { teams: preview.length, sizes: preview.join('・') })}</p>
@@ -173,6 +174,7 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
         )}
       </div>
 
+      {teams.length > 0 && <p className="text-[13px] leading-[1.7] text-muted">{t('moveHint')}</p>}
       {teams.map((team) => (
         <TeamCard
           key={team.podId}

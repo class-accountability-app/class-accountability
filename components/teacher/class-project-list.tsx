@@ -41,6 +41,7 @@ export function ClassProjectList({ classId, projects }: { classId: string; proje
               {' · '}
               {t('taskCount', { count: p.tasks.length })}
             </span>
+            <span className="text-[13px] leading-6 font-semibold text-accent-text underline underline-offset-4">{t('editCue')}</span>
           </summary>
           <div className="flex flex-col gap-4 border-t border-dashed border-ink/15 pt-4 mt-3">
             <ClassProjectForm

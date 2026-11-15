@@ -76,10 +76,22 @@ export default async function RootLayout({
     data: { user },
   } = await supabase.auth.getUser()
 
-  const { data: memberships } = user
-    ? await supabase.from('class_memberships').select('class_id, role').eq('user_id', user.id)
-    : { data: null }
-  const classIds = (memberships ?? []).map((m) => m.class_id)
+  const [{ data: memberships }, { data: teamRows }] = user
+    ? await Promise.all([
+        supabase.from('class_memberships').select('class_id, role').eq('user_id', user.id),
+        // The classes where I'm in an active team: there the クラス tab opens
+        // the team's board instead of the class page.
+        supabase
+          .from('pairing_members')
+          .select('pairings!inner(class_id, status)')
+          .eq('user_id', user.id)
+          .eq('pairings.status', 'active'),
+      ])
+    : [{ data: null }, { data: null }]
+  const teamClassIds = new Set(
+    ((teamRows ?? []) as unknown as { pairings: { class_id: string } }[]).map((r) => r.pairings.class_id)
+  )
+  const classes = (memberships ?? []).map((m) => ({ id: m.class_id, inTeam: teamClassIds.has(m.class_id) }))
   // A teacher-only account (0015: organizers are never in a team) gets お知らせ
   // where students have 声かけ, which could never show a teacher anything.
   const teacherOnly = isTeacherOnly((memberships ?? []).map((m) => m.role))
@@ -101,13 +113,13 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <Nav signedIn={!!user} />
           <div className="flex flex-1">
-            {user && <SideMenu classIds={classIds} teacherOnly={teacherOnly} />}
+            {user && <SideMenu classes={classes} teacherOnly={teacherOnly} />}
             <div className="ruled relative flex min-w-0 flex-1 flex-col">
               <main id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">{children}</main>
             </div>
           </div>
           <PublicFooter signedIn={!!user} />
-          {user && <TabBar classIds={classIds} teacherOnly={teacherOnly} />}
+          {user && <TabBar classes={classes} teacherOnly={teacherOnly} />}
           <PwaSupport />
           {user && <PushSync />}
           {user && <PresencePing />}

@@ -4,15 +4,18 @@ import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { isClassId, projectStepHref, startStepRedirect } from '@/lib/first-run'
 import { StepHead } from '@/components/first-run/step-head'
-import { primaryButtonClass } from '@/components/buttons'
+import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { CreatePodButton } from '@/app/classes/[classId]/create-pod-button'
 import { TeamCodeForm } from '@/components/team/team-code-form'
 
-// Step 2 of 3 of the first-run flow (Prompt 15): start a pod, ask to join one,
-// or decide later. Starting a pod leads to its project (project first); later
-// goes to the class page. It works when opened directly and shows the right state:
-// not a student of this class → Home; already in a team → on to the project. There is no way back: the name and the join before
-// it can't be undone, so 「あとで決める」 is the way out.
+// Step 2 of 3 of the first-run flow (Prompt 15): start a team, join one with
+// its code, ask to join one from the class page, or decide later. Each choice
+// has a heading and a line saying when to use it and what happens next.
+// Starting a team leads to its project (project first); later goes to the
+// class page. It works when opened directly and shows the right state: not a
+// student of this class → Home; already in a team → on to the project. There
+// is no way back: the name and the join before it can't be undone, so
+// 「あとで決める」 is the way out.
 export default async function StartPodPage({
   searchParams,
 }: {
@@ -57,23 +60,41 @@ export default async function StartPodPage({
           <h1 className="font-heading text-[28px] leading-tight font-bold text-ink lg:text-[36px]">{t('pod.title')}</h1>
           <p className="text-[15px] leading-7 text-ink/85">{t('pod.lead')}</p>
         </div>
-        <div className="flex flex-col gap-3.5">
-          <CreatePodButton classId={classId} buttonClassName={`${primaryButtonClass} w-full`} goTo={toProject} />
-          <TeamCodeForm />
-          <div className="flex flex-col items-center">
-            <Link
-              href={`/classes/${classId}#other-pods`}
-              className="inline-flex min-h-11 items-center text-sm font-semibold text-accent-text underline underline-offset-4"
-            >
+        {/* Three ways in, each with a line saying when to use it and what
+            happens next; the one filled button is "start a new team". */}
+        <ol aria-label={t('pod.optionsLabel')} className="flex flex-col gap-3.5">
+          <li className="rule-card tint-penna flex flex-col gap-2.5 px-5 py-5">
+            <div>
+              <h2 className="font-heading text-[17px] leading-7 font-bold text-ink">{t('pod.createHeading')}</h2>
+              <p className="text-[13px] leading-7 text-ink">{t('pod.createWhy')}</p>
+            </div>
+            <CreatePodButton classId={classId} buttonClassName={`${primaryButtonClass} w-full`} goTo={toProject} />
+          </li>
+          <li className="rule-card flex flex-col gap-2.5 px-5 py-5">
+            <div>
+              <h2 className="font-heading text-[17px] leading-7 font-bold text-ink">{t('pod.codeHeading')}</h2>
+              <p className="text-[13px] leading-7 text-muted">{t('pod.codeWhy')}</p>
+            </div>
+            <TeamCodeForm />
+          </li>
+          <li className="rule-card flex flex-col gap-2.5 px-5 py-5">
+            <div>
+              <h2 className="font-heading text-[17px] leading-7 font-bold text-ink">{t('pod.otherHeading')}</h2>
+              <p className="text-[13px] leading-7 text-muted">{t('pod.otherWhy')}</p>
+            </div>
+            <Link href={`/classes/${classId}#other-pods`} className={`${secondaryButtonClass} self-start`}>
               {t('pod.other')}
             </Link>
-            <Link
-              href={`/classes/${classId}`}
-              className="inline-flex min-h-11 items-center text-sm text-muted underline underline-offset-4"
-            >
-              {t('pod.later')}
-            </Link>
-          </div>
+          </li>
+        </ol>
+        <div className="flex flex-col items-center text-center">
+          <Link
+            href={`/classes/${classId}`}
+            className="inline-flex min-h-11 items-center text-sm text-muted underline underline-offset-4"
+          >
+            {t('pod.later')}
+          </Link>
+          <p className="text-[13px] leading-7 text-muted">{t('pod.laterWhy')}</p>
         </div>
       </div>
     </div>

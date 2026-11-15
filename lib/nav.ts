@@ -33,18 +33,29 @@ export function showsHeaderSignOutOnPhones(pathname: string): boolean {
   return pathname === '/welcome' || JOIN_PAGE.test(pathname) || TEAM_PAGE.test(pathname) || START_PAGE.test(pathname)
 }
 
-// The クラス tab opens the class directly when there's exactly one, since
-// that's where a student in one class always goes next.
-export function classesHref(classIds: readonly string[]): string {
-  return classIds.length === 1 ? `/classes/${classIds[0]}` : '/classes'
+// One of my classes, as the navigation needs it: `inTeam` is true when I am
+// in an active team there (never for a class I organize, 0015).
+export type NavClass = { id: string; inTeam: boolean }
+
+// Where "open this class" leads: the team's board once I'm in a team (that is
+// where the work is; the board links back to the class page), otherwise the
+// class page, where a team is found or the class is managed.
+export function classHref(c: NavClass): string {
+  return c.inTeam ? `/classes/${c.id}/project` : `/classes/${c.id}`
 }
 
-export function tabHref(tab: TabId, classIds: readonly string[]): string {
+// The クラス tab opens the class directly when there's exactly one, since
+// that's where a student in one class always goes next.
+export function classesHref(classes: readonly NavClass[]): string {
+  return classes.length === 1 ? classHref(classes[0]) : '/classes'
+}
+
+export function tabHref(tab: TabId, classes: readonly NavClass[]): string {
   switch (tab) {
     case 'home':
       return '/'
     case 'classes':
-      return classesHref(classIds)
+      return classesHref(classes)
     case 'nudges':
       return '/nudges'
     case 'settings':
