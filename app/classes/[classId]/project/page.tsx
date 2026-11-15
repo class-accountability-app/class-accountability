@@ -35,7 +35,7 @@ import { appOrigin } from '@/lib/app-origin'
 import { tokyoToday } from '@/lib/date'
 import { TeamName } from '@/components/team/team-name'
 import { inviteFirst } from '@/lib/team-invite'
-import { TeamTable, type PresenceRow } from '@/components/team/team-table'
+import { TeamTable, type PresenceRow, type AwayRow } from '@/components/team/team-table'
 import { TeamCodeForm } from '@/components/team/team-code-form'
 import { NudgeForm } from '@/components/nudges/nudge-form'
 import { NudgeList, NudgeListProvider, type NudgeItem } from '@/components/nudges/nudge-list'
@@ -277,7 +277,7 @@ export default async function ProjectPage({
   const boardPath = `/classes/${classId}/project`
 
   // 声かけ in this team that I sent or received (RLS shows nothing else).
-  const [{ data: nudgeRows }, tNudges, { data: presenceRows }, { data: depRows }, { data: milestoneRows }, tPlanning, { data: linkRows }, { data: activityTasks }, { data: projectMeta }, { data: stuckRows }] = await Promise.all([
+  const [{ data: nudgeRows }, tNudges, { data: presenceRows }, { data: depRows }, { data: milestoneRows }, tPlanning, { data: linkRows }, { data: activityTasks }, { data: projectMeta }, { data: stuckRows }, { data: awayRows }] = await Promise.all([
     supabase
       .from('nudges')
       .select('id, from_user_id, to_user_id, content, created_at')
@@ -301,6 +301,8 @@ export default async function ProjectPage({
     supabase.from('projects').select('created_at').eq('id', project.id).maybeSingle(),
     // 0047: 「困っています」 (errors before that migration: no flags then).
     supabase.from('project_tasks').select('id, stuck_note').eq('project_id', project.id).not('stuck_note', 'is', null),
+    // 0049: お休み (errors before that migration: nobody shows as away).
+    supabase.rpc('team_away', { p_pod: pod.podId }),
   ])
   const stuckNotes = new Map(((stuckRows ?? []) as { id: string; stuck_note: string }[]).map((r) => [r.id, r.stuck_note]))
   const deps = (depRows as Dependency[] | null) ?? null
@@ -553,7 +555,7 @@ export default async function ProjectPage({
         <GoogleCard boardPath={boardPath} groupDocId={groupDocId} hasGoogle={hasGoogle === true} hasCountedTask={hasCountedTask} />
 
       {presenceRows && (
-        <TeamTable podId={pod.podId} me={user.id} members={teamRows} initial={presenceRows as PresenceRow[]} />
+        <TeamTable podId={pod.podId} me={user.id} members={teamRows} initial={presenceRows as PresenceRow[]} initialAway={(awayRows as AwayRow[] | null) ?? []} />
       )}
 
       </aside>

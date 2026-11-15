@@ -76,6 +76,10 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
   one line, 「伝える」. **Expect:** `B` sees 「困っています：…」 on that task;
   `B` has no way to clear it; `O`'s team board does not show it. `A` taps
   「解決した」, or finishes or hands over the task: the line is gone.
+- [ ] 3.y (0049) `A` opens 設定 → 「お休みを伝える」, picks a day within 30
+  days, 「伝える」. **Expect:** `B` sees 「○日までお休み」 under A's name in
+  チームのようす; `O` sees nothing about it. 「取り消す」 removes it; a day in
+  the past or more than 30 days ahead is refused.
 
 ## 4. Logging
 

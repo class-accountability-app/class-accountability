@@ -3,7 +3,9 @@ import { redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { setLocale } from '@/i18n/actions'
-import { locales } from '@/i18n/config'
+import { locales, type Locale } from '@/i18n/config'
+import { addDaysYmd, formatDate, tokyoToday } from '@/lib/date'
+import { AWAY_MAX_DAYS, isAway } from '@/lib/away'
 import { DELETE_ACCOUNT_PATH, PRIVACY_POLICY_PATH } from '@/lib/contact'
 import { feedbackUrl } from '@/lib/feedback'
 import { DisplayNameForm } from './display-name-form'
@@ -11,6 +13,7 @@ import { InstallRow } from './install-row'
 import { PushRow } from './push-row'
 import { GoogleRow } from './google-row'
 import { OnlineRow } from './online-row'
+import { AwayRow } from './away-row'
 import { SignOutForm } from '@/components/sign-out-form'
 
 const LANGUAGE_NAMES = { ja: '日本語', en: 'English' } as const
@@ -51,14 +54,18 @@ export default async function SettingsPage() {
     redirect('/login')
   }
 
-  const [{ data: profile }, t, tGoogle, locale, { data: hasGoogle }, { data: presence }] = await Promise.all([
+  const [{ data: profile }, t, tGoogle, locale, { data: hasGoogle }, { data: presence }, { data: awayRow, error: awayError }] = await Promise.all([
     supabase.from('profiles').select('display_name').eq('id', user.id).single(),
     getTranslations('settings'),
     getTranslations('google'),
     getLocale(),
     supabase.rpc('has_google_connection'),
     supabase.from('member_presence').select('share_online').eq('user_id', user.id).maybeSingle(),
+    // 0049: my own away day (errors before that migration: the row is hidden).
+    supabase.from('member_presence').select('away_until').eq('user_id', user.id).maybeSingle(),
   ])
+  const today = tokyoToday()
+  const awayUntil = isAway(awayRow?.away_until) ? (awayRow!.away_until as string) : null
 
   const emailNoteId = 'settings-email-note'
 
@@ -94,6 +101,16 @@ export default async function SettingsPage() {
           <div className="border-t border-border">
             <OnlineRow initialOn={presence?.share_online ?? true} />
           </div>
+          {!awayError && (
+            <div className="border-t border-border">
+              <AwayRow
+                initialUntil={awayUntil}
+                initialLabel={awayUntil ? formatDate(awayUntil, locale as Locale) : null}
+                min={today}
+                max={addDaysYmd(today, AWAY_MAX_DAYS)}
+              />
+            </div>
+          )}
         </section>
         </div>
 
