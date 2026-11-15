@@ -5,7 +5,7 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
 import { createClient } from '@/lib/supabase/server'
 import { formatDateTime, tokyoToday } from '@/lib/date'
-import { bestOption, tallyOptions, type PollAnswer } from '@/lib/meeting-poll'
+import { availability, bestOption, pollSummary, rankOptions, tallyOptions, type PollAnswer } from '@/lib/meeting-poll'
 import { latestCheckins, type CheckinRow } from '@/lib/project-board'
 import { missingCheckins, roundStartFor } from '@/lib/checkin'
 import { StatusStamp } from '@/components/status-stamp'
@@ -199,15 +199,41 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
   const best = bestOption(poll.options, tallies)
   const mine: Record<string, PollAnswer> = {}
   for (const v of poll.votes) if (v.userId === user.id) mine[v.optionId] = v.answer
+  // Who can make each time (2026-11-15): names, a summary on top, a table on
+  // wide screens. The team already reads every answer (0024).
+  const who = availability(poll.options, poll.votes, memberIds)
+  const whoOf = new Map(who.map((w) => [w.optionId, w]))
+  const names = (ids: string[]) => ids.map(displayName).join(tCommon('listSeparator'))
   const rows = poll.options.map((o) => {
     const tally = tallies.find((x) => x.optionId === o.id)!
+    const w = whoOf.get(o.id)!
     return {
       id: o.id,
       label: formatSlot(o.startsAt, locale),
       tally: t('vote.tally', { yes: tally.yes, maybe: tally.maybe, no: tally.no }),
       best: o.id === best,
+      everyone: w.everyone,
+      yes: names(w.yes),
+      maybe: names(w.maybe),
+      no: names(w.no),
+      unanswered: names(w.unanswered),
+      counts: { yes: w.yes.length, maybe: w.maybe.length, no: w.no.length, unanswered: w.unanswered.length },
     }
   })
+  const labelOf = new Map(rows.map((r) => [r.id, r.label]))
+  const summary = pollSummary(who)
+  const costOf = (optionId: string) => {
+    const w = whoOf.get(optionId)!
+    if (w.everyone) return t('vote.confirmEveryone')
+    const parts = [
+      w.no.length > 0 ? t('vote.confirmNo', { names: names(w.no) }) : null,
+      w.maybe.length > 0 ? t('vote.confirmMaybe', { names: names(w.maybe) }) : null,
+      w.unanswered.length > 0 ? t('vote.confirmUnanswered', { names: names(w.unanswered) }) : null,
+    ].filter((x): x is string => x !== null)
+    return parts.join(' ')
+  }
+  const answerOf = new Map(poll.votes.map((v) => [`${v.optionId}:${v.userId}`, v.answer]))
+  const MARK: Record<PollAnswer, string> = { yes: '○', maybe: '△', no: '✕' }
   const notYet = memberIds.filter((id) => !poll.votes.some((v) => v.userId === id))
 
   return wrap(
@@ -217,7 +243,69 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
           (poll.voteBy ? ` · ${t('vote.by', { when: formatSlot(poll.voteBy, locale) })}` : '')
       )}
       <p className="-mb-3.5 px-0.5 text-[13px] leading-7 text-muted">{t('vote.legend')}</p>
-      <VoteGrid classId={classId} pollId={poll.id} rows={rows} mine={mine} />
+      <section
+        aria-labelledby="poll-summary"
+        className={`rule-card flex flex-col gap-1 px-5 py-4 ${summary.kind === 'everyone' ? 'tint-olive' : ''}`}
+      >
+        <h2 id="poll-summary" className="font-heading text-[17px] leading-7 font-bold text-ink">
+          {summary.kind === 'everyone'
+            ? t('vote.summaryEveryone', { when: labelOf.get(summary.optionId) ?? '' })
+            : summary.kind === 'best'
+              ? t('vote.summaryBest', { when: labelOf.get(summary.optionId) ?? '', yes: summary.yes, total: members.length })
+              : t('vote.summaryNone')}
+        </h2>
+        {summary.kind === 'everyone' && summary.more > 0 && (
+          <p className="text-sm leading-7 text-ink">{t('vote.summaryMore', { count: summary.more })}</p>
+        )}
+        {summary.kind === 'best' && summary.cannot.length > 0 && (
+          <p className="text-sm leading-7 text-ink [overflow-wrap:anywhere]">{t('vote.confirmNo', { names: names(summary.cannot) })}</p>
+        )}
+        {summary.kind === 'best' && summary.unanswered.length > 0 && (
+          <p className="text-sm leading-7 text-ink [overflow-wrap:anywhere]">
+            {t('vote.confirmUnanswered', { names: names(summary.unanswered) })}
+          </p>
+        )}
+      </section>
+      <VoteGrid classId={classId} pollId={poll.id} rows={rows} rankedIds={rankOptions(who).map((w) => w.optionId)} mine={mine} />
+      {/* Wide screens: the whole picture, times down and people across. */}
+      <section aria-labelledby="poll-table" className="rule-card hidden flex-col gap-2 px-5 py-5 md:flex">
+        <h2 id="poll-table" className="font-heading text-[17px] leading-7 font-bold text-ink">
+          {t('vote.tableHeading')}
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-left text-sm">
+            <thead>
+              <tr className="text-xs text-muted">
+                <th scope="col" className="py-1.5 pr-3 font-semibold">{t('vote.tableTime')}</th>
+                {members.map((m) => (
+                  <th key={m.id} scope="col" className="px-2 py-1.5 text-center font-semibold [overflow-wrap:anywhere]">
+                    {displayName(m.id)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id} className={`border-t border-dashed border-ink/15 ${r.everyone ? 'bg-tint-olive' : ''}`}>
+                  <th scope="row" className="py-2 pr-3 font-semibold whitespace-nowrap text-ink">
+                    {r.label}
+                    {r.everyone && <span className="font-meta text-xs font-bold"> · {t('vote.everyone')}</span>}
+                  </th>
+                  {members.map((m) => {
+                    const answer = answerOf.get(`${r.id}:${m.id}`)
+                    return (
+                      <td key={m.id} className="px-2 py-2 text-center text-[17px] font-bold text-ink">
+                        <span aria-hidden>{answer ? MARK[answer] : '–'}</span>
+                        <span className="sr-only">{answer ? t(`vote.answers.${answer}`) : t('vote.notAnswered')}</span>
+                      </td>
+                    )
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
       {notYet.length > 0 && (
         <p className="rule-card tint-hudson px-5 py-4 text-sm leading-7 text-ink">
           {t('vote.notYet', { names: notYet.map(displayName).join(tCommon('listSeparator')) })}
@@ -226,7 +314,7 @@ export default async function PollPage({ params }: { params: Promise<{ classId: 
       <ConfirmPoll
         classId={classId}
         pollId={poll.id}
-        options={rows.map((r) => ({ id: r.id, label: r.label }))}
+        options={rows.map((r) => ({ id: r.id, label: r.label, cost: costOf(r.id), everyone: r.everyone }))}
         defaultOptionId={best}
       />
       <CancelPoll classId={classId} pollId={poll.id} label={t('vote.cancel')} />
