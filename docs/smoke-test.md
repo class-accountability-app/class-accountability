@@ -31,6 +31,12 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
   name goes to Home.
 - [ ] 1.3 Settings → language switch to English and back. **Expect:** the
   whole UI changes, no untranslated keys (`project.xyz`-style text).
+- [ ] 1.4 (2026-11-15) A brand-new student joins their first class with the
+  code. **Expect:** 「チームに入りましょう」 (step 2 of 3) with three cards, each
+  with a line of explanation: 「新しいチームを作る」 (→ the project page),
+  「仲間のチームに入る」 (a team code → the team's join page), 「クラスのチーム
+  から選ぶ」 (→ the class page's list of teams); under them 「あとで決める」 with
+  a line about classes where the teacher makes the teams (→ the class page).
 
 ## 2. Organizer: class, teams, names, swap (0036, 0039)
 
@@ -39,7 +45,8 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
 - [ ] 2.1b (0045) `O` opens 「＋ プロジェクトを追加」, adds a second project with
   two tasks. **Expect:** it appears in the list; every existing team's board
   and Home show a switcher with both projects; the team summary has a line per
-  project. 「リストから外す」 removes it from the list only: teams keep it.
+  project. 「このプロジェクトをリストから外す」 removes it from the list only:
+  teams keep it. Each project row says 「開いて内容を変える」.
 - [ ] 2.1c (0046) `O` taps 「このチームのボードを見る」 on a project line of the
   team summary. **Expect:** that team's tasks with owners and numbers,
   check-ins made after 2026-11-14 12:00 JST with their notes, meetings and
@@ -52,7 +59,8 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
   a team card with A and B; `C` still without a team.
 - [ ] 2.4 `O` uses `C`'s 「チームに入れる…」 menu → the A/B team. **Expect:**
   C moves into it (3 members).
-- [ ] 2.5 `O` makes a second team: move `C` out (「チームから外す」), then make
+- [ ] 2.5 `O` makes a second team: move `C` out (「チームから外す（チームなしに
+  戻す）」), then make
   a team of `C` alone. Then on `A`'s menu pick 「…の人と入れ替える」 → `C`.
   **Expect:** A and C have changed teams; both teams keep their size.
 - [ ] 2.6 Put everyone back as you want them for the rest (A, B, C in one team
@@ -68,6 +76,27 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
   招く」 says it is the class link, not the team invite. As someone with no
   team, other teams show 「このチームに入れてもらう」 and, once asked, 「お願い済み
   （返事待ち）」.
+- [ ] 2.y (2026-11-15, クラス tab) `A` is in exactly one class and in a team:
+  tap the クラス tab. **Expect:** the team's board opens directly, not the
+  class page. Under the project's due line, 「クラスのページ（メンバー・招待・
+  チームを抜ける）」 opens the class page; 「チームのボードを開く」 there goes
+  back. A student in one class with NO team: the tab opens the class page, as
+  before. With two classes: the tab opens the list; a card reading 「チームの
+  ボードへ」 opens that class's board, one reading 「開いてチームを探す」 opens
+  its class page. `O` (organizer): the tab and cards open the class page.
+- [ ] 2.z (2026-11-15, team invite) `A` alone in a team that has a project:
+  Home's 次にやること says 「仲間を誘いましょう」 with 「チームのコードとQRを
+  開く」. **Expect:** the board opens at チームに招待する (team code, QR, LINE,
+  copy). On the class page the same step scrolls to the same card under
+  あなたのチーム, which shows while the team has fewer than 6 members and is
+  gone in a full team. The class join link stays under 「このクラスに人を招く」.
+- [ ] 2.w (2026-11-15, teacher wording) `O` reads the class page. **Expect:**
+  the header buttons say 「学生を招くリンクとQRへ」 and 「お知らせを書く」;
+  チームの管理 says a menu choice applies at once and that a moved student's
+  tasks go back to 担当なし (check on the board after 2.4: C's tasks are
+  unassigned, numbers kept); buttons read 「チーム名を保存」, 「チームに入って
+  いない○人を自動で分ける」, 「お知らせを送る」, 「この目安を消す」; the team
+  summary's link reads 「このチームのボードを見る（見るだけ）」.
 
 ## 3. Project and tasks
 
