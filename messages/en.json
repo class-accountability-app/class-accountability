@@ -144,7 +144,7 @@
     "invitedTo": "Invited to join a team ({members})",
     "emptyPod": "Empty team",
     "yourPod": "Your team",
-    "notInPod": "Start a team and invite classmates, or wait for an invitation. A team has up to 6 people.",
+    "notInPod": "Start a team, join with a team code, or ask to join one of the teams below. An invitation to you will show up here. A team has up to 6 people.",
     "memberCount": "{count} / {max} members",
     "requestsHeading": "Requests to join",
     "podFull": "This team is full.",
@@ -161,25 +161,17 @@
     "inviting": "Sending…",
     "noOneToInvite": "No classmates left to invite.",
     "notInPodTitle": "You're not in a team yet",
-    "organizerNote": "You run this class. You see a summary per team and each team's board (tasks, owners, progress, check-ins), view only. Students' writing and memos on progress entries are never shown.",
+    "organizerNote": "You run this class. On this page you put students into teams, hand out projects and post announcements. Each team’s board is view only. Students’ writing and memos on progress entries are never shown.",
     "studentCount": "{count, plural, one {# student has joined} other {# students have joined}}",
     "leavePod": "Leave this team",
     "leaveConfirm": "Leave this team? Your tasks go back to unassigned and teammates won't see your progress any more. The numbers you logged stay.",
     "leaveYes": "Leave",
     "leaveNo": "Cancel",
     "leaving": "Leaving…",
-    "targetsWhy": "Log each day with + Log.",
-    "newTarget": "New target",
-    "noTargets": "No targets yet.",
     "yourPodWhy": "Up to 6 people working on the same project.",
-    "podProgressLink": "See your team’s progress",
-    "podProgressSub": "Targets, recent logs, comments",
     "inviteHeading": "Invite people to this class",
     "inviteWhy": "Send the class join link or QR code to people who aren't in this class yet.",
     "showLinkQr": "Show the class join link and QR",
-    "yourTargets": "Your targets",
-    "projectLink": "Project",
-    "projectLinkSub": "See tasks and progress",
     "openTeamBoard": "Open team board",
     "acceptInvite": "Join this team",
     "acceptRequest": "Let them join",
@@ -188,7 +180,7 @@
     "requestHint": "You join when a member of this team says yes.",
     "inviteHint": "They get an invitation in the app and join once they accept.",
     "leaveHint": "Your tasks go back to unassigned. The numbers you logged stay.",
-    "inviteNotTeam": "To bring someone into your team, use “Invite a classmate to your team” above."
+    "inviteNotTeam": "To bring someone into your team, use the team code and QR under “Your team”, or “Invite a classmate to your team”."
   },
   "units": {
     "word_count": "{count, plural, one {# word} other {# words}}",
@@ -892,7 +884,7 @@
     "label": "Next step",
     "join": {
       "title": "Join your class",
-      "why": "Enter the code from your class to connect with your classmates."
+      "why": "Enter the code from your class to join it and work on a project with your team."
     },
     "share": {
       "title": "Share the join link",
@@ -905,52 +897,23 @@
       "action": "See the invitation"
     },
     "pod": {
-      "title": "Start a team",
-      "why": "In {className}, you and your classmates can then see each other’s progress.",
-      "other": "Ask to join another team"
-    },
-    "firstTarget": {
-      "title": "Set your first target",
-      "why": "Choose a report length or study hours for {className}, and every log becomes progress.",
-      "action": "Set your first target"
-    },
-    "logToday": {
-      "title": "Log today’s work",
-      "daysLeft": "{count, plural, one {# day} other {# days}} left",
-      "dueToday": "due today",
-      "overdue": "past the deadline",
-      "whyAmountWhen": "{title}: {amount} to go ({when}).",
-      "whyAmount": "{title}: {amount} to go.",
-      "whyWhen": "{title} ({when}).",
-      "why": "{title}.",
-      "hintPhone": "Use + Log at the bottom of the screen.",
-      "hintWide": "Use + Log on the target below.",
-      "writeTitle": "Keep writing",
-      "writeAction": "Keep writing"
+      "title": "Get into a team",
+      "why": "Projects in {className} are done in teams. Start a new team, or ask to join one that exists.",
+      "other": "Ask to join an existing team"
     },
     "invite": {
       "title": "Invite classmates",
-      "why": "You’re the only one in your team so far. Send the link and classmates can join.",
-      "action": "Invite classmates"
-    },
-    "seePod": {
-      "title": "You’ve logged today",
-      "why": "Have a look at your team. It’s a good moment to check in on someone.",
-      "action": "See your team"
-    },
-    "nextTarget": {
-      "title": "All targets reached",
-      "why": "Well done. When the next assignment comes, set a target for it.",
-      "action": "Set your next target"
+      "why": "You’re the only one in your team so far. Show your team’s QR code or code and classmates join it directly.",
+      "action": "Open the team code and QR"
     },
     "startProject": {
       "title": "Start your project",
-      "why": "Your team in {className} works on one project. Split it into tasks and pick who does what.",
+      "why": "Create the project your team in {className} will work on. Split it into tasks and pick who does what.",
       "action": "Create the project"
     },
     "openProject": {
       "title": "Keep the project moving",
-      "why": "Log your tasks on your team’s board in {className}.",
+      "why": "Work on your tasks and log them on your team’s board in {className}.",
       "action": "Open the board"
     }
   },
@@ -1047,14 +1010,18 @@
     "stepLabel": "Step {n} of 3",
     "back": "Back",
     "pod": {
-      "title": "Start a team",
-      "lead": "A team is a group of up to 6 classmates who see each other’s progress.",
-      "other": "Ask to join another team",
-      "later": "Decide later"
-    },
-    "target": {
-      "title": "Set your first target",
-      "lead": "Say what you’ll do and how much, and every log becomes progress."
+      "title": "Get into a team",
+      "lead": "A team is a group of up to 6 classmates working on the same project. There are three ways in.",
+      "other": "See the teams in the class",
+      "later": "Decide later",
+      "createHeading": "Start a new team",
+      "createWhy": "You become its first member. Afterwards you can invite classmates with the team’s code or QR.",
+      "codeHeading": "Join a classmate’s team",
+      "codeWhy": "If a classmate already started a team, ask them for its code. Enter it and you’re in right away.",
+      "otherHeading": "Pick a team in the class",
+      "otherWhy": "No code? Choose a team on the class page and ask to join. You’re in once a member of that team says yes.",
+      "laterWhy": "If your teacher puts students into teams, you don’t need to do anything.",
+      "optionsLabel": "Ways into a team"
     }
   },
   "project": {
@@ -1318,7 +1285,8 @@
       "submit": "Tell the team",
       "resolve": "Solved",
       "hint": "Your teammates see this. Your teacher doesn't. Up to 80 characters."
-    }
+    },
+    "toClassPage": "Class page (members, invites, leave the team)"
   },
   "google": {
     "kicker": "AUTOMATIC LOGGING",
@@ -1450,7 +1418,7 @@
   },
   "teacher": {
     "title": "How the teams are doing",
-    "why": "One summary line per team and project.",
+    "why": "For each team and project: progress, last activity and check-ins.",
     "noTeams": "No teams yet.",
     "team": "Team {number}",
     "members": "{count, plural, one {# person} other {# people}}",
@@ -1466,7 +1434,7 @@
       "behind": "Behind",
       "notStarted": "Not started"
     },
-    "downloadCsv": "Download as CSV (no names)",
+    "downloadCsv": "Download this summary as CSV (no names)",
     "csv": {
       "team": "Team",
       "members": "Members",
@@ -1485,8 +1453,8 @@
     "googleStuck": "{count} of {links} Google links haven’t been counted for over a day. Automatic counting may have stopped; please tell the developer.",
     "classKicker": "Class",
     "organizerRole": "Organizer",
-    "inviteLink": "Join link and QR",
-    "announceLink": "Send an announcement",
+    "inviteLink": "Go to the student join link and QR",
+    "announceLink": "Write an announcement",
     "manageLabel": "Manage the class",
     "stats": {
       "onTrack": "Teams on track",
@@ -1494,7 +1462,7 @@
       "checkins": "Check-ins this round"
     },
     "newClass": "Create another class",
-    "openBoard": "View this team's board"
+    "openBoard": "View this team’s board (view only)"
   },
   "teamJoin": {
     "eyebrow": "Team invitation",
@@ -1557,7 +1525,7 @@
     "daysLabel": "Days before the deadline",
     "removeTask": "Remove this task",
     "addTask": "Add a task",
-    "save": "Save",
+    "save": "Save changes",
     "saving": "Saving…",
     "saved": "Saved.",
     "taskProblemAt": "Check task {n}.",
@@ -1570,11 +1538,12 @@
     "due": "Due {date}",
     "noDeadline": "No deadline",
     "taskCount": "{count} tasks",
-    "remove": "Remove from the list",
+    "remove": "Remove this project from the list",
     "removeConfirm": "Remove it from the list? Teams that already have it keep their copy.",
     "removeYes": "Remove",
     "cancel": "Cancel",
-    "full": "A class can list up to 10 projects."
+    "full": "A class can list up to 10 projects.",
+    "editCue": "Open to change it"
   },
   "templates": {
     "presentation": "Presentation",
@@ -1603,35 +1572,37 @@
   },
   "organizer": {
     "heading": "Manage teams",
-    "why": "{students} students, {teams} teams. You see names and teams only, never progress or writing.",
+    "why": "{students} students, {teams} teams. Put students into teams, move them to another team, or swap two students.",
     "unassignedHeading": "Students without a team ({count})",
     "unassignedNone": "Everyone is in a team.",
     "pickLegend": "Choose students for a team",
     "newTeamName": "Team name (optional)",
     "makeTeam": "Make a team of {count}",
-    "autoSplitLabel": "Split the rest into teams automatically",
+    "autoSplitLabel": "Choose a team size and split automatically",
     "sizeOption": "{count} per team",
-    "autoSplit": "Split",
+    "autoSplit": "Split the students without a team ({count})",
     "autoSplitPreview": "That makes {teams} teams ({sizes})",
     "teamNo": "Team {n}",
     "memberCount": "{count} members",
     "teamName": "Team name",
-    "save": "Save",
+    "save": "Save team name",
     "moveLabel": "Move {name} to",
     "stayIn": "Stay in {team}",
     "moveTo": "Move to {team}",
-    "removeFromTeam": "Remove from team",
+    "removeFromTeam": "Remove from team (back to no team)",
     "announceHeading": "Announcements",
     "announceLabel": "Message",
-    "announceHint": "Shown on every student’s board in this class (up to {max} characters).",
-    "announceSend": "Post",
+    "announceHint": "Posting shows it on every student’s board and class page in this class and sends them a notification (up to {max} characters).",
+    "announceSend": "Post announcement",
     "announceDelete": "Delete this announcement",
     "fromTeacher": "From your teacher",
     "placeIn": "Add to a team…",
     "placeLabel": "Team to add {name} to",
     "teamFull": "{team} (full)",
     "swapWith": "Swap with someone in {team}",
-    "swapOption": "⇄ {name}"
+    "swapOption": "⇄ {name}",
+    "unassignedHint": "Tick students to make a new team, or use the menu on the right to add one to an existing team. A menu choice applies at once.",
+    "moveHint": "Choosing from the menu next to a name moves the student at once. Their tasks go back to unassigned; the numbers they logged stay."
   },
   "teamName": {
     "unnamed": "No team name yet",
@@ -1678,15 +1649,15 @@
     "notesUpdated": "Last updated: {name}, {when}",
     "notesSave": "Save notes",
     "notesSaved": "Saved",
-    "milestonesHeading": "Milestones",
+    "milestonesHeading": "Progress checkpoints",
     "milestonesWhy": "Show teams checkpoints such as \"30% by 20 November\". Each team sees the next one on its board; here you see only how many teams reached each.",
     "milestoneLine": "{percent}% by {date}",
     "milestoneReached": "{reached}/{teams} teams reached",
-    "milestoneDelete": "Delete",
+    "milestoneDelete": "Delete this checkpoint",
     "milestoneTitleLabel": "Milestone name",
     "milestoneTitleExample": "e.g. Outline ready",
     "milestoneDueLabel": "Date",
-    "milestonePercentLabel": "Target (%)",
+    "milestonePercentLabel": "Progress (%)",
     "milestoneAdd": "Add milestone",
     "boardMilestone": "Teacher's milestone \"{title}\": {percent}% by {date}",
     "boardMilestoneReached": "reached",

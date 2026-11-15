@@ -144,7 +144,7 @@
     "invitedTo": "チームへの招待（{members}）",
     "emptyPod": "メンバーのいないチーム",
     "yourPod": "あなたのチーム",
-    "notInPod": "チームを作って仲間を招待するか、招待が届くのを待ちましょう。チームは最大6人です。",
+    "notInPod": "チームを作るか、チームコードで入るか、下のチームに入れてもらいましょう。招待が届いたら、ここに表示されます。チームは最大6人です。",
     "memberCount": "メンバー {count} / {max}人",
     "requestsHeading": "参加リクエスト",
     "podFull": "このチームは満員です。",
@@ -161,25 +161,17 @@
     "inviting": "送っています…",
     "noOneToInvite": "招待できるクラスメイトはもういません。",
     "notInPodTitle": "まだチームに入っていません",
-    "organizerNote": "あなたはこのクラスの運営者です。チームごとのまとめと、各チームのボード（タスク、担当者、進み具合、チェックイン）を見ることができます。変更はできません。学生の文章や記録のメモは表示されません。",
+    "organizerNote": "あなたはこのクラスの運営者です。このページで、チームを分ける、プロジェクトを配る、お知らせを送ることができます。各チームのボードは見るだけで、変更はできません。学生の文章や記録のメモは表示されません。",
     "studentCount": "参加している学生：{count}人",
     "leavePod": "このチームを抜ける",
     "leaveConfirm": "このチームを抜けますか？ あなたの担当タスクは担当なしに戻り、仲間はあなたの進み具合を見られなくなります。記録した数字は残ります。",
     "leaveYes": "抜ける",
     "leaveNo": "やめる",
     "leaving": "抜けています…",
-    "targetsWhy": "毎日の記録は ＋記録 から。",
-    "newTarget": "新しい目標",
-    "noTargets": "まだ目標がありません。",
     "yourPodWhy": "同じプロジェクトを進める、最大6人のグループです。",
-    "podProgressLink": "チームの進み具合を見る",
-    "podProgressSub": "目標・最近の記録・コメント",
     "inviteHeading": "このクラスに人を招く",
     "inviteWhy": "まだこのクラスに入っていない人に、クラスの参加リンクかQRコードを送ります。",
     "showLinkQr": "クラスの参加リンクとQRを表示",
-    "yourTargets": "あなたの目標",
-    "projectLink": "プロジェクト",
-    "projectLinkSub": "タスクと進み具合を見る",
     "openTeamBoard": "チームのボードを開く",
     "acceptInvite": "このチームに入る",
     "acceptRequest": "チームに入れる",
@@ -188,7 +180,7 @@
     "requestHint": "このチームのメンバーが認めると入れます。",
     "inviteHint": "相手の画面に招待が届きます。相手が承諾するとチームに入ります。",
     "leaveHint": "抜けると、あなたの担当タスクは担当なしに戻ります。記録した数字は残ります。",
-    "inviteNotTeam": "チームに誘うときは、上の「クラスメイトをチームに招待」を使ってください。"
+    "inviteNotTeam": "チームに誘うときは、「あなたのチーム」にあるチームのコードとQR、または「クラスメイトをチームに招待」を使ってください。"
   },
   "units": {
     "word_count": "{count, number}語",
@@ -892,7 +884,7 @@
     "label": "次にやること",
     "join": {
       "title": "クラスに参加しましょう",
-      "why": "授業で配られたコードを入力すると、同じ授業の仲間とつながれます。"
+      "why": "授業で配られたコードを入力すると、クラスに入り、チームでプロジェクトを進められます。"
     },
     "share": {
       "title": "参加リンクを共有しましょう",
@@ -905,52 +897,23 @@
       "action": "招待を見る"
     },
     "pod": {
-      "title": "チームを作りましょう",
-      "why": "{className} で、仲間と進み具合を見せ合えるようになります。",
-      "other": "ほかのチームに参加を申し込む"
-    },
-    "firstTarget": {
-      "title": "最初の目標を作りましょう",
-      "why": "{className} のレポートの文字数や勉強時間を決めると、毎日の記録が進み具合になります。",
-      "action": "最初の目標を作る"
-    },
-    "logToday": {
-      "title": "今日の分を記録しましょう",
-      "daysLeft": "残り{count}日",
-      "dueToday": "今日まで",
-      "overdue": "締め切りを過ぎています",
-      "whyAmountWhen": "{title}：あと{amount}（{when}）。",
-      "whyAmount": "{title}：あと{amount}。",
-      "whyWhen": "{title}（{when}）。",
-      "why": "{title}。",
-      "hintPhone": "画面下の ＋記録 から記録できます。",
-      "hintWide": "下の目標の ＋記録 から記録できます。",
-      "writeTitle": "続きを書きましょう",
-      "writeAction": "続きを書く"
+      "title": "チームに入りましょう",
+      "why": "{className} のプロジェクトはチームで進めます。新しいチームを作るか、今あるチームに入れてもらいましょう。",
+      "other": "今あるチームに入れてもらう"
     },
     "invite": {
       "title": "仲間を誘いましょう",
-      "why": "チームにはまだあなただけです。リンクを送ると、同じ授業の人が参加できます。",
-      "action": "仲間を招待する"
-    },
-    "seePod": {
-      "title": "今日の記録は済みました",
-      "why": "仲間の様子も見てみましょう。声をかけるきっかけになります。",
-      "action": "チームの様子を見る"
-    },
-    "nextTarget": {
-      "title": "すべての目標を達成しました",
-      "why": "おつかれさまでした。次の課題があれば、目標を作りましょう。",
-      "action": "次の目標を作る"
+      "why": "チームにはまだあなただけです。チームのQRコードかコードを見せると、クラスメイトがそのままチームに入れます。",
+      "action": "チームのコードとQRを開く"
     },
     "startProject": {
       "title": "プロジェクトをはじめましょう",
-      "why": "{className} のチームで、1つのプロジェクトに取り組みます。タスクを分けて担当を決めましょう。",
+      "why": "{className} のチームで取り組むプロジェクトを作ります。タスクに分けて、担当を決めましょう。",
       "action": "プロジェクトを作る"
     },
     "openProject": {
       "title": "プロジェクトを進めましょう",
-      "why": "{className} のチームのボードで、担当のタスクを記録できます。",
+      "why": "{className} のチームのボードで、担当のタスクを進めて記録しましょう。",
       "action": "ボードを開く"
     }
   },
@@ -1047,14 +1010,18 @@
     "stepLabel": "3ステップのうち{n}つ目",
     "back": "戻る",
     "pod": {
-      "title": "チームを作りましょう",
-      "lead": "チームは、同じクラスの仲間と進み具合を見せ合う、最大6人のグループです。",
-      "other": "ほかのチームに参加を申し込む",
-      "later": "あとで決める"
-    },
-    "target": {
-      "title": "最初の目標を決めましょう",
-      "lead": "何をどれだけやるかを決めると、毎日の記録が進み具合になります。"
+      "title": "チームに入りましょう",
+      "lead": "チームは、同じプロジェクトをいっしょに進める最大6人のグループです。入り方は3つあります。",
+      "other": "クラスのチームを見る",
+      "later": "あとで決める",
+      "createHeading": "新しいチームを作る",
+      "createWhy": "あなたが最初のメンバーになります。作ったあと、チームのコードやQRで仲間を誘えます。",
+      "codeHeading": "仲間のチームに入る",
+      "codeWhy": "仲間がもうチームを作っているときは、コードを見せてもらってください。入力するとすぐに入れます。",
+      "otherHeading": "クラスのチームから選ぶ",
+      "otherWhy": "コードがないときは、クラスのページでチームを選んでお願いできます。そのチームのメンバーが認めると入れます。",
+      "laterWhy": "先生がチームを分ける授業では、何もしなくても大丈夫です。",
+      "optionsLabel": "チームへの入り方"
     }
   },
   "project": {
@@ -1318,7 +1285,8 @@
       "submit": "伝える",
       "resolve": "解決した",
       "hint": "チームの仲間に見えます。先生には表示されません。80文字まで。"
-    }
+    },
+    "toClassPage": "クラスのページ（メンバー・招待・チームを抜ける）"
   },
   "google": {
     "kicker": "自動で記録",
@@ -1450,7 +1418,7 @@
   },
   "teacher": {
     "title": "チームの進み具合",
-    "why": "チームとプロジェクトごとのまとめです。",
+    "why": "チームごと、プロジェクトごとに、進み具合・最後の動き・チェックインの数が並びます。",
     "noTeams": "まだチームがありません。",
     "team": "チーム{number}",
     "members": "{count}人",
@@ -1466,7 +1434,7 @@
       "behind": "遅れ気味",
       "notStarted": "未開始"
     },
-    "downloadCsv": "CSVでダウンロード（名前は含みません）",
+    "downloadCsv": "このまとめをCSVでダウンロード（名前は含みません）",
     "csv": {
       "team": "チーム",
       "members": "人数",
@@ -1485,8 +1453,8 @@
     "googleStuck": "Google とつないだ記録のうち {count}件（全{links}件中）が1日以上数えられていません。自動の集計が止まっている可能性があるので、開発者に知らせてください。",
     "classKicker": "クラス",
     "organizerRole": "運営者",
-    "inviteLink": "参加用のリンクと QR",
-    "announceLink": "お知らせを送る",
+    "inviteLink": "学生を招くリンクとQRへ",
+    "announceLink": "お知らせを書く",
     "manageLabel": "クラスの管理",
     "stats": {
       "onTrack": "予定どおりのチーム",
@@ -1494,7 +1462,7 @@
       "checkins": "今回のチェックイン"
     },
     "newClass": "新しいクラスを作る",
-    "openBoard": "このチームのボードを見る"
+    "openBoard": "このチームのボードを見る（見るだけ）"
   },
   "teamJoin": {
     "eyebrow": "チームへの招待",
@@ -1557,7 +1525,7 @@
     "daysLabel": "締切の何日前",
     "removeTask": "このタスクを削除",
     "addTask": "タスクを追加",
-    "save": "保存する",
+    "save": "変更を保存する",
     "saving": "保存しています…",
     "saved": "保存しました。",
     "taskProblemAt": "タスク{n}を確認してください。",
@@ -1570,11 +1538,12 @@
     "due": "締切 {date}",
     "noDeadline": "締切なし",
     "taskCount": "タスク {count}件",
-    "remove": "リストから外す",
+    "remove": "このプロジェクトをリストから外す",
     "removeConfirm": "リストから外しますか？ すでにチームに配られたプロジェクトは残ります。",
     "removeYes": "外す",
     "cancel": "やめる",
-    "full": "プロジェクトは10件までです。"
+    "full": "プロジェクトは10件までです。",
+    "editCue": "開いて内容を変える"
   },
   "templates": {
     "presentation": "発表",
@@ -1603,35 +1572,37 @@
   },
   "organizer": {
     "heading": "チームの管理",
-    "why": "学生{students}人・チーム{teams}つ。ここでは名前とチームだけが見えます。進み具合や文章は見えません。",
+    "why": "学生{students}人・チーム{teams}つ。学生をチームに入れる、ほかのチームへ移す、入れ替えることができます。",
     "unassignedHeading": "チームに入っていない学生（{count}人）",
     "unassignedNone": "全員がチームに入っています。",
     "pickLegend": "チームにする学生を選ぶ",
     "newTeamName": "チーム名（任意）",
     "makeTeam": "選んだ{count}人でチームを作る",
-    "autoSplitLabel": "残りの学生を自動でチーム分けする",
+    "autoSplitLabel": "1チームの人数を選んで、自動でチーム分けする",
     "sizeOption": "{count}人ずつ",
-    "autoSplit": "自動で分ける",
+    "autoSplit": "チームに入っていない{count}人を自動で分ける",
     "autoSplitPreview": "{teams}チーム（{sizes}人）になります",
     "teamNo": "チーム{n}",
     "memberCount": "{count}人",
     "teamName": "チーム名",
-    "save": "保存",
+    "save": "チーム名を保存",
     "moveLabel": "{name}さんの移動先",
     "stayIn": "{team}のまま",
     "moveTo": "{team}へ移動",
-    "removeFromTeam": "チームから外す",
+    "removeFromTeam": "チームから外す（チームなしに戻す）",
     "announceHeading": "クラスへのお知らせ",
     "announceLabel": "お知らせの内容",
-    "announceHint": "クラスの学生全員のボードに表示されます（{max}文字まで）。",
-    "announceSend": "お知らせする",
+    "announceHint": "送ると、クラスの学生全員のボードとクラスのページに表示され、通知も届きます（{max}文字まで）。",
+    "announceSend": "お知らせを送る",
     "announceDelete": "このお知らせを消す",
     "fromTeacher": "先生からのお知らせ",
     "placeIn": "チームに入れる…",
     "placeLabel": "{name}さんを入れるチーム",
     "teamFull": "{team}（満員）",
     "swapWith": "{team}の人と入れ替える",
-    "swapOption": "⇄ {name}さん"
+    "swapOption": "⇄ {name}さん",
+    "unassignedHint": "チェックを入れて新しいチームを作るか、右のメニューで今あるチームに入れます。メニューは選ぶとすぐに反映されます。",
+    "moveHint": "名前の右のメニューで選ぶと、すぐに移動します。移った学生の担当タスクは「担当なし」に戻り、記録した数字は残ります。"
   },
   "teamName": {
     "unnamed": "チーム名はまだありません",
@@ -1678,15 +1649,15 @@
     "notesUpdated": "最終更新：{name}・{when}",
     "notesSave": "メモを保存する",
     "notesSaved": "保存しました",
-    "milestonesHeading": "目安",
+    "milestonesHeading": "進み具合の目安",
     "milestonesWhy": "「11月20日までに30%」のような目安をチームに見せられます。各チームのボードに次の目安が出ます。ここでは達成したチームの数だけがわかります。",
     "milestoneLine": "{date}までに{percent}%",
     "milestoneReached": "{reached}/{teams}チームが達成",
-    "milestoneDelete": "消す",
+    "milestoneDelete": "この目安を消す",
     "milestoneTitleLabel": "目安の名前",
     "milestoneTitleExample": "例：構成ができている",
     "milestoneDueLabel": "日付",
-    "milestonePercentLabel": "目標（%）",
+    "milestonePercentLabel": "進み具合（%）",
     "milestoneAdd": "目安を追加する",
     "boardMilestone": "先生の目安「{title}」：{date}までに{percent}%",
     "boardMilestoneReached": "達成しています",

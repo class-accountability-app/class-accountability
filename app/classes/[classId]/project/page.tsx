@@ -83,6 +83,17 @@ export default async function ProjectPage({
       <p className="text-sm leading-7 text-muted">{cls.name}</p>
     </div>
   )
+  // The クラス tab and the class list open the board directly for someone in
+  // a team, so the board is the way to the class page (members, invites,
+  // leaving the team).
+  const toClassPage = (
+    <Link
+      href={`/classes/${classId}`}
+      className="inline-flex min-h-11 items-center self-start text-[13px] font-semibold text-accent-text underline underline-offset-4"
+    >
+      {t('toClassPage')}
+    </Link>
+  )
   const wrap = (children: React.ReactNode, wide = false) => (
     <div className="flex flex-1 flex-col px-4 py-7 sm:px-6">
       <div className={`mx-auto flex w-full max-w-md flex-col gap-7 md:max-w-xl ${wide ? 'lg:max-w-6xl' : ''}`}>{children}</div>
@@ -162,6 +173,7 @@ export default async function ProjectPage({
         {inviteOnTop && inviteCard}
         <CreateProjectForm classId={classId} />
         {!inviteOnTop && inviteCard}
+        {toClassPage}
         {past.length > 0 && (
           <section aria-labelledby="history-heading" className="flex flex-col gap-3.5">
             <h2 id="history-heading" className="px-0.5 font-heading text-[17px] leading-7 font-bold text-ink">
@@ -375,6 +387,7 @@ export default async function ProjectPage({
           <span className="font-bold">{project.title}</span>
         </h1>
         <p className="pt-1 font-meta text-[13px] leading-7 text-muted">{dueLine}</p>
+        {toClassPage}
       </div>
         <Link href={`/classes/${classId}/project/tasks/new`} className={secondaryButtonClass}>
           ＋ {t('addTask')}

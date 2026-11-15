@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import type { NextStep } from '@/lib/next-step'
+import { TEAM_INVITE_ID } from '@/lib/team-invite'
 import { CodeJoinForm } from '@/components/code-join-form'
 import { RuleSnap } from '@/components/rule-snap'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
@@ -20,9 +21,20 @@ function Chevron() {
 // and at most one button.
 // On the ruled page: 28px lines, 14px padding, the actions row 56px.
 //
-// `podPrimary` (Home, Prompt 15 PR 2): false draws the pod step's button
-// outlined, under a hero target card that owns the filled button.
-export async function NextStepCard({ step, podPrimary = true }: { step: NextStep; podPrimary?: boolean }) {
+// `podPrimary`: false draws the team step's button outlined, for a screen
+// area that already has a filled button.
+// `inviteHref`: where 「仲間を誘いましょう」 leads. Always the TEAM invite (its
+// code and QR, #team-invite), never the class join link: the board's card by
+// default, the class page's own card when the step is shown there.
+export async function NextStepCard({
+  step,
+  podPrimary = true,
+  inviteHref,
+}: {
+  step: NextStep
+  podPrimary?: boolean
+  inviteHref?: string
+}) {
   const t = await getTranslations('nextStep')
 
   let title: string
@@ -81,7 +93,7 @@ export async function NextStepCard({ step, podPrimary = true }: { step: NextStep
       title = t('invite.title')
       why = t('invite.why')
       actions = (
-        <Link href={`/classes/${step.classId}/project`} className={secondaryButtonClass}>
+        <Link href={inviteHref ?? `/classes/${step.classId}/project#${TEAM_INVITE_ID}`} className={secondaryButtonClass}>
           {t('invite.action')}
           <Chevron />
         </Link>
