@@ -36,6 +36,7 @@ import { tokyoToday } from '@/lib/date'
 import { TeamName } from '@/components/team/team-name'
 import { inviteFirst } from '@/lib/team-invite'
 import { TeamTable, type PresenceRow, type AwayRow } from '@/components/team/team-table'
+import { TeamStatus } from '@/components/team/team-status'
 import { TeamCodeForm } from '@/components/team/team-code-form'
 import { NudgeForm } from '@/components/nudges/nudge-form'
 import { NudgeList, NudgeListProvider, type NudgeItem } from '@/components/nudges/nudge-list'
@@ -277,7 +278,7 @@ export default async function ProjectPage({
   const boardPath = `/classes/${classId}/project`
 
   // 声かけ in this team that I sent or received (RLS shows nothing else).
-  const [{ data: nudgeRows }, tNudges, { data: presenceRows }, { data: depRows }, { data: milestoneRows }, tPlanning, { data: linkRows }, { data: activityTasks }, { data: projectMeta }, { data: stuckRows }, { data: awayRows }] = await Promise.all([
+  const [{ data: nudgeRows }, tNudges, { data: presenceRows }, { data: depRows }, { data: milestoneRows }, tPlanning, { data: linkRows }, { data: activityTasks }, { data: projectMeta }, { data: stuckRows }, { data: awayRows }, { data: myPresence }] = await Promise.all([
     supabase
       .from('nudges')
       .select('id, from_user_id, to_user_id, content, created_at')
@@ -303,6 +304,8 @@ export default async function ProjectPage({
     supabase.from('project_tasks').select('id, stuck_note').eq('project_id', project.id).not('stuck_note', 'is', null),
     // 0049: お休み (errors before that migration: nobody shows as away).
     supabase.rpc('team_away', { p_pod: pod.podId }),
+    // Whether my own green dot is shown (設定 → オンライン表示); no row yet = on.
+    supabase.from('member_presence').select('share_online').eq('user_id', user.id).maybeSingle(),
   ])
   const stuckNotes = new Map(((stuckRows ?? []) as { id: string; stuck_note: string }[]).map((r) => [r.id, r.stuck_note]))
   const deps = (depRows as Dependency[] | null) ?? null
@@ -408,6 +411,18 @@ export default async function ProjectPage({
         )}
         </div>
       </section>
+
+      {/* チームのいま (2026-11-15): who is here, before anything else. */}
+      {presenceRows && (
+        <TeamStatus
+          podId={pod.podId}
+          me={user.id}
+          members={members.map((m) => ({ id: m.id, name: m.name }))}
+          initial={presenceRows as PresenceRow[]}
+          initialAway={(awayRows as AwayRow[] | null) ?? []}
+          sharing={myPresence?.share_online ?? true}
+        />
+      )}
 
       <WhatChanged projectId={project.id} items={changes} />
 

@@ -80,6 +80,12 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
   days, 「伝える」. **Expect:** `B` sees 「○日までお休み」 under A's name in
   チームのようす; `O` sees nothing about it. 「取り消す」 removes it; a day in
   the past or more than 30 days ahead is refused.
+- [ ] 3.z (2026-11-15) `A` and `B` open the board; `C` stays closed. **Expect:**
+  チームのいま at the top of the board and Home says 「3人中2人がオンライン」,
+  A and B first with a filled dot and 「オンライン：いま開いています」, C with a
+  ring and the last day. `B` closes the app: within about 3 minutes B turns to
+  オフライン for `A` without reloading. `A` turns オンライン表示 off in 設定:
+  A's own strip says it is off, and `B` sees A as offline.
 
 ## 4. Logging
 
