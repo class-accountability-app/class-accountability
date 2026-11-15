@@ -28,6 +28,15 @@
   --tint-hudson: #ebdbd3;
   --tint-rubble: #d0bea3;
   --tint-olive: #8f917c;
+  /* Member lights (チームのいま, 2026-11-15): one per teammate, by the order
+     they joined the team (a team has at most 6). They mean only "this person",
+     never a state: the word オンライン and the filled dot say the state. */
+  --light-1: #f2b84b; /* amber */
+  --light-2: #6fb7e9; /* sky */
+  --light-3: #f08a7b; /* coral */
+  --light-4: #6fcf9f; /* mint */
+  --light-5: #a895e8; /* violet */
+  --light-6: #ec8fc0; /* pink */
 
   /* Layout rhythm kept from the notebook theme (28px lines). */
   --rule: 28px;
@@ -387,12 +396,40 @@ html:lang(ja) body {
     220ms cubic-bezier(0.32, 0.72, 0, 1) both vt-slide-in;
 }
 
+/* A teammate's card in チームのいま. Offline it is flat; online it lights up in
+   that member's own light (--light, set by .light-N): a pale wash of the
+   colour under Umbra text (over 9:1), a ring and a soft glow that breathes. */
+.light-1 { --light: var(--light-1); }
+.light-2 { --light: var(--light-2); }
+.light-3 { --light: var(--light-3); }
+.light-4 { --light: var(--light-4); }
+.light-5 { --light: var(--light-5); }
+.light-6 { --light: var(--light-6); }
+.member-card { background-color: var(--surface-container); }
+.member-card.is-away { background-color: var(--tint-hudson); }
+.member-card.is-lit {
+  background-color: color-mix(in srgb, var(--light) 30%, white);
+  box-shadow:
+    inset 0 0 0 2px var(--light),
+    0 0 16px color-mix(in srgb, var(--light) 60%, transparent);
+  animation: member-glow 2.8s ease-in-out infinite;
+}
+.member-card.is-lit .member-badge { background-color: var(--light); }
+@keyframes member-glow {
+  0%, 100% { box-shadow: inset 0 0 0 2px var(--light), 0 0 10px color-mix(in srgb, var(--light) 45%, transparent); }
+  50% { box-shadow: inset 0 0 0 2px var(--light), 0 0 22px color-mix(in srgb, var(--light) 80%, transparent); }
+}
+
 /* Reduced motion: an instant switch, no fade and no movement. */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(*),
   ::view-transition-new(*),
   ::view-transition-group(*),
   ::view-transition-image-pair(*) {
+    animation: none !important;
+  }
+
+  .member-card.is-lit {
     animation: none !important;
   }
 

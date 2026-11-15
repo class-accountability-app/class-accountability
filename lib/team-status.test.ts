@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { initialOf, memberStatuses, onlineFirst } from './team-status'
+import { initialOf, memberStatuses, onlineFirst, lightOf } from './team-status'
 
 // 2026-11-15 10:00 JST
 const now = new Date('2026-11-15T01:00:00Z')
@@ -42,5 +42,17 @@ describe('initialOf', () => {
     expect(initialOf('  aki')).toBe('a')
     expect(initialOf('👩‍🎓まい')).toBe('👩‍🎓')
     expect(initialOf('')).toBe('?')
+  })
+})
+
+describe('lightOf', () => {
+  it('gives each of six teammates a different light, by join order', () => {
+    const ids = ['a', 'b', 'c', 'd', 'e', 'f']
+    expect(ids.map((id) => lightOf(ids, id))).toEqual([1, 2, 3, 4, 5, 6])
+  })
+
+  it('does not depend on who is online or on the display order', () => {
+    expect(lightOf(['a', 'b', 'c'], 'c')).toBe(3)
+    expect(lightOf(['a', 'b', 'c'], 'unknown')).toBe(1)
   })
 })

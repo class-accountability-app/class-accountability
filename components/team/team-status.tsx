@@ -4,13 +4,14 @@ import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import type { Locale } from '@/i18n/config'
 import { formatDate, formatDayAgo } from '@/lib/date'
-import { initialOf, memberStatuses, onlineFirst, type AwayRow, type PresenceRow } from '@/lib/team-status'
+import { initialOf, lightOf, memberStatuses, onlineFirst, type AwayRow, type PresenceRow } from '@/lib/team-status'
 import { StatusDot } from './status-dot'
 import { useTeamPresence } from './use-team-presence'
 
 // チームのいま (2026-11-15): who is here right now, at the top of Home and the
 // board. One card per teammate, online people first, each with a badge, a
-// status shape and the status in words. It shows only what the team already
+// status shape and the status in words; an online teammate's card lights up
+// in their own colour. It shows only what the team already
 // sees (0035, 0049): open now, the last DAY opened (never the time), お休み.
 export function TeamStatus({
   podId,
@@ -33,7 +34,8 @@ export function TeamStatus({
   const { presence, away } = useTeamPresence(podId, initial, initialAway)
 
   const nameOf = new Map(members.map((m) => [m.id, m.name]))
-  const statuses = onlineFirst(memberStatuses(members.map((m) => m.id), presence, away))
+  const memberIds = members.map((m) => m.id)
+  const statuses = onlineFirst(memberStatuses(memberIds, presence, away))
   const online = statuses.filter((s) => s.state === 'online').length
 
   return (
@@ -60,14 +62,16 @@ export function TeamStatus({
           return (
             <li
               key={s.id}
-              className={`flex items-center gap-3 rounded-2xl px-3 py-2 ${
-                s.state === 'online' ? 'bg-tint-olive' : s.state === 'away' ? 'bg-tint-hudson' : 'bg-surface-container'
+              // Online: the card lights up in this member's own light
+              // (globals.css .member-card). The words and the dot still say it.
+              className={`member-card light-${lightOf(memberIds, s.id)} flex items-center gap-3 rounded-2xl px-3 py-2 ${
+                s.state === 'online' ? 'is-lit' : s.state === 'away' ? 'is-away' : ''
               }`}
             >
               <span className="relative shrink-0">
                 <span
                   aria-hidden
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-base font-bold text-ink shadow-[inset_0_0_0_1.5px_var(--ink)]"
+                  className="member-badge flex h-10 w-10 items-center justify-center rounded-full bg-surface text-base font-bold text-ink shadow-[inset_0_0_0_1.5px_var(--ink)]"
                 >
                   {initialOf(name)}
                 </span>

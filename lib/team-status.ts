@@ -51,3 +51,13 @@ export function initialOf(name: string): string {
   const first = new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(trimmed)[Symbol.iterator]().next()
   return first.done ? '?' : first.value.segment
 }
+
+// Each teammate's own light (globals.css --light-1..6): by their place in the
+// team's join order, so everyone in the team sees the same colour for the
+// same person. A team has at most 6 members, so within a team no two share one.
+export const MEMBER_LIGHTS = 6
+
+export function lightOf(memberIds: readonly string[], id: string): number {
+  const at = memberIds.indexOf(id)
+  return (Math.max(at, 0) % MEMBER_LIGHTS) + 1
+}
