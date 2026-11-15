@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import type { Locale } from '@/i18n/config'
 import { formatDate, formatDayAgo } from '@/lib/date'
-import { initialOf, lightOf, memberStatuses, onlineFirst, type AwayRow, type MemberStatus, type PresenceRow } from '@/lib/team-status'
+import { initialOf, tintOf, memberStatuses, onlineFirst, type AwayRow, type MemberStatus, type PresenceRow } from '@/lib/team-status'
 import { StatusDot } from './status-dot'
 import { useTeamPresence } from './use-team-presence'
 
@@ -55,9 +55,9 @@ export function TeamStatus({
     return (
       <li
         key={s.id}
-        // Online: the card lights up in this member's own light
+        // Online: the card lights up in this member's tint
         // (globals.css .member-card). The words and the dot still say it.
-        className={`member-card light-${lightOf(memberIds, s.id)} flex items-center gap-3 rounded-2xl px-3 py-2 ${
+        className={`member-card light-${tintOf(memberIds, s.id, me)} flex items-center gap-3 rounded-2xl px-3 py-2 ${
           s.state === 'online' ? 'is-lit' : s.state === 'away' ? 'is-away' : s.state === 'today' ? 'is-today' : ''
         }`}
       >
@@ -102,7 +102,7 @@ export function TeamStatus({
             <span key={s.id} className="relative shrink-0">
               <span
                 aria-hidden
-                className={`member-badge-solo light-${lightOf(memberIds, s.id)} ${s.state === 'online' ? 'is-lit' : ''} flex h-10 w-10 items-center justify-center rounded-full bg-surface text-base font-bold text-ink shadow-[inset_0_0_0_1.5px_var(--ink)]`}
+                className={`member-badge-solo light-${tintOf(memberIds, s.id, me)} ${s.state === 'online' ? 'is-lit' : ''} flex h-10 w-10 items-center justify-center rounded-full bg-surface text-base font-bold text-ink shadow-[inset_0_0_0_1.5px_var(--ink)]`}
               >
                 {initialOf(nameOf.get(s.id) ?? '')}
               </span>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { initialOf, memberStatuses, onlineFirst, lightOf } from './team-status'
+import { initialOf, memberStatuses, onlineFirst, tintOf } from './team-status'
 
 // 2026-11-15 10:00 JST
 const now = new Date('2026-11-15T01:00:00Z')
@@ -70,14 +70,19 @@ describe('initialOf', () => {
   })
 })
 
-describe('lightOf', () => {
-  it('gives each of six teammates a different light, by join order', () => {
-    const ids = ['a', 'b', 'c', 'd', 'e', 'f']
-    expect(ids.map((id) => lightOf(ids, id))).toEqual([1, 2, 3, 4, 5, 6])
+describe('tintOf', () => {
+  const ids = ['a', 'b', 'c', 'd', 'e', 'f']
+
+  it('is Penna for me and the other three tints for teammates, in join order', () => {
+    expect(ids.map((id) => tintOf(ids, id, 'c'))).toEqual(['hudson', 'rubble', 'penna', 'olive', 'hudson', 'rubble'])
   })
 
-  it('does not depend on who is online or on the display order', () => {
-    expect(lightOf(['a', 'b', 'c'], 'c')).toBe(3)
-    expect(lightOf(['a', 'b', 'c'], 'unknown')).toBe(1)
+  it('gives three teammates three different colours, whoever is looking', () => {
+    const team = ['a', 'b', 'c', 'd']
+    for (const me of team) {
+      const others = team.filter((id) => id !== me).map((id) => tintOf(team, id, me))
+      expect(new Set(others).size).toBe(3)
+      expect(others).not.toContain('penna')
+    }
   })
 })

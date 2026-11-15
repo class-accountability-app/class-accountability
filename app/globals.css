@@ -28,15 +28,6 @@
   --tint-hudson: #ebdbd3;
   --tint-rubble: #d0bea3;
   --tint-olive: #8f917c;
-  /* Member lights (チームのいま, 2026-11-15): one per teammate, by the order
-     they joined the team (a team has at most 6). They mean only "this person",
-     never a state: the word オンライン and the filled dot say the state. */
-  --light-1: #f2b84b; /* amber */
-  --light-2: #6fb7e9; /* sky */
-  --light-3: #f08a7b; /* coral */
-  --light-4: #6fcf9f; /* mint */
-  --light-5: #a895e8; /* violet */
-  --light-6: #ec8fc0; /* pink */
 
   /* Layout rhythm kept from the notebook theme (28px lines). */
   --rule: 28px;
@@ -130,6 +121,9 @@ body {
 .rule-card.tint-penna { background-color: var(--tint-penna); box-shadow: none; }
 .rule-card.tint-hudson { background-color: var(--tint-hudson); box-shadow: none; }
 .rule-card.tint-rubble { background-color: var(--tint-rubble); box-shadow: none; }
+/* Farmer's Market is the darkest tint: as a card it is mixed with white so
+   the muted text on it stays readable (over 4.5:1). */
+.rule-card.tint-olive { background-color: color-mix(in srgb, var(--tint-olive) 45%, white); box-shadow: none; }
 
 /* Visible keyboard focus everywhere: an Umbra ring with a white gap. */
 :focus-visible {
@@ -396,21 +390,20 @@ html:lang(ja) body {
     220ms cubic-bezier(0.32, 0.72, 0, 1) both vt-slide-in;
 }
 
-/* A teammate's card in チームのいま. Offline it is flat; online it lights up in
-   that member's own light (--light, set by .light-N): a pale wash of the
-   colour under Umbra text (over 9:1), a ring and a soft glow that breathes. */
-.light-1 { --light: var(--light-1); }
-.light-2 { --light: var(--light-2); }
-.light-3 { --light: var(--light-3); }
-.light-4 { --light: var(--light-4); }
-.light-5 { --light: var(--light-5); }
-.light-6 { --light: var(--light-6); }
+/* A teammate's card in チームのいま. Offline it is flat; online it takes that
+   member's tint (--light, one of the four tints, set by .light-*; see
+   tintOf() in lib/team-status.ts): the tint as a wash under Umbra text, a
+   ring and a soft glow that breathes. */
+.light-penna { --light: var(--tint-penna); }
+.light-hudson { --light: var(--tint-hudson); }
+.light-rubble { --light: var(--tint-rubble); }
+.light-olive { --light: var(--tint-olive); }
 .member-card { background-color: var(--surface-container); }
 .member-card.is-away { background-color: var(--tint-hudson); }
 /* Opened today, not here now: a white card with an outline, between lit and flat. */
 .member-card.is-today { background-color: var(--surface); box-shadow: inset 0 0 0 1.5px var(--border); }
 .member-card.is-lit {
-  background-color: color-mix(in srgb, var(--light) 30%, white);
+  background-color: color-mix(in srgb, var(--light) 55%, white);
   box-shadow:
     inset 0 0 0 2px var(--light),
     0 0 16px color-mix(in srgb, var(--light) 60%, transparent);

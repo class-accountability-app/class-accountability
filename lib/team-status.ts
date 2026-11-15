@@ -68,12 +68,17 @@ export function initialOf(name: string): string {
   return first.done ? '?' : first.value.segment
 }
 
-// Each teammate's own light (globals.css --light-1..6): by their place in the
-// team's join order, so everyone in the team sees the same colour for the
-// same person. A team has at most 6 members, so within a team no two share one.
-export const MEMBER_LIGHTS = 6
+// The colour a member's cards take while they are online (the board's task
+// cards, チームのいま, the 「オンライン」 pill), always one of the app's four
+// tints (globals.css). Mine is Penna, "your own work"; teammates take Hudson,
+// Country Rubble and Farmer's Market in the team's join order, starting again
+// from Hudson for a fourth and fifth teammate. Offline, a card is white. The
+// colour only tells people apart: the word オンライン and the dot say the state.
+export type MemberTint = 'penna' | 'hudson' | 'rubble' | 'olive'
+const TEAMMATE_TINTS: readonly MemberTint[] = ['hudson', 'rubble', 'olive']
 
-export function lightOf(memberIds: readonly string[], id: string): number {
-  const at = memberIds.indexOf(id)
-  return (Math.max(at, 0) % MEMBER_LIGHTS) + 1
+export function tintOf(memberIds: readonly string[], id: string, me: string): MemberTint {
+  if (id === me) return 'penna'
+  const at = memberIds.filter((m) => m !== me).indexOf(id)
+  return TEAMMATE_TINTS[Math.max(at, 0) % TEAMMATE_TINTS.length]
 }
