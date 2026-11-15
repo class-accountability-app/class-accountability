@@ -1,5 +1,6 @@
 -- =============================================================================
 -- rls_team_presence.sql — tests for 0035 (team table: online now, last day seen)
+-- and 0050 (online for 100 seconds, a write every 45 seconds at most)
 -- =============================================================================
 -- ONE transaction that ends in ROLLBACK, like the other files here.
 -- Success is the final row: result = 'all RLS tests passed'.
@@ -122,6 +123,56 @@ begin
   if not (select online from public.team_presence('00000000-0000-4000-8000-0000000035f1')
           where user_id = '00000000-0000-4000-8000-0000000035a1') then
     raise exception 'FAIL: a new ping should make A online again';
+  end if;
+end $$;
+
+-- 0050: online means seen in the last 100 seconds (2 minutes ago is offline,
+-- 80 seconds ago is still online), and a ping is written once the stored time
+-- is 45 seconds old (one 50 seconds old is replaced, one 30 seconds old is kept).
+reset role;
+update public.member_presence set last_seen_at = now() - interval '2 minutes'
+where user_id = '00000000-0000-4000-8000-0000000035a1';
+set local role authenticated;
+do $$
+begin
+  if (select online from public.team_presence('00000000-0000-4000-8000-0000000035f1')
+      where user_id = '00000000-0000-4000-8000-0000000035a1') then
+    raise exception 'FAIL: 2 minutes without a ping is not online (0050)';
+  end if;
+end $$;
+reset role;
+update public.member_presence set last_seen_at = now() - interval '80 seconds'
+where user_id = '00000000-0000-4000-8000-0000000035a1';
+set local role authenticated;
+do $$
+begin
+  if not (select online from public.team_presence('00000000-0000-4000-8000-0000000035f1')
+          where user_id = '00000000-0000-4000-8000-0000000035a1') then
+    raise exception 'FAIL: 80 seconds after a ping is still online (0050)';
+  end if;
+end $$;
+reset role;
+update public.member_presence set last_seen_at = now() - interval '30 seconds'
+where user_id = '00000000-0000-4000-8000-0000000035a1';
+set local role authenticated;
+do $$
+begin
+  perform public.touch_presence();
+  if (select last_seen_at from public.member_presence
+      where user_id = '00000000-0000-4000-8000-0000000035a1') > now() - interval '25 seconds' then
+    raise exception 'FAIL: a ping 30 seconds after the last write must not write again (0050)';
+  end if;
+end $$;
+reset role;
+update public.member_presence set last_seen_at = now() - interval '50 seconds'
+where user_id = '00000000-0000-4000-8000-0000000035a1';
+set local role authenticated;
+do $$
+begin
+  perform public.touch_presence();
+  if (select last_seen_at from public.member_presence
+      where user_id = '00000000-0000-4000-8000-0000000035a1') < now() - interval '5 seconds' then
+    raise exception 'FAIL: a ping 50 seconds after the last write must be written (0050)';
   end if;
 end $$;
 

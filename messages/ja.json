@@ -1776,6 +1776,13 @@
     "awayUntil": "お休み：{date}まで",
     "sharingOn": "あなたはチームの仲間にオンラインと表示されています。",
     "sharingOff": "あなたのオンライン表示はオフです。開いていても、仲間にはオフラインと表示されます。",
-    "settings": "設定で変える"
+    "settings": "設定で変える",
+    "today": "今日開きました（いまはオフライン）",
+    "showAll": "全員のようすを見る",
+    "hideAll": "閉じる",
+    "ownerOnline": "オンライン",
+    "ownerToday": "今日開きました",
+    "ownerAway": "お休み",
+    "ownerOffline": "オフライン"
   }
 }

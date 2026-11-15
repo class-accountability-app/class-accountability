@@ -37,6 +37,8 @@ import { TeamName } from '@/components/team/team-name'
 import { inviteFirst } from '@/lib/team-invite'
 import { TeamTable, type PresenceRow, type AwayRow } from '@/components/team/team-table'
 import { TeamStatus } from '@/components/team/team-status'
+import { TeamPresenceProvider } from '@/components/team/use-team-presence'
+import { OwnerPresence } from '@/components/team/owner-presence'
 import { TeamCodeForm } from '@/components/team/team-code-form'
 import { NudgeForm } from '@/components/nudges/nudge-form'
 import { NudgeList, NudgeListProvider, type NudgeItem } from '@/components/nudges/nudge-list'
@@ -373,8 +375,24 @@ export default async function ProjectPage({
     />
   )
 
+  // One read of the team's status for チームのいま, the marks next to owners'
+  // names and チームのようす (none before 0035, when team_presence errors).
+  const withPresence = (children: React.ReactNode) =>
+    presenceRows ? (
+      <TeamPresenceProvider
+        podId={pod.podId}
+        initial={presenceRows as PresenceRow[]}
+        initialAway={(awayRows as AwayRow[] | null) ?? []}
+      >
+        {children}
+      </TeamPresenceProvider>
+    ) : (
+      children
+    )
+
   return wrap(
     <NudgeListProvider nudges={(nudgeRows as NudgeItem[] | null) ?? []}>
+      {withPresence(<>
       {/* Anyone in the team adds tasks (0022 RLS), not only the teacher's
           class project, so the button sits next to the title (screen A). */}
       <div className="flex flex-wrap items-end justify-between gap-x-5 gap-y-3 px-0.5">
@@ -494,6 +512,8 @@ export default async function ProjectPage({
               <div className="flex min-h-7 items-center gap-2.5">
                 {group.ownerId !== null && <StatusStamp status={group.tasks.length > 0 ? 'active' : 'stale'} />}
                 <h3 className="flex-1 text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{name}</h3>
+                {/* Is the person who has these tasks here right now? */}
+                {group.ownerId !== null && !mine && <OwnerPresence userId={group.ownerId} memberIds={members.map((m) => m.id)} />}
                 {(mine || (teamLive && group.ownerId !== null)) && (
                   <span className="rounded-full bg-ink px-2.5 font-meta text-xs leading-6 font-bold text-white">{t('live')}</span>
                 )}
@@ -588,6 +608,7 @@ export default async function ProjectPage({
 
       </aside>
       </div>
+      </>)}
     </NudgeListProvider>,
     true
   )

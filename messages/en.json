@@ -1776,6 +1776,13 @@
     "awayUntil": "Away until {date}",
     "sharingOn": "Your teammates see you as online.",
     "sharingOff": "Showing you online is off. Teammates see you as offline even while the app is open.",
-    "settings": "Change in Settings"
+    "settings": "Change in Settings",
+    "today": "Opened today (offline now)",
+    "showAll": "See everyone",
+    "hideAll": "Close",
+    "ownerOnline": "Online",
+    "ownerToday": "Opened today",
+    "ownerAway": "Away",
+    "ownerOffline": "Offline"
   }
 }
