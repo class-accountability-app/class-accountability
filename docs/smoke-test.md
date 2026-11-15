@@ -164,6 +164,12 @@ Docs' count of the body, not of the whole Doc when it has headings.
 - [ ] 7.3 Confirm a time. **Expect:** the board's 次の打ち合わせ card shows it;
   Google Calendar and .ics links work; 打ち合わせのメモ saves and shows who
   updated it.
+- [ ] 7.x (2026-11-15) Open poll with `A`, `B`, `C` answering differently.
+  **Expect:** each time lists names under 行ける / なんとか / 行けない / 未回答
+  with a bar; the top card names a time everyone can make, or the best time
+  and who it leaves out; 並び順 switches between 日時順 and おすすめ順; on a
+  laptop a table shows times down and people across; picking a time under
+  打ち合わせの日時 says who can't come before 「この日時にきめる」.
 
 ## 8. Push (phone)
 

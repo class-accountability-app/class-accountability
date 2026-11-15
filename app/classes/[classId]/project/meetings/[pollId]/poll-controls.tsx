@@ -11,24 +11,60 @@ import { answerPoll, cancelPoll, confirmPoll } from '../actions'
 
 const MARK: Record<PollAnswer, string> = { yes: '○', maybe: '△', no: '✕' }
 
-type Row = { id: string; label: string; tally: string; best: boolean }
+export type VoteRow = {
+  id: string
+  label: string
+  tally: string
+  best: boolean
+  everyone: boolean
+  // Names by answer, already joined for this language; '' when nobody.
+  yes: string
+  maybe: string
+  no: string
+  unanswered: string
+  // Counts for the bar.
+  counts: { yes: number; maybe: number; no: number; unanswered: number }
+}
 
-// The vote grid (mockup view "vote"): one row per time, ○ △ ✕ as toggle
-// buttons. A tap saves at once; the counts refresh from the server.
+const WHO: { key: 'yes' | 'maybe' | 'no' | 'unanswered'; mark: string; label: 'whoYes' | 'whoMaybe' | 'whoNo' | 'whoUnanswered' }[] = [
+  { key: 'yes', mark: '○', label: 'whoYes' },
+  { key: 'maybe', mark: '△', label: 'whoMaybe' },
+  { key: 'no', mark: '✕', label: 'whoNo' },
+  { key: 'unanswered', mark: '–', label: 'whoUnanswered' },
+]
+
+// The bar under a time: ○ △ ✕ and not-yet, in that order. Decoration only;
+// the names under it say the same in words.
+const BAR: Record<'yes' | 'maybe' | 'no' | 'unanswered', string> = {
+  yes: 'bg-status-active',
+  maybe: 'bg-tint-olive',
+  no: 'bg-tint-hudson shadow-[inset_0_0_0_1px_var(--ink)]',
+  unanswered: 'bg-surface-container',
+}
+
+// The vote grid (mockup view "vote"): one block per time with ○ △ ✕ as toggle
+// buttons (a tap saves at once), a bar of the answers and who gave each one
+// (2026-11-15: names, not only counts). 日時順 or おすすめ順.
 export function VoteGrid({
   classId,
   pollId,
   rows,
+  rankedIds,
   mine,
 }: {
   classId: string
   pollId: string
-  rows: Row[]
+  // In calendar order.
+  rows: VoteRow[]
+  // The same times, best first (rankOptions in lib/meeting-poll.ts).
+  rankedIds: string[]
   mine: Record<string, PollAnswer>
 }) {
   const t = useTranslations('project')
   const router = useRouter()
+  const sortId = useId()
   const [answers, setAnswers] = useState(mine)
+  const [order, setOrder] = useState<'date' | 'best'>('date')
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<ErrorKey | null>(null)
 
@@ -52,39 +88,82 @@ export function VoteGrid({
     })
   }
 
+  const byId = new Map(rows.map((r) => [r.id, r]))
+  const shown = order === 'date' ? rows : rankedIds.flatMap((id) => (byId.has(id) ? [byId.get(id)!] : []))
+
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-2.5">
+      <div className="flex items-center gap-2.5 px-0.5">
+        <label htmlFor={sortId} className="text-sm font-semibold text-ink">
+          {t('vote.sortLabel')}
+        </label>
+        <select
+          id={sortId}
+          value={order}
+          onChange={(e) => setOrder(e.target.value === 'best' ? 'best' : 'date')}
+          className="h-11 rounded-lg border border-outline bg-surface px-3 text-base text-ink"
+        >
+          <option value="date">{t('vote.sortDate')}</option>
+          <option value="best">{t('vote.sortBest')}</option>
+        </select>
+      </div>
       <ul className="rule-card flex flex-col px-3.5 py-1.5" aria-busy={isPending}>
-        {rows.map((row) => (
-          <li
-            key={row.id}
-            className="flex min-h-14 items-center justify-between gap-2.5 border-b border-dashed border-ink/15 py-1.5 last:border-b-0"
-          >
-            <div className="min-w-0">
-              <p className="text-[15px] leading-7 text-ink">{row.label}</p>
-              <p className="font-meta text-xs leading-5 text-muted">
-                {row.tally}
-                {row.best && <span className="font-bold text-status-active"> · {t('vote.best')}</span>}
-              </p>
-            </div>
-            <div className="flex shrink-0 gap-1.5" role="group" aria-label={row.label}>
-              {POLL_ANSWERS.map((a) => (
-                <button
-                  key={a}
-                  type="button"
-                  aria-pressed={answers[row.id] === a}
-                  aria-label={t(`vote.answers.${a}`)}
-                  onClick={() => choose(row.id, a)}
-                  className={`inline-flex h-11 w-11 items-center justify-center rounded-lg text-[17px] font-bold ${
-                    answers[row.id] === a ? 'bg-ink text-white' : 'bg-surface text-ink shadow-[inset_0_0_0_1px_var(--outline)]'
-                  }`}
-                >
-                  {MARK[a]}
-                </button>
-              ))}
-            </div>
-          </li>
-        ))}
+        {shown.map((row) => {
+          const total = row.counts.yes + row.counts.maybe + row.counts.no + row.counts.unanswered
+          return (
+            <li key={row.id} className="flex flex-col gap-1.5 border-b border-dashed border-ink/15 py-2.5 last:border-b-0">
+              <div className="flex min-h-11 items-center justify-between gap-2.5">
+                <div className="min-w-0">
+                  <p className="text-[15px] leading-7 font-semibold text-ink">{row.label}</p>
+                  <p className="flex flex-wrap items-center gap-x-2 font-meta text-xs leading-5 text-muted">
+                    <span>{row.tally}</span>
+                    {row.everyone && (
+                      <span className="rounded-lg bg-tint-olive px-2 font-bold text-ink">{t('vote.everyone')}</span>
+                    )}
+                    {row.best && !row.everyone && <span className="font-bold text-status-active">{t('vote.best')}</span>}
+                  </p>
+                </div>
+                <div className="flex shrink-0 gap-1.5" role="group" aria-label={row.label}>
+                  {POLL_ANSWERS.map((a) => (
+                    <button
+                      key={a}
+                      type="button"
+                      aria-pressed={answers[row.id] === a}
+                      aria-label={t(`vote.answers.${a}`)}
+                      onClick={() => choose(row.id, a)}
+                      className={`inline-flex h-11 w-11 items-center justify-center rounded-lg text-[17px] font-bold ${
+                        answers[row.id] === a ? 'bg-ink text-white' : 'bg-surface text-ink shadow-[inset_0_0_0_1px_var(--outline)]'
+                      }`}
+                    >
+                      {MARK[a]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {total > 0 && (
+                <div aria-hidden className="flex h-2.5 w-full overflow-hidden rounded-full">
+                  {WHO.map(({ key }) =>
+                    row.counts[key] > 0 ? (
+                      <span key={key} className={BAR[key]} style={{ width: `${(row.counts[key] / total) * 100}%` }} />
+                    ) : null
+                  )}
+                </div>
+              )}
+              <ul className="flex flex-col">
+                {WHO.map(({ key, mark, label }) =>
+                  row[key] ? (
+                    <li key={key} className="flex gap-2 text-[13px] leading-6 text-ink [overflow-wrap:anywhere]">
+                      <span aria-hidden className="w-4 shrink-0 text-center font-bold">
+                        {mark}
+                      </span>
+                      <span className={key === 'unanswered' ? 'text-muted' : undefined}>{t(`vote.${label}`, { names: row[key] })}</span>
+                    </li>
+                  ) : null
+                )}
+              </ul>
+            </li>
+          )
+        })}
       </ul>
       <FormError error={error} />
     </div>
@@ -100,7 +179,8 @@ export function ConfirmPoll({
 }: {
   classId: string
   pollId: string
-  options: { id: string; label: string }[]
+  // `cost` says who the time leaves out (or that everyone can come).
+  options: { id: string; label: string; cost: string; everyone: boolean }[]
   defaultOptionId: string | null
 }) {
   const t = useTranslations('project')
@@ -142,6 +222,18 @@ export function ConfirmPoll({
           </option>
         ))}
       </select>
+      {/* Who this time leaves out, before it is fixed. */}
+      {options
+        .filter((o) => o.id === choice)
+        .map((o) => (
+          <p
+            key={o.id}
+            role="status"
+            className={`rounded-lg px-3 py-2 text-sm leading-7 text-ink [overflow-wrap:anywhere] ${o.everyone ? 'bg-tint-olive' : 'bg-tint-hudson'}`}
+          >
+            {o.cost}
+          </p>
+        ))}
       <button type="submit" disabled={isPending || !choice} className={`${primaryButtonClass} h-[52px] w-full`}>
         {isPending ? tCommon('working') : t('vote.confirm')}
       </button>

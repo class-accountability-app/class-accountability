@@ -54,6 +54,68 @@ export function bestOption(options: readonly PollOption[], tallies: readonly Opt
   return best?.id ?? null
 }
 
+// Who can make each time (2026-11-15): the same answers as tallyOptions(), as
+// member ids instead of counts, in the order the members were given. Only
+// current members count. `everyone` is true when every member said yes.
+export type OptionAvailability = {
+  optionId: string
+  startsAt: string
+  yes: string[]
+  maybe: string[]
+  no: string[]
+  unanswered: string[]
+  everyone: boolean
+}
+
+export function availability(
+  options: readonly PollOption[],
+  votes: readonly PollVote[],
+  memberIds: readonly string[],
+): OptionAvailability[] {
+  return options.map((o) => {
+    const answerOf = new Map(votes.filter((v) => v.optionId === o.id).map((v) => [v.userId, v.answer]))
+    const who = (a: PollAnswer) => memberIds.filter((id) => answerOf.get(id) === a)
+    const yes = who('yes')
+    return {
+      optionId: o.id,
+      startsAt: o.startsAt,
+      yes,
+      maybe: who('maybe'),
+      no: who('no'),
+      unanswered: memberIds.filter((id) => !answerOf.has(id)),
+      everyone: memberIds.length > 0 && yes.length === memberIds.length,
+    }
+  })
+}
+
+// おすすめ順: most yes, then most maybe, then fewest no, then the earliest.
+// The same first three rules as bestOption(), applied to every time.
+export function rankOptions(list: readonly OptionAvailability[]): OptionAvailability[] {
+  return [...list].sort(
+    (a, b) =>
+      b.yes.length - a.yes.length ||
+      b.maybe.length - a.maybe.length ||
+      a.no.length - b.no.length ||
+      a.startsAt.localeCompare(b.startsAt),
+  )
+}
+
+// The one line the poll page opens with: a time everyone can make (the
+// earliest, and how many more there are), else the best time and who it
+// leaves out, else nothing yet.
+export type PollSummary =
+  | { kind: 'everyone'; optionId: string; more: number }
+  | { kind: 'best'; optionId: string; yes: number; cannot: string[]; unanswered: string[] }
+  | { kind: 'none' }
+
+export function pollSummary(list: readonly OptionAvailability[]): PollSummary {
+  const all = list.filter((o) => o.everyone).sort((a, b) => a.startsAt.localeCompare(b.startsAt))
+  if (all.length > 0) return { kind: 'everyone', optionId: all[0].optionId, more: all.length - 1 }
+  const best = rankOptions(list).find((o) => o.yes.length + o.maybe.length > 0)
+  if (!best) return { kind: 'none' }
+  return { kind: 'best', optionId: best.optionId, yes: best.yes.length, cannot: best.no, unanswered: best.unanswered }
+}
+
 // A time typed as a Tokyo date and clock ('2026-10-08', '16:30') as an ISO
 // timestamp, or null if either part isn't a real value.
 export function tokyoSlotToIso(date: string, time: string): string | null {
