@@ -40,10 +40,11 @@ export function LeavePodButton({ classId, podId }: { classId: string; podId: str
           ref={leaveRef}
           type="button"
           onClick={() => setConfirming(true)}
-          className="min-h-11 text-[15px] text-muted underline underline-offset-4"
+          className="min-h-11 text-[15px] text-ink underline underline-offset-4"
         >
           {t('leavePod')}
         </button>
+        <p className="text-[13px] leading-6 text-muted">{t('leaveHint')}</p>
       </div>
     )
   }

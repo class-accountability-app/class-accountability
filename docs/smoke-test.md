@@ -60,6 +60,14 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
   names, no numbers per person.
 - [ ] 2.7 `O` posts an お知らせ. **Expect:** students see it on their board and
   class page; with push on (step 8), a push 「先生からお知らせが届きました」.
+- [ ] 2.x (2026-11-15) As a student, open クラス. **Expect:** each class card
+  ends in a worded button (チームのボードへ / 開いてチームを探す); the header
+  says 「＋ コードでクラスに参加」. On the class page: one 「チームのボードを開く」
+  at the top; in your team card 「クラスメイトをチームに招待」 with 「招待を送る」
+  and a line under it, 「このチームを抜ける」 with what happens; 「このクラスに人を
+  招く」 says it is the class link, not the team invite. As someone with no
+  team, other teams show 「このチームに入れてもらう」 and, once asked, 「お願い済み
+  （返事待ち）」.
 
 ## 3. Project and tasks
 
