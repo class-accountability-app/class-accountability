@@ -46,8 +46,7 @@ function Cursor({ scene }: { scene: number }) {
     >
       <path
         d="M2 2 L2 19 L7 14.5 L10.5 22 L13.5 20.6 L10 13.2 L16.5 13.2 Z"
-        fill="#1f1f1f"
-        stroke="#ffffff"
+        style={{ fill: 'var(--ink)', stroke: 'var(--surface)' }}
         strokeWidth="1.2"
         strokeLinejoin="round"
       />
@@ -56,7 +55,7 @@ function Cursor({ scene }: { scene: number }) {
 }
 
 function Stamp({ stale = false, style }: { stale?: boolean; style?: CSSProperties }) {
-  const color = stale ? '#747775' : '#146c2e'
+  const color = stale ? 'var(--status-stale)' : 'var(--status-active)'
   return (
     <span
       className="mt-px inline-flex size-[22px] shrink-0 items-center justify-center rounded-full border-[1.5px]"
@@ -146,7 +145,7 @@ export async function Demo() {
             <div className="flex items-center gap-2">
               <div className={`${field} h-9 grow justify-between`}>
                 <span>{t('tanaka')}</span>
-                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="#1f1f1f" strokeWidth="1.5">
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M1 1l4 4 4-4" />
                 </svg>
               </div>
@@ -299,7 +298,7 @@ export async function Demo() {
               <span
                 key={caption}
                 className="size-2 rounded-full"
-                style={{ background: i === STILL ? '#1f1f1f' : '#c4c7c5', ...loop('lp-dot', i) }}
+                style={{ background: i === STILL ? 'var(--ink)' : 'var(--border)', ...loop('lp-dot', i) }}
               />
             ))}
           </div>

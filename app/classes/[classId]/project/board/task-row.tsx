@@ -146,9 +146,25 @@ export async function BoardTaskRow({
           </Link>
         </>
       )}
-      {mine && task.status !== 'done' && <StuckControl classId={classId} taskId={task.id} note={stuckNote} />}
-      {mine && task.inputMode === 'manual' && task.status !== 'done' && (
-        <HandOverControl classId={classId} taskId={task.id} teammates={teammates} />
+      {/* While the task is flagged, 「解決した」 stays in sight. Otherwise the
+          two rarely used controls share one fold, so a phone shows one row per
+          task instead of two (the author's ask of 2026-11-16). */}
+      {mine && task.status !== 'done' && stuckNote !== null && (
+        <StuckControl classId={classId} taskId={task.id} note={stuckNote} />
+      )}
+      {mine && task.status !== 'done' && (stuckNote === null || task.inputMode === 'manual') && (
+        <details className="group pb-1">
+          <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 text-[13px] font-semibold text-accent-text [&::-webkit-details-marker]:hidden">
+            <svg aria-hidden width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-open:rotate-90">
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+            <span className="underline underline-offset-4">{t('more')}</span>
+          </summary>
+          <div className="flex flex-col border-l-2 border-border pl-3">
+            {stuckNote === null && <StuckControl classId={classId} taskId={task.id} note={null} />}
+            {task.inputMode === 'manual' && <HandOverControl classId={classId} taskId={task.id} teammates={teammates} />}
+          </div>
+        </details>
       )}
       {unassigned && (
         <div className="pb-3.5">

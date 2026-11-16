@@ -73,7 +73,7 @@
     "title": "Log in to Study Pods",
     "intro": "No password needed. We'll email a 6-digit login code and a login link to your university address.",
     "emailLabel": "University email",
-    "emailPlaceholder": "23b0000@andrew.ac.jp",
+    "emailPlaceholder": "e.g. 23b0000@andrew.ac.jp",
     "emailHint": "Only @andrew.ac.jp addresses can be used.",
     "submit": "Send login code",
     "codeTitle": "Check your inbox",
@@ -718,7 +718,7 @@
       "shared1": "Your display name",
       "shared2": "The tasks you own and how far they have got",
       "shared3": "The day you last opened the app (you can turn off showing you online in Settings)",
-      "shared4": "Comments and nudges you send",
+      "shared4": "What you share in check-ins, and the nudges you send (a nudge reaches only the person you send it to)",
       "privateStamp": "PRIVATE",
       "privateTitle": "Not visible to other students",
       "private1": "The text of your reports and assignments",
@@ -827,11 +827,9 @@
     "intro": "Deleting your account removes all of the following. This can’t be undone.",
     "itemProfile": "Your profile (display name and email address)",
     "itemClasses": "The classes you’ve joined, and your place in teams",
-    "itemTargets": "Your targets and logs",
-    "itemComments": "Comments you wrote, and comments on your logs",
     "itemNudges": "Nudges you sent and received",
     "itemInvitations": "Team invitations and join requests",
-    "othersNote": "Your teammates’ targets and logs are not affected.",
+    "othersNote": "Your team’s tasks stay; the ones you owned go back to unassigned. What you logged is removed from the tasks’ numbers too. Meeting polls you started, meeting notes you edited and links you added stay with the team, without your name. Your teammates’ entries are not affected.",
     "emailOption": "You can also ask us by email:",
     "emailSubject": "Account deletion request",
     "confirmLabel": "To confirm, type “delete”",
@@ -840,7 +838,10 @@
     "back": "Back to settings",
     "organizerBlocked": "You organize a class that still has students, so you can’t delete your account here. Please email us and we’ll help you hand the class over or delete it.",
     "organizerSubject": "Account deletion (organizer)",
-    "itemDocuments": "Text you wrote in Study Pods, and its history"
+    "itemDocuments": "Text you wrote in Study Pods, and its history",
+    "itemProgress": "Your progress entries and check-ins",
+    "itemMeetings": "Your answers to meeting polls",
+    "itemConnections": "Your Google connection, notification settings, online status and away dates"
   },
   "targetCard": {
     "due": "Due {date}",
@@ -1076,7 +1077,7 @@
       "notePlaceholder": "e.g. Finished the data analysis part",
       "submit": "Save",
       "saved": "Saved",
-      "fine": "Only you see your own logs. Your group sees what you share in a check-in.",
+      "fine": "Only you see the memos on your entries. Each task’s total is visible to your team and your teacher.",
       "queued": "You're offline. Saved on this device; it will be sent automatically when you're back online."
     },
     "newTask": {
@@ -1287,7 +1288,8 @@
       "resolve": "Solved",
       "hint": "Your teammates see this. Your teacher doesn't. Up to 80 characters."
     },
-    "toClassPage": "Class page (members, invites, leave the team)"
+    "toClassPage": "Class page (members, invites, leave the team)",
+    "more": "Stuck, or handing it over"
   },
   "google": {
     "kicker": "AUTOMATIC LOGGING",
