@@ -22,6 +22,12 @@
   --accent: #1f1f1f; /* filled buttons: Umbra, white text 16:1 */
   --accent-text: #1f1f1f; /* links are Umbra and underlined */
   --status-active: #4d4f39; /* Farmer's Market, darkened for text: 8.4:1 on white, 4.6:1 or more on every tint (2026-11-16) */
+  /* Online, "here right now" (the author's ask of 2026-11-16: a vivid colour
+     for online only, outside the four tints). --online fills the dot (inside
+     a white ring, 3.3:1); --online-strong is for text and for fills under
+     white text (5.0:1). Never used for anything but online. */
+  --online: #16a34a;
+  --online-strong: #15803d;
   --status-stale: #4e4d52; /* 8.4:1 on white, 4.6:1 or more on every tint (2026-11-16) */
   --error: #b3261e; /* 6.5:1 on white; the palette has no red */
   --tint-penna: #bac8e0;
@@ -44,6 +50,8 @@
   --color-accent: var(--accent);
   --color-accent-text: var(--accent-text);
   --color-status-active: var(--status-active);
+  --color-online: var(--online);
+  --color-online-strong: var(--online-strong);
   --color-status-stale: var(--status-stale);
   --color-outline: var(--outline);
   --color-error: var(--error);
@@ -411,8 +419,12 @@ html:lang(ja) body {
 }
 .member-card.is-lit .member-badge,
 .member-badge-solo.is-lit { background-color: var(--light); }
-/* 「オンライン」 next to an owner's name on the board, in that member's light. */
-.member-pill { background-color: color-mix(in srgb, var(--light) 45%, white); box-shadow: inset 0 0 0 1.5px var(--light); }
+/* The online dot: a soft green pulse around it (none under reduced motion). */
+.online-pulse { animation: online-pulse 2.2s ease-out infinite; }
+@keyframes online-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--online) 55%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--online) 0%, transparent); }
+}
 @keyframes member-glow {
   0%, 100% { box-shadow: inset 0 0 0 2px var(--light), 0 0 10px color-mix(in srgb, var(--light) 45%, transparent); }
   50% { box-shadow: inset 0 0 0 2px var(--light), 0 0 22px color-mix(in srgb, var(--light) 80%, transparent); }
@@ -427,6 +439,7 @@ html:lang(ja) body {
     animation: none !important;
   }
 
+  .online-pulse,
   .member-card.is-lit {
     animation: none !important;
   }
