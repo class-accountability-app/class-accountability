@@ -9,7 +9,9 @@ import { Demo } from './demo'
 // 16-landing-mobile.dc.html (390). One responsive page: phone first, the
 // desktop grid from lg up. Header, <main> and footer come from the root
 // layout. All motion is CSS; under reduced motion none of it runs (see
-// .landing in globals.css).
+// .landing in globals.css). Opening (2026-11-16, the author's ask): the hero's
+// lines rise in turn, the demo board launches into place, then a Penna
+// highlight sweeps under the last headline line.
 
 function rise(delay: number, duration = 0.7): CSSProperties {
   return { animation: `lp-rise ${duration}s ease ${delay}s both` }
@@ -81,7 +83,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
             {t('hero.titleLine2')}
             {/* Japanese breaks before the last line; English flows on, as in the design. */}
             {locale === 'ja' ? <br /> : ' '}
-            <span className="text-accent-text">{t('hero.titleLine3')}</span>
+            <span className="lp-mark text-accent-text">{t('hero.titleLine3')}</span>
           </h1>
           <p className={`mt-6 max-w-[560px] text-base leading-[1.9] lg:mt-7 lg:text-lg ${body}`} style={rise(0.35)}>
             {t('hero.body')}

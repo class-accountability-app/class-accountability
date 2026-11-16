@@ -84,7 +84,7 @@ export async function Demo() {
   const captions = [t('caption1'), t('caption2'), t('caption3'), t('caption4'), t('caption5')]
 
   return (
-    <figure className="relative z-[1] m-0" style={{ animation: 'lp-rise 0.8s ease 0.3s both' }}>
+    <figure className="relative z-[1] m-0" style={{ animation: 'lp-launch 1.1s cubic-bezier(.2,.9,.25,1) 0.55s both' }}>
       <figcaption className="sr-only">{t('description')}</figcaption>
 
       <div aria-hidden className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_1px_3px_rgba(0,0,0,0.12),0_6px_16px_2px_rgba(0,0,0,0.06)]">

@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { memberStatuses } from '@/lib/team-status'
+import { StatusStamp } from '@/components/status-stamp'
 import { StatusDot } from './status-dot'
 import { useSharedTeamPresence } from './use-team-presence'
 
@@ -31,4 +32,19 @@ export function OwnerPresence({ userId, memberIds }: { userId: string; memberIds
       {status.state === 'today' ? t('ownerToday') : status.state === 'away' ? t('ownerAway') : <span className="sr-only">{t('ownerOffline')}</span>}
     </span>
   )
+}
+
+// The mark at the top of each member's card on the board (the author's ask of
+// 2026-11-16): the green online dot, pulsing, while that member is online, and
+// otherwise the old stamp (filled when they have tasks, a ring when they have
+// none). On my own card it follows what my team sees: green only while my
+// 「オンライン表示」 is on. The words (the 「オンライン」 pill, チームのいま)
+// say the same thing, so the colour is never the only signal.
+export function OwnerStamp({ userId, memberIds, hasTasks }: { userId: string; memberIds: string[]; hasTasks: boolean }) {
+  const shared = useSharedTeamPresence()
+  const online =
+    shared !== null &&
+    memberStatuses(memberIds, shared.presence, shared.away).some((s) => s.id === userId && s.state === 'online')
+  if (online) return <StatusDot state="online" className="h-4 w-4" />
+  return <StatusStamp status={hasTasks ? 'active' : 'stale'} />
 }
