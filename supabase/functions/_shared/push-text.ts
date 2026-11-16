@@ -3,7 +3,8 @@
 // memo, a class or progress numbers. A meeting reminder says when, not what;
 // a stalled-task or due-tomorrow push names the task (it goes to its owner
 // only) but never a number; the check-in-day, poll and announcement pushes name nothing (not
-// the poll's title, nor the announcement's words).
+// the poll's title, nor the announcement's words); a new poll names only the
+// teammate who started it (0052).
 //
 // The Edge Function can't read messages/*.json once deployed, so these are a
 // copy of their "push" keys; push-text.test.ts fails if the two drift.
@@ -25,6 +26,8 @@ export const PUSH_TEXT = {
     weeklyDigest: '新しい週です。チームのボードで今週の予定を確認しましょう',
     teamInactive: '1週間動きのないチームがあります。クラスのページで確認できます',
     dueSoon: '「{task}」の締切は明日です',
+    pollCreated: '{name}さんが打ち合わせの日程調整を始めました。都合を答えましょう',
+    pollCreatedUnknown: '打ち合わせの日程調整が始まりました。都合を答えましょう',
   },
   en: {
     title: 'Study Pods',
@@ -40,6 +43,8 @@ export const PUSH_TEXT = {
     weeklyDigest: 'A new week: check this week’s plan on your team board',
     teamInactive: 'A team has been quiet for a week. See your class page',
     dueSoon: '“{task}” is due tomorrow',
+    pollCreated: '{name} started a meeting poll. Give your times',
+    pollCreatedUnknown: 'A meeting poll has started. Give your times',
   },
 } as const
 
@@ -113,6 +118,13 @@ export function checkinDueText(locale: string): { title: string; body: string } 
 export function pollVoteText(locale: string): { title: string; body: string } {
   const t = textFor(locale)
   return { title: t.title, body: t.pollVote }
+}
+
+// 0052: a teammate started a poll. Names who started it (as a nudge names its
+// sender), never the poll's title.
+export function pollCreatedText(locale: string, name: string | null): { title: string; body: string } {
+  const t = textFor(locale)
+  return { title: t.title, body: name ? fill(t.pollCreated, 'name', name) : t.pollCreatedUnknown }
 }
 
 export function announcementText(locale: string): { title: string; body: string } {

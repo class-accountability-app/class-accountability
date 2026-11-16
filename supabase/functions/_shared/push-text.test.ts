@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import ja from '@/messages/ja.json'
 import en from '@/messages/en.json'
-import { PUSH_TEXT, announcementText, dueSoonText, checkinDueText, pollVoteText, meetingReminderText, pushText, stalledTaskText } from './push-text'
+import { PUSH_TEXT, announcementText, pollCreatedText, dueSoonText, checkinDueText, pollVoteText, meetingReminderText, pushText, stalledTaskText } from './push-text'
 
 describe('pushText', () => {
   it('names the sender in Japanese', () => {
@@ -41,6 +41,14 @@ describe('pushText', () => {
   it('asks for a poll answer without naming the poll', () => {
     expect(pollVoteText('ja').body).toBe('打ち合わせの日程調整が、あなたの回答を待っています')
     expect(pollVoteText('en').body).toBe('A meeting poll is waiting for your answer')
+  })
+
+  it('says who started a new poll, never its title (0052)', () => {
+    expect(pollCreatedText('ja', 'LIN').body).toBe('LINさんが打ち合わせの日程調整を始めました。都合を答えましょう')
+    expect(pollCreatedText('en', 'LIN').body).toBe('LIN started a meeting poll. Give your times')
+    expect(pollCreatedText('ja', null).body).toBe('打ち合わせの日程調整が始まりました。都合を答えましょう')
+    expect(pollCreatedText('en', null).body).toBe('A meeting poll has started. Give your times')
+    expect(pollCreatedText('en', '$&').body).toBe('$& started a meeting poll. Give your times')
   })
 
   it('announces a teacher message without its words', () => {

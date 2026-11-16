@@ -2,7 +2,7 @@
 // database queues in push_events (0025: meeting reminders, stalled tasks;
 // 0033: check-in day; 0034: a meeting poll not yet answered; 0037: a
 // teacher's announcement; 0038: the weekly digest and the team-inactive alert;
-// 0048: a task due tomorrow).
+// 0048: a task due tomorrow; 0052: a teammate started a meeting poll).
 //
 // Called only by our database (0018: the nudges trigger and pg_cron at
 // 07:00 JST; 0025: pg_cron with {"events": true}), never by a browser.
@@ -16,7 +16,7 @@
 import webpush from 'npm:web-push@3.6.7'
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.110.2'
 import { isQuietHours } from '../_shared/quiet-hours.ts'
-import { announcementText, checkinDueText, dueSoonText, meetingReminderText, pollVoteText, pushText, stalledTaskText, teamInactiveText, weeklyDigestText } from '../_shared/push-text.ts'
+import { announcementText, pollCreatedText, checkinDueText, dueSoonText, meetingReminderText, pollVoteText, pushText, stalledTaskText, teamInactiveText, weeklyDigestText } from '../_shared/push-text.ts'
 import { classPath, meetingPath, projectPath } from '../_shared/push-path.ts'
 import { verifySignature } from '../_shared/signature.ts'
 
@@ -90,7 +90,7 @@ async function notify(db: SupabaseClient, toUserId: string, nudges: Sender[]) {
 type PushEvent = {
   id: string
   user_id: string
-  kind: 'meeting_reminder' | 'task_stalled' | 'checkin_due' | 'poll_vote_due' | 'announcement' | 'weekly_digest' | 'team_inactive' | 'task_due_soon'
+  kind: 'meeting_reminder' | 'task_stalled' | 'checkin_due' | 'poll_vote_due' | 'announcement' | 'weekly_digest' | 'team_inactive' | 'task_due_soon' | 'poll_created'
   poll_id: string | null
   task_id: string | null
   project_id: string | null
@@ -182,6 +182,34 @@ async function sendEvents(db: SupabaseClient) {
         ...dueSoonText(locale, task.title),
         kind: 'task_due_soon',
         path: projectPath(classId),
+      }))
+    } else if (event.kind === 'poll_created' && event.poll_id) {
+      // 0052: a teammate started a poll. Still open, and this person hasn't
+      // answered yet (they may have seen it on the board first).
+      const { data: poll } = await db
+        .from('meeting_polls')
+        .select('id, project_id, created_by, status, meeting_poll_options!meeting_poll_options_poll_id_fkey(id)')
+        .eq('id', event.poll_id)
+        .maybeSingle()
+      if (!poll || poll.status !== 'open') continue
+      const optionIds = ((poll.meeting_poll_options ?? []) as unknown as { id: string }[]).map((o) => o.id)
+      if (optionIds.length === 0) continue
+      const { count } = await db
+        .from('meeting_poll_votes')
+        .select('option_id', { count: 'exact', head: true })
+        .eq('user_id', event.user_id)
+        .in('option_id', optionIds)
+      if ((count ?? 0) > 0) continue
+      const classId = await classOfProject(db, poll.project_id)
+      if (!classId) continue
+      const { data: maker } = poll.created_by
+        ? await db.from('profiles').select('display_name').eq('id', poll.created_by).maybeSingle()
+        : { data: null }
+      const makerName = (maker as { display_name: string | null } | null)?.display_name ?? null
+      await sendToUser(db, event.user_id, 'poll', (locale) => ({
+        ...pollCreatedText(locale, makerName),
+        kind: 'poll_created',
+        path: meetingPath(classId, poll.id),
       }))
     } else if (event.kind === 'poll_vote_due' && event.poll_id) {
       // 0034: the poll is still open and they still haven't answered any time.

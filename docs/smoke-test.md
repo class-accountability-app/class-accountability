@@ -212,6 +212,11 @@ Docs' count of the body, not of the whole Doc when it has headings.
 
 - [ ] 7.1 `A` creates a poll: pick 3 times on the week grid, deadline 1 day.
   **Expect:** the poll page with the vote grid.
+- [ ] 7.1b (2026-11-16, 0052; needs push on for `B` and `C`, section 8) right
+  after 7.1. **Expect:** `B` and `C` get 「Aさんが打ち合わせの日程調整を始めました。
+  都合を答えましょう」 within a few seconds (between 23:00 and 7:00 it waits
+  until 7:00); tapping it opens the poll. `A` gets nothing. Someone who already
+  answered before the push went out gets nothing either.
 - [ ] 7.2 `B` and `C` vote. **Expect:** tallies update; the best time is marked.
 - [ ] 7.3 Confirm a time. **Expect:** the board's 次の打ち合わせ card shows it;
   Google Calendar and .ics links work; 打ち合わせのメモ saves and shows who
