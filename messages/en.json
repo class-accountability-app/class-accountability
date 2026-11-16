@@ -492,7 +492,9 @@
     "announcement": "Your teacher posted an announcement",
     "weeklyDigest": "A new week: check this week’s plan on your team board",
     "teamInactive": "A team has been quiet for a week. See your class page",
-    "dueSoon": "“{task}” is due tomorrow"
+    "dueSoon": "“{task}” is due tomorrow",
+    "pollCreated": "{name} started a meeting poll. Give your times",
+    "pollCreatedUnknown": "A meeting poll has started. Give your times"
   },
   "empty": {
     "findPod": "Find a team",
