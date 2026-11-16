@@ -90,6 +90,15 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
   copy). On the class page the same step scrolls to the same card under
   あなたのチーム, which shows while the team has fewer than 6 members and is
   gone in a full team. The class join link stays under 「このクラスに人を招く」.
+- [ ] 2.v (2026-11-16, live online status; needs 0051 applied and Realtime's
+  "Allow public access" OFF) `A` on a phone, `B` on a laptop, both on the
+  board. **Expect:** when `B` opens the board, `B`'s card on `A`'s phone turns
+  coloured with 「オンライン」 within a couple of seconds; when `B` closes the
+  tab or locks the laptop, it goes white about 10 seconds later. `A` switching
+  apps for a few seconds and back does not flicker on `B`'s screen. `B` turns
+  設定 → 「オンライン表示」 off: `B` goes offline on `A`'s screen at once and
+  stays offline while `B` keeps using the app. In DevTools on `C` (another
+  team), no websocket message ever mentions `A`'s team.
 - [ ] 2.w (2026-11-15, teacher wording) `O` reads the class page. **Expect:**
   the header buttons say 「学生を招くリンクとQRへ」 and 「お知らせを書く」;
   チームの管理 says a menu choice applies at once and that a moved student's

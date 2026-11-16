@@ -763,7 +763,7 @@
   },
   "privacy": {
     "effective": "Effective 31 October 2026",
-    "updated": "Last updated 14 November 2026",
+    "updated": "Last updated 16 November 2026",
     "title": "Privacy policy",
     "intro": "Study Pods (“the service”) is a study app built and run by a student. This page explains what the service collects, how it’s used, and who can see it.",
     "collectHeading": "1. What we collect",
@@ -818,7 +818,7 @@
     "teamCodeLabel": "Team codes:",
     "teamCodeText": "a team’s code and QR code are shown only to that team’s members. Anyone who has the code can join that team (and, if they aren’t in the class yet, the class as a student). Any member can make a new code at any time, and the old one stops working.",
     "presenceLabel": "When you open the app, and the online dot:",
-    "presenceText": "While the app is open, we record once a minute when you last opened it. Teammates see only the day you last opened it (not the time) and whether you have it open right now (a green dot). You can turn the green dot off in Settings under “Show when I’m online”. Teachers and other classmates can’t see this, and it isn’t used for research."
+    "presenceText": "While the app is open, we record once a minute when you last opened it. While the app is on screen, it also joins a live connection for each of your teams so teammates see at once that you have it open (nothing about this connection is stored, and the only thing sent is your account’s identifier). Teammates see only the day you last opened it (not the time) and whether you have it open right now (a green dot). You can turn the green dot off in Settings under “Show when I’m online”; then the live connection doesn’t announce you either. Teachers and other classmates can’t see this, and it isn’t used for research."
   },
   "deleteAccount": {
     "title": "Delete account",
@@ -1047,7 +1047,6 @@
     "members": "Members",
     "membersWhy": "Who is doing what. You see a teammate’s numbers only as they shared them in a check-in.",
     "you": "{name} (you)",
-    "live": "LIVE",
     "noTasksYet": "No tasks yet",
     "unassigned": "No one has taken these yet",
     "claim": "Take it",
@@ -1776,6 +1775,13 @@
     "awayUntil": "Away until {date}",
     "sharingOn": "Your teammates see you as online.",
     "sharingOff": "Showing you online is off. Teammates see you as offline even while the app is open.",
-    "settings": "Change in Settings"
+    "settings": "Change in Settings",
+    "today": "Opened today (offline now)",
+    "showAll": "See everyone",
+    "hideAll": "Close",
+    "ownerOnline": "Online",
+    "ownerToday": "Opened today",
+    "ownerAway": "Away",
+    "ownerOffline": "Offline"
   }
 }

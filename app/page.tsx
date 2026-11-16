@@ -7,6 +7,7 @@ import { pickHomeProject } from '@/lib/home-project'
 import { ProjectHome } from '@/components/home/project-home'
 import { TeacherViewNotice } from '@/components/home/teacher-view-notice'
 import { nextStep } from '@/lib/next-step'
+import { classHref } from '@/lib/nav'
 import { formatDateWithWeekday } from '@/lib/date'
 import { NextStepCard } from '@/components/next-step-card'
 import { JoinClassButton } from '@/components/join-class-button'
@@ -118,6 +119,7 @@ export default async function Home({
       project: (homeProject?.classId === m.class_id ? 'started' : 'none') as 'started' | 'none',
     }))
   const step = nextStep({ classes })
+  const tClasses = await getTranslations('classes')
 
   // Soft pastel (2026-11-06): the date as a small line above a big
   // greeting, the next step on Penna, then my classes as cards.
@@ -158,9 +160,11 @@ export default async function Home({
             <ul className="grid gap-4 md:grid-cols-2">
               {classes.map((c) => (
                 <li key={c.id}>
+                  {/* The same destination and worded action as the cards on
+                      クラス: the team's board once I'm in a team there. */}
                   <Link
-                    href={`/classes/${c.id}`}
-                    className="rule-card flex min-h-[88px] items-center justify-between gap-4 px-5 py-4 hover:bg-surface-container"
+                    href={classHref({ id: c.id, inTeam: c.podSize !== null })}
+                    className="rule-card flex min-h-[88px] flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-4 hover:bg-surface-container"
                   >
                     <span className="flex min-w-0 flex-col">
                       <span className="text-base leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{c.name}</span>
@@ -169,9 +173,10 @@ export default async function Home({
                         {c.organizer && ` · ${t('organizerMark')}`}
                       </span>
                     </span>
-                    <span aria-hidden className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-surface-container text-ink">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M7 17L17 7M9 7h8v8" />
+                    <span className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full bg-surface px-3.5 text-[13px] font-semibold text-ink shadow-[inset_0_0_0_1.5px_var(--ink)]">
+                      {c.organizer ? tClasses('actionManage') : c.podSize !== null ? tClasses('actionOpen') : tClasses('actionFindTeam')}
+                      <svg aria-hidden width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 6l6 6-6 6" />
                       </svg>
                     </span>
                   </Link>
