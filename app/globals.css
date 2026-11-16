@@ -485,6 +485,23 @@ html {
  * prefixed lp-. The demo is one 17.5s loop of five 3.5s scenes, all CSS.
  */
 @keyframes lp-rise { from { opacity: 0; transform: translateY(18px) } to { opacity: 1; transform: translateY(0) } }
+/* The opening: the demo board rises from a little lower and smaller, settles
+   with a slight overshoot, and a soft shadow lands with it. */
+@keyframes lp-launch {
+  0% { opacity: 0; transform: translateY(40px) scale(0.94); filter: drop-shadow(0 0 0 transparent) }
+  60% { opacity: 1; transform: translateY(-4px) scale(1.005); filter: drop-shadow(0 18px 28px color-mix(in srgb, var(--ink) 14%, transparent)) }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: drop-shadow(0 10px 20px color-mix(in srgb, var(--ink) 8%, transparent)) }
+}
+/* A Penna highlight under the last headline line, swept in once the board has
+   landed. Its resting state is the drawn highlight, so with reduced motion
+   (no animation at all) it simply shows. */
+.lp-mark {
+  background: linear-gradient(var(--tint-penna), var(--tint-penna)) no-repeat 0 88% / 100% 0.38em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  animation: lp-mark 0.9s cubic-bezier(.3,.8,.3,1) 1.35s both;
+}
+@keyframes lp-mark { from { background-size: 0% 0.38em } to { background-size: 100% 0.38em } }
 @keyframes lp-draw { to { stroke-dashoffset: 0 } }
 @keyframes lp-lines { 0%, 10% { stroke-dashoffset: 1 } 60%, 100% { stroke-dashoffset: 0 } }
 @keyframes lp-restamp { 0% { opacity: 0; transform: scale(2.2) } 7% { opacity: 1; transform: scale(.92) } 11%, 100% { opacity: 1; transform: scale(1) } }
