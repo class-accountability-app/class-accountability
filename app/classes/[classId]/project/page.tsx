@@ -9,7 +9,6 @@ import { latestCheckins, visibleTotal, type CheckinRow } from '@/lib/project-boa
 import { checkinStatus } from '@/lib/checkin'
 import { EmptyState } from '@/components/empty-state'
 import { ProgressBar } from '@/components/progress-bar'
-import { StatusStamp } from '@/components/status-stamp'
 import { secondaryButtonClass } from '@/components/buttons'
 import { CreateProjectForm } from './create-project-form'
 import { loadLiveTotals, loadMyPodProject, taskValueText, type TaskRow } from './load'
@@ -38,7 +37,7 @@ import { inviteFirst } from '@/lib/team-invite'
 import { TeamTable, type PresenceRow, type AwayRow } from '@/components/team/team-table'
 import { TeamStatus } from '@/components/team/team-status'
 import { TeamPresenceProvider } from '@/components/team/use-team-presence'
-import { OwnerPresence } from '@/components/team/owner-presence'
+import { OwnerPresence, OwnerStamp } from '@/components/team/owner-presence'
 import { OwnerCard } from '@/components/team/owner-card'
 import { TeamCodeForm } from '@/components/team/team-code-form'
 import { NudgeForm } from '@/components/nudges/nudge-form'
@@ -509,7 +508,9 @@ export default async function ProjectPage({
           return (
             <OwnerCard key={group.ownerId ?? 'unassigned'} userId={group.ownerId} me={user.id} memberIds={memberIds}>
               <div className="flex min-h-7 items-center gap-2.5">
-                {group.ownerId !== null && <StatusStamp status={group.tasks.length > 0 ? 'active' : 'stale'} />}
+                {group.ownerId !== null && (
+                  <OwnerStamp userId={group.ownerId} memberIds={memberIds} hasTasks={group.tasks.length > 0} />
+                )}
                 <h3 className="flex-1 text-[15px] leading-7 font-semibold text-ink [overflow-wrap:anywhere]">{name}</h3>
                 {/* Is the person who has these tasks here right now? */}
                 {group.ownerId !== null && !mine && <OwnerPresence userId={group.ownerId} memberIds={memberIds} me={user.id} />}
