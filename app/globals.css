@@ -21,8 +21,14 @@
   --muted: #4a4a4a; /* 8.9:1 on white */
   --accent: #1f1f1f; /* filled buttons: Umbra, white text 16:1 */
   --accent-text: #1f1f1f; /* links are Umbra and underlined */
-  --status-active: #55573f; /* Farmer's Market, darkened for text: 7.3:1 */
-  --status-stale: #6b6970;
+  --status-active: #4d4f39; /* Farmer's Market, darkened for text: 8.4:1 on white, 4.6:1 or more on every tint (2026-11-16) */
+  /* Online, "here right now" (the author's ask of 2026-11-16: a vivid colour
+     for online only, outside the four tints). --online fills the dot (inside
+     a white ring, 3.3:1); --online-strong is for text and for fills under
+     white text (5.0:1). Never used for anything but online. */
+  --online: #16a34a;
+  --online-strong: #15803d;
+  --status-stale: #4e4d52; /* 8.4:1 on white, 4.6:1 or more on every tint (2026-11-16) */
   --error: #b3261e; /* 6.5:1 on white; the palette has no red */
   --tint-penna: #bac8e0;
   --tint-hudson: #ebdbd3;
@@ -44,6 +50,8 @@
   --color-accent: var(--accent);
   --color-accent-text: var(--accent-text);
   --color-status-active: var(--status-active);
+  --color-online: var(--online);
+  --color-online-strong: var(--online-strong);
   --color-status-stale: var(--status-stale);
   --color-outline: var(--outline);
   --color-error: var(--error);
@@ -411,8 +419,12 @@ html:lang(ja) body {
 }
 .member-card.is-lit .member-badge,
 .member-badge-solo.is-lit { background-color: var(--light); }
-/* 「オンライン」 next to an owner's name on the board, in that member's light. */
-.member-pill { background-color: color-mix(in srgb, var(--light) 45%, white); box-shadow: inset 0 0 0 1.5px var(--light); }
+/* The online dot: a soft green pulse around it (none under reduced motion). */
+.online-pulse { animation: online-pulse 2.2s ease-out infinite; }
+@keyframes online-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--online) 55%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--online) 0%, transparent); }
+}
 @keyframes member-glow {
   0%, 100% { box-shadow: inset 0 0 0 2px var(--light), 0 0 10px color-mix(in srgb, var(--light) 45%, transparent); }
   50% { box-shadow: inset 0 0 0 2px var(--light), 0 0 22px color-mix(in srgb, var(--light) 80%, transparent); }
@@ -427,6 +439,7 @@ html:lang(ja) body {
     animation: none !important;
   }
 
+  .online-pulse,
   .member-card.is-lit {
     animation: none !important;
   }
@@ -481,14 +494,14 @@ html {
 @keyframes lp-box { 0% { opacity: 0; transform: scale(2) } 60% { opacity: 1; transform: scale(.94) } 100% { opacity: 1; transform: scale(1) } }
 @keyframes lp-box-l { 0% { opacity: 0; transform: scale(2) } 60% { opacity: 1; transform: scale(.94) } 100% { opacity: 1; transform: scale(1) } }
 @keyframes lp-scene { 0% { opacity: 0; transform: translateY(8px) } 3% { opacity: 1; transform: translateY(0) } 18% { opacity: 1; transform: translateY(0) } 21% { opacity: 0; transform: translateY(-6px) } 100% { opacity: 0; transform: translateY(-6px) } }
-@keyframes lp-dot { 0%, 19% { background: #1f1f1f } 20%, 100% { background: #c4c7c5 } }
+@keyframes lp-dot { 0%, 19% { background: var(--ink) } 20%, 100% { background: var(--border) } }
 @keyframes lp-cursor { 0%, 1% { opacity: 0; transform: translate(70px, 60px) } 4% { opacity: 1; transform: translate(40px, 34px) } 8% { opacity: 1; transform: translate(0, 0) scale(1) } 9% { transform: translate(0, 0) scale(.82) } 10.5% { transform: translate(0, 0) scale(1) } 17% { opacity: 1; transform: translate(0, 0) } 19%, 100% { opacity: 0; transform: translate(0, 0) } }
 @keyframes lp-btn-out { 0%, 9% { opacity: 1 } 11%, 100% { opacity: 0 } }
 @keyframes lp-joined { 0%, 9% { opacity: 0; transform: scale(2) } 12% { opacity: 1; transform: scale(.94) } 14%, 100% { opacity: 1; transform: scale(1) } }
 @keyframes lp-ap1 { 0%, 2% { opacity: 0; transform: translateY(6px) } 5%, 100% { opacity: 1; transform: translateY(0) } }
 @keyframes lp-ap2 { 0%, 5% { opacity: 0; transform: translateY(6px) } 8%, 100% { opacity: 1; transform: translateY(0) } }
 @keyframes lp-ap3 { 0%, 10% { opacity: 0; transform: translateY(6px) } 13%, 100% { opacity: 1; transform: translateY(0) } }
-@keyframes lp-chip { 0%, 8.5% { background: #ffffff; color: #1f1f1f; border-color: #c4c7c5 } 10%, 100% { background: #1f1f1f; color: #ffffff; border-color: #1f1f1f } }
+@keyframes lp-chip { 0%, 8.5% { background: var(--surface); color: var(--ink); border-color: var(--border) } 10%, 100% { background: var(--ink); color: var(--surface); border-color: var(--ink) } }
 @keyframes lp-grow { 0%, 5% { transform: scaleX(.565) } 14%, 100% { transform: scaleX(1) } }
 @keyframes lp-out { 0%, 9% { opacity: 1 } 10%, 100% { opacity: 0 } }
 @keyframes lp-in { 0%, 9% { opacity: 0 } 10%, 100% { opacity: 1 } }

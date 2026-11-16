@@ -179,7 +179,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
           </Feature>
           <Feature title={t('features.docsTitle')} text={t('features.docsBody')} delay={0.75}>
             <div className="flex h-16 items-center gap-4">
-              <svg width="44" height="52" viewBox="0 0 44 52" fill="none" stroke="#1f1f1f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="44" height="52" viewBox="0 0 44 52" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 2h26l10 10v38H4z" />
                 <path d="M30 2v10h10" />
                 {[
@@ -291,7 +291,7 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
             <details key={q} open={i === 0} className="border-b border-border">
               <summary className="flex min-h-[68px] cursor-pointer list-none items-center justify-between gap-4 py-3 font-heading text-lg leading-[1.5] font-bold lg:text-xl">
                 {t(`faq.${q}`)}
-                <svg aria-hidden width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#1f1f1f" strokeWidth="1.8" strokeLinecap="round" className="lp-faq-icon shrink-0 transition-transform duration-200">
+                <svg aria-hidden width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="lp-faq-icon shrink-0 transition-transform duration-200">
                   <path d="M9 3v12M3 9h12" />
                 </svg>
               </summary>
@@ -310,8 +310,8 @@ export async function Landing({ accountDeleted = false }: { accountDeleted?: boo
         <svg aria-hidden width="170" height="80" viewBox="0 0 170 80" fill="none" className="absolute -top-9 right-12 hidden overflow-visible lg:block">
           <path d="M4 74 C 40 78, 58 42, 94 50 S 132 52, 144 28" className="stroke-muted" strokeWidth="1.5" strokeDasharray="4 6" strokeLinecap="round" />
           <g style={{ transformBox: 'fill-box', transformOrigin: 'center', animation: 'none' }}>
-            <path d="M140 24 L168 8 L156 34 L150 26 Z" stroke="#1f1f1f" strokeWidth="1.5" strokeLinejoin="round" fill="#ffffff" />
-            <path d="M150 26 L168 8" stroke="#1f1f1f" strokeWidth="1.5" />
+            <path d="M140 24 L168 8 L156 34 L150 26 Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" style={{ fill: 'var(--surface)' }} />
+            <path d="M150 26 L168 8" stroke="currentColor" strokeWidth="1.5" />
           </g>
         </svg>
         <div>
@@ -376,7 +376,7 @@ function DataCard({
 
 const stroke = {
   fill: 'none',
-  stroke: '#1f1f1f',
+  stroke: 'currentColor',
   strokeWidth: 1.5,
   strokeLinecap: 'round' as const,
   strokeLinejoin: 'round' as const,
@@ -388,7 +388,7 @@ function StepOneArt() {
       <rect className="lp-draw" x="14" y="4" width="46" height="48" rx="2" pathLength={1} style={draw(1, 0.6)} />
       <path className="lp-draw" d="M9 14h9M9 26h9M9 38h9" pathLength={1} style={draw(0.6, 1.2)} />
       <path className="lp-draw" d="M25 18h26M25 28h26M25 38h14" pathLength={1} style={draw(0.8, 1.4)} />
-      <path className="lp-draw" d="M42 37l4 4 9-10" stroke="#1f1f1f" strokeWidth="2.2" pathLength={1} style={draw(0.4, 2)} />
+      <path className="lp-draw" d="M42 37l4 4 9-10" stroke="currentColor" strokeWidth="2.2" pathLength={1} style={draw(0.4, 2)} />
     </svg>
   )
 }
@@ -396,7 +396,7 @@ function StepOneArt() {
 function StepTwoArt() {
   return (
     <svg aria-hidden width="68" height="56" viewBox="0 0 68 56" {...stroke}>
-      <ellipse cx="34" cy="30" rx="31" ry="23" stroke="#1f1f1f" strokeDasharray="3 4" />
+      <ellipse cx="34" cy="30" rx="31" ry="23" stroke="currentColor" strokeDasharray="3 4" />
       <circle className="lp-draw" cx="22" cy="24" r="5" pathLength={1} style={draw(0.5, 0.9)} />
       <circle className="lp-draw" cx="34" cy="19" r="5" pathLength={1} style={draw(0.5, 1.1)} />
       <circle className="lp-draw" cx="46" cy="24" r="5" pathLength={1} style={draw(0.5, 1.3)} />
@@ -409,7 +409,7 @@ function StepThreeArt() {
   return (
     <svg aria-hidden width="68" height="56" viewBox="0 0 68 56" {...stroke}>
       <path d="M6 44h50" />
-      <path className="lp-draw" d="M6 44h32" stroke="#1f1f1f" strokeWidth="4" pathLength={1} style={draw(1.2, 1.2, 'cubic-bezier(.3,.9,.3,1)')} />
+      <path className="lp-draw" d="M6 44h32" stroke="currentColor" strokeWidth="4" pathLength={1} style={draw(1.2, 1.2, 'cubic-bezier(.3,.9,.3,1)')} />
       <path className="lp-draw" d="M58 44V8" pathLength={1} style={draw(0.5, 0.8)} />
       <path className="lp-draw" d="M58 10h-16l5 6-5 6h16" pathLength={1} style={draw(0.6, 1.3)} />
     </svg>
@@ -433,7 +433,7 @@ function ExampleQr() {
     </g>
   )
   return (
-    <svg width="150" height="150" viewBox="-2 -2 29 29" className="shrink-0 rounded-lg border border-border bg-white" fill="#1f1f1f">
+    <svg width="150" height="150" viewBox="-2 -2 29 29" className="shrink-0 rounded-lg border border-border bg-surface text-ink" fill="currentColor">
       {finder(0, 0)}
       {finder(18, 0)}
       {finder(0, 18)}

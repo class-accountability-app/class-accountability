@@ -35,7 +35,7 @@ export async function Nav({ signedIn }: { signedIn: boolean }) {
               type="submit"
               lang={target}
               aria-label={target === 'en' ? t('switchToEnglishLabel') : t('switchToJapaneseLabel')}
-              className="min-h-11 px-2 font-meta text-sm text-muted underline underline-offset-4"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center px-2 font-meta text-sm text-muted underline underline-offset-4"
             >
               {target === 'en' ? t('switchToEnglish') : t('switchToJapanese')}
             </button>

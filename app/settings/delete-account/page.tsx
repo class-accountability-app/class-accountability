@@ -50,14 +50,18 @@ export default async function DeleteAccountPage() {
   )
   const blocked = counts.some((n) => n > 0)
 
+  // What delete_my_account() removes, checked against the foreign keys on
+  // 2026-11-16: everything here cascades from profiles. Tasks, polls, meeting
+  // notes and links the student made stay with the team (set null): othersNote.
   const items = [
     t('itemProfile'),
     t('itemClasses'),
-    t('itemTargets'),
+    t('itemProgress'),
     t('itemDocuments'),
-    t('itemComments'),
+    t('itemMeetings'),
     t('itemNudges'),
     t('itemInvitations'),
+    t('itemConnections'),
   ]
 
   return (

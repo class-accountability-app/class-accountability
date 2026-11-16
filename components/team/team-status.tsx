@@ -89,7 +89,8 @@ export function TeamStatus({
         <h2 id="team-status-heading" className="font-heading text-[17px] leading-7 font-bold text-ink">
           {t('heading')}
         </h2>
-        <p className="text-sm leading-7 font-semibold text-ink" aria-live="polite">
+        <p className="inline-flex items-center gap-2 text-sm leading-7 font-semibold text-ink" aria-live="polite">
+          {online > 0 && <StatusDot state="online" className="h-2.5 w-2.5" />}
           {online > 0 ? t('count', { online, total: members.length }) : t('none')}
         </p>
       </div>

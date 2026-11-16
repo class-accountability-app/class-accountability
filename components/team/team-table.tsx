@@ -72,7 +72,7 @@ export function TeamTable({
                 </th>
                 <td className="py-2 pr-2 text-muted">
                   {online ? (
-                    <span className="font-semibold text-status-active">{t('online')}</span>
+                    <span className="font-semibold text-online-strong">{t('online')}</span>
                   ) : status.lastSeenDay ? (
                     formatDayAgo(status.lastSeenDay, locale)
                   ) : (

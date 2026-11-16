@@ -133,6 +133,13 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
   オフライン for `A` without reloading. `A` turns オンライン表示 off in 設定:
   A's own strip says it is off, and `B` sees A as offline.
 
+- [ ] 3.x (2026-11-16) On a phone, `A`'s own card on the board. **Expect:**
+  each open task has one 「困ったとき・担当の変更」 row; opening it shows
+  「困っていると伝える」 and 「担当を変える」. After flagging a task as stuck,
+  「解決した」 shows on the task without opening anything. Under the card the
+  note says memos are yours alone and totals are seen by the team and the
+  teacher.
+
 ## 4. Logging
 
 - [ ] 4.1 `A` ＋記録 on a counted task (chips, then 記録する). **Expect:**
