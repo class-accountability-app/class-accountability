@@ -157,7 +157,7 @@ begin
     where c.conrelid = 'public.push_events'::regclass and c.contype = 'f'
       and a.attname = 'poll_id' and c.confdeltype = 'c'
   ) then
-    raise exception 'FAIL: push_events.poll_id must cascade, so a poll's pushes go with it';
+    raise exception 'FAIL: push_events.poll_id must cascade, so pushes go with their poll';
   end if;
 end $$;
 
