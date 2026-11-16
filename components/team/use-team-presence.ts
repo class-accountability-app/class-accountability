@@ -3,10 +3,14 @@
 import { createContext, createElement, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { AwayRow, PresenceRow } from '@/lib/team-status'
+import { applyLive } from '@/lib/live-presence'
+import { useLivePresence } from './live-presence'
 
 // How often the team's status is re-read while the page is visible. The
 // database counts someone as online for 100 seconds after their last ping
-// (0050; 3 minutes before it).
+// (0050; 3 minutes before it). While the team's live channel is connected
+// (0051, live-presence.tsx) `online` comes from it instead, at once; polling
+// still gives the last day opened and お休み.
 const REFRESH_MS = 20_000
 
 type TeamPresence = { presence: PresenceRow[]; away: AwayRow[] }
@@ -61,7 +65,9 @@ export function TeamPresenceProvider({
   initialAway: AwayRow[]
   children: React.ReactNode
 }) {
-  const value = usePolledPresence(podId, initial, initialAway, true)
+  const polled = usePolledPresence(podId, initial, initialAway, true)
+  const live = useLivePresence(podId)
+  const value = { presence: applyLive(polled.presence, live), away: polled.away }
   return createElement(TeamPresenceContext.Provider, { value }, children)
 }
 
@@ -70,7 +76,8 @@ export function TeamPresenceProvider({
 export function useTeamPresence(podId: string, initial: PresenceRow[], initialAway: AwayRow[]): TeamPresence {
   const shared = useContext(TeamPresenceContext)
   const own = usePolledPresence(podId, initial, initialAway, shared === null)
-  return shared ?? own
+  const live = useLivePresence(podId)
+  return shared ?? { presence: applyLive(own.presence, live), away: own.away }
 }
 
 // For a mark that has no data of its own: null outside a provider.

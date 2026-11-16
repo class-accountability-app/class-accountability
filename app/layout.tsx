@@ -12,6 +12,7 @@ import { PwaSupport } from '@/components/pwa'
 import { PushSync } from '@/components/push'
 import { PresencePing } from '@/components/presence'
 import { OfflineLogSync } from '@/components/offline-log-sync'
+import { LivePresenceProvider } from '@/components/team/live-presence'
 import './globals.css'
 
 // Soft pastel (2026-11-06): Outfit for Latin, loaded by next/font. Japanese
@@ -76,21 +77,23 @@ export default async function RootLayout({
     data: { user },
   } = await supabase.auth.getUser()
 
-  const [{ data: memberships }, { data: teamRows }] = user
+  const [{ data: memberships }, { data: teamRows }, { data: myPresence }] = user
     ? await Promise.all([
         supabase.from('class_memberships').select('class_id, role').eq('user_id', user.id),
         // The classes where I'm in an active team: there the クラス tab opens
         // the team's board instead of the class page.
         supabase
           .from('pairing_members')
-          .select('pairings!inner(class_id, status)')
+          .select('pairing_id, pairings!inner(class_id, status)')
           .eq('user_id', user.id)
           .eq('pairings.status', 'active'),
+        // 「オンライン表示」 (0035): whether I announce myself on my teams'
+        // live channels (0051). No row yet = on.
+        supabase.from('member_presence').select('share_online').eq('user_id', user.id).maybeSingle(),
       ])
-    : [{ data: null }, { data: null }]
-  const teamClassIds = new Set(
-    ((teamRows ?? []) as unknown as { pairings: { class_id: string } }[]).map((r) => r.pairings.class_id)
-  )
+    : [{ data: null }, { data: null }, { data: null }]
+  const myTeams = (teamRows ?? []) as unknown as { pairing_id: string; pairings: { class_id: string } }[]
+  const teamClassIds = new Set(myTeams.map((r) => r.pairings.class_id))
   const classes = (memberships ?? []).map((m) => ({ id: m.class_id, inTeam: teamClassIds.has(m.class_id) }))
   // A teacher-only account (0015: organizers are never in a team) gets お知らせ
   // where students have 声かけ, which could never show a teacher anything.
@@ -111,6 +114,14 @@ export default async function RootLayout({
           {tNav('skipToContent')}
         </a>
         <NextIntlClientProvider>
+          {/* Live presence on my teams' channels (0051). Always rendered (with
+              no teams it does nothing), so joining a first team doesn't
+              remount the page. A provider only, no <ViewTransition>. */}
+          <LivePresenceProvider
+            userId={user?.id ?? ''}
+            podIds={myTeams.map((r) => r.pairing_id)}
+            share={myPresence?.share_online ?? true}
+          >
           <Nav signedIn={!!user} />
           <div className="flex flex-1">
             {user && <SideMenu classes={classes} teacherOnly={teacherOnly} />}
@@ -124,6 +135,7 @@ export default async function RootLayout({
           {user && <PushSync />}
           {user && <PresencePing />}
           {user && <OfflineLogSync userId={user.id} />}
+          </LivePresenceProvider>
         </NextIntlClientProvider>
       </body>
     </html>

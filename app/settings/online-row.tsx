@@ -1,6 +1,7 @@
 'use client'
 
 import { useId, useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { setOnlineSharing } from './actions'
 
@@ -9,6 +10,7 @@ import { setOnlineSharing } from './actions'
 export function OnlineRow({ initialOn }: { initialOn: boolean }) {
   const t = useTranslations('settings.online')
   const id = useId()
+  const router = useRouter()
   const [on, setOn] = useState(initialOn)
   const [failed, setFailed] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -24,7 +26,11 @@ export function OnlineRow({ initialOn }: { initialOn: boolean }) {
       if (result.error) {
         setOn(!next)
         setFailed(true)
+        return
       }
+      // The layout passes the setting to the live channels (0051), which
+      // rejoin with it: off stops announcing me at once.
+      router.refresh()
     })
   }
 
