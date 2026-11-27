@@ -1,7 +1,8 @@
 # Study Pods identity
 
 The identity system of record. It holds every decision already in the app
-plus the proposals the author accepted on 2026-11-16. The visual guide (a
+plus the proposals the author accepted on 2026-11-16, and the pod mark chosen
+on 2026-11-27. The visual guide (a
 private artifact, the author's) is at
 https://claude.ai/artifact/2p4gyhA1diWfiSm3YxePVZ.
 
@@ -56,79 +57,87 @@ work gets finished without anyone having to chase.
   directly: 「Study Pods は、…」.
 - **Page titles:** `<page>｜Study Pods` in Japanese (full-width bar) and
   `<page> | Study Pods` in English.
-- **Short name:** "sp" appears only as the mark's letters, never as a word.
+- **Short name:** none. Always write "Study Pods" in full; the mark carries no letters.
 
 ## 3. The mark
 
-The sp mark (2026-11-06) is a lower-case **s** and a **p** whose bowl is a
-**pea**, set on a Hudson rounded square, the **pod**.
+**The pod** (chosen 2026-11-27, concept A of the pod concepts board,
+https://claude.ai/artifact/8ni3a4h5UPuipAP6GZgvLk): a pea pod, tilted as if
+just picked, with four peas showing through. The last pea is Penna: **you**,
+in your team, the same colour the app uses for your own work. It tells the
+name without letters, so it works the same in Japanese and English.
+
+It replaced the sp mark of 2026-11-06 (a lower-case s and a p whose bowl was
+a pea). The file keeps its name, `docs/icons/sp-mark.svg`, so links and the
+icon script stay the same.
 
 The master is `docs/icons/sp-mark.svg`. Every icon is rendered from it with
-`node scripts/make-icons.mjs`. Never edit the PNGs by hand.
+`node scripts/make-icons.mjs`. Never edit the PNGs by hand, and bump
+`VERSION` in `public/sw.js` after rendering.
 
 ### Construction (100-unit grid)
 
 | Part | Geometry | Fill |
 |---|---|---|
-| Pod | `rect` x 4, y 4, 92 × 92, corner radius 26 | Hudson `#ebdbd3` |
-| s | Outfit Bold glyph outlined, `translate(22 60) scale(0.05 -0.05)` | Umbra `#1f1f1f` |
-| p stem | `rect` x 51, y 35, 9 × 45, corner radius 4.5 | Umbra |
-| Pea (p's bowl) | `circle` centre (67, 47), radius 12 | Umbra |
+| Tile | `rect` x 4, y 4, 92 × 92, corner radius 26 | Hudson `#ebdbd3` |
+| Pod group | `translate(-2.2 6.5) rotate(-25 50 50)`, so the pod is centred on (50, 50) | |
+| Pod | `M10 50 Q50 20 90 50 Q50 80 10 50 Z`: a lens 80 long and 30 wide | Umbra `#1f1f1f` |
+| Stem | `M89 49 q7 -2 8 -10`, stroke 4, round caps | Umbra stroke |
+| Peas | circles radius 6.2 at x 30, 44, 58 (y 50), cut out of the pod | the tile's colour |
+| You | circle radius 6.2 at x 72 (y 50), the last pea | Penna `#bac8e0` |
 
-- **Letter box:** the letters fill x 22.5–79, y 35–80. They sit low on
-  purpose, so the p's stem reads as a descender.
-- **Stroke weight:** the stem's 9 units match the weight of the s, so the two
-  letters read as one word.
-- **The pea:** a full circle, not a letter bowl. It is the reason for the
-  name, so never flatten it into a plain "p".
+- **Bounds:** the drawn pod spans x 11.5–88.5 and y 24.7–75.3; its tips are about 45 units from the centre.
+- **The tilt** (25°) is part of the mark: a pod just picked, not lying flat.
+- **The peas** are cut out of the pod, so they always show the tile behind them. Four peas means "a few", not a fixed team size.
+- **You** is always the last pea, nearest the stem, and always Penna.
 
 ### Colourways
 
-| Version | Pod | Letters | Use |
-|---|---|---|---|
-| **Primary** | Hudson `#ebdbd3` | Umbra `#1f1f1f` | App icons, favicon, the header, and everywhere by default |
-| **On dark** | `#2c2c2e` | Porcelain `#f5f4f7` | The dark tab bar and side menu, and dark slides |
-| **On colour** | White `#ffffff` | Umbra | A tinted or photographic ground, including a Hudson one (where the primary pod would vanish) |
-| **Letters only** | none | Umbra (or white on dark) | One-colour print, stamps, embossing, and sizes below 24 px |
+| Version | Tile | Pod | Peas | You | Use |
+|---|---|---|---|---|---|
+| **Primary** | Hudson `#ebdbd3` | Umbra | Hudson | Penna | App icons, favicon, the header, and everywhere by default |
+| **On dark** | `#2c2c2e` | Porcelain `#f5f4f7` | `#2c2c2e` | Penna | The dark tab bar and side menu, and dark slides |
+| **On colour** | White | Umbra | White | Penna | A tinted or photographic ground, including a Hudson one |
+| **Pod only** | none | Umbra | the ground | Umbra outline, or the ground | One-colour print, stamps and embossing |
 
 ### Clear space
 
-Keep **one pea's width** (24 units, a quarter of the mark's width) clear on
-every side. At the 36 px header size that is 9 px, which the header's 10 px
-gap to the wordmark already meets.
+Keep **two peas' width** (25 units, about a quarter of the mark's width)
+clear on every side. At the 36 px header size that is 9 px, which the
+header's 10 px gap to the wordmark already meets.
 
 ### Sizes
 
 | Size | Where |
 |---|---|
-| 512 / 192 | Installed app icons (full bleed; the OS crops the shape) |
-| 180 | Apple touch icon |
+| 512 / 192 | Installed app icons: full bleed, pod at 0.86× so its tips stay in Android's maskable safe circle (radius 40) |
+| 180 | Apple touch icon (same art) |
 | 96 | Large in-page use (empty states, about) |
 | 48 | Cards, the push notification icon |
-| 36 | App header (`components/nav.tsx`) |
+| 36 | App header (`components/nav.tsx`, `PodMark`) |
 | 24 | Smallest size in the UI |
-| 16 | Favicon; **absolute minimum** |
+| 16 | Favicon; **absolute minimum**. The tab renderer draws the pod at 1.1× so the peas stay visible |
 
-Below 24 px, use the letters-only mark on a Hudson ground. The favicon
-renderer enlarges the letters to 1.18× for this reason.
+Below 24 px the stem disappears; that's expected. The pod and its peas still
+read.
 
 ### Don't
 
 - **Stretch or squash it:** scale it only as a square.
-- **Make it green:** green means "online" and nothing else.
+- **Make it green:** green means "online" and nothing else. The "you" pea is Penna, never green.
 - **Add effects:** no drop shadows, glows, gradients, outlines or bevels.
-- **Rotate it:** the status stamp on a member card tilts, but the mark never
-  does.
-- **Re-letter, redraw or retype it:** use the SVG.
-- **Put the primary pod on Hudson:** use the on-colour version.
+- **Change the tilt or flip it:** the pod always points up to the right, with the stem at the top.
+- **Move or recolour "you":** it is always the last pea, in Penna.
+- **Add or remove peas** to show a team's size: the mark is not a counter.
+- **Redraw it:** use the SVG, or `PodMark` in the app.
+- **Put the primary tile on Hudson:** use the on-colour version.
 - **Animate its parts apart:** the mark may fade in as a whole, nothing more.
-- **Box it inside another shape:** the pod already is the container.
 
 ## 4. Lockup
 
 The mark, then the wordmark, set horizontally.
 
-- **Mark:** 36 px (`SpMark size={36}`).
+- **Mark:** 36 px (`PodMark size={36}`).
 - **Gap:** 10 px (`gap-2.5`).
 - **Wordmark:** "Study Pods" in Outfit SemiBold (600), with tight tracking
   (`tracking-tight`, −0.025em). It is 18 px on phones (`text-lg`) and 20 px
@@ -420,9 +429,9 @@ copy that a test keeps in step.
 | Asset | File(s) | Spec |
 |---|---|---|
 | Master mark | `docs/icons/sp-mark.svg` | 100 × 100 viewBox |
-| Installed app icons | `public/icons/icon-192.png`, `icon-512.png`, `icon-maskable-512.png` | Full-bleed Hudson square, letters at 1.1×, inside the maskable safe circle (radius 40) |
+| Installed app icons | `public/icons/icon-192.png`, `icon-512.png`, `icon-maskable-512.png` | Full-bleed Hudson square, pod at 0.86×, inside the maskable safe circle (radius 40) |
 | Apple touch icon | `app/apple-icon.png`, `public/apple-touch-icon.png`, `public/apple-touch-icon-precomposed.png` | 180 px, same art |
-| Favicons | `app/favicon.ico` (16/32/48), `app/icon1.png` (32), `app/icon2.png` (192) | Tab: rounded tile (corner radius 22), letters at 1.18× |
+| Favicons | `app/favicon.ico` (16/32/48), `app/icon1.png` (32), `app/icon2.png` (192) | Tab: rounded tile (corner radius 22), pod at 1.1× |
 | Header lockup | `components/brand-mark.tsx`, `components/nav.tsx` | Section 4 |
 | Link preview | `docs/og-image/og-image.html` → `app/opengraph-image.png` | Porcelain, lockup, hero headline with the Penna highlight; keep in step with the landing hero |
 | Web app manifest | `app/manifest.ts` | Name "Study Pods", theme and background `#f5f4f7`, single theme |
@@ -456,8 +465,12 @@ For the classroom wall or a lecture slide, so students can join on the spot.
 
 ## 14. Changing the identity
 
-- **The mark:** change only `docs/icons/sp-mark.svg`, then rerun the icon
-  script and bump the service worker version.
+- **The mark:** it is drawn in three places, so change them together:
+  `docs/icons/sp-mark.svg` (the master), `PodMark` in
+  `components/brand-mark.tsx` (the header) and the inline copy in
+  `docs/og-image/og-image.html`. Then rerun `node scripts/make-icons.mjs`,
+  re-render `app/opengraph-image.png` from the og-image page and bump
+  `VERSION` in `public/sw.js`.
 - **New colours:** add a token in `app/globals.css` with its contrast in a
   comment, then add it to section 5. A new colour needs a single meaning.
 - **Copy:** change both `messages/ja.json` and `messages/en.json`. Push copy
