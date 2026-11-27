@@ -8,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Study Pods',
     short_name: 'Study Pods',
     description:
-      'グループ課題のための、チームの進捗ボード。同じ授業の2〜6人のチームで、発表やレポートをタスクに分けて進めます。',
+      'グループ課題のための、チームの進捗ボード。同じ授業の少人数のチームで、発表やレポートをタスクに分けて進めます。',
     lang: 'ja',
     start_url: '/',
     scope: '/',
