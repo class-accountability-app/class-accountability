@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
 import { createClient } from '@/lib/supabase/server'
+import { isTeamFull } from '@/lib/team-size'
+import { loadTeamLimit } from '../team-limit'
 import { formatDate, formatTimeAgo, tokyoDaysUntil } from '@/lib/date'
 import { groupTasksByOwner, projectPercent } from '@/lib/project-stats'
 import { latestCheckins, visibleTotal, type CheckinRow } from '@/lib/project-board'
@@ -135,8 +137,9 @@ export default async function ProjectPage({
   const teamName = !teamNameError && teamRow ? (
     <TeamName classId={classId} podId={pod.podId} name={teamRow.name} />
   ) : null
-  // チームに招待する (0028): the code and QR while there is room.
-  const invite = members.length < 6 ? await loadTeamInvite(supabase, pod.podId) : null
+  // チームに招待する (0028): the code and QR while there is room (the
+  // class's team size limit, 0053).
+  const invite = !isTeamFull(members.length, await loadTeamLimit(supabase, classId)) ? await loadTeamInvite(supabase, pod.podId) : null
   const inviteCard = invite && (
     <TeamInviteCard
       podId={pod.podId}

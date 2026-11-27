@@ -3,12 +3,15 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { DB_CODES, toErrorKey, type ActionResult } from '@/lib/errors'
-import { ANNOUNCEMENT_MAX, TEAM_NAME_MAX, isAutoSplitSize } from '@/lib/organizer'
+import { ANNOUNCEMENT_MAX, TEAM_NAME_MAX } from '@/lib/organizer'
+import { isAutoSplitSize, isTeamSizeLimit } from '@/lib/team-size'
+import { loadTeamLimit } from './team-limit'
 import { isMilestoneInput } from '@/lib/planning'
 
 // The organizer's team tools (0036). The database checks that the caller is
 // this class's organizer and keeps every team rule (students only, one team
-// per class, at most 6); these only turn common mistakes into clear messages.
+// per class, at most the class's team size limit, 0053); these only turn
+// common mistakes into clear messages.
 
 const TEAM_ERRORS = {
   [DB_CODES.teamFull]: 'podFull',
@@ -27,9 +30,9 @@ const nameOk = (name: string) => [...name.trim()].length <= TEAM_NAME_MAX
 
 export async function createTeam(classId: string, name: string, memberIds: string[]): Promise<ActionResult> {
   if (memberIds.length === 0) return { error: 'teamSetupInvalid' }
-  if (memberIds.length > 6) return { error: 'podFull' }
   if (!nameOk(name)) return { error: 'teamNameTooLong' }
   const supabase = await createClient()
+  if (memberIds.length > (await loadTeamLimit(supabase, classId))) return { error: 'podFull' }
   const { error } = await supabase.rpc('organizer_create_team', {
     p_class: classId,
     p_name: name.trim() || null,
@@ -49,11 +52,30 @@ export async function moveStudent(classId: string, userId: string, toPod: string
 }
 
 export async function autoSplit(classId: string, size: number): Promise<ActionResult> {
-  if (!isAutoSplitSize(size)) return { error: 'teamSetupInvalid' }
   const supabase = await createClient()
+  if (!isAutoSplitSize(size, await loadTeamLimit(supabase, classId))) return { error: 'teamSetupInvalid' }
   const { error } = await supabase.rpc('organizer_auto_split', { p_class: classId, p_size: size })
   if (error) return { error: toErrorKey('autoSplit', error, TEAM_ERRORS) }
   refresh(classId)
+  return { error: null }
+}
+
+// チームの人数の上限 (0053): 2–10 for the whole class. Lowering it removes
+// nobody; a team over the new limit just takes no one new.
+export async function setTeamSizeLimit(classId: string, limit: number): Promise<ActionResult> {
+  if (!isTeamSizeLimit(limit)) return { error: 'teamSizeInvalid' }
+  const supabase = await createClient()
+  const { error } = await supabase.rpc('set_team_size_limit', { p_class: classId, p_limit: limit })
+  if (error) {
+    return {
+      error: toErrorKey('setTeamSizeLimit', error, {
+        [DB_CODES.teamSetupInvalid]: 'teamSizeInvalid',
+        [DB_CODES.insufficientPrivilege]: 'notAllowed',
+      }),
+    }
+  }
+  refresh(classId)
+  revalidatePath('/classes')
   return { error: null }
 }
 

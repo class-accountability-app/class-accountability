@@ -7,6 +7,7 @@ import { StepHead } from '@/components/first-run/step-head'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { CreatePodButton } from '@/app/classes/[classId]/create-pod-button'
 import { TeamCodeForm } from '@/components/team/team-code-form'
+import { loadTeamLimit } from '@/app/classes/[classId]/team-limit'
 
 // Step 2 of 3 of the first-run flow (Prompt 15): start a team, join one with
 // its code, ask to join one from the class page, or decide later. Each choice
@@ -58,7 +59,7 @@ export default async function StartPodPage({
         <StepHead step={2} />
         <div>
           <h1 className="font-heading text-[28px] leading-tight font-bold text-ink lg:text-[36px]">{t('pod.title')}</h1>
-          <p className="text-[15px] leading-7 text-ink/85">{t('pod.lead')}</p>
+          <p className="text-[15px] leading-7 text-ink/85">{t('pod.lead', { max: await loadTeamLimit(supabase, classId) })}</p>
         </div>
         {/* Three ways in, each with a line saying when to use it and what
             happens next; the one filled button is "start a new team". */}

@@ -2,7 +2,7 @@
 
 // A team this small shows its invite card near the top of the board, before
 // the tasks: finding teammates is the next thing to do. Larger teams keep it
-// at the bottom (it disappears at 6, the cap).
+// at the bottom (it disappears when the team reaches the class's limit, 0053).
 export const SMALL_TEAM = 3
 
 export function inviteFirst(memberCount: number): boolean {

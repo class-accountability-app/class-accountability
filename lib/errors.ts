@@ -45,7 +45,8 @@ const TASK_SOURCE_MISMATCH = 'SP011'
 const POLL_CLOSED = 'SP012'
 // Raised by create_meeting_poll (0024): times must be 2–8, distinct, in the future.
 const POLL_TIMES_INVALID = 'SP013'
-// Raised by join_pod_by_code (0028_team_join_code.sql): the team has 6 members.
+// Raised by join_pod_by_code (0028) and the organizer's team tools (0036): the
+// team is at its class's size limit (6 until 0053 let the organizer set 2–10).
 const TEAM_FULL = 'SP014'
 // Raised by join_pod_by_code (0028): no active team has this code.
 const TEAM_CODE_UNKNOWN = 'SP015'

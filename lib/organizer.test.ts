@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { groupRoster, isAutoSplitSize, splitPreview, type RosterRow } from './organizer'
+import { groupRoster, splitPreview, type RosterRow } from './organizer'
 
 const row = (id: string, pod: string | null, no: number | null, name: string | null = null): RosterRow => ({
   user_id: id,
@@ -24,12 +24,5 @@ describe('organizer tools', () => {
     expect(splitPreview(10, 4)).toEqual([4, 3, 3])
     expect(splitPreview(12, 4)).toEqual([4, 4, 4])
     expect(splitPreview(0, 3)).toEqual([])
-  })
-
-  it('takes team sizes 2 to 6 only', () => {
-    expect(isAutoSplitSize(2)).toBe(true)
-    expect(isAutoSplitSize(6)).toBe(true)
-    expect(isAutoSplitSize(7)).toBe(false)
-    expect(isAutoSplitSize('3')).toBe(false)
   })
 })

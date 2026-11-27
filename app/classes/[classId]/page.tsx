@@ -1,10 +1,13 @@
 import Link from 'next/link'
 import { TeamSummary } from '@/components/teacher/team-summary'
 import { TeamManager } from '@/components/teacher/team-manager'
+import { TeamSizeSetting } from '@/components/teacher/team-size-setting'
+import { isTeamFull } from '@/lib/team-size'
+import { loadTeamLimitInfo } from './team-limit'
 import { AnnouncementManager, type Announcement } from '@/components/teacher/announcement-manager'
 import { MilestoneManager, type MilestoneStatus } from '@/components/teacher/milestone-manager'
 import { ClassAnnouncements } from '@/components/class-announcements'
-import type { RosterRow } from '@/lib/organizer'
+import { groupRoster, type RosterRow } from '@/lib/organizer'
 import { ClassProjectList } from '@/components/teacher/class-project-list'
 import { rowsFromTasks } from '@/lib/class-project'
 import { redirect } from 'next/navigation'
@@ -30,7 +33,6 @@ import { loadTeamInvite } from '@/app/team/load'
 import { TeamInviteCard } from '@/components/team/team-invite-card'
 import { TEAM_INVITE_ID, inviteFirst } from '@/lib/team-invite'
 
-const POD_SOFT_CAP = 6
 
 type ClassProjectRow = { id: string; title: string; deadline: string | null; checkin_every_days: number; tasks: unknown }
 type PodMember = { pairing_id: string; user_id: string; profiles: { display_name: string } | null }
@@ -90,6 +92,9 @@ export default async function ClassPodsPage({
   if (!membership) {
     redirect('/classes')
   }
+
+  // 0053: the class's team size limit (6 until the migration adds it).
+  const teamLimit = await loadTeamLimitInfo(supabase, classId)
 
   const url = joinUrl(await appOrigin(), cls.join_code)
   const shortUrl = shortJoinUrl(url)
@@ -198,7 +203,16 @@ export default async function ClassPodsPage({
             <aside aria-label={tTeacher('manageLabel')} className="flex min-w-0 flex-col gap-7">
               {hasTools && (
                 <>
-                  <TeamManager classId={classId} roster={rosterRows as RosterRow[]} />
+                  {teamLimit.stored && (
+                    <TeamSizeSetting
+                      classId={classId}
+                      limit={teamLimit.limit}
+                      overCount={
+                        groupRoster(rosterRows as RosterRow[]).teams.filter((team) => team.members.length > teamLimit.limit).length
+                      }
+                    />
+                  )}
+                  <TeamManager classId={classId} roster={rosterRows as RosterRow[]} limit={teamLimit.limit} />
                   <div id="announcements" className="scroll-mt-4">
                     <AnnouncementManager classId={classId} announcements={(announcementRows as Announcement[] | null) ?? []} />
                   </div>
@@ -294,7 +308,7 @@ export default async function ClassPodsPage({
   }
 
   function memberCount(podId: string) {
-    return t('memberCount', { count: (membersByPod.get(podId) ?? []).length, max: POD_SOFT_CAP })
+    return t('memberCount', { count: (membersByPod.get(podId) ?? []).length, max: teamLimit.limit })
   }
 
   const myPodId = myPods[0] ?? null
@@ -305,7 +319,7 @@ export default async function ClassPodsPage({
   const myPodSize = myPodId ? (membersByPod.get(myPodId) ?? []).length : null
   // チームに招待する (0028): my team's code and QR, here as well as on the
   // board, while there is room. Null (card hidden) if the code can't be read.
-  const teamInvite = myPodId && myPodSize !== null && myPodSize < POD_SOFT_CAP ? await loadTeamInvite(supabase, myPodId) : null
+  const teamInvite = myPodId && myPodSize !== null && !isTeamFull(myPodSize, teamLimit.limit) ? await loadTeamInvite(supabase, myPodId) : null
   const step = nextStep({
     classes: [
       {
@@ -391,14 +405,14 @@ export default async function ClassPodsPage({
 
           <div className="flex min-w-0 flex-col gap-7">
             <section aria-labelledby="pod-heading" className="flex flex-col gap-7">
-              {sectionHead('pod-heading', t('yourPod'), t('yourPodWhy'))}
+              {sectionHead('pod-heading', t('yourPod'), t('yourPodWhy', { max: teamLimit.limit }))}
               {myPods.length === 0 ? (
                 // 次にやること above already offers チームを作る; no second one here.
-                <EmptyState illustration="pod" title={t('notInPodTitle')} headingLevel="h3" body={t('notInPod')} ruled />
+                <EmptyState illustration="pod" title={t('notInPodTitle')} headingLevel="h3" body={t('notInPod', { max: teamLimit.limit })} ruled />
               ) : (
                 myPods.map((podId) => {
                   const podMembers = membersByPod.get(podId) ?? []
-                  const isFull = podMembers.length >= POD_SOFT_CAP
+                  const isFull = isTeamFull(podMembers.length, teamLimit.limit)
                   const memberIds = new Set(podMembers.map((m) => m.user_id))
                   const eligibleClassmates = [...classmateNames.entries()]
                     .filter(
@@ -487,7 +501,7 @@ export default async function ClassPodsPage({
                   <ul className="flex flex-col gap-7">
                     {otherPods.map((podId) => {
                       const podMembers = membersByPod.get(podId) ?? []
-                      const isFull = podMembers.length >= POD_SOFT_CAP
+                      const isFull = isTeamFull(podMembers.length, teamLimit.limit)
                       const alreadyRequested = myPendingRequestPodIds.has(podId)
 
                       return (
@@ -497,7 +511,7 @@ export default async function ClassPodsPage({
                             <span className="font-meta text-xs leading-7 text-muted">{memberCount(podId)}</span>
                           </div>
                           {isFull ? (
-                            <span className="text-[13px] leading-7 font-semibold text-ink">{t('full')}</span>
+                            <span className="text-[13px] leading-7 font-semibold text-ink">{t('full', { max: teamLimit.limit })}</span>
                           ) : alreadyRequested ? (
                             <span className="text-[13px] leading-7 font-semibold text-ink">{t('requested')}</span>
                           ) : (

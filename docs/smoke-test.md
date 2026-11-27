@@ -53,6 +53,13 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
   team links; no button or field anywhere; pills to the other teams on the same
   project and to the team's other projects. `A` opening the same URL gets 404.
   `A`'s Home shows 「先生に見えるものが変わりました」 once, until わかりました.
+- [ ] 2.1d (0053, team size limit) `O` opens 「チームの人数の上限」 on the class
+  page. **Expect:** 6人 selected. Choose 3人, 「上限を保存」. **Expect:**
+  「保存しました。」; 自動でチーム分け offers only 2人 and 3人; a student's class page
+  says 「最大3人」 and a team of 3 shows 「満員（3人まで）」; a 4th student
+  opening that team's code gets 「このチームは満員です（このクラスは1チーム3人まで）」.
+  Lower it to 2 with a team of 3: nobody leaves, and the setting says
+  「1チームが上限を超えています…」. Put it back to 6 afterwards.
 - [ ] 2.2 `A`, `B`, `C` join the class with the code or QR. **Expect:** `O`'s
   student count goes to 3; チームの管理 lists all three without a team.
 - [ ] 2.3 `O` ticks `A` and `B`, names the team, 「チームを作る」. **Expect:**
