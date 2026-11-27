@@ -14,6 +14,7 @@ type TaskRow = {
   title: string
   target_amount: number | null
   input_mode: 'manual' | 'document'
+  status: string
   projects: { pairings: { class_id: string; classes: { name: string } | null } | null } | null
 }
 
@@ -31,7 +32,7 @@ async function load(classId: string, taskId: string) {
   const [{ data: task }, { data: doc }] = await Promise.all([
     supabase
       .from('project_tasks')
-      .select('id, title, target_amount, input_mode, projects!inner(pairings!inner(class_id, classes(name)))')
+      .select('id, title, target_amount, input_mode, status, projects!inner(pairings!inner(class_id, classes(name)))')
       .eq('id', taskId)
       .eq('owner_id', user.id)
       .eq('projects.pairings.class_id', classId)
@@ -76,6 +77,7 @@ export default async function WritePage({ params }: { params: Params }) {
       taskId={task.id}
       title={task.title}
       targetAmount={task.target_amount === null ? null : Number(task.target_amount)}
+      doneAtStart={task.status === 'done'}
       initial={{ content, version: doc?.version ?? 0, updatedAt: doc?.updated_at ?? null }}
     />
   )

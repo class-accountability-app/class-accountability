@@ -399,7 +399,7 @@ export async function logTaskProgress(
   classId: string,
   taskId: string,
   input: { amount: string; note: string; clientId: string }
-): Promise<ActionResult> {
+): Promise<ActionResult & { reached?: boolean }> {
   const supabase = await createClient()
   const {
     data: { user },
@@ -410,6 +410,14 @@ export async function logTaskProgress(
   if (value === null) return { error: 'logAmountInvalid' }
   const note = input.note.trim() || null
   if (note !== null && [...note].length > NOTE_MAX) return { error: 'tooLong' }
+
+  // 0054 marks the task done in the database once its total reaches the
+  // target. Reading the status before and after tells the form whether this
+  // entry is the one that finished it (so it celebrates once, not on retries).
+  const statusOf = async () =>
+    (await supabase.from('project_tasks').select('status').eq('id', taskId).maybeSingle<{ status: string }>()).data
+      ?.status ?? null
+  const before = await statusOf()
 
   const { error } = await supabase.from('task_progress').insert({
     task_id: taskId,
@@ -427,8 +435,9 @@ export async function logTaskProgress(
   // The first entry means the work has started.
   await supabase.from('project_tasks').update({ status: 'doing' }).eq('id', taskId).eq('status', 'todo')
 
+  const reached = !error && before !== null && before !== 'done' && (await statusOf()) === 'done'
   refresh(classId)
-  return { error: null }
+  return { error: null, reached }
 }
 
 // チェックインする: submit_checkin (0022) builds my snapshot in the database

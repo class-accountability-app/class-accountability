@@ -8,6 +8,7 @@ import { TASK_CHIPS, parseWholeAmount, type TaskMetric } from '@/lib/tasks'
 import { FieldError, FormError, describedField } from '@/components/form-errors'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { isOffline, queueLog } from '@/lib/offline-log'
+import { celebrateTaskDone } from '@/lib/celebrate'
 import { logTaskProgress } from './actions'
 import { controlClass } from './create-project-form'
 
@@ -88,6 +89,9 @@ export function TaskLog({
         return
       }
       done('saved')
+      // 0054: this entry took the task to its target, so it is done now. The
+      // celebration lives in the layout: this form disappears on refresh.
+      if ('reached' in result && result.reached) celebrateTaskDone(title)
       router.refresh()
     })
   }

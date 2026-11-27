@@ -15,6 +15,7 @@ import { decideDraft, deleteDraft, dropStaleDrafts, readDraft, type LocalDraft }
 import { ProgressBar } from '@/components/progress-bar'
 import { currentDocument, restoreVersion } from './actions'
 import { useAutosave } from './use-autosave'
+import { celebrateTaskDone } from '@/lib/celebrate'
 import { Toolbar } from './toolbar'
 import { SaveStatus } from './save-status'
 import { ConflictDialog, DraftDialog } from './conflict-dialog'
@@ -40,6 +41,7 @@ export function Editor({
   taskId,
   title,
   targetAmount,
+  doneAtStart,
   initial,
 }: {
   userId: string
@@ -48,6 +50,8 @@ export function Editor({
   taskId: string
   title: string
   targetAmount: number | null
+  // Whether the task was already done when the editor opened (0054).
+  doneAtStart: boolean
   initial: Initial
 }) {
   const t = useTranslations('editor')
@@ -159,6 +163,17 @@ export function Editor({
     // Once per editor: the initial version is fixed for this page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor])
+
+  // 目標に届きました (0054): once a save has stored text that reaches the
+  // target, the database has marked the task done; celebrate that once. A
+  // task already done, or already over its target when the editor opened,
+  // never celebrates here.
+  const celebrated = useRef(doneAtStart || (targetAmount !== null && count >= targetAmount))
+  useEffect(() => {
+    if (celebrated.current || targetAmount === null || state.status !== 'saved' || count < targetAmount) return
+    celebrated.current = true
+    celebrateTaskDone(title)
+  }, [state.status, count, targetAmount, title])
 
   // PDF: the print page reads the saved text, so wait for the save first.
   useEffect(() => {

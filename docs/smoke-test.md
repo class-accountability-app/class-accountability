@@ -149,6 +149,13 @@ When you're done, reset with `docs/demo-reset.md` if you want a clean demo.
 
 ## 4. Logging
 
+- [ ] 4.0 (0054) `A` logs ＋記録 on a counted task with a target until the total
+  reaches it (e.g. 8 of 10, then +2). **Expect:** the task turns 完了 by itself;
+  a card 「目標に届きました」 rises above the tab bar, the pod's peas pop in and a
+  check stamps down, then it closes after ~5 s (閉じる closes it sooner). Logging
+  more on a done task shows no card. With the phone's reduced motion on, the
+  card appears without moving. Writing in Study Pods past a target shows the same
+  card once the save finishes.
 - [ ] 4.1 `A` ＋記録 on a counted task (chips, then 記録する). **Expect:**
   「記録しました」; the bar moves; teammates see the new total (live).
 - [ ] 4.2 Double-tap 記録する quickly. **Expect:** one entry, not two.
