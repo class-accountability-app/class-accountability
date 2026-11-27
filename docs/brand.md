@@ -38,7 +38,7 @@ Contents:
 | **Audience** | Japanese university students (andrew.ac.jp), mostly on phones and often on the way to class; and the teacher who runs the class. |
 | **Problem** | In group work, nobody knows who is doing what until the night before. Chat groups bury it, and asking feels like nagging. |
 | **Promise** | The team finishes together. Everyone can see who is doing what and how far it has got, without chat, rankings or competition. |
-| **Core metaphor** | A pea pod. Each pea is one student; the pod is the team of 2–6 that carries them to the end of the project. The name says it, the mark draws it, and the board is built around it. |
+| **Core metaphor** | A pea pod. Each pea is one student; the pod is the small team (6 by default; the teacher can set 2–10) that carries them to the end of the project. The name says it, the mark draws it, and the board is built around it. |
 | **Personality** | Calm, plain-spoken and kind, like a thoughtful senpai, never a coach shouting. |
 | **Values** | Togetherness without pressure. Honesty about who sees what. Almost no effort to log progress (automation first). |
 | **Never** | Leaderboards, streak pressure, confetti, neon, guilt, or a colour as the only signal. Nor anything cut on purpose: open chat, gamification, matching with strangers. |
@@ -364,7 +364,7 @@ delays a tap.
 | Japanese | English | Meaning |
 |---|---|---|
 | クラス | class | A course; joined with a class code |
-| チーム | team | A pod of 2–6 students in one class (the code still says `pairings`) |
+| チーム | team | A small group of students in one class, up to the class's limit (6 by default, 2–10; the code still says `pairings`) |
 | プロジェクト | project | The team's shared group assignment |
 | タスク | task | A piece of the project with one owner |
 | ボード | board | The team's project page |
