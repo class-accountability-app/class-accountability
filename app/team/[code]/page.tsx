@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { EmptyState, emptyActionClass } from '@/components/empty-state'
 import { TeamJoinForm } from './team-join-form'
+import { isTeamFull, teamLimitOf } from '@/lib/team-size'
 
 type PodByCode = {
   pod_id: string
@@ -12,9 +13,9 @@ type PodByCode = {
   member_count: number
   is_member: boolean
   in_class: boolean
+  // 0053; missing before that migration (then the old cap of 6).
+  team_limit?: number
 }
-
-const TEAM_CAP = 6
 
 // /team/{code}, from a teammate's QR or code (0028). Logged out, the proxy
 // sends the student to /login?next=/team/{code} (and /welcome first without a
@@ -56,7 +57,8 @@ export default async function TeamJoinPage({ params }: { params: Promise<{ code:
 
   if (team.is_member) redirect(`/classes/${team.class_id}/project`)
 
-  const full = Number(team.member_count) >= TEAM_CAP
+  const limit = teamLimitOf(team.team_limit)
+  const full = isTeamFull(Number(team.member_count), limit)
   return (
     <div className="flex flex-1 flex-col px-4 pt-7 pb-8 sm:px-6">
       <div className="mx-auto mt-7 flex w-full max-w-md flex-col gap-3.5 rule-card px-[22px] py-7">
@@ -65,7 +67,7 @@ export default async function TeamJoinPage({ params }: { params: Promise<{ code:
           {t('title', { className: team.class_name })}
         </h1>
         <p className="-mt-1.5 font-meta text-[13px] text-muted">{t('meta', { count: Number(team.member_count) })}</p>
-        <p className="text-[15px] leading-7 text-ink/85">{full ? t('full') : t('body')}</p>
+        <p className="text-[15px] leading-7 text-ink/85">{full ? t('full', { max: limit }) : t('body')}</p>
         {!team.in_class && !full && <p className="text-[13px] leading-7 text-muted">{t('alsoJoinsClass')}</p>}
         {full ? (
           <Link href="/" className={emptyActionClass}>

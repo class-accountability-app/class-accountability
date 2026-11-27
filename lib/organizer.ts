@@ -3,11 +3,8 @@
 
 export const TEAM_NAME_MAX = 30
 export const ANNOUNCEMENT_MAX = 500
-export const AUTO_SPLIT_SIZES = [2, 3, 4, 5, 6] as const
-
-export function isAutoSplitSize(value: unknown): value is (typeof AUTO_SPLIT_SIZES)[number] {
-  return typeof value === 'number' && (AUTO_SPLIT_SIZES as readonly number[]).includes(value)
-}
+// Auto-split's sizes depend on the class's team size limit (0053): see
+// autoSplitSizes() in lib/team-size.ts.
 
 export type RosterRow = {
   user_id: string

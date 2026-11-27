@@ -4,7 +4,8 @@ import { useId, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import type { ErrorKey } from '@/lib/errors'
-import { AUTO_SPLIT_SIZES, TEAM_NAME_MAX, groupRoster, splitPreview, type RosterRow, type RosterTeam } from '@/lib/organizer'
+import { TEAM_NAME_MAX, groupRoster, splitPreview, type RosterRow, type RosterTeam } from '@/lib/organizer'
+import { TEAM_SIZE_DEFAULT, autoSplitSizes, isTeamFull } from '@/lib/team-size'
 import { FormError } from '@/components/form-errors'
 import { primaryButtonClass, secondaryButtonClass } from '@/components/buttons'
 import { autoSplit, createTeam, moveStudent, renameTeam, swapStudents } from '@/app/classes/[classId]/organizer-actions'
@@ -18,7 +19,16 @@ const SWAP = 'swap:'
 // existing team, splits them automatically, renames teams, moves a student
 // (or takes them out of a team) and swaps two students between teams (0039). Names and
 // teams only: no numbers, tasks or text.
-export function TeamManager({ classId, roster }: { classId: string; roster: RosterRow[] }) {
+export function TeamManager({
+  classId,
+  roster,
+  limit = TEAM_SIZE_DEFAULT,
+}: {
+  classId: string
+  roster: RosterRow[]
+  // The class's team size limit (0053).
+  limit?: number
+}) {
   const t = useTranslations('organizer')
   const tCommon = useTranslations('common')
   const id = useId()
@@ -27,7 +37,7 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
   const [error, setError] = useState<ErrorKey | null>(null)
   const [picked, setPicked] = useState<Set<string>>(() => new Set())
   const [newName, setNewName] = useState('')
-  const [size, setSize] = useState<number>(4)
+  const [size, setSize] = useState<number>(Math.min(4, limit))
   const { unassigned, teams } = groupRoster(roster)
 
   function run(action: () => Promise<{ error: ErrorKey | null }>, after?: () => void) {
@@ -108,8 +118,8 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
                       >
                         <option value="">{t('placeIn')}</option>
                         {teams.map((team) => (
-                          <option key={team.podId} value={team.podId} disabled={team.members.length >= 6}>
-                            {team.members.length >= 6 ? t('teamFull', { team: teamLabel(team) }) : teamLabel(team)}
+                          <option key={team.podId} value={team.podId} disabled={isTeamFull(team.members.length, limit)}>
+                            {isTeamFull(team.members.length, limit) ? t('teamFull', { team: teamLabel(team) }) : teamLabel(team)}
                           </option>
                         ))}
                       </select>
@@ -153,7 +163,7 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
               </label>
               <div className="flex flex-wrap items-center gap-2.5">
                 <select id={`${id}-size`} value={size} onChange={(e) => setSize(Number(e.target.value))} className={control}>
-                  {AUTO_SPLIT_SIZES.map((n) => (
+                  {autoSplitSizes(limit).map((n) => (
                     <option key={n} value={n}>
                       {t('sizeOption', { count: n })}
                     </option>
@@ -182,6 +192,7 @@ export function TeamManager({ classId, roster }: { classId: string; roster: Rost
           label={teamLabel(team)}
           teams={teams}
           teamLabel={teamLabel}
+          limit={limit}
           pending={isPending}
           onRename={(name) => run(() => renameTeam(classId, team.podId, name))}
           onMove={(userId, to) => run(() => moveStudent(classId, userId, to))}
@@ -197,6 +208,7 @@ function TeamCard({
   label,
   teams,
   teamLabel,
+  limit,
   pending,
   onRename,
   onMove,
@@ -206,6 +218,7 @@ function TeamCard({
   label: string
   teams: RosterTeam[]
   teamLabel: (t: RosterTeam) => string
+  limit: number
   pending: boolean
   onRename: (name: string) => void
   onMove: (userId: string, to: string | null) => void
@@ -263,10 +276,10 @@ function TeamCard({
               className={`${control} max-w-[11rem]`}
             >
               {teams.map((other) => (
-                <option key={other.podId} value={other.podId} disabled={other.podId !== team.podId && other.members.length >= 6}>
+                <option key={other.podId} value={other.podId} disabled={other.podId !== team.podId && isTeamFull(other.members.length, limit)}>
                   {other.podId === team.podId
                     ? t('stayIn', { team: teamLabel(other) })
-                    : other.members.length >= 6
+                    : isTeamFull(other.members.length, limit)
                       ? t('teamFull', { team: teamLabel(other) })
                       : t('moveTo', { team: teamLabel(other) })}
                 </option>

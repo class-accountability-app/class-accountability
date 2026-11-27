@@ -3,10 +3,12 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { DB_CODES, logServerError, toErrorKey, type ActionResult } from '@/lib/errors'
+import { isTeamFull } from '@/lib/team-size'
+import { loadTeamLimit } from './team-limit'
 
-// Soft cap only — no DB constraint (see 0003 decision log). Checked here, not
-// enforced atomically; see 0004's comment on the accept race.
-const POD_SOFT_CAP = 6
+// Invitations keep a soft cap — no DB constraint (see 0003 decision log).
+// Checked here, not enforced atomically; see 0004's comment on the accept
+// race. The cap is the class's team size limit (0053, default 6).
 
 type Supabase = Awaited<ReturnType<typeof createClient>>
 
@@ -200,12 +202,12 @@ export async function acceptInvitation(invitationId: string): Promise<ActionResu
     return { error: 'invitationNotFound' }
   }
 
-  const { count } = await supabase
-    .from('pairing_members')
-    .select('user_id', { count: 'exact', head: true })
-    .eq('pairing_id', invitation.pod_id)
+  const [{ count }, limit] = await Promise.all([
+    supabase.from('pairing_members').select('user_id', { count: 'exact', head: true }).eq('pairing_id', invitation.pod_id),
+    loadTeamLimit(supabase, invitation.class_id),
+  ])
 
-  if ((count ?? 0) >= POD_SOFT_CAP) {
+  if (isTeamFull(count ?? 0, limit)) {
     return { error: 'podFull' }
   }
 
