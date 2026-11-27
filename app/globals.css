@@ -685,3 +685,49 @@ html {
     widows: 2;
   }
 }
+
+/*
+ * 目標に届きました (0054, components/project/done-celebration.tsx): the card
+ * rises in, the peas pop into the pod one by one (the last one is you), the
+ * pod swells once and the check stamps down (stamp-in, above). About 1.3 s in
+ * all, once per task. Nothing moves under reduced motion: the card and its
+ * words simply appear.
+ */
+@keyframes done-rise {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  60% { opacity: 1; transform: translateY(-3px) scale(1.01); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pea-pop {
+  0% { scale: 0; }
+  70% { scale: 1.3; }
+  100% { scale: 1; }
+}
+@keyframes pod-swell {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.07; }
+}
+.done-card { animation: done-rise 0.5s cubic-bezier(0.2, 0.9, 0.25, 1) both; }
+.done-pea {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pea-pop 0.36s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.done-pod {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pod-swell 0.45s ease-out 0.62s both;
+}
+.done-check {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: stamp-in 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .done-card,
+  .done-pea,
+  .done-pod,
+  .done-check {
+    animation: none !important;
+  }
+}
