@@ -1,4 +1,4 @@
-// Renders every app icon and favicon from docs/icons/sp-mark.svg (the sp mark).
+// Renders every app icon and favicon from docs/icons/sp-mark.svg (the pod mark).
 //   node scripts/make-icons.mjs
 // Writes: public/icons/icon-192.png, icon-512.png, icon-maskable-512.png,
 // app/apple-icon.png + public/apple-touch-icon(-precomposed).png (180),
@@ -12,17 +12,18 @@ const load = createRequire(import.meta.url)
 const { chromium } = load('playwright')
 
 const svg = readFileSync('docs/icons/sp-mark.svg', 'utf8')
-// The letters only (everything after the tile).
-const letters = svg.slice(svg.indexOf('<path'), svg.lastIndexOf('</svg>'))
-// The letters' box is x 22.5–79, y 35–80; centre them on (50, 50).
-const centred = (scale) =>
-  `<g transform="translate(50 50) scale(${scale}) translate(-50.7 -57.5)">${letters}</g>`
+// The pod only (the <g id="pod"> after the tile). The master already centres
+// it on (50, 50): it spans x 11.5–88.5, y 24.7–75.3, and its tips reach about
+// 45 units from the centre.
+const pod = svg.slice(svg.indexOf('<g id="pod"'), svg.lastIndexOf('</g>') + 4)
+const centred = (scale) => `<g transform="translate(50 50) scale(${scale}) translate(-50 -50)">${pod}</g>`
 
-// Full-bleed square: iPhone and Android crop it to their own shape, and the
-// letters stay inside the maskable safe zone (a circle of radius 40).
-const fullBleed = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#ebdbd3"/>${centred(1.1)}</svg>`
-// Browser tab: the rounded tile, a little larger letters so 16px stays readable.
-const tab = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="#ebdbd3"/>${centred(1.18)}</svg>`
+// Full-bleed square: iPhone and Android crop it to their own shape. At 0.86
+// the tips stay inside Android's maskable safe zone (a circle of radius 40).
+// The cut-out peas are the tile's Hudson, so they match this background.
+const fullBleed = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#ebdbd3"/>${centred(0.86)}</svg>`
+// Browser tab: the rounded tile, the pod a little larger so 16px stays readable.
+const tab = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="#ebdbd3"/>${centred(1.1)}</svg>`
 
 const browser = await chromium.launch()
 const page = await browser.newPage()

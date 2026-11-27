@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { setLocale } from '@/i18n/actions'
 import { HeaderLogIn, HeaderSignOut } from '@/components/app-nav'
-import { SpMark } from '@/components/brand-mark'
+import { PodMark } from '@/components/brand-mark'
 
 // Persistent shell nav: the sp mark and name left, then the language switch
 // and sign-out. The page links are the side menu on desktop and the tab bar
@@ -24,7 +24,7 @@ export async function Nav({ signedIn }: { signedIn: boolean }) {
           href="/"
           className="inline-flex min-h-11 items-center gap-2.5 font-heading text-lg font-semibold tracking-tight text-ink sm:text-xl"
         >
-          <SpMark size={36} />
+          <PodMark size={36} />
           {t('brand')}
         </Link>
         <div className="flex items-center gap-2">
